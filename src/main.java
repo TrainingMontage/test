@@ -15,6 +15,8 @@
 public class main {
     /**
      * Here we have the all-important entry point into our application.
+     *
+     * @param args Command-line arguments.
      */
     public static void main(String[] args) {
         System.out.println("Hello, world!");
