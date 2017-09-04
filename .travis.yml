@@ -3,7 +3,7 @@ script: make
 deploy:
   provider: pages
   local_dir: doc
-  repo: https://github.com/TrainingMontage/trainingmontage.github.io
+  repo: TrainingMontage/trainingmontage.github.io
   skip_cleanup: true
   github_token: $GITHUB_TOKEN
   on:
