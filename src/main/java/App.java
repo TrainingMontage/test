@@ -14,6 +14,8 @@
 public class App {
     /**
      * A basic function that can be tested with simple code.
+     *
+     * @return a friendly greeting string
      */
     public String getGreeting() {
         return "Hello world.";
