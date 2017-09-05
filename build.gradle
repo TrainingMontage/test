@@ -29,9 +29,3 @@ dependencies {
 
 // Define the main class for the application
 mainClassName = 'App'
-
-
-// custom tasks
-task generateJavadocs(type: Javadoc) {
-    source = sourceSets.main.allJava
-}
