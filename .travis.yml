@@ -1,5 +1,4 @@
 language: java
-script: make
 deploy:
   provider: pages
   local_dir: build/docs/javadoc
