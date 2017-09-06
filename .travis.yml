@@ -1,8 +1,9 @@
 language: java
-script: make
+script:
+  - ./gradlew javadoc
 deploy:
   provider: pages
-  local_dir: doc
+  local_dir: build/docs/javadoc
   skip_cleanup: true
   github_token: $GITHUB_TOKEN
   on:

@@ -1,17 +1,15 @@
-defuault: bin/main.class doc/index.html
-	java -cp bin/ main
+.DEFAULT_GOAL := default
 
-doc/index.html: doc src/main.java
-	javadoc src/main.java -d doc
+default: build run
+
+build:
+	./gradlew build
+
+run:
+	./gradlew run
 
 clean:
-	rm bin/*
-
-bin/main.class: bin src/main.java
-	javac src/main.java -d bin
-
-bin:
-	mkdir bin
+	./gradlew clean
 
 doc:
-	mkdir doc
+	./gradlew javadoc
