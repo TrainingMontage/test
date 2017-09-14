@@ -3,6 +3,9 @@
 gen_index.py </path/to/directory> [--header <header text>]
 """
 
+# python2 and python3 compatible
+from __future__ import print_function
+
 import os
 import argparse
 
