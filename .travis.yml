@@ -1,10 +1,13 @@
 language: java
 before_install:
 - "sudo apt-get update && sudo apt-get install --no-install-recommends texlive-fonts-recommended texlive-latex-extra texlive-fonts-extra texlive-latex-recommended dvipng"
+- "pip install mako"
 script:
   - ./gradlew javadoc
   - mkdir -p build/wp/wp1
   - pdflatex -output-directory build/wp/wp1 work_packages/work_package1/srs.tex
+  - python scripts/gen_index.py /build/wp
+  - python scripts/gen_index.py /build/wp/wp1
 deploy:
   provider: pages
   local_dir: build/docs
