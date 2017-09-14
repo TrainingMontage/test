@@ -1,7 +1,7 @@
 language: java
 before_install:
 - "sudo apt-get update && sudo apt-get install --no-install-recommends texlive-fonts-recommended texlive-latex-extra texlive-fonts-extra texlive-latex-recommended dvipng"
-- "pip install mako"
+- "pip install --user mako"
 script:
   - ./gradlew javadoc
   - mkdir -p build/wp/wp1
