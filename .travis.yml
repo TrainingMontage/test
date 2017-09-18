@@ -6,6 +6,7 @@ script:
   - ./gradlew javadoc
   - mkdir -p build/docs/wp/wp1
   - pdflatex -output-directory build/docs/wp/wp1 work_packages/work_package_1/srs.tex
+  - python scripts/gen_index.py build/docs
   - python scripts/gen_index.py build/docs/wp
   - python scripts/gen_index.py build/docs/wp/wp1
 deploy:
