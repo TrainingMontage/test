@@ -246,7 +246,55 @@ meaningful tag of some kind.$>$
 
 REQ-1:	REQ-2:
 
-\section{System Feature 2 (and so on)}
+\section{Track Model}
+
+\subsection{Description}
+The system shall have a model of the transit system track layout. This module is not VITAL
+
+\subsection{Interface}
+\begin{enumerate}
+    \item The track model will accept speed and authority as inputs from the Wayside Controller.
+    \item The track model will provide speed and authority to the Train Model.
+\end{enumerate}
+
+\subsection{Functional Requirements}
+\begin{enumerate}
+    \item The Track Model shall consider grade and elevation.
+    \item The Track Model shall be configurable.
+    \item The Track Model shall consider allowable directions of travel, branching, and speed limits.
+    \item The Track Model shall be able to export and import track layouts.
+    \item The Track Model shall consider block size.
+    \begin{enumerate}
+        \item Blocks must be shown and configurable.
+    \end{enumerate}
+    \item The Track Model shall signals and switch machines.
+    \item The Track Model shall implement track circuits for presence detection.
+    \item The Track Model shall consider railway crossings.
+    \item The Track Model shall include stations.
+    \begin{enumerate}
+        \item Passengers shall be loaded and unloaded at stations.
+    \end{enumerate}
+    \item The Track Model shall implement the following failure modes:
+    \begin{enumerate}
+        \item Broken rail
+        \item Track Circuit failure
+        \item Extra or no trains detected
+        \item Power failure
+        \item No communication going to train
+    \end{enumerate}
+\end{enumerate}
+$<$Itemize the detailed functional requirements associated with this feature.  
+These are the software capabilities that must be present in order for the user 
+to carry out the services provided by the feature, or to execute the use case.  
+Include how the product should respond to anticipated error conditions or 
+invalid inputs. Requirements should be concise, complete, unambiguous, 
+verifiable, and necessary. Use “TBD” as a placeholder to indicate when necessary 
+information is not yet available.$>$
+
+$<$Each requirement should be uniquely identified with a sequence number or a 
+meaningful tag of some kind.$>$
+
+REQ-1:  REQ-2:
 
 
 \chapter{Other Nonfunctional Requirements}
