@@ -68,7 +68,7 @@
 \section{Purpose}
 The product whose software requirements are specified in this document is the
 Training Montage Rail Simulator (TMRS). This SRS covers the functional and 
-non-functional requirements, design contraints, and funcitonal limitations that
+non-functional requirements, design constraints, and functional limitations that
 will be observed during the development of this project. This SRS will encompass
 the entire system, and will include specific requirements, constraints, and 
 limitations for each sub-system.
@@ -243,7 +243,7 @@ transfer rates, and synchronization mechanisms.$>$
 This application shall be made of 5 separate modules, each of which a team member shall own.
 These shall be the Centralized Traffic Controller, Wayside / Track Controller, Track Model, Train Model, and Train Controller.
 These modules shall have strict communication constraints and be organized in the following way.
-% an image will be imput here
+% an image will be input here
 
 \section{Centralized Traffic Control (CTC) Office Module}
 
@@ -255,7 +255,6 @@ and routes trains according to a set schedule, or manual mode where trains are
 dispatched by the dispatcher.
 
 \subsection{Interface}
-<<<<<<< HEAD
 The CTC module interacts with two users, a human dispatcher and the wayside controller 
 module. 
 \begin{enumerate}
@@ -285,7 +284,7 @@ CTC to communicate information on passenger throughput.
         \item Length
         \item Grade
         \item Elevation
-        \item Block Passible (Yes, Broken, or Maintainance)
+        \item Block Passible (Yes, Broken, or Maintenance)
         \item Heater (On, Disabled, N/A)
         \item Underground/Above Ground
         \item Light Information (when applicable)
@@ -303,7 +302,7 @@ CTC to communicate information on passenger throughput.
             \item Number of Passengers
         \end{enumerate}
     \end{enumerate}
-    \item The CTC module must let the dispatcher close and open blocks for maintainance.
+    \item The CTC module must let the dispatcher close and open blocks for maintenance.
     \item The CTC module must be able to operate in manual or automatic mode. In manual 
     mode, all trains will be manually dispatched by the human dispatcher. In automatic 
     mode, trains will be dispatched by the module according to a schedule.
@@ -315,6 +314,7 @@ CTC to communicate information on passenger throughput.
     when selecting a train in the map view.
     \begin{enumerate}
         \item Train ID
+        \item Current Block
         \item Suggested Speed
         \item Given Authority
         \item Origin
@@ -455,7 +455,7 @@ It shall also control track flow, based on PLC code given by a Wayside Engineer.
 \section{Performance Requirements}
 The simulation software must be able to simulate at 10 times wall clock speed.
 This will allow quicker evaluation of a simulated circumstances. The simulation
-speed should be modifyable during simulation; i.e. it specified while the simulation
+speed should be modifiable during simulation; i.e. it specified while the simulation
 is running, rather than before the software starts.
 
 \section{Safety Requirements}
