@@ -333,10 +333,10 @@ This module is responsible for safely dictating the train's speed by way of cont
 
 This vital controller receives a suggested speed and compares it to its own calculated maximum safe speed and selects the lower of the two values to relay to the Train Model. As the train's speed is controlled by its current power, the Train Controller converts the new speed into a power requirement (or a brake setting, if needed).  The train controller also dictates when the lights and doors should be activated, and announces when the train is approaching a station or has stopped at a station.
 
-\subsection{I/O}
+\subsection{Interface}
 The Train Controller receives a suggested speed from the Wayside Controller. This information will be processed and relayed to the Train Model as a power setting.  The controller sends signals to turn lights on or off, and open doors on either side of the train.  This module receives feedback from the Train Model in the from of its current speed and/or power.  The Train Controller also knows the train's current authority in the form of distance in miles.
 
-\subsection{Interface}
+\subsection{Functional Requirements}
 \begin{enumerate}
 \item The Train Controller must have an algorithm capable of calculating a maximum safe speed for the train in question.
 	\begin{enumerate}
@@ -428,7 +428,7 @@ This module is a vital computing platform.
 It shall output safe (not unsafe) speed or authority to the Track Model.
 It shall also control track flow, based on PLC code given by a Wayside Engineer.
 
-\section{Interface}
+\subsection{Interface}
 \begin{enumerate}
     \item The Wayside Controller shall accept suggested (non-vital) speed and authority (per train) from the CTC.
     \item The Wayside Controller shall accept block occupancy and switch positions from the Track Model.
