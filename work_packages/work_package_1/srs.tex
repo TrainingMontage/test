@@ -235,12 +235,11 @@ as FTP or HTTP. Specify any communication security or encryption issues, data
 transfer rates, and synchronization mechanisms.$>$
 
 
-\chapter{System Features}
-$<$This template illustrates organizing the functional requirements for the 
-product by system features, the major services provided by the product. You may 
-prefer to organize this section by use case, mode of operation, user class, 
-object class, functional hierarchy, or combinations of these, whatever makes the 
-most logical sense for your product.$>$
+\chapter{System Modules}
+This application shall be made of 5 separate modules, each of which a team member shall own.
+These shall be the Centralized Traffic Controller, Wayside / Track Controller, Track Model, Train Model, and Train Controller.
+These modules shall have strict communication constraints and be organized in the following way.
+% an image will be imput here
 
 \section{Train Controller}
 
@@ -297,12 +296,6 @@ The Train Controller receives a suggested speed from the Wayside Controller. Thi
 		\item The Train Controller shall display the information until the train has physically left that station.
 	\end{enumerate}
 \end{enumerate}
-
-\chapter{System Modules}
-This application shall be made of 5 separate modules, each of which a team member shall own.
-These shall be the Centralized Traffic Controller, Wayside / Track Controller, Track Model, Train Model, and Train Controller.
-These modules shall have strict communication constraints and be organized in the following way.
-% an image will be imput here
 
 \section{Track Model}
 
