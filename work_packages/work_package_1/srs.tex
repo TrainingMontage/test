@@ -80,6 +80,8 @@ The following acronyms will be used throughout the paper:
   \item[Failure] A subsystem has failed when it allows two locomotives to share a block.
   \item[Unsafe] A situation or subsystem is unsafe if failure is made possible by said situation or subsystem.
   \item[Vital] A vital subsystem is one which shall not allow unsafe output.
+  \item[PLC] Programmable Logic Controller, a hardware platform which operates solely on binary values, controlled by code given by a user. The term PLC will be used interchangeably to refer to the device and the code which runs on it.
+  \item[Block] The track is partitioned into blocks, what is considered an indivisible unit of track. A block has one speed limit, one grade, one altitude, no switches, and at most one train occupying it.
 \end{description}
 
 $<$Describe any standards or typographical conventions that were followed when 
@@ -199,7 +201,7 @@ interface with each module.
 \chapter{System Modules}
 This application shall be made of 5 separate modules, each of which a team member shall own.
 These shall be the Centralized Traffic Controller, Wayside / Track Controller, Track Model, Train Model, and Train Controller.
-These modules shall have strict communication constraints and be architected in the following way.
+These modules shall have strict communication constraints and be organized in the following way.
 % an image will be imput here
 
 \section{Track Model}
@@ -246,6 +248,17 @@ The system shall have a model of the transit system track layout. This module is
 This module is a vital computing platform.
 It shall output safe (not unsafe) speed or authority to the Track Model.
 It shall also control track flow, based on PLC code given by a Wayside Engineer.
+
+\begin{enumerate}
+    \item The Wayside Controller shall accept suggested (non-vital) speed and authority (per train) from the CTC.
+    \item The Wayside Controller shall accept block occupancy and switch positions from the Track Model.
+    \item The Wayside Controller shall have vital outputs to the Track Model:
+        \begin{enumerate}
+            \item Speed \& Authority per train.
+            \item Light Colors per track block.
+            \item Switch Positions.
+            \end{enumerate}
+\end{enumerate}
 
 \chapter{Other Nonfunctional Requirements}
 
