@@ -84,6 +84,7 @@ The following acronyms will be used throughout the paper:
   \item[Unsafe] A situation or subsystem is unsafe if failure is made possible by said situation or subsystem.
   \item[Vital] A vital subsystem is one which shall not allow unsafe output.
   \item[PLC] Programmable Logic Controller, a hardware platform which operates solely on binary values, controlled by code given by a user. The term PLC will be used interchangeably to refer to the device and the code which runs on it.
+  \item[CTC] Centralized Traffic Control, the module that represents the main dispatcher office.
   \item[Block] The track is partitioned into blocks, what is considered an indivisible unit of track. A block has one speed limit, one grade, one altitude, no switches, and at most one train occupying it.
 \end{description}
 
@@ -279,7 +280,7 @@ transfer rates, and synchronization mechanisms.$>$
 This application shall be made of 5 separate modules, each of which a team member shall own.
 These shall be the Centralized Traffic Controller, Wayside / Track Controller, Track Model, Train Model, and Train Controller.
 These modules shall have strict communication constraints and be organized in the following way.
-% an image will be imput here
+% an image will be input here
 
 \section{Centralized Traffic Control (CTC) Office Module}
 
@@ -291,27 +292,28 @@ and routes trains according to a set schedule, or manual mode where trains are
 dispatched by the dispatcher.
 
 \subsection{Interface}
-The CTC module interacts with two users, a human dispatcher and the wayside controller module. 
-\begin{itemize}
+The CTC module interacts with two users, a human dispatcher and the wayside controller 
+module. 
+\begin{enumerate}
     \item The module must display information on the current track layout and currently 
     deployed trains to the dispatcher. 
     \item The dispatcher can manually schedule trains for the CTC to deploy. 
-\end{itemize}
-\begin{itemize}
+\end{enumerate}
+\begin{enumerate}
     \item The CTC gives suggested speed and authority for each train to the wayside 
     controller module. 
     \item The wayside controller module will send the CTC information on which pieces of 
     track are occupied by trains. 
-\end{itemize}
+\end{enumerate}
 There is also a communication link between the stations of the track model and the 
 CTC to communicate information on passenger throughput.
 
 \subsection{Functional Requirements}
-\begin{itemize}
+\begin{enumerate}
     \item The CTC module must display the following track information. Some information 
     will be displayed in a dynamic map view and detailed information will be displayed 
     when selecting a block in the map view.  
-    \begin{itemize}
+    \begin{enumerate}
         \item Block ID
         \item Block Region
         \item Occupied State
@@ -323,21 +325,21 @@ CTC to communicate information on passenger throughput.
         \item Heater (On, Disabled, N/A)
         \item Underground/Above Ground
         \item Light Information (when applicable)
-        \begin{itemize}
+        \begin{enumerate}
             \item Light State (Super Green, Green, Yellow, Red)
-        \end{itemize}
+        \end{enumerate}
         \item Switch Information (when applicable)
-        \begin{itemize}
+        \begin{enumerate}
             \item Switch ID
             \item Switch State
-        \end{itemize}
+        \end{enumerate}
         \item Station Information (when applicable)
-        \begin{itemize}
+        \begin{enumerate}
             \item Station Name
-            %\Number of Passengers Waiting (Do we need this? Can we even get this info?)
-        \end{itemize}
-    \end{itemize}
-    \item The CTC module must let the dispatcher close and open blocks for maintainance.
+            \item Number of Passengers
+        \end{enumerate}
+    \end{enumerate}
+    \item The CTC module must let the dispatcher close and open blocks for maintenance.
     \item The CTC module must be able to operate in manual or automatic mode. In manual 
     mode, all trains will be manually dispatched by the human dispatcher. In automatic 
     mode, trains will be dispatched by the module according to a schedule.
@@ -347,73 +349,49 @@ CTC to communicate information on passenger throughput.
     \item The CTC module must display the following train information. Some information 
     will be displayed in a dynamic map view and detailed information will be displayed 
     when selecting a train in the map view.
-    \begin{itemize}
+    \begin{enumerate}
         \item Train ID
+        \item Current Block
         \item Suggested Speed
         \item Given Authority
         \item Origin
         \item Destination
-    \end{itemize}
+    \end{enumerate}
     \item The CTC module must display the ambient temperature.
     \item The CTC module must display the current passenger throughput based on tickets
     sold at each station.
-\end{itemize}
+\end{enumerate}
 
 
-\section{Train Controller}
+\section{Wayside / Track Controller}
 
 \subsection{Description}
-This module is responsible for safely dictating the train's speed by way of controlling its power, as well as controlling some smaller tasks like light and door control, and feedback about current and approaching stations. This module is VITAL.
-
-This vital controller receives a suggested speed and compares it to its own calculated maximum safe speed and selects the lower of the two values to relay to the Train Model. As the train's speed is controlled by its current power, the Train Controller converts the new speed into a power requirement (or a brake setting, if needed).  The train controller also dictates when the lights and doors should be activated, and announces when the train is approaching a station or has stopped at a station.
-
-\subsection{I/O}
-The Train Controller receives a suggested speed from the Wayside Controller. This information will be processed and relayed to the Train Model as a power setting.  The controller sends signals to turn lights on or off, and open doors on either side of the train.  This module receives feedback from the Train Model in the from of its current speed and/or power.  The Train Controller also knows the train's current authority in the form of distance in miles.
+This module is a vital computing platform.
+The Wayside Controller module is a simulation of the many wayside controllers which sit next to track, and operate the switches and lights on the track, and provide the train traveling with within its region safe speed and authority.
 
 \subsection{Interface}
 \begin{enumerate}
-\item The Train Controller shall have an algorithm capable of calculating a maximum safe speed for the train in question.
-	\begin{enumerate}
-		\item The maximum safe speed shall be the maximum speed that can be fully arrested in the minimum safe breaking distance.
-		\item The train controller shall consider the train's mass, current speed, and current authority when calculating this speed.
-	\end{enumerate}
-
-\item The Train Controller shall select a safe speed for the train.
-	\begin{enumerate}
-		\item The Train Controller shall choose the suggested speed or its own calculated maximum safe speed.
-		\item By default, the lower of the two speeds will be chosen for the train.
-		\item The Train Controller shall allow a manual mode for the driver of the train to manually input a speed.  This speed shall not exceed the speed suggested by the Wayside Controller.
-	\end{enumerate}
-
-\item The module, once it has chosen a speed for the train, will require an algorithm to convert that desired speed into either (1) a power setting for the train, or (2) an application of the brake for a certain amount of time.
-	\begin{enumerate}
-		\item This algorithm shall use the train's current and desired kinetic energy combined with a time constraint to determine the power required to achieve the desired speed.
-		\item This algorithm shall also take grade into account.
-		\item The details of this algorithm are TBD.
-	\end{enumerate}
-
-\item The Train Controller must dictate that lights should be turned on or off.
-	\begin{enumerate}
-		\item The Train Controller shall control lights based on a daily schedule.
-		\item It is the responsibility of the Train Model to execute these instructions.
-	\end{enumerate}
-
-\item The Train Controller must dictate that train doors should open.
-	\begin{enumerate}
-		\item The Train Controller shall only open doors when the train is stopped.
-		\item Doors can be opened on the left or the right, or both.
-		\item The Train Controller shall read which doors should be open from beacons approaching each station.
-		\item In the event of an emergency stop and train evacuation, the Train Controller shall send the command to open whichever doors are appropriate, given the situation at hand.
-		\item It is the responsibility of the Train Model to execute these instructions.
-	\end{enumerate}
-
-\item The Train Controller must display stops and stations.
-	\begin{enumerate}
-		\item The upcoming stop and the distance to that stop shall be read from an RFID sensor one block before the station or stop's location.
-		\item The Train Controller shall display the stop as soon as it receives and deciphers the information from the RFID sensor.
-		\item The Train Controller shall display the information until the train has physically left that station.
-	\end{enumerate}
+    \item The Wayside Controller shall accept suggested (non-vital) speed and authority (per train) from the CTC.
+    \item The Wayside Controller shall accept block occupancy and switch positions from the Track Model.
+    \item The Wayside Controller shall have vital outputs to the Track Model:
+    \begin{enumerate}
+        \item Speed \& Authority per train.
+        \item Light Colors per track block.
+        \item Switch Positions.
+    \end{enumerate}
 \end{enumerate}
+
+\subsection{Functional Requirements}
+\begin{enumerate}
+    \item The Wayside Controller shall be a vital computing platform.
+    \item The Wayside Controller shall receive suggested speed and authority from the CTC per train, and output safe speed and authority per train.
+    \item The Wayside Controller shall control the switching of the track.
+    \item The Wayside Controller shall detect broken blocks of rail.
+    \item The Wayside Controller shall report the state of the track, railway crossings, signals, and occupancy to the CTC.
+    \item This is a PLC, and shall allow a user, a Wayside Engineer, to upload a code to control it. It is assumed that this Wayside Engineer's code is vital. The implementation of this shall be diverse.
+\end{enumerate}
+
+
 
 \section{Track Model}
 
@@ -452,42 +430,73 @@ The system shall have a model of the transit system track layout. This module is
         \item Power failure
         \item No communication going to train
     \end{enumerate}
-\end{enumerate}
+\end{enumerate} 
 
-\section{Wayside / Track Controller}
+
+% PARTH, PUT YOUR SHIT HERE!!
+
+
+\section{Train Controller}
 
 \subsection{Description}
-This module is a vital computing platform.
-The Wayside Controller module is a simulation of the many wayside controllers which sit next to track, and operate the switches and lights on the track, and provide the train traveling with within its region safe speed and authority.
+This module is responsible for safely dictating the train's speed by way of controlling its power, as well as controlling some smaller tasks like light and door control, and feedback about current and approaching stations. This module is VITAL.
 
-\section{Interface}
-\begin{enumerate}
-    \item The Wayside Controller shall accept suggested (non-vital) speed and authority (per train) from the CTC.
-    \item The Wayside Controller shall accept block occupancy and switch positions from the Track Model.
-    \item The Wayside Controller shall have vital outputs to the Track Model:
-        \begin{enumerate}
-            \item Speed \& Authority per train.
-            \item Light Colors per track block.
-            \item Switch Positions.
-        \end{enumerate}
-\end{enumerate}
- 
+This vital controller receives a suggested speed and compares it to its own calculated maximum safe speed and selects the lower of the two values to relay to the Train Model. As the train's speed is controlled by its current power, the Train Controller converts the new speed into a power requirement (or a brake setting, if needed).  The train controller also dictates when the lights and doors should be activated, and announces when the train is approaching a station or has stopped at a station.
+
+\subsection{Interface}
+The Train Controller receives a suggested speed from the Wayside Controller. This information will be processed and relayed to the Train Model as a power setting.  The controller sends signals to turn lights on or off, and open doors on either side of the train.  This module receives feedback from the Train Model in the from of its current speed and/or power.  The Train Controller also knows the train's current authority in the form of distance in miles.
+
 \subsection{Functional Requirements}
 \begin{enumerate}
-    \item The Wayside Controller shall be a vital computing platform.
-    \item The Wayside Controller shall receive suggested speed and authority from the CTC per train, and output safe speed and authority per train.
-    \item The Wayside Controller shall control the switching of the track.
-    \item The Wayside Controller shall detect broken blocks of rail.
-    \item The Wayside Controller shall report the state of the track, railway crossings, signals, and occupancy to the CTC.
-    \item This is a PLC, and shall allow a user, a Wayside Engineer, to upload a code to control it. It is assumed that this Wayside Engineer's code is vital. The implementation of this shall be diverse.
-\end{enumerate} 
+    \item The Train Controller shall have an algorithm capable of calculating a maximum safe speed for the train in question.
+    \begin{enumerate}
+        \item The maximum safe speed shall be the maximum speed that can be fully arrested in the minimum safe breaking distance.
+        \item The train controller shall consider the train's mass, current speed, and current authority when calculating this speed.
+    \end{enumerate}
+    
+    \item The Train Controller shall select a safe speed for the train.
+    \begin{enumerate}
+        \item The Train Controller shall choose the suggested speed or its own calculated maximum safe speed.
+        \item By default, the lower of the two speeds will be chosen for the train.
+        \item The Train Controller shall allow a manual mode for the driver of the train to manually input a speed.  This speed shall not exceed the speed suggested by the Wayside Controller.
+    \end{enumerate}
+    
+    \item The module, once it has chosen a speed for the train, will require an algorithm to convert that desired speed into either (1) a power setting for the train, or (2) an application of the brake for a certain amount of time.
+    \begin{enumerate}
+        \item This algorithm shall use the train's current and desired kinetic energy combined with a time constraint to determine the power required to achieve the desired speed.
+        \item This algorithm shall also take grade into account.
+        \item The details of this algorithm are TBD.
+    \end{enumerate}
+    
+    \item The Train Controller must dictate that lights should be turned on or off.
+    \begin{enumerate}
+        \item The Train Controller shall control lights based on a daily schedule.
+        \item It is the responsibility of the Train Model to execute these instructions.
+    \end{enumerate}
+    
+    \item The Train Controller must dictate that train doors should open.
+    \begin{enumerate}
+        \item The Train Controller shall only open doors when the train is stopped.
+        \item Doors can be opened on the left or the right, or both.
+        \item The Train Controller shall read which doors should be open from beacons approaching each station.
+        \item In the event of an emergency stop and train evacuation, the Train Controller shall send the command to open whichever doors are appropriate, given the situation at hand.
+        \item It is the responsibility of the Train Model to execute these instructions.
+    \end{enumerate}
+    
+    \item The Train Controller must display stops and stations.
+    \begin{enumerate}
+        \item The upcoming stop and the distance to that stop shall be read from an RFID sensor one block before the station or stop's location.
+        \item The Train Controller shall display the stop as soon as it receives and deciphers the information from the RFID sensor.
+        \item The Train Controller shall display the information until the train has physically left that station.
+    \end{enumerate}
+\end{enumerate}
 
 \chapter{Other Nonfunctional Requirements}
 
 \section{Performance Requirements}
 The simulation software must be able to simulate at 10 times wall clock speed.
 This will allow quicker evaluation of a simulated circumstances. The simulation
-speed should be modifyable during simulation; i.e. it specified while the simulation
+speed should be modifiable during simulation; i.e. it specified while the simulation
 is running, rather than before the software starts.
 
 \section{Safety Requirements}
