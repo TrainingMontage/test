@@ -37,7 +37,7 @@
         Prepared by:\\
         Alec Rosenbaum\\
         Aric Hudson\\
-        Issac Goss\\
+        Isaac Goss\\
         Mitch Moran\\
         Parth Dadhania\\
         \vspace{1.9cm}
@@ -56,6 +56,8 @@
         \hline
 	    Name & Date & Reason For Changes & Version\\
         \hline
+        et all & September 24, 2017 & Module Requirements & 0.2.0\\
+        \hline
 	    Alec Rosenbaum & September 14, 2017 & init & 0.1\\
         % \hline
 	    % 31 & 32 & 33 & 34\\
@@ -68,17 +70,13 @@
 \section{Purpose}
 The product whose software requirements are specified in this document is the
 Training Montage Rail Simulator (TMRS). This SRS covers the functional and 
-non-functional requirements, design contraints, and funcitonal limitations that
+non-functional requirements, design constraints, and functional limitations that
 will be observed during the development of this project. This SRS will encompass
 the entire system, and will include specific requirements, constraints, and 
 limitations for each sub-system.
 
 \section{Document Conventions}
 The following acronyms will be used throughout the paper:
-\begin{enumerate}
-  \item TMRS - Training Montage Rail Simulator
-  \item CTC - Centralized Traffic Control
-\end{enumerate}
 
 \begin{description}
   \item[TMRS] Training Montage Rail Simulator
@@ -89,11 +87,6 @@ The following acronyms will be used throughout the paper:
   \item[Block] The track is partitioned into blocks, what is considered an indivisible unit of track. A block has one speed limit, one grade, one altitude, no switches, and at most one train occupying it.
 \end{description}
 
-$<$Describe any standards or typographical conventions that were followed when 
-writing this SRS, such as fonts or highlighting that have special significance.  
-For example, state whether priorities  for higher-level requirements are assumed 
-to be inherited by detailed requirements, or whether every requirement statement 
-is to have its own priority.$>$
 
 \section{Intended Audience and Reading Suggestions}
 This document is intended as a part of the contractual agreement between Training
@@ -107,12 +100,12 @@ capabilities are provided by the system. After reviewing the UI design prototype
 proceed to read the rest of the document in the order that it's presented.
 
 \section{Project Scope}
-$<$Provide a short description of the software being specified and its purpose, 
-including relevant benefits, objectives, and goals. Relate the software to 
-corporate goals or business strategies. If a separate vision and scope document 
-is available, refer to it rather than duplicating its contents here.$>$
+TMRS is a simulation and prototype bid for the North Shore Extension presented by the City of Pittsburgh, PA.
+In this capacity, the software is intended to allow users view of how a completed North Shore Extension control system would operate, and serve to inform the development of the system to be deployed.
 
 \section{References}
+
+
 $<$List any other documents or Web addresses to which this SRS refers. These may 
 include user interface style guides, contracts, standards, system requirements 
 specifications, use case documents, or a vision and scope document. Provide 
@@ -286,7 +279,7 @@ CTC to communicate information on passenger throughput.
         \item Length
         \item Grade
         \item Elevation
-        \item Block Passible (Yes, Broken, or Maintainance)
+        \item Block Passable (Yes, Broken, or Maintenance)
         \item Heater (On, Disabled, N/A)
         \item Underground/Above Ground
         \item Light Information (when applicable)
@@ -339,16 +332,15 @@ The Train Controller receives a suggested speed from the Wayside Controller. Thi
 
 \subsection{Interface}
 \begin{enumerate}
-\item The Train Controller must have an algorithm capable of calculating a maximum safe speed for the train in question.
+\item The Train Controller shall have an algorithm capable of calculating a maximum safe speed for the train in question.
 	\begin{enumerate}
-		\item The maximum safe speed will be the maximum speed that can be fully arrested in the minimum safe breaking distance.
+		\item The maximum safe speed shall be the maximum speed that can be fully arrested in the minimum safe breaking distance.
 		\item The train controller shall consider the train's mass, current speed, and current authority when calculating this speed.
-		\item Details of this algorithm are TBD.
 	\end{enumerate}
 
 \item The Train Controller shall select a safe speed for the train.
 	\begin{enumerate}
-		\item The Train Controller shall choose the suggested pseed or its own calculated maximum safe speed.
+		\item The Train Controller shall choose the suggested speed or its own calculated maximum safe speed.
 		\item By default, the lower of the two speeds will be chosen for the train.
 		\item The Train Controller shall allow a manual mode for the driver of the train to manually input a speed.  This speed shall not exceed the speed suggested by the Wayside Controller.
 	\end{enumerate}
