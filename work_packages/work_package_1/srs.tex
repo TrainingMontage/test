@@ -77,6 +77,9 @@ limitations for each sub-system.
 The following acronyms will be used throughout the paper:
 \begin{description}
   \item[TMRS] Training Montage Rail Simulator
+  \item[Failure] A subsystem has failed when it allows two locomotives to share a block.
+  \item[Unsafe] A situation or subsystem is unsafe if failure is made possible by said situation or subsystem.
+  \item[Vital] A vital subsystem is one which shall not allow unsafe output.
 \end{description}
 
 $<$Describe any standards or typographical conventions that were followed when 
@@ -193,7 +196,11 @@ UI Prototypes for each module are shown in the UI Design document. The User's
 Manual further elaborates on operational details and how users are expected to
 interface with each module.
 
-\chapter{System Features}
+\chapter{System Modules}
+This application shall be made of 5 separate modules, each of which a team member shall own.
+These shall be the Centralized Traffic Controller, Wayside / Track Controller, Track Model, Train Model, and Train Controller.
+These modules shall have strict communication constraints and be architected in the following way.
+% an image will be imput here
 
 \section{Track Model}
 
@@ -232,6 +239,13 @@ The system shall have a model of the transit system track layout. This module is
         \item No communication going to train
     \end{enumerate}
 \end{enumerate}
+
+\section{Wayside / Track Controller}
+
+\subsection{Description}
+This module is a vital computing platform.
+It shall output safe (not unsafe) speed or authority to the Track Model.
+It shall also control track flow, based on PLC code given by a Wayside Engineer.
 
 \chapter{Other Nonfunctional Requirements}
 
