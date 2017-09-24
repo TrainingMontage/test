@@ -443,7 +443,12 @@ It shall also control track flow, based on PLC code given by a Wayside Engineer.
  
 \subsection{Functional Requirements}
 \begin{enumerate}
-    \item 
+    \item The Wayside Controller shall be a vital computing platform.
+    \item The Wayside Controller shall receive suggested speed and authority from the CTC per train, and output safe speed and authority per train.
+    \item The Wayside Controller shall control the switching of the track.
+    \item The Wayside Controller shall detect broken blocks of rail.
+    \item The Wayside Controller shall report the state of the track, railway crossings, signals, and occupancy to the CTC.
+    \item This is a PLC, and shall allow a user, a Wayside Engineer, to upload a code to control it. It is assumed that this Wayside Engineer's code is vital. The implementation of this shall be diverse.
 \end{enumerate} 
 
 \chapter{Other Nonfunctional Requirements}
