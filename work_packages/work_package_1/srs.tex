@@ -198,6 +198,106 @@ UI Prototypes for each module are shown in the UI Design document. The User's
 Manual further elaborates on operational details and how users are expected to
 interface with each module.
 
+$<$Describe the logical characteristics of each interface between the software 
+product and the users. This may include sample screen images, any GUI standards 
+or product family style guides that are to be followed, screen layout 
+constraints, standard buttons and functions (e.g., help) that will appear on 
+every screen, keyboard shortcuts, error message display standards, and so on.  
+Define the software components for which a user interface is needed. Details of 
+the user interface design should be documented in a separate user interface 
+specification.$>$
+
+\section{Hardware Interfaces}
+$<$Describe the logical and physical characteristics of each interface between 
+the software product and the hardware components of the system. This may include 
+the supported device types, the nature of the data and control interactions 
+between the software and the hardware, and communication protocols to be 
+used.$>$
+
+\section{Software Interfaces}
+$<$Describe the connections between this product and other specific software 
+components (name and version), including databases, operating systems, tools, 
+libraries, and integrated commercial components. Identify the data items or 
+messages coming into the system and going out and describe the purpose of each.  
+Describe the services needed and the nature of communications. Refer to 
+documents that describe detailed application programming interface protocols.  
+Identify data that will be shared across software components. If the data 
+sharing mechanism must be implemented in a specific way (for example, use of a 
+global data area in a multitasking operating system), specify this as an 
+implementation constraint.$>$
+
+\section{Communications Interfaces}
+$<$Describe the requirements associated with any communications functions 
+required by this product, including e-mail, web browser, network server 
+communications protocols, electronic forms, and so on. Define any pertinent 
+message formatting. Identify any communication standards that will be used, such 
+as FTP or HTTP. Specify any communication security or encryption issues, data 
+transfer rates, and synchronization mechanisms.$>$
+
+
+\chapter{System Features}
+$<$This template illustrates organizing the functional requirements for the 
+product by system features, the major services provided by the product. You may 
+prefer to organize this section by use case, mode of operation, user class, 
+object class, functional hierarchy, or combinations of these, whatever makes the 
+most logical sense for your product.$>$
+
+\section{Train Controller}
+
+\subsection{Description}
+This module is responsible for safely dictating the train's speed by way of controlling its power, as well as controlling some smaller tasks like light and door control, and feedback about current and approaching stations. This module is VITAL.
+
+This vital controller receives a suggested speed and compares it to its own calculated maximum safe speed and selects the lower of the two values to relay to the Train Model. As the train's speed is controlled by its current power, the Train Controller converts the new speed into a power requirement (or a brake setting, if needed).  The train controller also dictates when the lights and doors should be activated, and announces when the train is approaching a station or has stopped at a station.
+
+\subsection{I/O}
+The Train Controller receives a suggested speed from the Wayside Controller. This information will be processed and relayed to the Train Model as a power setting.  The controller sends signals to turn lights on or off, and open doors on either side of the train.  This module receives feedback from the Train Model in the from of its current speed and/or power.  The Train Controller also knows the train's current authority in the form of distance in miles.
+
+\subsection{Interface}
+\begin{enumerate}
+\item The Train Controller must have an algorithm capable of calculating a maximum safe speed for the train in question.
+	\begin{enumerate}
+		\item The maximum safe speed will be the maximum speed that can be fully arrested in the minimum safe breaking distance.
+		\item The train controller shall consider the train's mass, current speed, and current authority when calculating this speed.
+		\item Details of this algorithm are TBD.
+	\end{enumerate}
+
+\item The Train Controller shall select a safe speed for the train.
+	\begin{enumerate}
+		\item The Train Controller shall choose the suggested pseed or its own calculated maximum safe speed.
+		\item By default, the lower of the two speeds will be chosen for the train.
+		\item The Train Controller shall allow a manual mode for the driver of the train to manually input a speed.  This speed shall not exceed the speed suggested by the Wayside Controller.
+	\end{enumerate}
+
+\item The module, once it has chosen a speed for the train, will require an algorithm to convert that desired speed into either (1) a power setting for the train, or (2) an application of the brake for a certain amount of time.
+	\begin{enumerate}
+		\item This algorithm shall use the train's current and desired kinetic energy combined with a time constraint to determine the power required to achieve the desired speed.
+		\item This algorithm shall also take grade into account.
+		\item The details of this algorithm are TBD.
+	\end{enumerate}
+
+\item The Train Controller must dictate that lights should be turned on or off.
+	\begin{enumerate}
+		\item The Train Controller shall control lights based on a daily schedule.
+		\item It is the responsibility of the Train Model to execute these instructions.
+	\end{enumerate}
+
+\item The Train Controller must dictate that train doors should open.
+	\begin{enumerate}
+		\item The Train Controller shall only open doors when the train is stopped.
+		\item Doors can be opened on the left or the right, or both.
+		\item The Train Controller shall read which doors should be open from beacons approaching each station.
+		\item In the event of an emergency stop and train evacuation, the Train Controller shall send the command to open whichever doors are appropriate, given the situation at hand.
+		\item It is the responsibility of the Train Model to execute these instructions.
+	\end{enumerate}
+
+\item The Train Controller must display stops and stations.
+	\begin{enumerate}
+		\item The upcoming stop and the distance to that stop shall be read from an RFID sensor one block before the station or stop's location.
+		\item The Train Controller shall display the stop as soon as it receives and deciphers the information from the RFID sensor.
+		\item The Train Controller shall display the information until the train has physically left that station.
+	\end{enumerate}
+\end{enumerate}
+
 \chapter{System Modules}
 This application shall be made of 5 separate modules, each of which a team member shall own.
 These shall be the Centralized Traffic Controller, Wayside / Track Controller, Track Model, Train Model, and Train Controller.
