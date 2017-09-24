@@ -202,8 +202,8 @@ The system shall have a model of the transit system track layout. This module is
 
 \subsection{Interface}
 \begin{enumerate}
-    \item The track model will accept speed and authority as inputs from the Wayside Controller.
-    \item The track model will provide speed and authority to the Train Model.
+    \item The track model shall accept speed and authority as inputs from the Wayside Controller.
+    \item The track model shall provide speed and authority to the Train Model.
 \end{enumerate}
 
 \subsection{Functional Requirements}
@@ -236,14 +236,14 @@ The system shall have a model of the transit system track layout. This module is
 \chapter{Other Nonfunctional Requirements}
 
 \section{Performance Requirements}
-$<$If there are performance requirements for the product under various 
-circumstances, state them here and explain their rationale, to help the 
-developers understand the intent and make suitable design choices. Specify the 
-timing relationships for real time systems. Make such requirements as specific 
-as possible. You may need to state performance requirements for individual 
-functional requirements or features.$>$
+The simulation software must be able to simulate at 10 times wall clock speed.
+This will allow quicker evaluation of a simulated circumstances. The simulation
+speed should be modifyable during simulation; i.e. it specified while the simulation
+is running, rather than before the software starts.
 
 \section{Safety Requirements}
+No train shall at any point crash into any other train. No train shall exceed
+the speed limit or authority.
 $<$Specify those requirements that are concerned with possible loss, damage, or 
 harm that could result from the use of the product. Define any safeguards or 
 actions that must be taken, as well as actions that must be prevented. Refer to 
