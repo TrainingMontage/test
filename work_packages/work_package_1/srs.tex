@@ -77,6 +77,7 @@ limitations for each sub-system.
 The following acronyms will be used throughout the paper:
 \begin{enumerate}
   \item TMRS - Training Montage Rail Simulator
+  \item CTC - Centralized Traffic Control
 \end{enumerate}
 
 $<$Describe any standards or typographical conventions that were followed when 
@@ -193,7 +194,95 @@ UI Prototypes for each module are shown in the UI Design document. The User's
 Manual further elaborates on operational details and how users are expected to
 interface with each module.
 
-\chapter{System Features}
+
+\chapter{System Modules}
+
+\section{Centralized Traffic Control (CTC) Office Module}
+
+\subsection{Description}
+The CTC office module is the part of the software that sends trains from the 
+train yard. A human dispatcher can view information of the entire system 
+from the CTC office. The module can operate in automatic mode, where is dispatches 
+and routes trains according to a set schedule, or manual mode where trains are 
+dispatched by the dispatcher.
+
+\subsection{Interface}
+The CTC module interacts with two "users," a human dispatcher and the wayside controller 
+module. 
+\begin{itemize}
+  \item The module must display information on the current track layout and currently 
+  deployed trains to the dispatcher. 
+  \item The dispatcher can manually schedule trains for the CTC to deploy. 
+\end{itemize}
+\begin{itemize}
+  \item The CTC gives suggested speed and authority for each train to the wayside 
+  controller module. 
+  \item The wayside controller module will send the CTC information on which pieces of 
+  track are occupied by trains. 
+\end{itemize}
+There is also a communication link between the stations of the track model and the 
+CTC to communicate information on passenger throughput.
+
+\subsection{Functional Requirements}
+$<$Itemize the detailed functional requirements associated with this feature.  
+These are the software capabilities that must be present in order for the user 
+to carry out the services provided by the feature, or to execute the use case.  
+Include how the product should respond to anticipated error conditions or 
+invalid inputs. Requirements should be concise, complete, unambiguous, 
+verifiable, and necessary. Use “TBD” as a placeholder to indicate when necessary 
+information is not yet available.$>$
+\begin{itemize}
+  \item The CTC module must display the following track information. Some information 
+  will be displayed in a dynamic map view and detailed information will be displayed 
+  when selecting a block in the map view.  
+  \begin{itemize}
+    \item Block ID
+	\item Block Region
+	\item Occupied State
+	\item Speed Limit
+	\item Length
+	\item Grade
+	\item Elevation
+	\item Block Passible (Yes, Broken, or Maintainance)
+	\item Heater (On, Disabled, N/A)
+	\item Underground/Above Ground
+	\item Light Information (when applicable)
+	\begin{itemize}
+	  \item Light State (Super Green, Green, Yellow, Red)
+	\end{itemize}
+	\item Switch Information (when applicable)
+	\begin{itemize}
+	  \item Switch ID
+	  \item Switch State
+	\end{itemize}
+	\item Station Information (when applicable)
+	\begin{itemize}
+	  \item Station Name
+	  %\Number of Passengers Waiting (Do we need this? Can we even get this info?)
+	\end{itemize}
+  \end{itemize}
+  \item The CTC module must let the dispatcher close and open blocks for maintainance.
+  \item The CTC module must be able to operate in manual or automatic mode. In manual 
+  mode, all trains will be manually dispatched by the human dispatcher. In automatic 
+  mode, trains will be dispatched by the module according to a schedule.
+  \item The CTC module must let the dispatcher upload a schedule to be followed in 
+  automatic mode.
+  \item The CTC module must let the dispatcher view and edit the schedule in manual mode.
+  \item The CTC module must display the following train information. Some information 
+  will be displayed in a dynamic map view and detailed information will be displayed 
+  when selecting a train in the map view.
+  \begin{itemize}
+    \item Train ID
+    \item Suggested Speed
+    \item Given Authority
+    \item Origin
+    \item Destination
+  \end{itemize}
+  \item The CTC module must display the ambient temperature.
+  \item The CTC module must display the current passenger throughput based on tickets
+  sold at each station.
+\end{itemize}
+
 
 \section{Track Model}
 
