@@ -5,8 +5,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage{graphicx}
-\graphicspath{{work_packages/work_package_1/static/user-manual-images/}} % path relative to root
-% \graphicspath{{static/user-manual-images/}}
+% \graphicspath{{work_packages/work_package_1/static/user-manual-images/}} % path relative to root
+\graphicspath{{static/user-manual-images/}}
 \hypersetup{
     pdftitle={Software Requirement Specification},    % title
     pdfauthor={Training Montage},                     % author
@@ -87,9 +87,9 @@ stored block details, and reconfigure block defails. Once the user selects a blo
 dropdown, that blocks information will be populated onto the approprate fields. The user may
 then reload the information about that block using the "Reload Block Info" button, or they
 may edit any field and click the "Submit Changes" button to modify the details stored by
-the module.
+the Track Model.
 
-The valid block states are any combination of the individual states enumerated below:
+The user may expect to see one or more of the follwing block states in the "State" field:
 \begin{description}
     \item[Operational] The selected block is fully functional.
     \item[Broken Rail] The selected block includes a section of broken rail.
