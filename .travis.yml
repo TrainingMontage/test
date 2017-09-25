@@ -1,15 +1,10 @@
 language: java
 before_install:
 - "sudo apt-get update && sudo apt-get install --no-install-recommends texlive-fonts-recommended texlive-latex-extra texlive-fonts-extra texlive-latex-recommended dvipng"
-- "pip install --user mako"
+- "pip3 install --user mako click"
 script:
   - ./gradlew javadoc
-  - mkdir -p build/docs/wp/wp1
-  - pdflatex -output-directory build/docs/wp/wp1 work_packages/work_package_1/srs.tex
-  - pdflatex -output-directory build/docs/wp/wp1 work_packages/work_package_1/risk-assessment.tex
-  - python scripts/gen_index.py build/docs
-  - python scripts/gen_index.py build/docs/wp
-  - python scripts/gen_index.py build/docs/wp/wp1
+  - python3 scripts/build.py work_packages build/docs
 deploy:
   provider: pages
   local_dir: build/docs
