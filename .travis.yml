@@ -4,7 +4,7 @@ before_install:
 - "pip install --user mako click"
 script:
   - ./gradlew javadoc
-  - ./build.sh work_packages build/docs
+  - ./scripts/build.sh work_packages build/docs
 deploy:
   provider: pages
   local_dir: build/docs
