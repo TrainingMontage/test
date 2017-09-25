@@ -79,6 +79,7 @@ def build(src_dir, build_dir):
                 # make directory tree, compile latex files, cleanup
                 mkdir_p(out_dir)
                 # print(["latexmk", "-output-directory={}".format(out_dir), "-pdf", str(filepath)])
+                call(["ls"])
                 call(["ls", "work_packages"])
                 call(["ls", "work_packages/work_package_1"])
                 call(["latexmk", "-output-directory={}".format(out_dir), "-pdf", str(filepath)])
