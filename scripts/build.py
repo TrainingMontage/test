@@ -89,7 +89,8 @@ def build(src_dir, build_dir):
                 call(["ls", "build/docs/work_packages"])
                 print("vars", out_dir, filepath)
                 print(["latexmk", "-output-directory={}".format(out_dir), "-pdf", str(filepath)])
-                call(["latexmk", "-output-directory={}".format(out_dir), "-pdf", str(filepath)])
+                call(["latexmk", "-pdf", str(filepath)])
+                # call(["latexmk", "-output-directory={}".format(out_dir), "-pdf", str(filepath)])
                 call(["latexmk", "-c", "-output-directory={}".format(out_dir), str(filepath)])
 
     # make an index.html file for all directoriesprocessed
