@@ -14,6 +14,7 @@ example usage:
 # python2 and python3 compatible
 from __future__ import print_function
 
+import errno
 import os
 from subprocess import call
 
@@ -44,6 +45,16 @@ INDEX_TEMPLATE = r"""
 EXCLUDED = ['index.html']
 
 
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
+
+
 def gen_index(directory, header=None):
     """generate an index.html file listing other files in that directory"""
     fnames = [fname for fname in sorted(os.listdir(directory))
@@ -66,7 +77,7 @@ def build(src_dir, build_dir):
                 out_dir = os.path.join(build_dir, subdir)
 
                 # make directory tree, compile latex files, cleanup
-                os.makedirs(out_dir, exist_ok=True)
+                mkdir_p(out_dir)
                 call(["latexmk", "-output-directory={}".format(out_dir), "-pdf", filepath])
                 call(["latexmk", "-c", "-output-directory={}".format(out_dir), filepath])
 
