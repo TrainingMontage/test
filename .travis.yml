@@ -1,10 +1,10 @@
 language: java
 before_install:
 - "sudo apt-get update && sudo apt-get install --no-install-recommends texlive-fonts-recommended texlive-latex-extra texlive-fonts-extra texlive-latex-recommended dvipng"
-- "pip3 install --user mako click"
+- "pip install --user mako click"
 script:
   - ./gradlew javadoc
-  - python3 scripts/build.py work_packages build/docs
+  - python scripts/build.py work_packages build/docs
 deploy:
   provider: pages
   local_dir: build/docs
