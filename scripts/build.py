@@ -11,6 +11,9 @@ example usage:
     python3 scripts/build.py work_packages build/docs
 """
 
+# python2 and python3 compatible
+from __future__ import print_function
+
 import os
 from subprocess import run
 
