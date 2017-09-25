@@ -89,6 +89,8 @@ def build(src_dir, build_dir):
                 call(["ls", "build/docs/work_packages"])
                 print("vars", out_dir, filepath)
                 print(["latexmk", "-output-directory={}".format(out_dir), "-pdf", str(filepath)])
+                call("ls")
+                call("ls work_packages")
                 call("ls work_packages/work_package_1")
                 call("latexmk -pdf work_packages/work_package_1/srs.tex")
                 # call(["latexmk", "-output-directory={}".format(out_dir), "-pdf", str(filepath)])
