@@ -78,8 +78,9 @@ def build(src_dir, build_dir):
 
                 # make directory tree, compile latex files, cleanup
                 mkdir_p(out_dir)
-                call(["latexmk", "-output-directory={}".format(out_dir), "-pdf", filepath])
-                call(["latexmk", "-c", "-output-directory={}".format(out_dir), filepath])
+                # print(["latexmk", "-output-directory={}".format(out_dir), "-pdf", str(filepath)])
+                call(["latexmk", "-output-directory={}".format(out_dir), "-pdf", str(filepath)])
+                call(["latexmk", "-c", "-output-directory={}".format(out_dir), str(filepath)])
 
     # make an index.html file for all directoriesprocessed
     for subdir, dirs, files in os.walk(build_dir):
