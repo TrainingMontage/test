@@ -1,6 +1,6 @@
 language: java
 before_install:
-- "sudo apt-get update && sudo apt-get install --no-install-recommends tree latexmk texlive-fonts-recommended texlive-latex-extra texlive-fonts-extra texlive-latex-recommended dvipng"
+- "sudo apt-get update && sudo apt-get install --no-install-recommends tree latexmk latexmk texlive-fonts-extra texlive-fonts-recommended texlive-latex-base texlive-latex-extra texlive-latex-recommended"
 - "pip install --user mako click"
 script:
   - ./gradlew javadoc
