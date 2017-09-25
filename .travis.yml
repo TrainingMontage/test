@@ -4,8 +4,7 @@ before_install:
 - "pip install --user mako click"
 script:
   - ./gradlew javadoc
-  - latexmk -pdf work_packages/work_package_1/srs.tex
-  - python scripts/build.py work_packages build/docs
+  - ./build.sh work_packages build/docs
 deploy:
   provider: pages
   local_dir: build/docs
