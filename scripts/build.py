@@ -15,7 +15,7 @@ example usage:
 from __future__ import print_function
 
 import os
-from subprocess import run
+from subprocess import call
 
 import click
 from mako.template import Template
@@ -67,8 +67,8 @@ def build(src_dir, build_dir):
 
                 # make directory tree, compile latex files, cleanup
                 os.makedirs(out_dir, exist_ok=True)
-                run(["latexmk", "-output-directory={}".format(out_dir), "-pdf", filepath])
-                run(["latexmk", "-c", "-output-directory={}".format(out_dir), filepath])
+                call(["latexmk", "-output-directory={}".format(out_dir), "-pdf", filepath])
+                call(["latexmk", "-c", "-output-directory={}".format(out_dir), filepath])
 
     # make an index.html file for all directoriesprocessed
     for subdir, dirs, files in os.walk(build_dir):
