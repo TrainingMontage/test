@@ -1,0 +1,85 @@
+\documentclass{scrreprt}
+\usepackage{listings}
+\usepackage{underscore}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\hypersetup{
+    pdftitle={Coding Standard, Defect Tracing Policy, and Workflow},    % title
+    pdfauthor={Training Montage},                     % author
+    pdfsubject={TeX and LaTeX},                        % subject of the document
+    pdfkeywords={TeX, LaTeX, graphics, images}, % list of keywords
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=blue,       % color of internal links
+    citecolor=black,       % color of links to bibliography
+    filecolor=black,        % color of file links
+    urlcolor=purple,        % color of external links
+    linktoc=page            % only page is linked
+}
+
+\def\myversion{0.1 }
+\date{}
+
+\usepackage{hyperref}
+\begin{document}
+
+\begin{flushright}
+    \rule{16cm}{5pt}\vskip1cm
+    \begin{bfseries}
+        \Huge{CODING STANDARD\\ 
+        DEFECT TRACKING\\ 
+        \& WORKFLOW}\\
+        \vspace{.9cm}
+        for\\
+        \vspace{.9cm}
+        COE 1186 Project\\
+        \vspace{.9cm}
+        \LARGE{Version \myversion approved}\\
+        \vspace{.9cm}
+        Prepared by:\\
+        Alec Rosenbaum\\
+        Aric Hudson\\
+        Issac Goss\\
+        Mitch Moran\\
+        Parth Dadhania\\
+        \vspace{1.9cm}
+        Training Montage\\
+        \vspace{.9cm}
+        \today\\
+    \end{bfseries}
+\end{flushright}
+
+\tableofcontents
+
+\chapter*{Revision History}
+
+\begin{center}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+	    Name & Date & Reason For Changes & Version\\
+        \hline
+	    Alec Rosenbaum & September 14, 2017 & init & 0.1\\
+        % \hline
+	    % 31 & 32 & 33 & 34\\
+        \hline
+    \end{tabular}
+\end{center}
+
+\chapter{Policies}
+
+\section{Purpose}
+The product whose coding standards, defect tracking policy, and workflow are specified in this document is the Training Montage Rail Simulator (TMRS). This document covers the methods we will employ to ensure that this product follows a standardized procedure for coding, as well as the tracking of defects and policies for defining how work is completed.
+
+\section{Coding Standard}
+The TMRS coding standard will follow the Google Java Style Guide. As a slight modification, TMRS code will use a 4-space indentation rather than a 2-space indentation.
+
+\section{Defect Tracking \& Workflow}
+Work will be coordinated using GitHub and the tools it provides.
+
+\subsection{Defect Tracking}
+Defects, problems, and unfinished work will be tracked using GitHub issues, which can be assigned to team members as needed and as they are available, so that such problems can be addressed promptly and their status recorded.
+
+\subsection{Workflow}
+Work done on this project will utilize the version control capabilities inherent in GitHub and the Git commands.  Team members will create branches of a common repository to perform their own work, merging those branches to common team-wide repositories as appropriate.  Mistakes and errors can thus be easily be rectified by reverting the branch to a previous version.
+
+\end{document}
