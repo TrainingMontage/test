@@ -70,10 +70,10 @@
 
 \section{Purpose}
 The product whose software requirements are specified in this document is the
-Training Montage Rail Simulator (TMRS). This SRS covers the functional and 
+Training Montage Rail Simulator (TMRS). This SRS covers the functional and
 non-functional requirements, design constraints, and functional limitations that
 will be observed during the development of this project. This SRS will encompass
-the entire system, and will include specific requirements, constraints, and 
+the entire system, and will include specific requirements, constraints, and
 limitations for each sub-system.
 
 \section{Document Conventions}
@@ -96,7 +96,7 @@ Montage and their client for the TMRS software package. It will be used as refer
 by developers, project managers, testers, and the client.
 
 It is suggested that the user read over the project scope and perspective, then
-visit the UI design prototype included in the Appendix. The UI design prototype 
+visit the UI design prototype included in the Appendix. The UI design prototype
 will give a good sense of how users will interact with the software, and of what
 capabilities are provided by the system. After reviewing the UI design prototype,
 proceed to read the rest of the document in the order that it's presented.
@@ -147,8 +147,8 @@ In this capacity, the software is intended to allow users view of how a complete
 There are five major modules which make up this system, for which the individual requirements will be specified in chapter 4.
 
 \begin{description}
-    \item[Centralized Traffic Control (CTC)] The CTC office module is the part of the software that sends trains from the train yard. 
-    A human dispatcher can view information of the entire system from the CTC office. 
+    \item[Centralized Traffic Control (CTC)] The CTC office module is the part of the software that sends trains from the train yard.
+    A human dispatcher can view information of the entire system from the CTC office.
     The module can operate in automatic mode, where it dispatches and routes trains according to a set schedule, or manual mode where trains are dispatched by the dispatcher.
     \item[Wayside / Track Controller] This module is a vital computing platform.
     The Wayside Controller module is a simulation of the many wayside controllers which sit next to track, and operate the switches and lights on the track, and provide the train traveling with within its region safe speed and authority.
@@ -158,13 +158,13 @@ There are five major modules which make up this system, for which the individual
 \end{description}
 
 
-%$<$Describe the context and origin of the product being specified in this SRS.  
-%For example, state whether this product is a follow-on member of a product 
-%family, a replacement for certain existing systems, or a new, self-contained 
-%product. If the SRS defines a component of a larger system, relate the 
-%requirements of the larger system to the functionality of this software and 
-%identify interfaces between the two. A simple diagram that shows the major 
-%components of the overall system, subsystem interconnections, and external 
+%$<$Describe the context and origin of the product being specified in this SRS.
+%For example, state whether this product is a follow-on member of a product
+%family, a replacement for certain existing systems, or a new, self-contained
+%product. If the SRS defines a component of a larger system, relate the
+%requirements of the larger system to the functionality of this software and
+%identify interfaces between the two. A simple diagram that shows the major
+%components of the overall system, subsystem interconnections, and external
 %interfaces can be helpful.$>$
 
 \section{Product Functions}
@@ -199,15 +199,15 @@ Mac OS X, Linux, and Solaris. We will be writing software using Java Version 8.
 
 \section{Design and Implementation Constraints}
 \begin{enumerate}
-    \item 
+    \item
 \end{enumerate}
-%$<$Describe any items or issues that will limit the options available to the 
-%developers. These might include: corporate or regulatory policies; hardware 
-%limitations (timing requirements, memory requirements); interfaces to other 
-%applications; specific technologies, tools, and databases to be used; parallel 
-%operations; language requirements; communications protocols; security 
-%considerations; design conventions or programming standards (for example, if the 
-%customer’s organization will be responsible for maintaining the delivered 
+%$<$Describe any items or issues that will limit the options available to the
+%developers. These might include: corporate or regulatory policies; hardware
+%limitations (timing requirements, memory requirements); interfaces to other
+%applications; specific technologies, tools, and databases to be used; parallel
+%operations; language requirements; communications protocols; security
+%considerations; design conventions or programming standards (for example, if the
+%customer’s organization will be responsible for maintaining the delivered
 %software).$>$
 
 \section{User Documentation}
@@ -220,13 +220,13 @@ The following documentation components will be delivered along with the software
 
 \section{Assumptions and Dependencies}
 
-%$<$List any assumed factors (as opposed to known facts) that could affect the 
-%requirements stated in the SRS. These could include third-party or commercial 
-%components that you plan to use, issues around the development or operating 
-%environment, or constraints. The project could be affected if these assumptions 
-%are incorrect, are not shared, or change. Also identify any dependencies the 
-%project has on external factors, such as software components that you intend to 
-%reuse from another project, unless they are already documented elsewhere (for 
+%$<$List any assumed factors (as opposed to known facts) that could affect the
+%requirements stated in the SRS. These could include third-party or commercial
+%components that you plan to use, issues around the development or operating
+%environment, or constraints. The project could be affected if these assumptions
+%are incorrect, are not shared, or change. Also identify any dependencies the
+%project has on external factors, such as software components that you intend to
+%reuse from another project, unless they are already documented elsewhere (for
 %example, in the vision and scope document or the project plan).$>$
 
 
@@ -244,40 +244,40 @@ interface with each module.
 
 
 %
-%$<$Describe the logical characteristics of each interface between the software 
-%product and the users. This may include sample screen images, any GUI standards 
-%or product family style guides that are to be followed, screen layout 
-%constraints, standard buttons and functions (e.g., help) that will appear on 
-%every screen, keyboard shortcuts, error message display standards, and so on.  
-%Define the software components for which a user interface is needed. Details of 
-%the user interface design should be documented in a separate user interface 
+%$<$Describe the logical characteristics of each interface between the software
+%product and the users. This may include sample screen images, any GUI standards
+%or product family style guides that are to be followed, screen layout
+%constraints, standard buttons and functions (e.g., help) that will appear on
+%every screen, keyboard shortcuts, error message display standards, and so on.
+%Define the software components for which a user interface is needed. Details of
+%the user interface design should be documented in a separate user interface
 %specification.$>$
 
 \section{Hardware Interfaces}
-%$<$Describe the logical and physical characteristics of each interface between 
-%the software product and the hardware components of the system. This may include 
-%the supported device types, the nature of the data and control interactions 
-%between the software and the hardware, and communication protocols to be 
+%$<$Describe the logical and physical characteristics of each interface between
+%the software product and the hardware components of the system. This may include
+%the supported device types, the nature of the data and control interactions
+%between the software and the hardware, and communication protocols to be
 %used.$>$
 
 \section{Software Interfaces}
-%$<$Describe the connections between this product and other specific software 
-%components (name and version), including databases, operating systems, tools, 
-%libraries, and integrated commercial components. Identify the data items or 
-%messages coming into the system and going out and describe the purpose of each.  
-%Describe the services needed and the nature of communications. Refer to 
-%documents that describe detailed application programming interface protocols.  
-%Identify data that will be shared across software components. If the data 
-%sharing mechanism must be implemented in a specific way (for example, use of a 
-%global data area in a multitasking operating system), specify this as an 
+%$<$Describe the connections between this product and other specific software
+%components (name and version), including databases, operating systems, tools,
+%libraries, and integrated commercial components. Identify the data items or
+%messages coming into the system and going out and describe the purpose of each.
+%Describe the services needed and the nature of communications. Refer to
+%documents that describe detailed application programming interface protocols.
+%Identify data that will be shared across software components. If the data
+%sharing mechanism must be implemented in a specific way (for example, use of a
+%global data area in a multitasking operating system), specify this as an
 %implementation constraint.$>$
 
 \section{Communications Interfaces}
-%$<$Describe the requirements associated with any communications functions 
-%required by this product, including e-mail, web browser, network server 
-%communications protocols, electronic forms, and so on. Define any pertinent 
-%message formatting. Identify any communication standards that will be used, such 
-%as FTP or HTTP. Specify any communication security or encryption issues, data 
+%$<$Describe the requirements associated with any communications functions
+%required by this product, including e-mail, web browser, network server
+%communications protocols, electronic forms, and so on. Define any pertinent
+%message formatting. Identify any communication standards that will be used, such
+%as FTP or HTTP. Specify any communication security or encryption issues, data
 %transfer rates, and synchronization mechanisms.$>$
 
 
@@ -290,34 +290,34 @@ These modules shall have strict communication constraints and be organized in th
 \section{Centralized Traffic Control (CTC) Office Module}
 
 \subsection{Description}
-The CTC office module is the part of the software that sends trains from the 
-train yard. A human dispatcher can view information of the entire system 
-from the CTC office. The module can operate in automatic mode, where is dispatches 
-and routes trains according to a set schedule, or manual mode where trains are 
+The CTC office module is the part of the software that sends trains from the
+train yard. A human dispatcher can view information of the entire system
+from the CTC office. The module can operate in automatic mode, where is dispatches
+and routes trains according to a set schedule, or manual mode where trains are
 dispatched by the dispatcher.
 
 \subsection{Interface}
-The CTC module interacts with two users, a human dispatcher and the wayside controller 
-module. 
+The CTC module interacts with two users, a human dispatcher and the wayside controller
+module.
 \begin{enumerate}
-    \item The module must display information on the current track layout and currently 
-    deployed trains to the dispatcher. 
-    \item The dispatcher can manually schedule trains for the CTC to deploy. 
+    \item The module must display information on the current track layout and currently
+    deployed trains to the dispatcher.
+    \item The dispatcher can manually schedule trains for the CTC to deploy.
 \end{enumerate}
 \begin{enumerate}
-    \item The CTC gives suggested speed and authority for each train to the wayside 
-    controller module. 
-    \item The wayside controller module will send the CTC information on which pieces of 
-    track are occupied by trains. 
+    \item The CTC gives suggested speed and authority for each train to the wayside
+    controller module.
+    \item The wayside controller module will send the CTC information on which pieces of
+    track are occupied by trains.
 \end{enumerate}
-There is also a communication link between the stations of the track model and the 
+There is also a communication link between the stations of the track model and the
 CTC to communicate information on passenger throughput.
 
 \subsection{Functional Requirements}
 \begin{enumerate}
-    \item The CTC module must display the following track information. Some information 
-    will be displayed in a dynamic map view and detailed information will be displayed 
-    when selecting a block in the map view.  
+    \item The CTC module must display the following track information. Some information
+    will be displayed in a dynamic map view and detailed information will be displayed
+    when selecting a block in the map view.
     \begin{enumerate}
         \item Block ID
         \item Block Region
@@ -345,14 +345,14 @@ CTC to communicate information on passenger throughput.
         \end{enumerate}
     \end{enumerate}
     \item The CTC module must let the dispatcher close and open blocks for maintenance.
-    \item The CTC module must be able to operate in manual or automatic mode. In manual 
-    mode, all trains will be manually dispatched by the human dispatcher. In automatic 
+    \item The CTC module must be able to operate in manual or automatic mode. In manual
+    mode, all trains will be manually dispatched by the human dispatcher. In automatic
     mode, trains will be dispatched by the module according to a schedule.
-    \item The CTC module must let the dispatcher upload a schedule to be followed in 
+    \item The CTC module must let the dispatcher upload a schedule to be followed in
     automatic mode.
     \item The CTC module must let the dispatcher view and edit the schedule in manual mode.
-    \item The CTC module must display the following train information. Some information 
-    will be displayed in a dynamic map view and detailed information will be displayed 
+    \item The CTC module must display the following train information. Some information
+    will be displayed in a dynamic map view and detailed information will be displayed
     when selecting a train in the map view.
     \begin{enumerate}
         \item Train ID
@@ -435,10 +435,51 @@ The system shall have a model of the transit system track layout. This module is
         \item Power failure
         \item No communication going to train
     \end{enumerate}
-\end{enumerate} 
+\end{enumerate}
 
+\section{Train Model}
 
-% PARTH, PUT YOUR SHIT HERE!!
+\subsection{Description}
+The Train Model models the movement of the train using Newton's laws of motion
+assuming that the train is a rigid body point mass. This is a non-vital module.
+
+\subsection{Interface}
+The Train Model shall take in speed and authority from Track Model. It shall
+output the speed and authority to the Train Controller.
+
+\subsection{Functional Requirements}
+\begin{enumerate}
+  \item Train Specifications
+   \begin{itemize}
+    \item Length
+    \item Height
+    \item Width
+    \item Mass
+    \item Passenger Count
+    \item Crew Count
+   \end{itemize}
+  \item Physics/Inputs
+  \begin{itemize}
+   \item Authority
+   \item Speed Limit
+   \item Acceleration/Deceleration Limit
+   \item Door open/close
+   \item Lights on/off
+   \item Temperature Control
+   \item Emergency Brake
+   \item Brake Command
+   \item Setpoint Speed Command
+   \item Track Circuit
+   \item Transponder
+   \item Route Information System
+  \end{itemize}
+  \item Failure Modes
+    \begin{itemize}
+     \item Brake Failure
+     \item Signal Pickup Failure
+     \item Train Engine Failure
+    \end{itemize}
+\end{enumerate}
 
 
 \section{Train Controller}
@@ -458,27 +499,27 @@ The Train Controller receives a suggested speed from the Wayside Controller. Thi
         \item The maximum safe speed shall be the maximum speed that can be fully arrested in the minimum safe breaking distance.
         \item The train controller shall consider the train's mass, current speed, and current authority when calculating this speed.
     \end{enumerate}
-    
+
     \item The Train Controller shall select a safe speed for the train.
     \begin{enumerate}
         \item The Train Controller shall choose the suggested speed or its own calculated maximum safe speed.
         \item By default, the lower of the two speeds will be chosen for the train.
         \item The Train Controller shall allow a manual mode for the driver of the train to manually input a speed.  This speed shall not exceed the speed suggested by the Wayside Controller.
     \end{enumerate}
-    
+
     \item The module, once it has chosen a speed for the train, will require an algorithm to convert that desired speed into either (1) a power setting for the train, or (2) an application of the brake for a certain amount of time.
     \begin{enumerate}
         \item This algorithm shall use the train's current and desired kinetic energy combined with a time constraint to determine the power required to achieve the desired speed.
         \item This algorithm shall also take grade into account.
         \item The details of this algorithm are TBD.
     \end{enumerate}
-    
+
     \item The Train Controller must dictate that lights should be turned on or off.
     \begin{enumerate}
         \item The Train Controller shall control lights based on a daily schedule.
         \item It is the responsibility of the Train Model to execute these instructions.
     \end{enumerate}
-    
+
     \item The Train Controller must dictate that train doors should open.
     \begin{enumerate}
         \item The Train Controller shall only open doors when the train is stopped.
@@ -487,7 +528,7 @@ The Train Controller receives a suggested speed from the Wayside Controller. Thi
         \item In the event of an emergency stop and train evacuation, the Train Controller shall send the command to open whichever doors are appropriate, given the situation at hand.
         \item It is the responsibility of the Train Model to execute these instructions.
     \end{enumerate}
-    
+
     \item The Train Controller must display stops and stations.
     \begin{enumerate}
         \item The upcoming stop and the distance to that stop shall be read from an RFID sensor one block before the station or stop's location.
@@ -507,56 +548,56 @@ is running, rather than before the software starts.
 \section{Safety Requirements}
 No train shall at any point collide with any other train. Trains shall not share blocks. No train shall exceed
 the speed limit or authority.
-%$<$Specify those requirements that are concerned with possible loss, damage, or 
-%harm that could result from the use of the product. Define any safeguards or 
-%actions that must be taken, as well as actions that must be prevented. Refer to 
-%any external policies or regulations that state safety issues that affect the 
-%product’s design or use. Define any safety certifications that must be 
+%$<$Specify those requirements that are concerned with possible loss, damage, or
+%harm that could result from the use of the product. Define any safeguards or
+%actions that must be taken, as well as actions that must be prevented. Refer to
+%any external policies or regulations that state safety issues that affect the
+%product’s design or use. Define any safety certifications that must be
 %satisfied.$>$
 
 \section{Security Requirements}
-%$<$Specify any requirements regarding security or privacy issues surrounding use 
-%of the product or protection of the data used or created by the product. Define 
-%any user identity authentication requirements. Refer to any external policies or 
-%regulations containing security issues that affect the product. Define any 
+%$<$Specify any requirements regarding security or privacy issues surrounding use
+%of the product or protection of the data used or created by the product. Define
+%any user identity authentication requirements. Refer to any external policies or
+%regulations containing security issues that affect the product. Define any
 %security or privacy certifications that must be satisfied.$>$
 
 \section{Software Quality Attributes}
-%$<$Specify any additional quality characteristics for the product that will be 
-%important to either the customers or the developers. Some to consider are: 
-%adaptability, availability, correctness, flexibility, interoperability, 
-%maintainability, portability, reliability, reusability, robustness, testability, 
-%and usability. Write these to be specific, quantitative, and verifiable when 
-%possible. At the least, clarify the relative preferences for various attributes, 
+%$<$Specify any additional quality characteristics for the product that will be
+%important to either the customers or the developers. Some to consider are:
+%adaptability, availability, correctness, flexibility, interoperability,
+%maintainability, portability, reliability, reusability, robustness, testability,
+%and usability. Write these to be specific, quantitative, and verifiable when
+%possible. At the least, clarify the relative preferences for various attributes,
 %such as ease of use over ease of learning.$>$
 
 \section{Business Rules}
-%$<$List any operating principles about the product, such as which individuals or 
-%roles can perform which functions under specific circumstances. These are not 
-%functional requirements in themselves, but they may imply certain functional 
+%$<$List any operating principles about the product, such as which individuals or
+%roles can perform which functions under specific circumstances. These are not
+%functional requirements in themselves, but they may imply certain functional
 %requirements to enforce the rules.$>$
 
 
 \chapter{Other Requirements}
-%$<$Define any other requirements not covered elsewhere in the SRS. This might 
-%include database requirements, internationalization requirements, legal 
-%requirements, reuse objectives for the project, and so on. Add any new sections 
+%$<$Define any other requirements not covered elsewhere in the SRS. This might
+%include database requirements, internationalization requirements, legal
+%requirements, reuse objectives for the project, and so on. Add any new sections
 %that are pertinent to the project.$>$
 
 \section{Appendix A: Glossary}
 %see https://en.wikibooks.org/wiki/LaTeX/Glossary
-%$<$Define all the terms necessary to properly interpret the SRS, including 
-%acronyms and abbreviations. You may wish to build a separate glossary that spans 
-%multiple projects or the entire organization, and just include terms specific to 
+%$<$Define all the terms necessary to properly interpret the SRS, including
+%acronyms and abbreviations. You may wish to build a separate glossary that spans
+%multiple projects or the entire organization, and just include terms specific to
 %a single project in each SRS.$>$
 
 \section{Appendix B: Analysis Models}
-%$<$Optionally, include any pertinent analysis models, such as data flow 
-%diagrams, class diagrams, state-transition diagrams, or entity-relationship 
+%$<$Optionally, include any pertinent analysis models, such as data flow
+%diagrams, class diagrams, state-transition diagrams, or entity-relationship
 %diagrams.$>$
 
 \section{Appendix C: To Be Determined List}
-%$<$Collect a numbered list of the TBD (to be determined) references that remain 
+%$<$Collect a numbered list of the TBD (to be determined) references that remain
 %in the SRS so they can be tracked to closure.$>$
 
 \end{document}
