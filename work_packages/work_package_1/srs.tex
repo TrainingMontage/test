@@ -66,12 +66,19 @@
 \chapter{Introduction}
 
 \section{Purpose}
-$<$Identify the product whose software requirements are specified in this 
-document, including the revision or release number. Describe the scope of the 
-product that is covered by this SRS, particularly if this SRS describes only 
-part of the system or a single subsystem.$>$
+The product whose software requirements are specified in this document is the
+Training Montage Rail Simulator (TMRS). This SRS covers the functional and 
+non-functional requirements, design contraints, and funcitonal limitations that
+will be observed during the development of this project. This SRS will encompass
+the entire system, and will include specific requirements, constraints, and 
+limitations for each sub-system.
 
 \section{Document Conventions}
+The following acronyms will be used throughout the paper:
+\begin{enumerate}
+  \item TMRS - Training Montage Rail Simulator
+\end{enumerate}
+
 $<$Describe any standards or typographical conventions that were followed when 
 writing this SRS, such as fonts or highlighting that have special significance.  
 For example, state whether priorities  for higher-level requirements are assumed 
@@ -79,12 +86,15 @@ to be inherited by detailed requirements, or whether every requirement statement
 is to have its own priority.$>$
 
 \section{Intended Audience and Reading Suggestions}
-$<$Describe the different types of reader that the document is intended for, 
-such as developers, project managers, marketing staff, users, testers, and 
-documentation writers. Describe what the rest of this SRS contains and how it is 
-organized. Suggest a sequence for reading the document, beginning with the 
-overview sections and proceeding through the sections that are most pertinent to 
-each reader type.$>$
+This document is intended as a part of the contractual agreement between Training
+Montage and their client for the TMRS software package. It will be used as reference
+by developers, project managers, testers, and the client.
+
+It is suggested that the user read over the project scope and perspective, then
+visit the UI design prototype included in the Appendix. The UI design prototype 
+will give a good sense of how users will interact with the software, and of what
+capabilities are provided by the system. After reviewing the UI design prototype,
+proceed to read the rest of the document in the order that it's presented.
 
 \section{Project Scope}
 $<$Provide a short description of the software being specified and its purpose, 
@@ -236,7 +246,55 @@ meaningful tag of some kind.$>$
 
 REQ-1:	REQ-2:
 
-\section{System Feature 2 (and so on)}
+\section{Track Model}
+
+\subsection{Description}
+The system shall have a model of the transit system track layout. This module is not VITAL
+
+\subsection{Interface}
+\begin{enumerate}
+    \item The track model will accept speed and authority as inputs from the Wayside Controller.
+    \item The track model will provide speed and authority to the Train Model.
+\end{enumerate}
+
+\subsection{Functional Requirements}
+\begin{enumerate}
+    \item The Track Model shall consider grade and elevation.
+    \item The Track Model shall be configurable.
+    \item The Track Model shall consider allowable directions of travel, branching, and speed limits.
+    \item The Track Model shall be able to export and import track layouts.
+    \item The Track Model shall consider block size.
+    \begin{enumerate}
+        \item Blocks must be shown and configurable.
+    \end{enumerate}
+    \item The Track Model shall signals and switch machines.
+    \item The Track Model shall implement track circuits for presence detection.
+    \item The Track Model shall consider railway crossings.
+    \item The Track Model shall include stations.
+    \begin{enumerate}
+        \item Passengers shall be loaded and unloaded at stations.
+    \end{enumerate}
+    \item The Track Model shall implement the following failure modes:
+    \begin{enumerate}
+        \item Broken rail
+        \item Track Circuit failure
+        \item Extra or no trains detected
+        \item Power failure
+        \item No communication going to train
+    \end{enumerate}
+\end{enumerate}
+$<$Itemize the detailed functional requirements associated with this feature.  
+These are the software capabilities that must be present in order for the user 
+to carry out the services provided by the feature, or to execute the use case.  
+Include how the product should respond to anticipated error conditions or 
+invalid inputs. Requirements should be concise, complete, unambiguous, 
+verifiable, and necessary. Use “TBD” as a placeholder to indicate when necessary 
+information is not yet available.$>$
+
+$<$Each requirement should be uniquely identified with a sequence number or a 
+meaningful tag of some kind.$>$
+
+REQ-1:  REQ-2:
 
 
 \chapter{Other Nonfunctional Requirements}
