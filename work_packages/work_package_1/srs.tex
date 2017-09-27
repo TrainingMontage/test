@@ -153,7 +153,8 @@ There are five major modules which make up this system, for which the individual
     \item[Wayside / Track Controller] This module is a vital computing platform.
     The Wayside Controller module is a simulation of the many wayside controllers which sit next to track, and operate the switches and lights on the track, and provide the train traveling with within its region safe speed and authority.
     \item[Track Model] The system shall have a model of the transit system track layout. This module is \textbf{not} vital.
-    \item[Train Model]
+    \item[Train Model] The Train Model models the movement of the train using Newton's laws of motion
+    assuming that the train is a rigid body point mass. This is a non-vital module.
     \item[Train Controller] This module is responsible for safely dictating the train's speed by way of controlling its power, as well as controlling some smaller tasks like light and door control, and feedback about current and approaching stations. This module is VITAL.
 \end{description}
 
@@ -196,6 +197,7 @@ The software will operate on the Java Virtual Machine. The Java Virtual Machine
 can be installed on computers with a Pentium 2 266 MHz or faster processor, at
 least 128 MB of physical RAM, and 124MB of free disk space. Java supports Windows,
 Mac OS X, Linux, and Solaris. We will be writing software using Java Version 8.
+This software shall be executable on Windows 10 operating system.
 
 \section{Design and Implementation Constraints}
 \begin{enumerate}
@@ -253,15 +255,15 @@ interface with each module.
 %the user interface design should be documented in a separate user interface
 %specification.$>$
 
-\section{Hardware Interfaces}
+%\section{Hardware Interfaces}
 %$<$Describe the logical and physical characteristics of each interface between
 %the software product and the hardware components of the system. This may include
 %the supported device types, the nature of the data and control interactions
 %between the software and the hardware, and communication protocols to be
 %used.$>$
 
-\section{Software Interfaces}
-    The software shall interface with the Java Virtual Machine version 8, and the Windows 10 operating system.
+%\section{Software Interfaces}
+%    The software shall interface with the Java Virtual Machine version 8, and the Windows 10 operating system.
 
 %$<$Describe the connections between this product and other specific software
 %components (name and version), including databases, operating systems, tools,
@@ -557,27 +559,6 @@ the speed limit or authority.
 %product’s design or use. Define any safety certifications that must be
 %satisfied.$>$
 
-\section{Security Requirements}
-%$<$Specify any requirements regarding security or privacy issues surrounding use
-%of the product or protection of the data used or created by the product. Define
-%any user identity authentication requirements. Refer to any external policies or
-%regulations containing security issues that affect the product. Define any
-%security or privacy certifications that must be satisfied.$>$
-
-\section{Software Quality Attributes}
-%$<$Specify any additional quality characteristics for the product that will be
-%important to either the customers or the developers. Some to consider are:
-%adaptability, availability, correctness, flexibility, interoperability,
-%maintainability, portability, reliability, reusability, robustness, testability,
-%and usability. Write these to be specific, quantitative, and verifiable when
-%possible. At the least, clarify the relative preferences for various attributes,
-%such as ease of use over ease of learning.$>$
-
-\section{Business Rules}
-%$<$List any operating principles about the product, such as which individuals or
-%roles can perform which functions under specific circumstances. These are not
-%functional requirements in themselves, but they may imply certain functional
-%requirements to enforce the rules.$>$
 
 
 %\chapter{Other Requirements}
