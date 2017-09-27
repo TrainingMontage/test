@@ -70,6 +70,116 @@ There is this section that does this and that and has this stuff.
 \section{GUI Section}
 There will probably be a few GUI sections to elaborate on
 
+
+%%%%%%%%%%%%%%%%%%   CTC Start   %%%%%%%%%%%%%%%%%%%%%
+\chapter{Centralized Traffic Control}
+
+% picture(s) of overall gui
+\includegraphics[width=\textwidth]{CTC-main}
+
+\section{File Menu}
+Clicking on file will show a drop down menu containing the following items:
+\begin{itemize}
+  \item Upload Schedule - Replace the existing schedule with a newly uploaded one
+  \item Save Schedule - Export schedule with any manual changes to a file
+  % Do I need an upload track option
+\end{itemize}
+
+\section{Auto/Manual Button}
+\begin{center}
+  \includegraphics[trim={9cm 14.65cm 20.8cm 1.7cm},clip,width=3cm]{CTC-main}
+\end{center}
+% trim={<left> <lower> <right> <upper>}
+Toggle between automatic and manual modes by clicking this button. In automatic mode trains 
+will be dispatched according to the internal schedule. In manual mode the dispatcher must 
+deploy all trains.
+
+\section{Dynamic Map Rendering}
+\begin{center}
+  \includegraphics[trim={17cm .65cm .5cm 1.75cm},clip,width=\textwidth]{CTC-main}
+\end{center}
+% trim={<left> <lower> <right> <upper>}
+The dynamic map rendering displays the current system state. Detailed information of each 
+piece will be displayed in the relevant info boxes when a train or piece of track is clicked.
+
+\section{CTC Info}
+\begin{center}
+  \includegraphics[trim={.45cm 13.5cm 27.45cm 1.7cm},clip,width=5cm]{CTC-main}
+\end{center}
+% trim={<left> <lower> <right> <upper>}
+The CTC info box displays information about the currently operating system.
+\begin{itemize}
+  \item Temperature - Current outside temperature.
+  \item Throughput - Amount of people that completed a trip within the last hour
+\end{itemize}
+
+\section{Train Info}
+\begin{center}
+  \includegraphics[trim={.45cm 6.6cm 27.45cm 4.6cm},clip,width=5cm]{CTC-main}
+\end{center}
+% trim={<left> <lower> <right> <upper>}
+Information on a train selected in the map view will display here. The following items 
+will be displayed.
+\begin{itemize}
+  \item Train ID - Unique ID number for the train
+  \item Current Block - The current block this train occupies
+  \item Origin - Location the train started at
+  \item Destination - Final stop for this train
+  \item Speed - Speed suggested by the CTC
+  \item Authority - The permitted distance until the train must stop
+\end{itemize}
+The Popout Train Details button will open a new window to allow the viewing of multiple 
+trains at once. This window will be explained in a later section. In manual mode, the New 
+Train button will create a blank template for the dispatcher to add a new train. Once the 
+new train's details are entered, Dispatch Train From Yard will send the new train. Closing 
+the template window without pressing the Dispatch button will cancel the new train.
+
+\section{Block Info}
+\begin{center}
+  \includegraphics[trim={8.75cm 6.7cm 19.2cm 3.2cm},clip,width=5cm]{CTC-main}
+\end{center}
+% trim={<left> <lower> <right> <upper>}
+Information on a block selected in the map view will display here. The following items 
+will be displayed. Items marked with an asterisk (*) are contextual and only appear when 
+relevant. 
+\begin{itemize}
+  \item Block ID - Together with Region forms a unique block ID
+  \item Region - The region of track in which this block is located
+  \item Occupied - (Yes/No) Indicates if the block is occupied or not
+  \item Speed Limit - The max safe speed for that block
+  \item Length - How long the block is
+  \item Grade - The grade of the block
+  \item Elevation - The block's elevation
+  \item Block Passable - (Yes, Broken, Maintenance) If the block can be passed or the reason 
+  it can't be passed
+  \item Heater State - (On, Off, N/A) Indicates if the heater is on, off, or there is no heater
+  \item Underground - (Yes, No) Indicates if the block is underground
+  \item Light State* - (Super Green, Green, Yellow, Red) The light color currently displayed
+  \item Switch ID* - A unique ID for the switch on this block
+  \item Switch State* - Shows which track pieces are connected by a switch
+  \item Station Name* - The name of the station on that block
+  \item Number of Passengers at Station* - How many passengers are waiting at that station
+\end{itemize}
+
+\section{Schedule}
+\begin{center}
+  \includegraphics[trim={.45cm .08cm 18.7cm 11.15cm},clip,width=11cm]{CTC-main}
+\end{center}
+% trim={<left> <lower> <right> <upper>}
+Displays the schedule for the whole system. Will be read-only in automatic mode and can be 
+edited in manual mode. Users can select a station from the Destination column or select a specific 
+block from the Track Piece column.
+
+\section{Train Details Popout}
+\begin{center}
+  \includegraphics[width=10cm]{CTC-pop}
+\end{center}
+% trim={<left> <lower> <right> <upper>}
+The same train information that was displayed in the main GUI will be replicated here. In 
+addition the train's individual schedule can be seen here and edited while in manual mode.
+
+%%%%%%%%%%%%%%%%%%   CTC End   %%%%%%%%%%%%%%%%%%%%%
+
 \chapter{Track Model}
 
 % picture(s) of overall gui
