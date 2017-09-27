@@ -135,8 +135,8 @@ This project shall have many deliverables, organized into three Work Packages (W
     \end{enumerate}
 \end{enumerate}
 
-\section{References}
-$<$ TBD $>$
+%\section{References}
+%$<$ TBD $>$
 
 \chapter{Overall Description}
 
@@ -201,7 +201,7 @@ This software shall be executable on Windows 10 operating system.
 
 \section{Design and Implementation Constraints}
 \begin{enumerate}
-    \item
+    \item The Wayside Controller is a PLC, meaning that it can only operate on simple binary values. Any PLC code written for it shall observe this constraint.
 \end{enumerate}
 %$<$Describe any items or issues that will limit the options available to the
 %developers. These might include: corporate or regulatory policies; hardware
@@ -385,8 +385,17 @@ The Wayside Controller module is a simulation of the many wayside controllers wh
     \item The Wayside Controller shall have vital outputs to the Track Model:
     \begin{enumerate}
         \item Speed \& Authority per train.
-        \item Light Colors per track block.
-        \item Switch Positions.
+        \item Light colors per track block.
+        \item Switch positions.
+        \item Railway crossings.
+    \end{enumerate}
+    \item The Wayside Controller shall report the following back to the CTC:
+    \begin{enumerate}
+        \item Broken rail.
+        \item Railway crossings.
+        \item Block occupancy.
+        \item Switch positions.
+        \item Light colors.
     \end{enumerate}
 \end{enumerate}
 
