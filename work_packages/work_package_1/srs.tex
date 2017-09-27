@@ -321,7 +321,8 @@ CTC to communicate information on passenger throughput.
 \begin{enumerate}
     \item The CTC module must display the following track information. Some information
     will be displayed in a dynamic map view and detailed information will be displayed
-    when selecting a block in the map view.
+    when selecting a block in the map view. Items indicated with an asterisk (*) are only 
+    displayed when relevant. 
     \begin{enumerate}
         \item Block ID
         \item Block Region
@@ -333,19 +334,23 @@ CTC to communicate information on passenger throughput.
         \item Block Passable (Yes, Broken, or Maintenance)
         \item Heater (On, Disabled, N/A)
         \item Underground/Above Ground
-        \item Light Information (when applicable)
+        \item Light Information* 
         \begin{enumerate}
             \item Light State (Super Green, Green, Yellow, Red)
         \end{enumerate}
-        \item Switch Information (when applicable)
+        \item Switch Information* 
         \begin{enumerate}
             \item Switch ID
             \item Switch State
         \end{enumerate}
-        \item Station Information (when applicable)
+        \item Station Information* 
         \begin{enumerate}
             \item Station Name
             \item Number of Passengers
+        \end{enumerate}
+        \item Railway Crossing*
+        \begin{enumerate}
+          \item Activated
         \end{enumerate}
     \end{enumerate}
     \item The CTC module must let the dispatcher close and open blocks for maintenance.
