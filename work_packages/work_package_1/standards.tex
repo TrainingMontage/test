@@ -27,7 +27,7 @@
 \begin{flushright}
     \rule{16cm}{5pt}\vskip1cm
     \begin{bfseries}
-        \Huge{CODING STANDARD\\ 
+        \Huge{CODING STANDARD &\\ 
         DEFECT TRACKING\\ 
         \& WORKFLOW}\\
         \vspace{.9cm}
@@ -63,12 +63,18 @@ The TMRS coding standard will follow the Google Java Style Guide. As a slight mo
 \url{https://google.github.io/styleguide/javaguide.html}
 
 \section{Defect Tracking \& Workflow}
-Work will be coordinated using GitHub and the tools it provides.
-
-\subsection{Defect Tracking}
-Defects, problems, and unfinished work will be tracked using GitHub issues, which can be assigned to team members as needed and as they are available, so that such problems can be addressed promptly and their status recorded.
-
-\subsection{Workflow}
 Work done on this project will utilize the version control capabilities inherent in GitHub and the Git commands.  Team members will create branches of a common repository to perform their own work, merging those branches to common team-wide repositories as appropriate.  Mistakes and errors can thus be easily be rectified by reverting the branch to a previous version.
+
+\subsection{Tools}
+Training Montage will track issues using GitHub Issues. GitHub Issues allows us to create issues, reference issues from commits and pull requests, associate issues with milestones, label issues according to type, and assign issues to users.
+
+\subsection{Numbering}
+GitHub Issues automatically keeps track of issue numbering. Every time a new issue is created, it is assigned a unique number.
+
+\subsection{Tracking}
+Training Montage team members recieve notifications when issues are created. From there, issues may be assigned to a team member.
+
+\subsection{Resolution}
+Issues should be resolved by creating a Pull Request, and associating that pull request with an issue. Once that pull request passes automated testing, it may be merged into the master branch, and the issue may be closed.
 
 \end{document}
