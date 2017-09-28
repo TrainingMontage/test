@@ -325,3 +325,6 @@ gradle-app.setting
 
 # ignore generated pdfs
 work_packages/*/*.pdf
+
+# ignore Mac image cache files
+*.DS_Store

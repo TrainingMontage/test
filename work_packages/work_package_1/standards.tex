@@ -1,0 +1,80 @@
+\documentclass{scrreprt}
+\usepackage{listings}
+\usepackage{underscore}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{xcolor}
+\hypersetup{
+    pdftitle={Coding Standard, Defect Tracing Policy, and Workflow},    % title
+    pdfauthor={Training Montage},                     % author
+    pdfsubject={TeX and LaTeX},                        % subject of the document
+    pdfkeywords={TeX, LaTeX, graphics, images}, % list of keywords
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=blue,       % color of internal links
+    citecolor=black,       % color of links to bibliography
+    filecolor=black,        % color of file links
+    urlcolor=purple,        % color of external links
+    linktoc=page            % only page is linked
+}
+
+\def\myversion{0.1 }
+\date{}
+
+\usepackage{hyperref}
+\begin{document}
+
+\begin{flushright}
+    \rule{16cm}{5pt}\vskip1cm
+    \begin{bfseries}
+        \Huge{CODING STANDARD,\\ 
+        DEFECT TRACKING\\ 
+        \& WORKFLOW}\\
+        \vspace{.9cm}
+        for\\
+        \vspace{.9cm}
+        COE 1186 Project\\
+        \vspace{.9cm}
+        \LARGE{Version \myversion approved}\\
+        \vspace{.9cm}
+        Prepared by:\\
+        Alec Rosenbaum\\
+        Aric Hudson\\
+        Issac Goss\\
+        Mitch Moran\\
+        Parth Dadhania\\
+        \vspace{1.9cm}
+        Training Montage\\
+        \vspace{.9cm}
+        \today\\
+    \end{bfseries}
+\end{flushright}
+
+\tableofcontents
+
+\chapter{Policies}
+
+\section{Purpose}
+The product whose coding standards, defect tracking policy, and workflow are specified in this document is the Training Montage Rail Simulator (TMRS). This document covers the methods we will employ to ensure that this product follows a standardized procedure for coding, as well as the tracking of defects and policies for defining how work is completed.
+
+\section{Coding Standard}
+The TMRS coding standard will follow the Google Java Style Guide. As a slight modification, TMRS code will use a 4-space indentation rather than a 2-space indentation. View the Google Java Style Guide here:
+
+\url{https://google.github.io/styleguide/javaguide.html}
+
+\section{Defect Tracking \& Workflow}
+Work done on this project will utilize the version control capabilities inherent in GitHub and the Git commands.  Team members will create branches of a common repository to perform their own work, merging those branches to common team-wide repositories as appropriate.  Mistakes and errors can thus be easily be rectified by reverting the branch to a previous version.
+
+\subsection{Tools}
+Training Montage will track issues using GitHub Issues. GitHub Issues allows us to create issues, reference issues from commits and pull requests, associate issues with milestones, label issues according to type, and assign issues to users.
+
+\subsection{Numbering}
+GitHub Issues automatically keeps track of issue numbering. Every time a new issue is created, it is assigned a unique number.
+
+\subsection{Tracking}
+Training Montage team members recieve notifications when issues are created. From there, issues may be assigned to a team member.
+
+\subsection{Resolution}
+Issues should be resolved by creating a Pull Request, and associating that pull request with an issue. Once that pull request passes automated testing, it may be merged into the master branch, and the issue may be closed.
+
+\end{document}
