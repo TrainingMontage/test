@@ -106,7 +106,7 @@ The following acronyms will be used throughout the paper:
   \item[Block] The track is partitioned into blocks, what is considered an indivisible unit of track. A block has one speed limit, one grade, one altitude, no switches, and at most one train occupying it.
 \end{description}
 
-\section{Intended Audience and Reading Suggestions}
+\section{Overview}
 This document is intended as a part of the contractual agreement between Training
 Montage and their client for the TMRS software package. It will be used as reference
 by developers, project managers, testers, and the client.
@@ -216,25 +216,12 @@ functionality of each module.
 It is, however, expected that Wayside Engineers are experts both on a section
 of track and in writing PLC code. All uploaded code is considered vital.
 
-\section{Operating Environment}
+\section{Operating Environment Constraints}
 The software shall operate on the Java Virtual Machine. The Java Virtual Machine
 can be installed on computers with a Pentium 2 266 MHz or faster processor, at
 least 128 MB of physical RAM, and 124MB of free disk space. Java supports Windows,
 Mac OS X, Linux, and Solaris. We will be writing software using Java Version 8.
 This software shall be executable on Windows 10 operating system.
-
-\section{Design and Implementation Constraints}
-\begin{numonly}
-    \item The Wayside Controller is a PLC, meaning that it can only operate on simple binary values. Any PLC code written for it shall observe this constraint.
-\end{numonly}
-%$<$Describe any items or issues that will limit the options available to the
-%developers. These might include: corporate or regulatory policies; hardware
-%limitations (timing requirements, memory requirements); interfaces to other
-%applications; specific technologies, tools, and databases to be used; parallel
-%operations; language requirements; communications protocols; security
-%considerations; design conventions or programming standards (for example, if the
-%customer’s organization will be responsible for maintaining the delivered
-%software).$>$
 
 \section{User Documentation}
 
@@ -579,15 +566,15 @@ The Train Controller receives a suggested speed from the Wayside Controller. Thi
     \end{numonly}
 \end{numonly}
 
-\chapter{Nonfunctional Requirements}
+\section{Nonfunctional Requirements}
 
-\section{Performance Requirements}
+\subsection{Performance Requirements}
 The simulation software shall be able to simulate at 10 times wall clock speed.
 This will allow quicker evaluation of a simulated circumstances. The simulation
 speed should be modifiable during simulation; i.e. it specified while the simulation
 is running, rather than before the software starts.
 
-\section{Safety Requirements}
+\subsection{Safety Requirements}
 No train shall at any point collide with any other train. Trains shall not share blocks. No train shall exceed
 the speed limit or authority.
 %$<$Specify those requirements that are concerned with possible loss, damage, or
@@ -596,6 +583,19 @@ the speed limit or authority.
 %any external policies or regulations that state safety issues that affect the
 %product’s design or use. Define any safety certifications that must be
 %satisfied.$>$
+
+\section{Design and Implementation Constraints}
+\begin{numonly}
+    \item The Wayside Controller is a PLC, meaning that it can only operate on simple binary values. Any PLC code written for it shall observe this constraint.
+\end{numonly}
+%$<$Describe any items or issues that will limit the options available to the
+%developers. These might include: corporate or regulatory policies; hardware
+%limitations (timing requirements, memory requirements); interfaces to other
+%applications; specific technologies, tools, and databases to be used; parallel
+%operations; language requirements; communications protocols; security
+%considerations; design conventions or programming standards (for example, if the
+%customer’s organization will be responsible for maintaining the delivered
+%software).$>$
 
 
 
