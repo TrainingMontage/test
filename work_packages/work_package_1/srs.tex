@@ -5,9 +5,6 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage{enumitem}
-\usepackage{graphicx}
-\graphicspath{{work_packages/work_package_1/static/srs/}}
-% \graphicspath{{static/srs/}}
 \hypersetup{
     pdftitle={Software Requirement Specification},    % title
     pdfauthor={Training Montage},                     % author
@@ -92,6 +89,7 @@ The following acronyms will be used throughout the paper:
   \item[Block] The track is partitioned into blocks, what is considered an indivisible unit of track. A block has one speed limit, one grade, one altitude, no switches, and at most one train occupying it.
 \end{description}
 
+
 \section{Intended Audience and Reading Suggestions}
 This document is intended as a part of the contractual agreement between Training
 Montage and their client for the TMRS software package. It will be used as reference
@@ -137,8 +135,8 @@ This project shall have many deliverables, organized into three Work Packages (W
     \end{enumerate}
 \end{enumerate}
 
-%\section{References}
-%$<$ TBD $>$
+\section{References}
+$<$ TBD $>$
 
 \chapter{Overall Description}
 
@@ -155,8 +153,7 @@ There are five major modules which make up this system, for which the individual
     \item[Wayside / Track Controller] This module is a vital computing platform.
     The Wayside Controller module is a simulation of the many wayside controllers which sit next to track, and operate the switches and lights on the track, and provide the train traveling with within its region safe speed and authority.
     \item[Track Model] The system shall have a model of the transit system track layout. This module is \textbf{not} vital.
-    \item[Train Model] The Train Model models the movement of the train using Newton's laws of motion
-    assuming that the train is a rigid body point mass. This is a non-vital module.
+    \item[Train Model]
     \item[Train Controller] This module is responsible for safely dictating the train's speed by way of controlling its power, as well as controlling some smaller tasks like light and door control, and feedback about current and approaching stations. This module is VITAL.
 \end{description}
 
@@ -199,11 +196,10 @@ The software will operate on the Java Virtual Machine. The Java Virtual Machine
 can be installed on computers with a Pentium 2 266 MHz or faster processor, at
 least 128 MB of physical RAM, and 124MB of free disk space. Java supports Windows,
 Mac OS X, Linux, and Solaris. We will be writing software using Java Version 8.
-This software shall be executable on Windows 10 operating system.
 
 \section{Design and Implementation Constraints}
 \begin{enumerate}
-    \item The Wayside Controller is a PLC, meaning that it can only operate on simple binary values. Any PLC code written for it shall observe this constraint.
+    \item
 \end{enumerate}
 %$<$Describe any items or issues that will limit the options available to the
 %developers. These might include: corporate or regulatory policies; hardware
@@ -223,7 +219,7 @@ The following documentation components will be delivered along with the software
 \end{enumerate}
 
 \section{Assumptions and Dependencies}
-It is assumed that every user has a static map of the track detailing block information.
+
 %$<$List any assumed factors (as opposed to known facts) that could affect the
 %requirements stated in the SRS. These could include third-party or commercial
 %components that you plan to use, issues around the development or operating
@@ -257,16 +253,14 @@ interface with each module.
 %the user interface design should be documented in a separate user interface
 %specification.$>$
 
-%\section{Hardware Interfaces}
+\section{Hardware Interfaces}
 %$<$Describe the logical and physical characteristics of each interface between
 %the software product and the hardware components of the system. This may include
 %the supported device types, the nature of the data and control interactions
 %between the software and the hardware, and communication protocols to be
 %used.$>$
 
-%\section{Software Interfaces}
-%    The software shall interface with the Java Virtual Machine version 8, and the Windows 10 operating system.
-
+\section{Software Interfaces}
 %$<$Describe the connections between this product and other specific software
 %components (name and version), including databases, operating systems, tools,
 %libraries, and integrated commercial components. Identify the data items or
@@ -278,7 +272,7 @@ interface with each module.
 %global data area in a multitasking operating system), specify this as an
 %implementation constraint.$>$
 
-%\section{Communications Interfaces}
+\section{Communications Interfaces}
 %$<$Describe the requirements associated with any communications functions
 %required by this product, including e-mail, web browser, network server
 %communications protocols, electronic forms, and so on. Define any pertinent
@@ -291,8 +285,7 @@ interface with each module.
 This application shall be made of 5 separate modules, each of which a team member shall own.
 These shall be the Centralized Traffic Controller, Wayside / Track Controller, Track Model, Train Model, and Train Controller.
 These modules shall have strict communication constraints and be organized in the following way.
-
-\includegraphics[width=\textwidth]{srs-module-overview}
+% an image will be input here
 
 \section{Centralized Traffic Control (CTC) Office Module}
 
@@ -324,8 +317,7 @@ CTC to communicate information on passenger throughput.
 \begin{enumerate}
     \item The CTC module must display the following track information. Some information
     will be displayed in a dynamic map view and detailed information will be displayed
-    when selecting a block in the map view. Items indicated with an asterisk (*) are only 
-    displayed when relevant. 
+    when selecting a block in the map view.
     \begin{enumerate}
         \item Block ID
         \item Block Region
@@ -337,23 +329,19 @@ CTC to communicate information on passenger throughput.
         \item Block Passable (Yes, Broken, or Maintenance)
         \item Heater (On, Disabled, N/A)
         \item Underground/Above Ground
-        \item Light Information* 
+        \item Light Information (when applicable)
         \begin{enumerate}
             \item Light State (Super Green, Green, Yellow, Red)
         \end{enumerate}
-        \item Switch Information* 
+        \item Switch Information (when applicable)
         \begin{enumerate}
             \item Switch ID
             \item Switch State
         \end{enumerate}
-        \item Station Information* 
+        \item Station Information (when applicable)
         \begin{enumerate}
             \item Station Name
             \item Number of Passengers
-        \end{enumerate}
-        \item Railway Crossing*
-        \begin{enumerate}
-          \item Activated
         \end{enumerate}
     \end{enumerate}
     \item The CTC module must let the dispatcher close and open blocks for maintenance.
@@ -393,17 +381,8 @@ The Wayside Controller module is a simulation of the many wayside controllers wh
     \item The Wayside Controller shall have vital outputs to the Track Model:
     \begin{enumerate}
         \item Speed \& Authority per train.
-        \item Light colors per track block.
-        \item Switch positions.
-        \item Railway crossings.
-    \end{enumerate}
-    \item The Wayside Controller shall report the following back to the CTC:
-    \begin{enumerate}
-        \item Broken rail.
-        \item Railway crossings.
-        \item Block occupancy.
-        \item Switch positions.
-        \item Light colors.
+        \item Light Colors per track block.
+        \item Switch Positions.
     \end{enumerate}
 \end{enumerate}
 
@@ -471,16 +450,16 @@ output the speed and authority to the Train Controller.
 \subsection{Functional Requirements}
 \begin{enumerate}
   \item Train Specifications
-   \begin{enumerate}
+   \begin{itemize}
     \item Length
     \item Height
     \item Width
     \item Mass
     \item Passenger Count
     \item Crew Count
-   \end{enumerate}
+   \end{itemize}
   \item Physics/Inputs
-  \begin{enumerate}
+  \begin{itemize}
    \item Authority
    \item Speed Limit
    \item Acceleration/Deceleration Limit
@@ -493,13 +472,13 @@ output the speed and authority to the Train Controller.
    \item Track Circuit
    \item Transponder
    \item Route Information System
-  \end{enumerate}
+  \end{itemize}
   \item Failure Modes
-    \begin{enumerate}
+    \begin{itemize}
      \item Brake Failure
      \item Signal Pickup Failure
      \item Train Engine Failure
-    \end{enumerate}
+    \end{itemize}
 \end{enumerate}
 
 
@@ -515,6 +494,11 @@ The Train Controller receives a suggested speed from the Wayside Controller. Thi
 
 \subsection{Functional Requirements}
 \begin{enumerate}
+	\item The Train Controller shall have an algorithm capable of calculating a minimum safe stopping distance for the train in question.
+	\begin{enumerate}
+		\item The minimum safe stopping distance shall be a function of the train's current authority.
+		\item The details of this algorithm are TBD.
+	\end{enumerate}
     \item The Train Controller shall have an algorithm capable of calculating a maximum safe speed for the train in question.
     \begin{enumerate}
         \item The maximum safe speed shall be the maximum speed that can be fully arrested in the minimum safe breaking distance.
@@ -538,6 +522,7 @@ The Train Controller receives a suggested speed from the Wayside Controller. Thi
     \item The Train Controller must dictate that lights should be turned on or off.
     \begin{enumerate}
         \item The Train Controller shall control lights based on a daily schedule.
+        \item The Train Controller shall have the capability to control lights manually if desired.
         \item It is the responsibility of the Train Model to execute these instructions.
     \end{enumerate}
 
@@ -552,8 +537,7 @@ The Train Controller receives a suggested speed from the Wayside Controller. Thi
 
     \item The Train Controller must display stops and stations.
     \begin{enumerate}
-        \item The upcoming stop and the distance to that stop shall be read from an RFID sensor one block before the station or stop's location.
-        \item The Train Controller shall display the stop as soon as it receives and deciphers the information from the RFID sensor.
+        \item The upcoming stop and the distance to that stop shall display the stop or station no more than one block before the block that contains the relevant stop or station.
         \item The Train Controller shall display the information until the train has physically left that station.
     \end{enumerate}
 \end{enumerate}
@@ -576,27 +560,48 @@ the speed limit or authority.
 %product’s design or use. Define any safety certifications that must be
 %satisfied.$>$
 
+\section{Security Requirements}
+%$<$Specify any requirements regarding security or privacy issues surrounding use
+%of the product or protection of the data used or created by the product. Define
+%any user identity authentication requirements. Refer to any external policies or
+%regulations containing security issues that affect the product. Define any
+%security or privacy certifications that must be satisfied.$>$
+
+\section{Software Quality Attributes}
+%$<$Specify any additional quality characteristics for the product that will be
+%important to either the customers or the developers. Some to consider are:
+%adaptability, availability, correctness, flexibility, interoperability,
+%maintainability, portability, reliability, reusability, robustness, testability,
+%and usability. Write these to be specific, quantitative, and verifiable when
+%possible. At the least, clarify the relative preferences for various attributes,
+%such as ease of use over ease of learning.$>$
+
+\section{Business Rules}
+%$<$List any operating principles about the product, such as which individuals or
+%roles can perform which functions under specific circumstances. These are not
+%functional requirements in themselves, but they may imply certain functional
+%requirements to enforce the rules.$>$
 
 
-%\chapter{Other Requirements}
+\chapter{Other Requirements}
 %$<$Define any other requirements not covered elsewhere in the SRS. This might
 %include database requirements, internationalization requirements, legal
 %requirements, reuse objectives for the project, and so on. Add any new sections
 %that are pertinent to the project.$>$
 
-%\section{Appendix A: Glossary}
-%%see https://en.wikibooks.org/wiki/LaTeX/Glossary
-%%$<$Define all the terms necessary to properly interpret the SRS, including
-%%acronyms and abbreviations. You may wish to build a separate glossary that spans
-%%multiple projects or the entire organization, and just include terms specific to
-%%a single project in each SRS.$>$
+\section{Appendix A: Glossary}
+%see https://en.wikibooks.org/wiki/LaTeX/Glossary
+%$<$Define all the terms necessary to properly interpret the SRS, including
+%acronyms and abbreviations. You may wish to build a separate glossary that spans
+%multiple projects or the entire organization, and just include terms specific to
+%a single project in each SRS.$>$
 
-%\section{Appendix B: Analysis Models}
+\section{Appendix B: Analysis Models}
 %$<$Optionally, include any pertinent analysis models, such as data flow
 %diagrams, class diagrams, state-transition diagrams, or entity-relationship
 %diagrams.$>$
 
-%\section{Appendix C: To Be Determined List}
+\section{Appendix C: To Be Determined List}
 %$<$Collect a numbered list of the TBD (to be determined) references that remain
 %in the SRS so they can be tracked to closure.$>$
 
