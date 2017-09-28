@@ -522,10 +522,15 @@ This vital controller receives a suggested speed and compares it to its own calc
 The Train Controller receives a suggested speed from the Wayside Controller. This information shall be processed and relayed to the Train Model as a power setting.  The controller sends signals to turn lights on or off, and open doors on either side of the train.  This module receives feedback from the Train Model in the from of its current speed and/or power.  The Train Controller also knows the train's current authority in the form of distance in miles.
 
 \subsection{Functional Requirements}
+\end{numonly}
 \begin{numonly}
     \item The Train Controller shall have an algorithm capable of calculating a maximum safe speed for the train in question.
     \begin{numonly}
         \item The maximum safe speed shall be the maximum speed that can be fully arrested in the minimum safe breaking distance.
+                \begin{numonly}
+                    \item The minimum safe braking distance shall take the train's authority into account during its calculation.
+                    \item The details of this calculation is TBD.
+                \end{numonly}
         \item The train controller shall consider the train's mass, current speed, and current authority when calculating this speed.
     \end{numonly}
 
@@ -546,6 +551,7 @@ The Train Controller receives a suggested speed from the Wayside Controller. Thi
     \item The Train Controller shall dictate that lights should be turned on or off.
     \begin{numonly}
         \item The Train Controller shall control lights based on a daily schedule.
+        \item The Train Controller may manually control these lights regardless of schedule, if desired.
         \item It is the responsibility of the Train Model to execute these instructions.
     \end{numonly}
 
@@ -560,9 +566,9 @@ The Train Controller receives a suggested speed from the Wayside Controller. Thi
 
     \item The Train Controller shall display stops and stations.
     \begin{numonly}
-        \item The upcoming stop and the distance to that stop shall be read from an RFID sensor one block before the station or stop's location.
-        \item The Train Controller shall display the stop as soon as it receives and deciphers the information from the RFID sensor.
+        \item The upcoming stop shall be displayed no more than one block before the station or stop's location.
         \item The Train Controller shall display the information until the train has physically left that station.
+        \item If there is no relevant station or stop to display, the Train Controller shall display nothing by default.
     \end{numonly}
 \end{numonly}
 
