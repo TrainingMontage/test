@@ -369,8 +369,50 @@ the entire track to be exported based on its current state.
 
 %%%%%%%%%%%%%%%  Begin Train Controller  %%%%%%%%%%%%%%%%%%
 \chapter{Train Controller}
-\Large{Aric Hudson}\\
+\Large{Aric Hudson}\\\\
+\includegraphics[width=\textwidth]{tc}
 
+\section{Time \& Station}
+\begin{itemize}
+    \item Upcoming and Current Station Information: Displays the next station or the current station if stopped at one.
+    \item Clock Icon: displays the current time, and speed of simulation
+\end{itemize}
+
+\section{Basic Info}
+\begin{itemize}
+    \item Train ID: Displays ID of current train; dropdown menu allows user to view different trains.
+    \item Authority: Displays current train's authority in miles.
+    \item Speed Limit: displays the current speed limit the train is under, if it knows what that speed limit is.
+\end{itemize}
+
+\section{Speed \& Power}
+\begin{itemize}
+    \item Suggested Speed: Speed suggested for the train by the Wayside Controller.
+    \item Current Train Speed: Current speed of the train currently being viewed.
+    \item Max Safe Speed: Maximum safe speed for train as calculated by Train Controller.
+    \item Set Speed: Speed to set train to; can be dictated in manual mode; updated automatically in automatic mode.
+    \item Calculated Power: The necessary power required by the train to attain the desired speed. Will display "brake" if the train needs to slow down.
+    \item Set Power: Power to set the train to; can be dictated in manual mode; updated automatically in automatic mode.
+    \item Std Brake: Applies the regular brake to the system as long as it is held.
+\end{itemize}
+
+\section{Manual Mode}
+\begin{itemize}
+    \item Manual: Toggles manual mode when "ON" is selected; toggles automatic mode when "OFF" is selected.
+    \item Apply Changes: When manual changes have been set, this applies the changes to the current train.
+\end{itemize}
+
+\section{Auxiliary Info}
+\begin{itemize}
+    \item Current Safe Braking Distance: The current safe braking distance as calculated by train controller.
+    \item Current Power: The current power applied to the train.
+\end{itemize}
+
+\section{Lights \& Doors}
+\begin{itemize}
+    \item Lights: Toggles lights on or off.  Lights should be on when "ON" is toggled; lights should be off when "OFF" is toggled.
+    \item Doors: Toggles doors to open.  If doors on left are open, toggling "LEFT" closes them; if the doors on the left are closed, toggling "LEFT" opens them.  The "RIGHT" toggle has identical functionality, but for the right doors.
+\end{itemize}
 
 
 %%%%%%%%%%%%%%%%% End Train Controller %%%%%%%%%%%%%%%%%%%%%%
