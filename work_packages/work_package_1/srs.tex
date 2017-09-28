@@ -5,6 +5,9 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 \usepackage{enumitem}
+\usepackage{graphicx}
+% \graphicspath{{work_packages/work_package_1/static/srs/}}
+\graphicspath{{static/srs/}}
 \hypersetup{
     pdftitle={Software Requirement Specification},    % title
     pdfauthor={Training Montage},                     % author
@@ -289,7 +292,8 @@ interface with each module.
 This application shall be made of 5 separate modules, each of which a team member shall own.
 These shall be the Centralized Traffic Controller, Wayside / Track Controller, Track Model, Train Model, and Train Controller.
 These modules shall have strict communication constraints and be organized in the following way.
-% an image will be input here
+
+\includegraphics[width=\textwidth]{srs-module-overview}
 
 \section{Centralized Traffic Control (CTC) Office Module}
 
