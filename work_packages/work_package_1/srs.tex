@@ -6,8 +6,22 @@
 \usepackage[english]{babel}
 \usepackage{enumitem}
 \usepackage{graphicx}
-\graphicspath{{work_packages/work_package_1/static/srs/}}
-% \graphicspath{{static/srs/}}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+
+%%%%%% header and footer info
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Software Requirements Specification}
+\lhead{Training Montage}
+\cfoot{\thepage}
+
+%%%%%% custom list definition
+\newlist{numonly}{enumerate}{10}
+\setlist[numonly]{label*=\arabic*.}
+
+% \graphicspath{{work_packages/work_package_1/static/srs/}}
+\graphicspath{{static/srs/}}
 \hypersetup{
     pdftitle={Software Requirement Specification},    % title
     pdfauthor={Training Montage},                     % author
@@ -75,7 +89,7 @@
 The product whose software requirements are specified in this document is the
 Training Montage Rail Simulator (TMRS). This SRS covers the functional and
 non-functional requirements, design constraints, and functional limitations that
-will be observed during the development of this project. This SRS will encompass
+will be observed during the development of this project. This SRS shall encompass
 the entire system, and will include specific requirements, constraints, and
 limitations for each sub-system.
 
@@ -106,10 +120,10 @@ proceed to read the rest of the document in the order that it's presented.
 \section{Project Scope}
 This project shall have many deliverables, organized into three Work Packages (WPs).
 
-\begin{enumerate}[label=\textbf{WP \arabic*.}]
+\begin{numonly}[label=\textbf{WP \arabic*.}]
     \item This includes project planning and requirement gathering, due Thursday, September 28, 2017.
-    It will contain the following deliverables:
-    \begin{enumerate}
+    It shall contain the following deliverables:
+    \begin{numonly}
         \item The Software Requirements Specification, this very document.
         \item User Interface prototype.
         \item User's Manual detailing the functionality of the aforementioned UI.
@@ -117,29 +131,37 @@ This project shall have many deliverables, organized into three Work Packages (W
         \item Coding Standard.
         \item Defect Tracking Policy.
         \item Schedule detailing our expected progress.
-    \end{enumerate}
+    \end{numonly}
 
     \item This is the phase in which the system shall be designed, due Thursday, November 2, 2017.
-    \begin{enumerate}
+    \begin{numonly}
         \item System Architecture and Design.
         \item Test Plan.
         \item Updated Schedule with resource assignments.
-    \end{enumerate}
+    \end{numonly}
 
-    \item This is the implementation phase. The requirements and design will be implemented to create a working system, due Thursday, September 7, 2017.
-    \begin{enumerate}
+    \item This is the implementation phase. The requirements and design shall be implemented to create a working system, due Thursday, September 7, 2017.
+    \begin{numonly}
         \item Code Base of the implemented application.
         \item Installation Guide.
         \item Configuration Management.
         \item Executed Test Plan.
         \item Defect Reports.
         \item Project Presentation.
-    \end{enumerate}
-\end{enumerate}
+    \end{numonly}
+\end{numonly}
 
-%\section{References}
-%$<$ TBD $>$
+\section{References}
+\begin{itemize}
+\item We used the following pdf as a reference for how real life systems work. It is based on the 
+English train system but still gave a good idea about the actual system.
 
+\url{http://etheses.whiterose.ac.uk/14543/1/531116.pdf} 
+
+\item This document is based on  the following SRS template.
+
+\url{https://github.com/jpeisenbarth/SRS-Tex}
+\end{itemize}
 \chapter{Overall Description}
 
 \section{Product Perspective}
@@ -172,39 +194,39 @@ There are five major modules which make up this system, for which the individual
 
 \section{Product Functions}
 The software shall:
-    \begin{enumerate}
+    \begin{numonly}
         \item Allow a dispatcher to perform tasks such as create, view, edit, and execute schedules, and also manually dispatch a train to a location.
         \item Allow a wayside engineer to control the operation of switches and lights with PLC code.
         \item Allow a locomotive engineer to observe automatic train operation, and also allow manual train control.
         \item Move trains to their destination always in a SAFE manner.
-    \end{enumerate}
+    \end{numonly}
 
 \section{User Classes and Characteristics}
 This produce is expected to be used by the following classes of users:
-\begin{enumerate}
+\begin{numonly}
     \item Dispatcher
     \item Wayside Engineer
     \item Train Conductor
-\end{enumerate}
+\end{numonly}
 
 It is expected none of these user classes to have technical expertise. As such,
-each user will be provided with an graphical user interface that allows full
+each user shall be provided with an graphical user interface that allows full
 functionality of each module.
 
 It is, however, expected that Wayside Engineers are experts both on a section
 of track and in writing PLC code. All uploaded code is considered vital.
 
 \section{Operating Environment}
-The software will operate on the Java Virtual Machine. The Java Virtual Machine
+The software shall operate on the Java Virtual Machine. The Java Virtual Machine
 can be installed on computers with a Pentium 2 266 MHz or faster processor, at
 least 128 MB of physical RAM, and 124MB of free disk space. Java supports Windows,
 Mac OS X, Linux, and Solaris. We will be writing software using Java Version 8.
 This software shall be executable on Windows 10 operating system.
 
 \section{Design and Implementation Constraints}
-\begin{enumerate}
+\begin{numonly}
     \item The Wayside Controller is a PLC, meaning that it can only operate on simple binary values. Any PLC code written for it shall observe this constraint.
-\end{enumerate}
+\end{numonly}
 %$<$Describe any items or issues that will limit the options available to the
 %developers. These might include: corporate or regulatory policies; hardware
 %limitations (timing requirements, memory requirements); interfaces to other
@@ -216,11 +238,11 @@ This software shall be executable on Windows 10 operating system.
 
 \section{User Documentation}
 
-The following documentation components will be delivered along with the software:
-\begin{enumerate}
+The following documentation components shall be delivered along with the software:
+\begin{numonly}
     \item UI Design
     \item User's Manual
-\end{enumerate}
+\end{numonly}
 
 \section{Assumptions and Dependencies}
 It is assumed that every user has a static map of the track detailing block information.
@@ -233,12 +255,14 @@ It is assumed that every user has a static map of the track detailing block info
 %reuse from another project, unless they are already documented elsewhere (for
 %example, in the vision and scope document or the project plan).$>$
 
+\section{Apportioning of Requirements}
+All requirements are to be completed in the delivered version of the TMRS software.
 
-\chapter{External Interface Requirements}
+%\chapter{External Interface Requirements}
 
 \section{User Interfaces}
-There will a be discrete user interface for each System Module. These user
-interfaces will be capable of running separately, but may also be run together
+There shall a be discrete user interface for each System Module. These user
+interfaces shall be capable of running separately, but may also be run together
 in order to show the full functionality of each module and how it interfaces
 behind-the-scenes with other modules.
 
@@ -306,27 +330,27 @@ dispatched by the dispatcher.
 \subsection{Interface}
 The CTC module interacts with two users, a human dispatcher and the wayside controller
 module.
-\begin{enumerate}
-    \item The module must display information on the current track layout and currently
+\begin{numonly}
+    \item The module shall display information on the current track layout and currently
     deployed trains to the dispatcher.
     \item The dispatcher can manually schedule trains for the CTC to deploy.
-\end{enumerate}
-\begin{enumerate}
+\end{numonly}
+\begin{numonly}
     \item The CTC gives suggested speed and authority for each train to the wayside
     controller module.
-    \item The wayside controller module will send the CTC information on which pieces of
+    \item The wayside controller module shall send the CTC information on which pieces of
     track are occupied by trains.
-\end{enumerate}
+\end{numonly}
 There is also a communication link between the stations of the track model and the
 CTC to communicate information on passenger throughput.
 
 \subsection{Functional Requirements}
-\begin{enumerate}
-    \item The CTC module must display the following track information. Some information
-    will be displayed in a dynamic map view and detailed information will be displayed
+\begin{numonly}
+    \item The CTC module shall display the following track information. Some information
+    shall be displayed in a dynamic map view and detailed information shall be displayed
     when selecting a block in the map view. Items indicated with an asterisk (*) are only 
     displayed when relevant. 
-    \begin{enumerate}
+    \begin{numonly}
         \item Block ID
         \item Block Region
         \item Occupied State
@@ -338,46 +362,46 @@ CTC to communicate information on passenger throughput.
         \item Heater (On, Disabled, N/A)
         \item Underground/Above Ground
         \item Light Information* 
-        \begin{enumerate}
+        \begin{numonly}
             \item Light State (Super Green, Green, Yellow, Red)
-        \end{enumerate}
+        \end{numonly}
         \item Switch Information* 
-        \begin{enumerate}
+        \begin{numonly}
             \item Switch ID
             \item Switch State
-        \end{enumerate}
+        \end{numonly}
         \item Station Information* 
-        \begin{enumerate}
+        \begin{numonly}
             \item Station Name
             \item Number of Passengers
-        \end{enumerate}
+        \end{numonly}
         \item Railway Crossing*
-        \begin{enumerate}
+        \begin{numonly}
           \item Activated
-        \end{enumerate}
-    \end{enumerate}
-    \item The CTC module must let the dispatcher close and open blocks for maintenance.
-    \item The CTC module must be able to operate in manual or automatic mode. In manual
-    mode, all trains will be manually dispatched by the human dispatcher. In automatic
-    mode, trains will be dispatched by the module according to a schedule.
-    \item The CTC module must let the dispatcher upload a schedule to be followed in
+        \end{numonly}
+    \end{numonly}
+    \item The CTC module shall let the dispatcher close and open blocks for maintenance.
+    \item The CTC module shall be able to operate in manual or automatic mode. In manual
+    mode, all trains shall be manually dispatched by the human dispatcher. In automatic
+    mode, trains shall be dispatched by the module according to a schedule.
+    \item The CTC module shall let the dispatcher upload a schedule to be followed in
     automatic mode.
-    \item The CTC module must let the dispatcher view and edit the schedule in manual mode.
-    \item The CTC module must display the following train information. Some information
-    will be displayed in a dynamic map view and detailed information will be displayed
+    \item The CTC module shall let the dispatcher view and edit the schedule in manual mode.
+    \item The CTC module shall display the following train information. Some information
+    shall be displayed in a dynamic map view and detailed information shall be displayed
     when selecting a train in the map view.
-    \begin{enumerate}
+    \begin{numonly}
         \item Train ID
         \item Current Block
         \item Suggested Speed
         \item Given Authority
         \item Origin
         \item Destination
-    \end{enumerate}
-    \item The CTC module must display the ambient temperature.
-    \item The CTC module must display the current passenger throughput based on tickets
+    \end{numonly}
+    \item The CTC module shall display the ambient temperature.
+    \item The CTC module shall display the current passenger throughput based on tickets
     sold at each station.
-\end{enumerate}
+\end{numonly}
 
 
 \section{Wayside / Track Controller}
@@ -387,35 +411,35 @@ This module is a vital computing platform.
 The Wayside Controller module is a simulation of the many wayside controllers which sit next to track, and operate the switches and lights on the track, and provide the train traveling with within its region safe speed and authority.
 
 \subsection{Interface}
-\begin{enumerate}
+\begin{numonly}
     \item The Wayside Controller shall accept suggested (non-vital) speed and authority (per train) from the CTC.
     \item The Wayside Controller shall accept block occupancy and switch positions from the Track Model.
     \item The Wayside Controller shall have vital outputs to the Track Model:
-    \begin{enumerate}
+    \begin{numonly}
         \item Speed \& Authority per train.
         \item Light colors per track block.
         \item Switch positions.
         \item Railway crossings.
-    \end{enumerate}
+    \end{numonly}
     \item The Wayside Controller shall report the following back to the CTC:
-    \begin{enumerate}
+    \begin{numonly}
         \item Broken rail.
         \item Railway crossings.
         \item Block occupancy.
         \item Switch positions.
         \item Light colors.
-    \end{enumerate}
-\end{enumerate}
+    \end{numonly}
+\end{numonly}
 
 \subsection{Functional Requirements}
-\begin{enumerate}
+\begin{numonly}
     \item The Wayside Controller shall be a vital computing platform.
     \item The Wayside Controller shall receive suggested speed and authority from the CTC per train, and output safe speed and authority per train.
     \item The Wayside Controller shall control the switching of the track.
     \item The Wayside Controller shall detect broken blocks of rail.
     \item The Wayside Controller shall report the state of the track, railway crossings, signals, and occupancy to the CTC.
     \item This is a PLC, and shall allow a user, a Wayside Engineer, to upload a code to control it. It is assumed that this Wayside Engineer's code is vital. The implementation of this shall be diverse.
-\end{enumerate}
+\end{numonly}
 
 
 
@@ -425,38 +449,38 @@ The Wayside Controller module is a simulation of the many wayside controllers wh
 The system shall have a model of the transit system track layout. This module is not VITAL.
 
 \subsection{Interface}
-\begin{enumerate}
+\begin{numonly}
     \item The Track Model shall accept speed and authority as inputs from the Wayside Controller.
     \item The Track Model shall provide block occupancy and switch positions to the Wayside Controller.
     \item The Track Model shall provide speed and authority to the Train Model.
-\end{enumerate}
+\end{numonly}
 
 \subsection{Functional Requirements}
-\begin{enumerate}
+\begin{numonly}
     \item The Track Model shall consider grade and elevation.
     \item The Track Model shall be configurable.
     \item The Track Model shall consider allowable directions of travel, branching, and speed limits.
     \item The Track Model shall be able to export and import track layouts.
     \item The Track Model shall consider block size.
-    \begin{enumerate}
-        \item Blocks must be shown and configurable.
-    \end{enumerate}
+    \begin{numonly}
+        \item Blocks shall be shown and configurable.
+    \end{numonly}
     \item The Track Model shall signals and switch machines.
     \item The Track Model shall implement track circuits for presence detection.
     \item The Track Model shall consider railway crossings.
     \item The Track Model shall include stations.
-    \begin{enumerate}
+    \begin{numonly}
         \item Passengers shall be loaded and unloaded at stations.
-    \end{enumerate}
+    \end{numonly}
     \item The Track Model shall implement the following failure modes:
-    \begin{enumerate}
+    \begin{numonly}
         \item Broken rail
         \item Track Circuit failure
         \item Extra or no trains detected
         \item Power failure
         \item No communication going to train
-    \end{enumerate}
-\end{enumerate}
+    \end{numonly}
+\end{numonly}
 
 \section{Train Model}
 
@@ -469,18 +493,18 @@ The Train Model shall take in speed and authority from Track Model. It shall
 output the speed and authority to the Train Controller.
 
 \subsection{Functional Requirements}
-\begin{enumerate}
+\begin{numonly}
   \item Train Specifications
-   \begin{enumerate}
+   \begin{numonly}
     \item Length
     \item Height
     \item Width
     \item Mass
     \item Passenger Count
     \item Crew Count
-   \end{enumerate}
+   \end{numonly}
   \item Physics/Inputs
-  \begin{enumerate}
+  \begin{numonly}
    \item Authority
    \item Speed Limit
    \item Acceleration/Deceleration Limit
@@ -489,18 +513,15 @@ output the speed and authority to the Train Controller.
    \item Temperature Control
    \item Emergency Brake
    \item Brake Command
-   \item Setpoint Speed Command
    \item Track Circuit
-   \item Transponder
-   \item Route Information System
-  \end{enumerate}
+  \end{numonly}
   \item Failure Modes
-    \begin{enumerate}
+    \begin{numonly}
      \item Brake Failure
      \item Signal Pickup Failure
      \item Train Engine Failure
-    \end{enumerate}
-\end{enumerate}
+    \end{numonly}
+\end{numonly}
 
 
 \section{Train Controller}
@@ -511,57 +532,57 @@ This module is responsible for safely dictating the train's speed by way of cont
 This vital controller receives a suggested speed and compares it to its own calculated maximum safe speed and selects the lower of the two values to relay to the Train Model. As the train's speed is controlled by its current power, the Train Controller converts the new speed into a power requirement (or a brake setting, if needed).  The train controller also dictates when the lights and doors should be activated, and announces when the train is approaching a station or has stopped at a station.
 
 \subsection{Interface}
-The Train Controller receives a suggested speed from the Wayside Controller. This information will be processed and relayed to the Train Model as a power setting.  The controller sends signals to turn lights on or off, and open doors on either side of the train.  This module receives feedback from the Train Model in the from of its current speed and/or power.  The Train Controller also knows the train's current authority in the form of distance in miles.
+The Train Controller receives a suggested speed from the Wayside Controller. This information shall be processed and relayed to the Train Model as a power setting.  The controller sends signals to turn lights on or off, and open doors on either side of the train.  This module receives feedback from the Train Model in the from of its current speed and/or power.  The Train Controller also knows the train's current authority in the form of distance in miles.
 
 \subsection{Functional Requirements}
-\begin{enumerate}
+\begin{numonly}
     \item The Train Controller shall have an algorithm capable of calculating a maximum safe speed for the train in question.
-    \begin{enumerate}
+    \begin{numonly}
         \item The maximum safe speed shall be the maximum speed that can be fully arrested in the minimum safe breaking distance.
         \item The train controller shall consider the train's mass, current speed, and current authority when calculating this speed.
-    \end{enumerate}
+    \end{numonly}
 
     \item The Train Controller shall select a safe speed for the train.
-    \begin{enumerate}
+    \begin{numonly}
         \item The Train Controller shall choose the suggested speed or its own calculated maximum safe speed.
-        \item By default, the lower of the two speeds will be chosen for the train.
+        \item By default, the lower of the two speeds shall be chosen for the train.
         \item The Train Controller shall allow a manual mode for the driver of the train to manually input a speed.  This speed shall not exceed the speed suggested by the Wayside Controller.
-    \end{enumerate}
+    \end{numonly}
 
-    \item The module, once it has chosen a speed for the train, will require an algorithm to convert that desired speed into either (1) a power setting for the train, or (2) an application of the brake for a certain amount of time.
-    \begin{enumerate}
+    \item The module, once it has chosen a speed for the train, shall require an algorithm to convert that desired speed into either (1) a power setting for the train, or (2) an application of the brake for a certain amount of time.
+    \begin{numonly}
         \item This algorithm shall use the train's current and desired kinetic energy combined with a time constraint to determine the power required to achieve the desired speed.
         \item This algorithm shall also take grade into account.
         \item The details of this algorithm are TBD.
-    \end{enumerate}
+    \end{numonly}
 
-    \item The Train Controller must dictate that lights should be turned on or off.
-    \begin{enumerate}
+    \item The Train Controller shall dictate that lights should be turned on or off.
+    \begin{numonly}
         \item The Train Controller shall control lights based on a daily schedule.
         \item It is the responsibility of the Train Model to execute these instructions.
-    \end{enumerate}
+    \end{numonly}
 
-    \item The Train Controller must dictate that train doors should open.
-    \begin{enumerate}
+    \item The Train Controller shall dictate that train doors should open.
+    \begin{numonly}
         \item The Train Controller shall only open doors when the train is stopped.
         \item Doors can be opened on the left or the right, or both.
         \item The Train Controller shall read which doors should be open from beacons approaching each station.
         \item In the event of an emergency stop and train evacuation, the Train Controller shall send the command to open whichever doors are appropriate, given the situation at hand.
         \item It is the responsibility of the Train Model to execute these instructions.
-    \end{enumerate}
+    \end{numonly}
 
-    \item The Train Controller must display stops and stations.
-    \begin{enumerate}
+    \item The Train Controller shall display stops and stations.
+    \begin{numonly}
         \item The upcoming stop and the distance to that stop shall be read from an RFID sensor one block before the station or stop's location.
         \item The Train Controller shall display the stop as soon as it receives and deciphers the information from the RFID sensor.
         \item The Train Controller shall display the information until the train has physically left that station.
-    \end{enumerate}
-\end{enumerate}
+    \end{numonly}
+\end{numonly}
 
-\chapter{Other Nonfunctional Requirements}
+\chapter{Nonfunctional Requirements}
 
 \section{Performance Requirements}
-The simulation software must be able to simulate at 10 times wall clock speed.
+The simulation software shall be able to simulate at 10 times wall clock speed.
 This will allow quicker evaluation of a simulated circumstances. The simulation
 speed should be modifiable during simulation; i.e. it specified while the simulation
 is running, rather than before the software starts.
