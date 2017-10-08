@@ -1,5 +1,9 @@
 package trackmodel;
 
+/**
+ * StaticBlock is a class, just getters for statically visible stuff about track.
+ * Authority and BlockStatus are enums.
+ */
 public interface TrackModelInterface {
     public static int getTrainAuthority(int trainId);
     public static double getTrainSpeed(int trainId);
@@ -13,4 +17,7 @@ public interface TrackModelInterface {
     public static int getPassengers(int trainId);
     public static boolean isIcyTrack(int trainId);
     public static StaticBlock getStaticBlock(int blockId);
+    public static double getGrade(int trainId);
+    public static boolean isOccupied(int blockId);
+    public static BlockStatus getStatus(int blockId);
 }
