@@ -7,4 +7,11 @@ public interface TrainModelInterface {
     public double getSuggestedSpeed();
     public double getAuthority();
     public double getMaxPower();
+    public int boardPassengers(int max);
+    public boolean getLights();
+    public boolean setLights(boolean turnOn);
+    public boolean getLeftDoors();
+    public boolean setLeftDoors(boolean open);
+    public boolean getRightDoors();
+    public boolean setRightDoors(boolean open);
 }
