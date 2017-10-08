@@ -7,7 +7,8 @@ public interface TrainModelInterface {
     public double getSuggestedSpeed();
     public double getAuthority();
     public double getMaxPower();
-    public int boardPassengers(int max);
+    public int boardPassengers();
+    public int offBoardPassengers();
     public boolean getLights();
     public boolean setLights(boolean turnOn);
     public boolean getLeftDoors();

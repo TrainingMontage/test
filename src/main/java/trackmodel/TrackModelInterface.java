@@ -9,4 +9,5 @@ public interface TrackModelInterface {
     public static boolean getSwitch(int blockId);
     public static Authority setAuthority(int blockId, Authority auth);
     public static int setSpeed(int blockId, int speed);
+    public static byte[] getTrainBeacon(int trainId);
 }
