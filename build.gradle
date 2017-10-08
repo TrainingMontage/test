@@ -25,6 +25,9 @@ dependencies {
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
+
+    // sqlite jdbc
+    compile 'org.xerial:sqlite-jdbc:3.7.2'
 }
 
 // Define the main class for the application
