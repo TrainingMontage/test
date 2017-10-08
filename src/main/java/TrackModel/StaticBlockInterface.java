@@ -37,7 +37,7 @@ public interface StaticBlockInterface {
      *
      * @return     Id's of the next blocks (as Strings).
      */
-    public List<String> getNextBlocks();
+    public String getNextBlocks();
 
     /**
      * Determines if underground.

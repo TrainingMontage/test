@@ -60,7 +60,9 @@ public class TrackModel {
     }
 
     /**
-     * Initialized the track model.
+     * Initialize the track model.
+     * 
+     * @return 
      */
     public static TrackModel init() {
         if (model == null) {
@@ -72,30 +74,28 @@ public class TrackModel {
     /**
      * Imports a model of the track from a file.
      *
-     * @param      filename  The filename
+     * Reads file as csv, and inserts each row into the database.
+     *
+     * @param      file  The file to import
      *
      * @return     True if successful, False otherwise
      */
     public static boolean importTrack(File file) {
-        String sql_load = "INSERT INTO blocks (id,region,length,station,occupied) VALUES (?, ?, ?, ?, ?);";
+        String sql_load = "INSERT INTO blocks (id,region,length,station) VALUES (?, ?, ?, ?);";
         BufferedReader br;
 
         try {
+            model.clearDB();
+
             PreparedStatement stmt = model.conn.prepareStatement(sql_load);
             br = new BufferedReader(new FileReader(file));
             String line;
             while ( (line = br.readLine()) != null) {
                 String[] values = line.split(",", -1);    //your seperator
-                System.out.println(values[4]);
                 stmt.setInt(1, Integer.parseInt(values[0]));
                 stmt.setString(2, values[1]);
                 stmt.setInt(3, Integer.parseInt(values[2]));
                 stmt.setString(4, values[3]);
-                if (values[4].length() > 0) {
-                    stmt.setInt(5, Integer.parseInt(values[4]));
-                } else {
-                    stmt.setNull(5, java.sql.Types.INTEGER);
-                }
 
                 stmt.executeUpdate();
             }
@@ -113,13 +113,50 @@ public class TrackModel {
     /**
      * Exports a model of the track to a file.
      *
-     * @param      filename  The filename
+     * @param      file  The file to export to
      *
      * @return     True if successful, False otherwise
      */
-    public static boolean exportTrack(String filename) {
-        // TODO
+    public static boolean exportTrack(File file) {
+        // create file if it doesn't exist
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        // write output to file
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            Statement stmt = model.conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT id,region,length,station FROM blocks");
+
+            writer.write("id,region,length,station");
+            while(rs.next()) {
+                String arrStr[] = { rs.getString("id"), rs.getString("region"), rs.getString("length"), rs.getString("station") };
+                writer.write("\n" + String.join(",", arrStr));
+            }
+            writer.close();
+            return true;
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
         return false;
+    }
+
+    /**
+     * Truncates all tables in database
+     *
+     * @throws     SQLException  Something went wrong when clearing
+     */
+    protected void clearDB() throws SQLException {
+        Statement stmt = this.conn.createStatement();
+        stmt.execute("DELETE FROM blocks;");
+        stmt.execute("DELETE FROM trains;");
     }
 
 }
