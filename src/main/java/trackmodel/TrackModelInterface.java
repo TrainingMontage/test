@@ -11,4 +11,5 @@ public interface TrackModelInterface {
     public static int setSpeed(int blockId, int speed);
     public static byte[] getTrainBeacon(int trainId);
     public static int getPassengers(int trainId);
+    public static boolean isIcyTrack(int trainId);
 }

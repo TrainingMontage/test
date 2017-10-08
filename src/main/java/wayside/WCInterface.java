@@ -1,12 +1,12 @@
 package wayside;
 
 public interface WCInterface {
-    public Block getAuthority(Block trainPosition);
-    public int getSpeed(Block trainPosition);
-    public static void suggest(Block trainPosition, Block authority, int speed);
-    public boolean occupiedBlock(Block block);
-    public boolean lightState(Block lightPosition);
-    public boolean switchState(Block switchPosition);
-    public boolean brokenBlock(Block block);
-    public boolean inMaintenenceBlock(Block block);
+    public Block getAuthority(int blockId);
+    public int getSpeed(int blockId);
+    public static void suggest(int blockId, int finalBlock, int speed);
+    public boolean occupiedBlock(int blockId);
+    public boolean lightState(int blockId);
+    public boolean switchState(int blockId);
+    public boolean brokenBlock(int blockId);
+    public boolean inMaintenenceBlock(int blockId);
 }
