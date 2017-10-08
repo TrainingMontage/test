@@ -8,7 +8,7 @@ public interface TrainModelInterface {
     public double getAuthority();
     public double getMaxPower();
     public int boardPassengers();
-    public int offBoardPassengers();
+    public int evictPassengers();
     public boolean getLights();
     public boolean setLights(boolean turnOn);
     public boolean getLeftDoors();
