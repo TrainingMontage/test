@@ -1,11 +1,14 @@
 package wayside;
 
+/**
+ * Suggestion is a class holding speed, authority (List<blockId>).
+ * BlockStatus is an enum holding {OK, BROKEN, IN_MAINTENANCE}
+ */
 public interface WCInterface {
-    public Block getAuthority(int blockId);
-    public int getSpeed(int blockId);
-    public static void suggest(int blockId, int finalBlock, int speed);
-    public boolean occupiedBlock(int blockId);
-    public boolean lightState(int blockId);
-    public boolean switchState(int blockId);
-    public BlockStatus getStatus(int blockId);
+    public static boolean isOccupied(int blockId);
+    public static boolean getSignal(int blockId);
+    public static boolean getSwitch(int blockId);
+    public static boolean getCrossing(int blockId);
+    public static void suggest(List<Suggestion> suggestion);
+    public static BlockStatus getStatus(int blockId);
 }
