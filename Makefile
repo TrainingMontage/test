@@ -5,6 +5,7 @@ default: build run
 
 build:
 	./gradlew build
+	./gradlew trackModelJar
 
 run:
 	./gradlew run
@@ -16,4 +17,4 @@ doc:
 	./gradlew javadoc
 
 test:
-	./gradlew test
+	./gradlew test --info
