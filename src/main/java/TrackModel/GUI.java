@@ -1,4 +1,4 @@
-package TrackModel;
+package trackmodel;
 
 import java.awt.*;
 import javax.swing.*;

@@ -1,7 +1,8 @@
-package TrackModel;
+package trackmodel;
 
 import java.io.*;
 import java.sql.*;
+import java.util.*;
 
 import org.junit.*;
 import static org.junit.Assert.*;
@@ -98,5 +99,33 @@ public class TrackModelTest {
 
         assertEquals("id,region,length,station", header);
         assertEquals("1,A,50,STATION", firstRow);
+    }
+
+    /**
+     * Validate basic occupancy check.
+     */
+    @Test
+    public void testTrackModelOccupancy() {
+        assertFalse(TrackModel.isOccupied(1));
+
+        try {
+            Statement stmt = _tm.conn.createStatement();
+            stmt.execute("UPDATE blocks SET occupied = 1 WHERE id = 1;");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        assertTrue(TrackModel.isOccupied(1));
+    }
+
+    /**
+     * Validate basic getblocks call.
+     */
+    @Test
+    public void testTrackModelGetBlockIds() {
+        ArrayList<String> ids = TrackModel.getBlockIds();
+
+        assertEquals(1, ids.size());
+        assertEquals("1", ids.get(0));
     }
 }

@@ -1,7 +1,8 @@
-package TrackModel;
+package trackmodel;
 
 import java.sql.*;
 import java.io.*;
+import java.util.*;
 
 public class TrackModel {
 
@@ -157,6 +158,55 @@ public class TrackModel {
         Statement stmt = this.conn.createStatement();
         stmt.execute("DELETE FROM blocks;");
         stmt.execute("DELETE FROM trains;");
+    }
+
+    /**
+     * Determines if a block occupied.
+     *
+     * @param      blockId  The block identifier
+     *
+     * @return     True if occupied, False otherwise.
+     */
+    public static boolean isOccupied(int blockId) {
+        Integer occupied = null;
+        try {
+            PreparedStatement stmt = model.conn.prepareStatement("SELECT occupied FROM blocks WHERE id = ?;");
+            stmt.setInt(1, blockId);
+            ResultSet rs = stmt.executeQuery();
+
+            rs.next();
+            occupied = (Integer) rs.getObject("occupied");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        if(occupied != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Gets the block ids. This is meant to be used from within the GUI
+     *
+     * @return     A lsit of block ids.
+     */
+    protected static ArrayList<String> getBlockIds() {
+        ArrayList<String> blocks = new ArrayList<String>();
+
+        try {
+            Statement stmt = model.conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT id FROM blocks;");
+
+            while (rs.next()) {
+                blocks.add(rs.getString("id"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return blocks;
     }
 
 }
