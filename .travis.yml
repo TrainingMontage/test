@@ -8,7 +8,7 @@ script:
   - cp -r build/docs/* build/pages
   - ./gradlew trackModelJar
   - mkdir -p build/pages/dist
-  - cp build/lib/*.jar build/pages/dist
+  - cp build/libs/*.jar build/pages/dist
   - ./scripts/build.sh work_packages build/pages
 deploy:
   provider: pages
