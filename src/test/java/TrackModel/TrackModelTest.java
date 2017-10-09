@@ -10,6 +10,7 @@ import static org.junit.Assert.*;
 
 public class TrackModelTest {
     public TrackModel _tm;
+    public static double epsilon = 0.0001;
 
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -24,11 +25,14 @@ public class TrackModelTest {
         Statement stmt = _tm.conn.createStatement();
         stmt.execute("DELETE FROM blocks;");
 
-        PreparedStatement _s = _tm.conn.prepareStatement("INSERT INTO blocks (id,region,length,station) VALUES (?, ?, ?, ?);");
-        _s.setInt(1, 1);
-        _s.setString(2, "A");
-        _s.setInt(3, 50);
-        _s.setString(4, "STATION");
+        PreparedStatement _s = _tm.conn.prepareStatement("INSERT INTO blocks (id,region,grade,elevation,length,station) VALUES (?, ?, ?, ?, ?, ?);");
+        int i = 1;
+        _s.setInt(i++, 1);
+        _s.setString(i++, "A");
+        _s.setDouble(i++, 0.5);
+        _s.setDouble(i++, 17.2);
+        _s.setInt(i++, 50);
+        _s.setString(i++, "STATION");
         _s.executeUpdate();
 
     }
@@ -67,12 +71,18 @@ public class TrackModelTest {
             _rs.next();
 
             // extract the first row
-            row = _rs.getString("id") + "," + _rs.getString("region") + "," + _rs.getString("length") + "," + _rs.getString("station");
+            row =
+                _rs.getString("id") + "," + 
+                _rs.getString("region") + "," + 
+                _rs.getString("grade") + "," + 
+                _rs.getString("elevation") + "," + 
+                _rs.getString("length") + "," + 
+                _rs.getString("station");
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        assertEquals("1,A,50,STATION", row);
+        assertEquals("1,A,0.5,17.2,50.0,STATION", row);
     }
 
     /**
@@ -102,8 +112,8 @@ public class TrackModelTest {
             fail();
         }
 
-        assertEquals("id,region,length,station", header);
-        assertEquals("1,A,50,STATION", firstRow);
+        assertEquals("id,region,grade,elevation,length,station", header);
+        assertEquals("1,A,0.5,17.2,50.0,STATION", firstRow);
     }
 
     /**
@@ -127,7 +137,7 @@ public class TrackModelTest {
      * Validate basic occupancy set.
      */
     @Test
-    public void testTrackModelSetOccupied() {
+    public void testTrackModelSetOccupiedTrue() {
 
         assertTrue(TrackModel.setOccupied(1, true));
 
@@ -147,6 +157,29 @@ public class TrackModelTest {
     }
 
     /**
+     * Validate basic occupancy set.
+     */
+    @Test
+    public void testTrackModelSetOccupiedFalse() {
+
+        assertTrue(TrackModel.setOccupied(1, false));
+
+        Integer occupied = 1;
+        try {
+            PreparedStatement stmt = _tm.conn.prepareStatement("SELECT occupied FROM blocks WHERE id = ?;");
+            stmt.setInt(1, 1);
+            ResultSet rs = stmt.executeQuery();
+
+            rs.next();
+            occupied = (Integer) rs.getObject("occupied");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        assertNull(occupied);
+    }
+
+    /**
      * Validate basic getblocks call.
      */
     @Test
@@ -155,5 +188,109 @@ public class TrackModelTest {
 
         assertEquals(1, ids.size());
         assertEquals("1", ids.get(0));
+    }
+
+    /**
+     * Validate getstaticblock works.
+     */
+    @Test
+    public void testTrackModelGetStaticBlock() {
+        StaticBlock block = TrackModel.getStaticBlock(1);
+
+        assertEquals(block.getId(), 1);
+        assertEquals(block.getRegion(), "A");
+        assertEquals(block.getGrade(), .5, epsilon);
+        assertEquals(block.getElevation(), 17.2, epsilon);
+        assertEquals(block.getLength(), 50, epsilon);
+        assertEquals(block.getStation(), "STATION");
+    }
+
+    /**
+     * Validate basic region set.
+     */
+    @Test
+    public void testTrackModelSetRegion() {
+
+        assertTrue(TrackModel.setRegion(1, "B"));
+
+        String region = null;
+        try {
+            PreparedStatement stmt = _tm.conn.prepareStatement("SELECT region FROM blocks WHERE id = ?;");
+            stmt.setInt(1, 1);
+            ResultSet rs = stmt.executeQuery();
+
+            rs.next();
+            region = rs.getString("region");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(region, "B");
+    }
+
+    /**
+     * Validate basic length set.
+     */
+    @Test
+    public void testTrackModelSetLength() {
+        assertTrue(TrackModel.setLength(1, 15.0));
+
+        Double length = null;
+        try {
+            PreparedStatement stmt = _tm.conn.prepareStatement("SELECT length FROM blocks WHERE id = ?;");
+            stmt.setInt(1, 1);
+            ResultSet rs = stmt.executeQuery();
+
+            rs.next();
+            length = rs.getDouble("length");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(length, 15.0, epsilon);
+    }
+
+    /**
+     * Validate basic elevation set.
+     */
+    @Test
+    public void testTrackModelSetElevation() {
+        assertTrue(TrackModel.setElevation(1, 15.0));
+
+        Double elevation = null;
+        try {
+            PreparedStatement stmt = _tm.conn.prepareStatement("SELECT elevation FROM blocks WHERE id = ?;");
+            stmt.setInt(1, 1);
+            ResultSet rs = stmt.executeQuery();
+
+            rs.next();
+            elevation = rs.getDouble("elevation");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(elevation, 15.0, epsilon);
+    }
+
+    /**
+     * Validate basic grade set.
+     */
+    @Test
+    public void testTrackModelSetGrade() {
+        assertTrue(TrackModel.setGrade(1, .75));
+
+        Double grade = null;
+        try {
+            PreparedStatement stmt = _tm.conn.prepareStatement("SELECT grade FROM blocks WHERE id = ?;");
+            stmt.setInt(1, 1);
+            ResultSet rs = stmt.executeQuery();
+
+            rs.next();
+            grade = rs.getDouble("grade");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(grade, .75, epsilon);
     }
 }

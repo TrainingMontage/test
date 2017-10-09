@@ -24,9 +24,9 @@ public class TrackModel {
             "CREATE TABLE blocks (\n" +
             "   id integer PRIMARY KEY,\n" + // static properties
             "   region text NOT NULL,\n" +
-            // "   grade real NOT NULL,\n" +
-            // "   elevation real NOT NULL,\n" +
-            "   length integer NOT NULL,\n" +
+            "   grade real NOT NULL,\n" +
+            "   elevation real NOT NULL,\n" +
+            "   length real NOT NULL,\n" +
             "   station text,\n" +
             // "   switch integer,\n" +
             // "   rr_crossing,\n" +
@@ -82,7 +82,7 @@ public class TrackModel {
      * @return     True if successful, False otherwise
      */
     public static boolean importTrack(File file) {
-        String sql_load = "INSERT INTO blocks (id,region,length,station) VALUES (?, ?, ?, ?);";
+        String sql_load = "INSERT INTO blocks (id,region,grade,elevation,length,station) VALUES (?, ?, ?, ?, ?, ?);";
         BufferedReader br;
 
         try {
@@ -92,11 +92,24 @@ public class TrackModel {
             br = new BufferedReader(new FileReader(file));
             String line;
             while ( (line = br.readLine()) != null) {
-                String[] values = line.split(",", -1);    //your seperator
-                stmt.setInt(1, Integer.parseInt(values[0]));
-                stmt.setString(2, values[1]);
-                stmt.setInt(3, Integer.parseInt(values[2]));
-                stmt.setString(4, values[3]);
+                String[] values = line.split(",", -1);
+                int i = 0; // id
+                stmt.setInt(i + 1, Integer.parseInt(values[i]));
+                
+                i++; // region
+                stmt.setString(i + 1, values[i]);
+
+                i++; // grade
+                stmt.setDouble(i + 1, Double.parseDouble(values[i]));
+
+                i++; // elevation
+                stmt.setDouble(i + 1, Double.parseDouble(values[i])); 
+                
+                i++; // length
+                stmt.setDouble(i + 1, Double.parseDouble(values[i])); 
+                
+                i++; // station
+                stmt.setString(i + 1, values[i]);
 
                 stmt.executeUpdate();
             }
@@ -133,11 +146,17 @@ public class TrackModel {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
             Statement stmt = model.conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT id,region,length,station FROM blocks");
+            ResultSet rs = stmt.executeQuery("SELECT id,region,grade,elevation,length,station FROM blocks");
 
-            writer.write("id,region,length,station");
+            writer.write("id,region,grade,elevation,length,station");
             while(rs.next()) {
-                String arrStr[] = { rs.getString("id"), rs.getString("region"), rs.getString("length"), rs.getString("station") };
+                String arrStr[] = {
+                    rs.getString("id"),
+                    rs.getString("region"),
+                    rs.getString("grade"),
+                    rs.getString("elevation"),
+                    rs.getString("length"),
+                    rs.getString("station") };
                 writer.write("\n" + String.join(",", arrStr));
             }
             writer.close();
@@ -198,13 +217,18 @@ public class TrackModel {
     protected static boolean setOccupied(int blockId, boolean occupied) {
         try {
             PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET occupied = ? WHERE id = ?;");
-            stmt.setInt(1, occupied?1:null);
+            if (occupied) {
+                stmt.setInt(1, 1);
+            } else {
+                stmt.setNull(1, java.sql.Types.INTEGER);
+            }
             stmt.setInt(2, blockId);
             stmt.execute();
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return isOccupied(blockId);
+        return false;
     }
 
     /**
@@ -227,6 +251,120 @@ public class TrackModel {
         }
 
         return blocks;
+    }
+
+    /**
+     * Gets the static block info for a given id.
+     *
+     * @param      blockId  The block identifier
+     *
+     * @return     The static block.
+     */
+    public static StaticBlock getStaticBlock(int blockId) {
+        try {
+            PreparedStatement stmt = model.conn.prepareStatement("SELECT id,region,grade,elevation,length,station FROM blocks WHERE id = ?");
+            stmt.setInt(1, blockId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+
+            StaticBlock block = new StaticBlock();
+
+            block.setId(rs.getInt("id"));
+            block.setRegion(rs.getString("region"));
+            block.setGrade(rs.getDouble("grade"));
+            block.setElevation(rs.getDouble("elevation"));
+            block.setLength(rs.getDouble("length"));
+            block.setStation(rs.getString("station"));
+            
+            return block;
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Sets the region of a block.
+     *
+     * @param      blockId  The block identifier
+     * @param      region   The region
+     *
+     * @return     true if successful, false otherwise
+     */
+    protected static boolean setRegion(int blockId, String region) {
+        try {
+            PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET region = ? WHERE id = ?;");
+            stmt.setString(1, region);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Sets the length of a block.
+     *
+     * @param      blockId  The block identifier
+     * @param      length   The length
+     *
+     * @return     true if successful, false otherwise
+     */
+    protected static boolean setLength(int blockId, double length) {
+        try {
+            PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET length = ? WHERE id = ?;");
+            stmt.setDouble(1, length);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Sets the elevation of a block.
+     *
+     * @param      blockId  The block identifier
+     * @param      elevation   The elevation
+     *
+     * @return     true if successful, false otherwise
+     */
+    protected static boolean setElevation(int blockId, double elevation) {
+        try {
+            PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET elevation = ? WHERE id = ?;");
+            stmt.setDouble(1, elevation);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Sets the grade of a block.
+     *
+     * @param      blockId  The block identifier
+     * @param      grade   The grade
+     *
+     * @return     true if successful, false otherwise
+     */
+    protected static boolean setGrade(int blockId, double grade) {
+        try {
+            PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET grade = ? WHERE id = ?;");
+            stmt.setDouble(1, grade);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }

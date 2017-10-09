@@ -5,11 +5,14 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
 
+import shared.*;
+
 public class GUI {
 
     protected static JButton reloadBlockInfo, submitChanges;
     protected static JCheckBox occupied;
     protected static JComboBox blockId;
+    protected static JTextArea speed_limit, length, grade, elevation, region, station;
 
 
     public static void addComponentsToPane(Container pane) {
@@ -56,7 +59,7 @@ public class GUI {
 
         // left half
 
-        label = new JLabel("Wayside ID:");
+        label = new JLabel("Region:");
         c.insets = new Insets(2, 2, 2, 2); //no padding
         c.fill = GridBagConstraints.HORIZONTAL;
         c.anchor = GridBagConstraints.NORTH;
@@ -64,10 +67,10 @@ public class GUI {
         c.gridy = 0;
         panelBlockInfo.add(label, c);
 
-        textArea = new JTextArea("1");
+        region = new JTextArea("1");
         c.gridx = 1;
         c.gridy = 0;
-        panelBlockInfo.add(textArea, c);
+        panelBlockInfo.add(region, c);
 
         label = new JLabel("Speed Limit:");
         c.gridx = 0;
@@ -84,20 +87,20 @@ public class GUI {
         c.gridy = 2;
         panelBlockInfo.add(label, c);
 
-        textArea = new JTextArea(".2 mi");
+        length = new JTextArea(".2 mi");
         c.gridx = 1;
         c.gridy = 2;
-        panelBlockInfo.add(textArea, c);
+        panelBlockInfo.add(length, c);
 
         label = new JLabel("Grade:");
         c.gridx = 0;
         c.gridy = 3;
         panelBlockInfo.add(label, c);
 
-        textArea = new JTextArea(".5 %");
+        grade = new JTextArea(".5 %");
         c.gridx = 1;
         c.gridy = 3;
-        panelBlockInfo.add(textArea, c);
+        panelBlockInfo.add(grade, c);
 
         label = new JLabel("Underground:");
         c.gridx = 0;
@@ -192,10 +195,10 @@ public class GUI {
         c.gridy = 2;
         panelBlockInfo.add(label, c);
 
-        textArea = new JTextArea("232 ft");
+        elevation = new JTextArea("232 ft");
         c.gridx = 3;
         c.gridy = 2;
-        panelBlockInfo.add(textArea, c);
+        panelBlockInfo.add(elevation, c);
 
         label = new JLabel("State:");
         c.gridx = 2;
@@ -411,9 +414,18 @@ public class GUI {
      *
      * @param      block  The block
      */
-    private static void loadBlock(String block) {
-        int blockId = Integer.parseInt(block);
+    private static void loadBlock(String blockStr) {
+        int blockId = Integer.parseInt(blockStr);
 
+        // static info
+        StaticBlock block = TrackModel.getStaticBlock(blockId);
+
+        region.setText(block.getRegion());
+        grade.setText(String.format("%.2f %%", block.getGrade()));
+        elevation.setText(String.format("%.2f ft", UnitUtils.metersToFeet(block.getElevation())));
+        length.setText(String.format("%.2f ft", UnitUtils.metersToFeet(block.getLength())));
+
+        // dynamic info
         occupied.setSelected(TrackModel.isOccupied(blockId));
     }
 
@@ -424,7 +436,21 @@ public class GUI {
      */
     private static void setBlock(String block) {
         int blockId = Integer.parseInt(block);
+        String str;
 
+        // static data
+        TrackModel.setRegion(blockId, region.getText());
+        
+        str = grade.getText();
+        TrackModel.setGrade(blockId, Double.parseDouble(str.substring(0, str.length() - 2)));
+
+        str = elevation.getText();
+        TrackModel.setElevation(blockId, UnitUtils.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 3))));
+
+        str = length.getText();
+        TrackModel.setLength(blockId, UnitUtils.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 2))));
+
+        // dynamic data
         TrackModel.setOccupied(blockId, occupied.isSelected());
     }
 
