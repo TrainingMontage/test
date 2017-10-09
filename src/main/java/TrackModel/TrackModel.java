@@ -188,6 +188,26 @@ public class TrackModel {
     }
 
     /**
+     * Sets whether or not a block is occupied.
+     *
+     * @param      blockId   The block identifier
+     * @param      occupied  The occupied
+     *
+     * @return     the new value for occupied
+     */
+    protected static boolean setOccupied(int blockId, boolean occupied) {
+        try {
+            PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET occupied = ? WHERE id = ?;");
+            stmt.setInt(1, occupied?1:null);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return isOccupied(blockId);
+    }
+
+    /**
      * Gets the block ids. This is meant to be used from within the GUI
      *
      * @return     A lsit of block ids.

@@ -37,9 +37,9 @@ public class TrackModelTest {
         assertNotNull(_tm);
     }
 
-     /**
-     * Make sure init actually creates the database
-     */
+    /**
+    * Make sure init actually creates the database
+    */
     @Test
     public void testTrackModelInitDB() {
         assertNotNull(_tm.conn);
@@ -51,7 +51,7 @@ public class TrackModelTest {
     @Test
     public void testTrackModelImport() {
         File file = new File(this.getClass().getClassLoader().getResource("TrackModel/track.csv").getFile());
-        
+
         // function should return true
         assertTrue(TrackModel.importTrack(file));
 
@@ -77,7 +77,7 @@ public class TrackModelTest {
     @Test
     public void testTrackModelExport() {
         File file = new File("track_export.csv");
-        
+
         // function should return true
         assertTrue(TrackModel.exportTrack(file));
 
@@ -105,7 +105,7 @@ public class TrackModelTest {
      * Validate basic occupancy check.
      */
     @Test
-    public void testTrackModelOccupancy() {
+    public void testTrackModelisOccupied() {
         assertFalse(TrackModel.isOccupied(1));
 
         try {
@@ -116,6 +116,29 @@ public class TrackModelTest {
         }
 
         assertTrue(TrackModel.isOccupied(1));
+    }
+
+    /**
+     * Validate basic occupancy set.
+     */
+    @Test
+    public void testTrackModelSetOccupied() {
+
+        assertTrue(TrackModel.setOccupied(1, true));
+
+        Integer occupied = null;
+        try {
+            PreparedStatement stmt = _tm.conn.prepareStatement("SELECT occupied FROM blocks WHERE id = ?;");
+            stmt.setInt(1, 1);
+            ResultSet rs = stmt.executeQuery();
+
+            rs.next();
+            occupied = (Integer) rs.getObject("occupied");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        assertEquals(occupied, (Integer) 1);
     }
 
     /**

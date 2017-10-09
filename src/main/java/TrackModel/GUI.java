@@ -1,13 +1,15 @@
 package trackmodel;
 
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
+import java.io.*;
 
 public class GUI {
 
     protected static JButton reloadBlockInfo, submitChanges;
     protected static JCheckBox occupied;
-    protected static JComboBox blockID;
+    protected static JComboBox blockId;
 
 
     public static void addComponentsToPane(Container pane) {
@@ -163,11 +165,17 @@ public class GUI {
         c.gridy = 0;
         panelBlockInfo.add(label, c);
 
-        String[] comboOptions =  { "A1", "A2", "A3", ".." };
-        blockID = new JComboBox(comboOptions);
+        blockId = new JComboBox();
+        blockId.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent event) {
+                if (event.getStateChange() == ItemEvent.SELECTED) {
+                    loadBlock(String.valueOf(blockId.getSelectedItem()));
+                }
+            }
+        });
         c.gridx = 3;
         c.gridy = 0;
-        panelBlockInfo.add(blockID, c);
+        panelBlockInfo.add(blockId, c);
 
         label = new JLabel("Next Blocks:");
         c.gridx = 2;
@@ -240,6 +248,11 @@ public class GUI {
         panelBlockInfo.add(textArea, c);
 
         button = new JButton("Submit Changes");
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                setBlock(String.valueOf(blockId.getSelectedItem()));
+            }
+        } );
         c.gridx = 2;
         c.gridy = 9;
         c.gridwidth = 2;
@@ -337,12 +350,35 @@ public class GUI {
         // ******************** right panel *******************
 
         button = new JButton("Import Track");
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                final JFileChooser fc = new JFileChooser();
+                int returnVal = fc.showOpenDialog(pane);
+
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    File file = fc.getSelectedFile();
+                    TrackModel.importTrack(file);
+                    refreshGUI();
+                }
+            }
+        } );
         c.gridwidth = 1;
         c.gridx = 0;
         c.gridy = 2;
         panelRight.add(button, c);
 
         button = new JButton("Export Track");
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                final JFileChooser fc = new JFileChooser();
+                int returnVal = fc.showSaveDialog(pane);
+
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    File file = fc.getSelectedFile();
+                    TrackModel.exportTrack(file);
+                }
+            }
+        } );
         c.gridx = 1;
         c.gridy = 2;
         panelRight.add(button, c);
@@ -353,6 +389,43 @@ public class GUI {
         c.gridy = 1;
         pane.add(panelRight, c);
 
+
+        refreshGUI();
+
+    }
+
+    /**
+     * redraws the gui based on the current state of the track model.
+     */
+    private static void refreshGUI() {
+
+        // reset the block id combo box
+        blockId.removeAllItems();
+        for (String s : TrackModel.getBlockIds()) {
+            blockId.addItem(s);
+        }
+    }
+
+    /**
+     * Callback for loading the information for a block
+     *
+     * @param      block  The block
+     */
+    private static void loadBlock(String block) {
+        int blockId = Integer.parseInt(block);
+
+        occupied.setSelected(TrackModel.isOccupied(blockId));
+    }
+
+    /**
+     * Callback for setting the information for a block
+     *
+     * @param      block  The block
+     */
+    private static void setBlock(String block) {
+        int blockId = Integer.parseInt(block);
+
+        TrackModel.setOccupied(blockId, occupied.isSelected());
     }
 
     /**
@@ -372,14 +445,4 @@ public class GUI {
         frame.pack();
         frame.setVisible(true);
     }
-
-    // public static void main(String[] args) {
-    //     //Schedule a job for the event-dispatching thread:
-    //     //creating and showing this application's GUI.
-    //     javax.swing.SwingUtilities.invokeLater(new Runnable() {
-    //         public void run() {
-    //             createAndShowGUI();
-    //         }
-    //     });
-    // }
 }
