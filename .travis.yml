@@ -3,11 +3,16 @@ before_install:
 - "sudo apt-get update && sudo apt-get install --no-install-recommends tree latexmk latexmk texlive-fonts-extra texlive-fonts-recommended texlive-latex-base texlive-latex-extra texlive-latex-recommended latex-xcolor"
 - "pip install --user mako click"
 script:
+  - mkdir -p build/pages
   - ./gradlew javadoc
-  - ./scripts/build.sh work_packages build/docs
+  - cp -r build/docs/* build/pages
+  - ./gradlew trackModelJar
+  - mkdir -p build/pages/dist
+  - cp build/lib/*.jar build/pages/dist
+  - ./scripts/build.sh work_packages build/pages
 deploy:
   provider: pages
-  local_dir: build/docs
+  local_dir: build/pages
   skip_cleanup: true
   github_token: $GITHUB_TOKEN
   on:
