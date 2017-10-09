@@ -5,10 +5,14 @@ import java.sql.*;
 import java.util.*;
 
 import org.junit.*;
+import org.junit.rules.*;
 import static org.junit.Assert.*;
 
 public class TrackModelTest {
     public TrackModel _tm;
+
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     @Before
     public void setup() throws Exception {
@@ -75,8 +79,9 @@ public class TrackModelTest {
      * Validate basic, typical use case export.
      */
     @Test
-    public void testTrackModelExport() {
-        File file = new File("track_export.csv");
+    public void testTrackModelExport() throws IOException {
+        File file = folder.newFile("myfile.txt");
+        // File file = new File("track_export.csv");
 
         // function should return true
         assertTrue(TrackModel.exportTrack(file));
