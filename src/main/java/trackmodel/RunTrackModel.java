@@ -12,4 +12,8 @@ public class RunTrackModel {
             }
         });    
     }
+
+    public static void main(String[] args) {
+        run();
+    }
 }
