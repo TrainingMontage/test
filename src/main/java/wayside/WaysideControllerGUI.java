@@ -196,19 +196,11 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
 
         jLabel10.setText("Actual:");
 
-        jTextField1.setText("jTextField1");
-
-        jTextField2.setText("jTextField2");
-
         jLabel11.setText("Suggested:");
 
         jLabel12.setText("Actual:");
 
-        jTextField3.setText("jTextField1");
-
         jLabel13.setText("Authority");
-
-        jTextField4.setText("jTextField2");
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
