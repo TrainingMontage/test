@@ -27,12 +27,11 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane6 = new javax.swing.JScrollPane();
-        jTextPane6 = new javax.swing.JTextPane();
+        plcFileChooser = new javax.swing.JFileChooser();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
-        jButton1 = new javax.swing.JButton();
+        plcButton = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextPane1 = new javax.swing.JTextPane();
@@ -63,7 +62,7 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
         jLabel13 = new javax.swing.JLabel();
         jTextField4 = new javax.swing.JTextField();
 
-        jScrollPane6.setViewportView(jTextPane6);
+        plcFileChooser.setDialogTitle("Upload PLC");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -76,10 +75,10 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("Upload PLC");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        plcButton.setText("Upload PLC");
+        plcButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                plcButtonActionPerformed(evt);
             }
         });
 
@@ -93,7 +92,7 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addComponent(plcButton)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -103,7 +102,7 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
+                    .addComponent(plcButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -312,9 +311,26 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void catFile(java.io.File file) {
+        try {
+            java.util.Scanner sc = new java.util.Scanner(file);
+            while (sc.hasNextLine()) {
+                System.out.println(sc.nextLine());
+            }
+        } catch (java.io.IOException ex) {
+            System.out.println("Could not access file: " + file.getAbsolutePath());
+        }
+    }
+    
+    private void plcButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plcButtonActionPerformed
+        int res = plcFileChooser.showOpenDialog(this);
+        if (javax.swing.JFileChooser.APPROVE_OPTION == res) {
+            java.io.File file = plcFileChooser.getSelectedFile();
+            catFile(file);
+        } else {
+            System.out.println("File access cancelled by user");
+        }
+    }//GEN-LAST:event_plcButtonActionPerformed
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
@@ -356,7 +372,6 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel1;
@@ -380,7 +395,6 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
@@ -390,6 +404,7 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
     private javax.swing.JTextPane jTextPane3;
     private javax.swing.JTextPane jTextPane4;
     private javax.swing.JTextPane jTextPane5;
-    private javax.swing.JTextPane jTextPane6;
+    private javax.swing.JButton plcButton;
+    private javax.swing.JFileChooser plcFileChooser;
     // End of variables declaration//GEN-END:variables
 }
