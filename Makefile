@@ -3,13 +3,13 @@
 default: build run
 
 build:
-	./gradlew build
+	gradlew build
 
 run:
-	./gradlew run
+	gradlew run
 
 clean:
-	./gradlew clean
+	gradlew clean
 
 doc:
-	./gradlew javadoc
+	gradlew javadoc
