@@ -1,11 +1,12 @@
-/**
- * The public interface of all wayside controllers.
- * Since there are multiple WCs throughout 
- */
 package wayside;
 
 import java.util.List;
 
+/**
+ * The public interface of all wayside controllers.
+ * Since there are multiple WCs all around the track,
+ * we represent each of them with an object, adressable by region.
+ */
 public class WaysideController {
 
     /** Stores the wayside controller objects, indexed by region number. */
@@ -46,8 +47,10 @@ public class WaysideController {
         return null;
     }
 }
+
 class BlockStatus {}
 class Suggestion {}
+
 /**
  * The objects which represent the actual WCs on the track.
  * This could be wrapped up in the WaysideController class,
