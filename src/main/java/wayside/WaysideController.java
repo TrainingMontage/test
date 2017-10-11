@@ -14,8 +14,13 @@ public class WaysideController {
     /** Maps the block ID to region number. */
     private static int[] regions;
 
+    /**
+     * Initiallizes the WaysideController.
+     * For now, just working on one region.
+     */
     public static void init() {
-        // TODO
+        controllers = new WC[1];
+        controllers[0] = new WC();
     }
 
     public static boolean isOccupied(int blockId) {
@@ -45,6 +50,14 @@ public class WaysideController {
     public static BlockStatus getStatus(int blockId) {
         // TODO
         return null;
+    }
+
+    private static int sum(int[] a) {
+        int res = 0;
+        for (int x : a) {
+            res += x;
+        }
+        return res;
     }
 }
 
