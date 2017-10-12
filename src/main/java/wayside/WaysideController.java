@@ -35,19 +35,9 @@ public class WaysideController {
     public static void init() {
         controllers = new WC[1];
         controllers[0] = new WC();
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                WaysideControllerGUI gui = new WaysideControllerGUI();
-                TrackModel.init(gui);
-                gui.setVisible(true);
-            }
-        });
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-            // do something?
-            System.out.println("Failed to wait....\n" + ex.getMessage());
-        }
+        WaysideControllerGUI gui = new WaysideControllerGUI();
+        TrackModel.init(gui);
+        gui.setVisible(true);
         TrackModel.setOccupancy(3, true);
     }
 
