@@ -55,7 +55,7 @@ public class WaysideController {
         return false;
     }
     
-    public static void suggest(List<Suggestion> suggestion) {
+    public static void suggest(Suggestion[] suggestion) {
         // TODO
     }
     
