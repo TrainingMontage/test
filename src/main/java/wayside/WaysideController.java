@@ -1,6 +1,8 @@
 package wayside;
 
 import utils.BlockStatus;
+import utils.Suggestion;
+
 import java.util.List;
 
 /**
@@ -61,8 +63,6 @@ public class WaysideController {
         return res;
     }
 }
-
-class Suggestion {}
 
 /**
  * The objects which represent the actual WCs on the track.

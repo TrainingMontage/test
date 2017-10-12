@@ -2,6 +2,8 @@
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import utils.Suggestion;
 import wayside.MockTrack;
 import wayside.WaysideController;
 
