@@ -36,7 +36,8 @@ public class WaysideTest {
      * all of the authorities should be set;
      * only the first block should be occupied.
      */
-    @Test public void test_emptyTrackSafeSuggestion() {
+    @Test
+    public void test_emptyTrackSafeSuggestion() {
         int[] list = {0, 1, 2, 3, 4, 5};
         Suggestion s = new Suggestion(0, 10, list);
         Suggestion[] res = {s};
@@ -59,7 +60,8 @@ public class WaysideTest {
         }
     }
 
-    @Test public void test_trainSafeOnlyNewSuggestion() {
+    @Test
+    public void test_trainSafeOnlyNewSuggestion() {
         int[] list = {0, 1, 2, 3};
         Suggestion s = new Suggestion(0, 10, list);
         Suggestion[] res = {s}; // Only giving a suggestion to the new train.
@@ -83,7 +85,8 @@ public class WaysideTest {
         }
     }
 
-    @Test public void test_trainUnsafeOnlyNewSuggestion() {
+    @Test
+    public void test_trainUnsafeOnlyNewSuggestion() {
         int[] list = {0, 1, 2, 3, 4, 5};
         Suggestion s = new Suggestion(0, 10, list);
         Suggestion[] res = {s}; // Only giving a suggestion to the new train.
@@ -102,7 +105,8 @@ public class WaysideTest {
         }
     }
 
-    @Test public void test_trainSafeBothSuggestion() {
+    @Test
+    public void test_trainSafeBothSuggestion() {
         int[] auth1 = {0, 1, 2, 3};
         Suggestion s1 = new Suggestion(0, 10, auth1);
         int[] auth2 = {4, 5, 6, 7, 8};
