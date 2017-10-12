@@ -23,6 +23,10 @@ public class UILayer {
         actualAuthority();
     }
 
+    public static void submitAction() {
+        System.out.println("submit action!");
+    }
+
     private static void occupancy() {
         if (gui == null) return; // Running headless.
         StringBuilder sb = new StringBuilder();
