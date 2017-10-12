@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package wayside;
+import wayside.UILayer;
 
 /**
  *
@@ -32,6 +33,7 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
         plcButton = new javax.swing.JButton();
+        submitButton = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextPane1 = new javax.swing.JTextPane();
@@ -82,6 +84,13 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
             }
         });
 
+        submitButton.setText("Submit");
+        submitButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                submitButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -92,6 +101,8 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(submitButton)
+                .addGap(18, 18, 18)
                 .addComponent(plcButton)
                 .addContainerGap())
         );
@@ -102,7 +113,8 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(plcButton))
+                    .addComponent(plcButton)
+                    .addComponent(submitButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -188,12 +200,7 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
 
         jLabel7.setText("Block");
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {
-            "Single Train, safe suggestion",
-            "Non-empty Track, Safe Suggestion",
-            "Non-empty Track, Unsafe Suggestion",
-            "Non-empty Track, Safe Suggestion to all"
-        }));
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         jLabel8.setText("Speed");
 
@@ -217,7 +224,7 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
                         .addGap(10, 10, 10)
                         .addComponent(jLabel7)
                         .addGap(18, 18, 18)
-                        .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -333,6 +340,10 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
+    private void submitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitButtonActionPerformed
+        UILayer.submitAction();
+    }//GEN-LAST:event_submitButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -435,5 +446,6 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
     private javax.swing.JTextPane jTextPane5;
     private javax.swing.JButton plcButton;
     private javax.swing.JFileChooser plcFileChooser;
+    private javax.swing.JButton submitButton;
     // End of variables declaration//GEN-END:variables
 }
