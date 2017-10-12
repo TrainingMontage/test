@@ -400,7 +400,7 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
     }
 
     public String getSignal() {
-        return jTextField4.getText();
+        return jTextPane4.getText();
     }
 
     public void setCrossing(String text) {

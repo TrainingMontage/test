@@ -68,6 +68,8 @@ public class TrackModel {
     }
 
     public static boolean setSignal(int blockId, boolean value) {
+        if (!(blockId == SWITCH || blockId == DEFAULT_LEAF || blockId == ACTIVE_LEAF))
+            return false;
         signals[blockId] = value;
         return value;
     }
@@ -77,6 +79,7 @@ public class TrackModel {
     }
 
     public static boolean setSwitch(int blockId, boolean value) {
+        if (blockId != SWITCH) return false;
         switches[blockId] = value;
         return value;
     }
@@ -96,6 +99,7 @@ public class TrackModel {
     }
 
     public static boolean setCrossing(int blockId, boolean active) {
+        if (blockId != CROSSING) return false;
         crossings[blockId] = active;
         return active;
     }

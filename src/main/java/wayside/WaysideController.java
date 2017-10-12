@@ -34,7 +34,7 @@ public class WaysideController {
      */
     public static void init() {
         UILayer.init();
-        test_emptyTrackSafeSuggestion();
+        //test_emptyTrackSafeSuggestion();
     }
 
     private static void test_emptyTrackSafeSuggestion() {
