@@ -2,6 +2,7 @@ package wayside;
 
 import utils.BlockStatus;
 import utils.Suggestion;
+import wayside.TrackModel;
 
 import java.util.List;
 
@@ -36,23 +37,27 @@ public class WaysideController {
     }
 
     public static boolean isOccupied(int blockId) {
-        // TODO
-        return false;
+        return TrackModel.isOccupied(blockId);
     }
 
     public static boolean getSignal(int blockId) {
-        // TODO
-        return false;
+        return TrackModel.getSignal(blockId);
     }
     
     public static boolean getSwitch(int blockId) {
-        // TODO
-        return false;
+        return TrackModel.getSwitch(blockId);
     }
     
     public static boolean getCrossing(int blockId) {
-        // TODO
-        return false;
+        return TrackModel.getCrossing(blockId);
+    }
+
+    public static boolean getAuthority(int blockId) {
+        return TrackModel.getTrainAuthority(blockId);
+    }
+
+    public static int getSpeed(int blockId) {
+        return TrackModel.getTrainSpeed(blockId);
     }
     
     public static void suggest(Suggestion[] suggestion) {
