@@ -188,7 +188,12 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
 
         jLabel7.setText("Block");
 
-        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {
+            "Single Train, safe suggestion",
+            "Non-empty Track, Safe Suggestion",
+            "Non-empty Track, Unsafe Suggestion",
+            "Non-empty Track, Safe Suggestion to all"
+        }));
 
         jLabel8.setText("Speed");
 
@@ -212,7 +217,7 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
                         .addGap(10, 10, 10)
                         .addComponent(jLabel7)
                         .addGap(18, 18, 18)
-                        .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
