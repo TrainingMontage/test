@@ -61,13 +61,37 @@ public class WaysideController {
     }
     
     public static void suggest(Suggestion[] suggestion) {
-        int sw = 2;
+        int sw = 2; // Do I have static information about the track?
         Suggestion s = suggestion[0]; // There should only be 1 for the 1 train so far.
+
+        // Validate that this is a safe suggestion.
+        boolean safe = true;
+        boolean[] safeAuthority = new boolean[TrackModel.TRACK_LEN];
         for (int block: s.authority) {
-            TrackModel.setAuthority(block, true);
+            if (TrackModel.isOccupied(block) && block != s.blockId) {
+                safe = false; // Authority would run over some other train.
+                break;
+            }
+            if (safeAuthority[block]) {
+                safe = false; // overlapping authority
+                break;
+            }
+            safeAuthority[block] = true;
         }
-        TrackModel.setSwitch(sw, true);
-        TrackModel.setSpeed(0, s.speed);
+
+        // Now act!
+        if (safe) {
+            for (int block: s.authority) {
+                TrackModel.setAuthority(block, true);
+            }
+            TrackModel.setSwitch(sw, true); // Want some logic around this.
+            TrackModel.setSpeed(s.blockId, s.speed);
+        } else {
+            for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
+                TrackModel.setAuthority(i, false);
+                TrackModel.setSpeed(i, 0);
+            }
+        }
     }
     
     public static BlockStatus getStatus(int blockId) {
