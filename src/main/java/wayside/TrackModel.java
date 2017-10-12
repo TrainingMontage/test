@@ -37,6 +37,14 @@ public class TrackModel {
             setSpeed(i, 0);
         }
     }
+
+    /**
+     * This exists only for this mock-up; not in the final code!!
+     */
+    public static boolean setOccupancy(int blockId, boolean occ) {
+        occupancy[blockId] = occ;
+        return occ;
+    }
     
     /** Cheating for this TrackModel; getting authority by block ID rather than Train ID. */
     public static boolean getTrainAuthority(int trainId) {
