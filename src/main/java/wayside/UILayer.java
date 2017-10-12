@@ -19,7 +19,7 @@ public class UILayer {
         switches();
         signals();
         crossings();
-        // actualSpeed();
+        actualSpeed();
         actualAuthority();
     }
 
@@ -72,6 +72,19 @@ public class UILayer {
             }
         }
         gui.setCrossing(sb.toString());
+    }
+
+    private static void actualSpeed() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
+            if (TrackModel.getTrainSpeed(i) != 0) {
+                sb.append(i);
+                sb.append(": ");
+                sb.append(TrackModel.getTrainSpeed(i));
+                sb.append("\n");
+            }
+        }
+        gui.setActualSpeed(sb.toString());
     }
 
     private static void actualAuthority() {
