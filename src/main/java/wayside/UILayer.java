@@ -17,8 +17,8 @@ public class UILayer {
     public static void update() {
         occupancy();
         switches();
-        // signals();
-        // crossings();
+        signals();
+        crossings();
         // actualSpeed();
         actualAuthority();
     }
@@ -38,13 +38,40 @@ public class UILayer {
     private static void switches() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
-            if (TrackModel.getSwitch(i)) {
+            if (TrackModel.SWITCH == i) {
                 sb.append(i);
                 sb.append(": ");
                 sb.append(TrackModel.getSwitch(i));
+                sb.append("\n");
             }
         }
         gui.setSwitch(sb.toString());
+    }
+
+    private static void signals() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
+            if (TrackModel.SWITCH == i || TrackModel.ACTIVE_LEAF == i || TrackModel.DEFAULT_LEAF == i) {
+                sb.append(i);
+                sb.append(": ");
+                sb.append(TrackModel.getSignal(i));
+                sb.append("\n");
+            }
+        }
+        gui.setSignal(sb.toString());
+    }
+
+    private static void crossings() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
+            if (TrackModel.CROSSING == i) {
+                sb.append(i);
+                sb.append(": ");
+                sb.append(TrackModel.getCrossing(i));
+                sb.append("\n");
+            }
+        }
+        gui.setCrossing(sb.toString());
     }
 
     private static void actualAuthority() {
