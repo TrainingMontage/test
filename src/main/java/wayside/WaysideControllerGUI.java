@@ -367,8 +367,32 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
         jTextPane1.setText(text);
     }
 
-    public void setAuthority(String text) {
+    public void setSwitch(String text) {
+        jTextPane2.setText(text);
+    }
+
+    public void setSignal(String text) {
+        jTextPane4.setText(text);
+    }
+
+    public void setCrossing(String text) {
+        jTextPane3.setText(text);
+    }
+
+    public void setSuggestedSpeed(String text) {
+        jTextField1.setText(text);
+    }
+
+    public void setSuggestedAuthority(String text) {
+        jTextField3.setText(text);
+    }
+
+    public void setActualAuthority(String text) {
         jTextField4.setText(text);
+    }
+
+    public void setActualSpeed(String text) {
+        jTextField2.setText(text);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

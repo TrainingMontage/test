@@ -39,6 +39,14 @@ public class TrackModel {
      */
     public static void init(WaysideControllerGUI g) {
         gui = g;
+        gui.setOccupancy("occupancy");
+        gui.setCrossing("crossing");
+        gui.setSwitch("switch");
+        gui.setSignal("signal");
+        gui.setActualAuthority("actual authority");
+        gui.setSuggestedAuthority("suggested authority");
+        gui.setSuggestedSpeed("suggested speed");
+        gui.setActualSpeed("actual speed");
         crossings = new boolean[TRACK_LEN];
         for (int i = 0; i < TRACK_LEN; i++) {
             occupancy[i] = false;
@@ -118,7 +126,7 @@ public class TrackModel {
                 sb.append("\n");
             }
         }
-        gui.setAuthority(sb.toString());
+        gui.setActualAuthority(sb.toString());
     }
 
     public static int setSpeed(int blockId, int s) {
