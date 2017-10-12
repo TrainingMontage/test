@@ -34,6 +34,7 @@ public class WaysideController {
      */
     public static void init() {
         UILayer.init();
+        test_emptyTrackSafeSuggestion();
     }
 
     private static void test_emptyTrackSafeSuggestion() {
@@ -41,6 +42,7 @@ public class WaysideController {
         Suggestion s = new Suggestion(0, 10, list);
         Suggestion[] res = {s};
         WaysideController.suggest(res);
+        UILayer.update();
     }
 
     public static boolean isOccupied(int blockId) {
