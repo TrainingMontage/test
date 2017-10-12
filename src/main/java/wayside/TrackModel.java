@@ -78,6 +78,7 @@ public class TrackModel {
         return authority[trainId];
     }
 
+
     public static int getTrainSpeed(int trainId) {
         return speed[trainId];
     }
@@ -102,7 +103,22 @@ public class TrackModel {
 
     public static boolean setAuthority(int blockId, boolean auth) {
         authority[blockId] = auth;
+        guiAuthority();
         return auth;
+    }
+
+    private static void guiAuthority() {
+        if (gui == null) return;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < TRACK_LEN; i++) {
+            if (authority[i]) {
+                sb.append(i);
+                sb.append(": ");
+                sb.append(authority[i]);
+                sb.append("\n");
+            }
+        }
+        gui.setAuthority(sb.toString());
     }
 
     public static int setSpeed(int blockId, int s) {
