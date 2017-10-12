@@ -19,6 +19,11 @@ import utils.BlockStatus;
 public class TrackModel {
 
     public static final int TRACK_LEN = 9;
+    public static final int SWITCH = 2;
+    public static final int DEFAULT_LEAF = 8;
+    public static final int ACTIVE_LEAF = 3;
+    public static final int CROSSING = 7;
+
     private static boolean[] occupancy = new boolean[TRACK_LEN];
     private static boolean[] switches = new boolean[TRACK_LEN];
     private static boolean[] crossings = new boolean[TRACK_LEN];
@@ -36,6 +41,8 @@ public class TrackModel {
             setAuthority(i, false);
             setSpeed(i, 0);
         }
+        setSignal(SWITCH, true);
+        setSignal(DEFAULT_LEAF, true);
     }
 
     /**

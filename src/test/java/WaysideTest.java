@@ -18,7 +18,11 @@ public class WaysideTest {
         for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
             Assert.assertFalse(WaysideController.isOccupied(i));
             Assert.assertFalse(WaysideController.getSwitch(i));
-            Assert.assertFalse(WaysideController.getSignal(i));
+            if (i == TrackModel.SWITCH || i == TrackModel.DEFAULT_LEAF) {
+                Assert.assertTrue(WaysideController.getSignal(i));
+            } else {
+                Assert.assertFalse(WaysideController.getSignal(i));
+            }
             Assert.assertFalse(WaysideController.getCrossing(i));
             Assert.assertFalse(WaysideController.getAuthority(i));
             Assert.assertEquals(WaysideController.getSpeed(i), 0);
@@ -40,6 +44,12 @@ public class WaysideTest {
 
         Assert.assertTrue(WaysideController.getSwitch(2));
         Assert.assertEquals(WaysideController.getSpeed(0), 10);
+        // Not using switch, signals, or crossing
+        Assert.assertTrue(WaysideController.getSwitch(TrackModel.SWITCH));
+        Assert.assertTrue(WaysideController.getSignal(TrackModel.SWITCH));
+        Assert.assertTrue(WaysideController.getSignal(TrackModel.ACTIVE_LEAF));
+        Assert.assertFalse(WaysideController.getSignal(TrackModel.DEFAULT_LEAF));
+        Assert.assertFalse(WaysideController.getCrossing(TrackModel.CROSSING));
         for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
             if (i < 6) {
                 Assert.assertTrue(WaysideController.getAuthority(i));
@@ -57,7 +67,12 @@ public class WaysideTest {
         WaysideController.suggest(res);
 
         Assert.assertTrue(WaysideController.isOccupied(4));
-        Assert.assertTrue(WaysideController.getSwitch(2));
+        Assert.assertTrue(WaysideController.getSwitch(TrackModel.SWITCH));
+        Assert.assertTrue(WaysideController.getSignal(TrackModel.SWITCH));
+        Assert.assertTrue(WaysideController.getSignal(TrackModel.ACTIVE_LEAF));
+        Assert.assertFalse(WaysideController.getSignal(TrackModel.DEFAULT_LEAF));
+        Assert.assertFalse(WaysideController.getCrossing(TrackModel.CROSSING));
+        
         Assert.assertEquals(WaysideController.getSpeed(0), 10);
         for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
             if (i < 4) {
@@ -75,9 +90,40 @@ public class WaysideTest {
         TrackModel.setOccupancy(4, true); // Put a train on 4.
         WaysideController.suggest(res);
 
+        Assert.assertTrue(WaysideController.isOccupied(4));
+        Assert.assertFalse(WaysideController.getSwitch(TrackModel.SWITCH));
+        Assert.assertTrue(WaysideController.getSignal(TrackModel.SWITCH));
+        Assert.assertFalse(WaysideController.getSignal(TrackModel.ACTIVE_LEAF));
+        Assert.assertTrue(WaysideController.getSignal(TrackModel.DEFAULT_LEAF));
+        Assert.assertFalse(WaysideController.getCrossing(TrackModel.CROSSING));
         Assert.assertEquals(WaysideController.getSpeed(0), 0);
         for (int block = 0; block < TrackModel.TRACK_LEN; block++) {
             Assert.assertFalse(WaysideController.getAuthority(block));
         }
     }
+
+    // @Test public void test_trainSafeBothSuggestion() {
+    //     int[] auth1 = {0, 1, 2, 3};
+    //     Suggestion s1 = new Suggestion(0, 10, auth1);
+    //     int[] auth2 = {4, 5, 6, 7, 8};
+    //     Suggestion s2 = new Suggestion(4, 10, auth2);
+    //     Suggestion[] res = {s1, s2}; // Only giving a suggestion to the new train.
+    //     TrackModel.setOccupancy(4, true); // Put a train on 4.
+    //     WaysideController.suggest(res);
+
+    //     Assert.assertTrue(WaysideController.isOccupied(4));
+    //     Assert.assertTrue(WaysideController.getSwitch(2));
+    //     Assert.assertTrue(WaysideController.getCrossing(7));
+    //     Assert.assertTrue(WaysideController.getSignal(2)); // root of the switch
+    //     Assert.assertTrue(WaysideController.getSignal(3)); // leaf the new train will be on.
+    //     Assert.assertFalse(WaysideController.getSignal(8)); // the switch will be the other direction.
+    //     Assert.assertEquals(WaysideController.getSpeed(0), 10);
+    //     for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
+    //         if (i < 4) {
+    //             Assert.assertTrue(WaysideController.getAuthority(i));
+    //         } else {
+    //             Assert.assertFalse(WaysideController.getAuthority(i));
+    //         }
+    //     }
+    // }
 }
