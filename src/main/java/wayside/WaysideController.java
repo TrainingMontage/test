@@ -3,6 +3,7 @@ package wayside;
 import utils.BlockStatus;
 import utils.Suggestion;
 import wayside.TrackModel;
+import wayside.WaysideControllerGUI;
 
 import java.util.List;
 
@@ -34,6 +35,20 @@ public class WaysideController {
     public static void init() {
         controllers = new WC[1];
         controllers[0] = new WC();
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                WaysideControllerGUI gui = new WaysideControllerGUI();
+                TrackModel.init(gui);
+                gui.setVisible(true);
+            }
+        });
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            // do something?
+            System.out.println("Failed to wait....\n" + ex.getMessage());
+        }
+        TrackModel.setOccupancy(3, true);
     }
 
     public static boolean isOccupied(int blockId) {
