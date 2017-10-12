@@ -16,7 +16,7 @@ import utils.BlockStatus;
  * You can see their directionality by the arrowheads; slash blocks can be inferred.
  * In a second, we'll be putting a train on block 4.
  */
-public class MockTrack {
+public class TrackModel {
 
     public static final int TRACK_LEN = 9;
     private static boolean[] occupancy = new boolean[TRACK_LEN];
@@ -38,7 +38,7 @@ public class MockTrack {
         }
     }
     
-    /** Cheating for this MockTrack; getting authority by block ID rather than Train ID. */
+    /** Cheating for this TrackModel; getting authority by block ID rather than Train ID. */
     public static boolean getTrainAuthority(int trainId) {
         return authority[trainId];
     }

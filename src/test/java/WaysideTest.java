@@ -4,24 +4,24 @@ import org.junit.Before;
 import org.junit.Test;
 
 import utils.Suggestion;
-import wayside.MockTrack;
+import wayside.TrackModel;
 import wayside.WaysideController;
 
 public class WaysideTest {
     @Before
-    public void init_MockTrack() {
-        MockTrack.init();
+    public void init_TrackModel() {
+        TrackModel.init();
     }
 
     @Test
-    public void test_MockTrackInit() {
-        for (int i = 0; i < MockTrack.TRACK_LEN; i++) {
-            Assert.assertFalse(MockTrack.isOccupied(i));
-            Assert.assertFalse(MockTrack.getSwitch(i));
-            Assert.assertFalse(MockTrack.getSignal(i));
-            Assert.assertFalse(MockTrack.getCrossing(i));
-            Assert.assertFalse(MockTrack.getTrainAuthority(i));
-            Assert.assertEquals(MockTrack.getTrainSpeed(i), 0);
+    public void test_TrackModelInit() {
+        for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
+            Assert.assertFalse(TrackModel.isOccupied(i));
+            Assert.assertFalse(TrackModel.getSwitch(i));
+            Assert.assertFalse(TrackModel.getSignal(i));
+            Assert.assertFalse(TrackModel.getCrossing(i));
+            Assert.assertFalse(TrackModel.getTrainAuthority(i));
+            Assert.assertEquals(TrackModel.getTrainSpeed(i), 0);
         }
     }
 
@@ -37,17 +37,17 @@ public class WaysideTest {
         Suggestion s = new Suggestion(0, 10, list);
         Suggestion[] res = {s};
         WaysideController.suggest(res);
-        Assert.assertTrue(MockTrack.getSwitch(2));
-        for (int i = 0; i < MockTrack.TRACK_LEN; i++) {
+        Assert.assertTrue(TrackModel.getSwitch(2));
+        for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
             if (i < 6) {
-                Assert.assertTrue(MockTrack.getTrainAuthority(i));
+                Assert.assertTrue(TrackModel.getTrainAuthority(i));
             } else {
-                Assert.assertFalse(MockTrack.getTrainAuthority(i));
+                Assert.assertFalse(TrackModel.getTrainAuthority(i));
             }
             if (i == 0) {
-                Assert.assertTrue(MockTrack.isOccupied(i));
+                Assert.assertTrue(TrackModel.isOccupied(i));
             } else {
-                Assert.assertFalse(MockTrack.isOccupied(i));
+                Assert.assertFalse(TrackModel.isOccupied(i));
             }
         }
     }
