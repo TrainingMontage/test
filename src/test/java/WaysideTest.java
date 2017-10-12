@@ -49,6 +49,25 @@ public class WaysideTest {
         }
     }
 
+    @Test public void test_trainSafeOnlyNewSuggestion() {
+        int[] list = {0, 1, 2, 3};
+        Suggestion s = new Suggestion(0, 10, list);
+        Suggestion[] res = {s}; // Only giving a suggestion to the new train.
+        TrackModel.setOccupancy(4, true); // Put a train on 4.
+        WaysideController.suggest(res);
+
+        Assert.assertTrue(WaysideController.isOccupied(4));
+        Assert.assertTrue(WaysideController.getSwitch(2));
+        Assert.assertEquals(WaysideController.getSpeed(0), 10);
+        for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
+            if (i < 4) {
+                Assert.assertTrue(WaysideController.getAuthority(i));
+            } else {
+                Assert.assertFalse(WaysideController.getAuthority(i));
+            }
+        }
+    }
+
     @Test public void test_trainUnsafeOnlyNewSuggestion() {
         int[] list = {0, 1, 2, 3, 4, 5};
         Suggestion s = new Suggestion(0, 10, list);
