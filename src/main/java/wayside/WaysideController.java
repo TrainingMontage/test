@@ -38,7 +38,14 @@ public class WaysideController {
         WaysideControllerGUI gui = new WaysideControllerGUI();
         TrackModel.init(gui);
         gui.setVisible(true);
-        TrackModel.setOccupancy(3, true);
+        test_emptyTrackSafeSuggestion();
+    }
+
+    private static void test_emptyTrackSafeSuggestion() {
+        int[] list = {0, 1, 2, 3, 4, 5};
+        Suggestion s = new Suggestion(0, 10, list);
+        Suggestion[] res = {s};
+        WaysideController.suggest(res);
     }
 
     public static boolean isOccupied(int blockId) {
