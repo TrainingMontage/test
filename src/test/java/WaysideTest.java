@@ -37,17 +37,14 @@ public class WaysideTest {
         Suggestion s = new Suggestion(0, 10, list);
         Suggestion[] res = {s};
         WaysideController.suggest(res);
+
         Assert.assertTrue(WaysideController.getSwitch(2));
+        Assert.assertEquals(WaysideController.getSpeed(0), 10);
         for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
             if (i < 6) {
                 Assert.assertTrue(WaysideController.getAuthority(i));
             } else {
                 Assert.assertFalse(WaysideController.getAuthority(i));
-            }
-            if (i == 0) {
-                Assert.assertTrue(WaysideController.isOccupied(i));
-            } else {
-                Assert.assertFalse(WaysideController.isOccupied(i));
             }
         }
     }

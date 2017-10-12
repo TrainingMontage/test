@@ -61,7 +61,13 @@ public class WaysideController {
     }
     
     public static void suggest(Suggestion[] suggestion) {
-        // TODO
+        int sw = 2;
+        Suggestion s = suggestion[0]; // There should only be 1 for the 1 train so far.
+        for (int block: s.authority) {
+            TrackModel.setAuthority(block, true);
+        }
+        TrackModel.setSwitch(sw, true);
+        TrackModel.setSpeed(0, s.speed);
     }
     
     public static BlockStatus getStatus(int blockId) {
