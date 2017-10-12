@@ -10,7 +10,7 @@ import wayside.WaysideController;
 public class WaysideTest {
     @Before
     public void init_TrackModel() {
-        TrackModel.init(null);
+        TrackModel.init();
     }
 
     @Test

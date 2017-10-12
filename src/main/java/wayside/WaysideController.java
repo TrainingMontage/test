@@ -3,7 +3,7 @@ package wayside;
 import utils.BlockStatus;
 import utils.Suggestion;
 import wayside.TrackModel;
-import wayside.WaysideControllerGUI;
+import wayside.UILayer;
 
 import java.util.List;
 
@@ -33,12 +33,7 @@ public class WaysideController {
      * For now, just working on one region.
      */
     public static void init() {
-        controllers = new WC[1];
-        controllers[0] = new WC();
-        WaysideControllerGUI gui = new WaysideControllerGUI();
-        TrackModel.init(gui);
-        gui.setVisible(true);
-        test_emptyTrackSafeSuggestion();
+        UILayer.init();
     }
 
     private static void test_emptyTrackSafeSuggestion() {
