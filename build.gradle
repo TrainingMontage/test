@@ -29,3 +29,13 @@ dependencies {
 
 // Define the main class for the application
 mainClassName = 'App'
+
+task trainControllerJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+    archiveName = 'TrainController.jar'
+    from sourceSets.main.output //tells the task to include the project code
+    configurations = [ project.configurations.runtime ] //tells the task to shadow in the jars files in the 'runtime' scope
+
+    manifest {
+        attributes 'Main-Class': 'traincontroller.RunTrainController'
+    }
+}
