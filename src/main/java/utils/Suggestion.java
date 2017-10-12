@@ -3,9 +3,11 @@ package utils;
 import java.util.List;
 
 public class Suggestion {
-    private final int speed;
-    private final List<Integer> authority;
-    public Suggestion(int s, List<Integer> a) {
+    public final int blockId;
+    public final int speed;
+    public final int[] authority;
+    public Suggestion(int b, int s, int[] a) {
+        blockId = b;
         speed = s;
         authority = a;
     }
