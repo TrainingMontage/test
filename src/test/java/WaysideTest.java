@@ -20,6 +20,8 @@ public class WaysideTest {
             Assert.assertFalse(MockTrack.getSwitch(i));
             Assert.assertFalse(MockTrack.getSignal(i));
             Assert.assertFalse(MockTrack.getCrossing(i));
+            Assert.assertFalse(MockTrack.getTrainAuthority(i));
+            Assert.assertEquals(MockTrack.getTrainSpeed(i), 0);
         }
     }
 }
