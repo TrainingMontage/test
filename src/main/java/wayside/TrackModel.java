@@ -1,6 +1,7 @@
 package wayside;
 
 import utils.BlockStatus;
+import wayside.WaysideControllerGUI;
 
 /**
  * A simple static track model aganist which to test WaysideController.
@@ -30,8 +31,14 @@ public class TrackModel {
     private static boolean[] signals = new boolean[TRACK_LEN];
     private static boolean[] authority = new boolean[TRACK_LEN];
     private static int[] speed = new int[TRACK_LEN];
+    private static WaysideControllerGUI gui;
 
-    public static void init() {
+    /** Needed to set up initial track state.
+     * @param g The GUI, so that this layer can update the GUI whenever output changes.
+     *      NOTE THAT THIS CAN BE NULL.
+     */
+    public static void init(WaysideControllerGUI g) {
+        gui = g;
         crossings = new boolean[TRACK_LEN];
         for (int i = 0; i < TRACK_LEN; i++) {
             occupancy[i] = false;
@@ -50,7 +57,20 @@ public class TrackModel {
      */
     public static boolean setOccupancy(int blockId, boolean occ) {
         occupancy[blockId] = occ;
+        guiOccupancy();
         return occ;
+    }
+
+    private static void guiOccupancy() {
+        if (gui == null) return; // Running headless.
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < TRACK_LEN; i++) {
+            sb.append(i);
+            sb.append(": ");
+            sb.append(occupancy[i]);
+            sb.append("\n");
+        }
+        gui.setOccupancy(sb.toString());
     }
     
     /** Cheating for this TrackModel; getting authority by block ID rather than Train ID. */

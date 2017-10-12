@@ -363,6 +363,10 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
         });
     }
 
+    public void setOccupancy(String text) {
+        jTextPane1.setText(text);
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JComboBox<String> jComboBox2;
