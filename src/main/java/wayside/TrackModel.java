@@ -1,7 +1,6 @@
 package wayside;
 
 import utils.BlockStatus;
-import wayside.WaysideControllerGUI;
 
 /**
  * A simple static track model aganist which to test WaysideController.
@@ -31,22 +30,12 @@ public class TrackModel {
     private static boolean[] signals = new boolean[TRACK_LEN];
     private static boolean[] authority = new boolean[TRACK_LEN];
     private static int[] speed = new int[TRACK_LEN];
-    private static WaysideControllerGUI gui;
 
     /** Needed to set up initial track state.
      * @param g The GUI, so that this layer can update the GUI whenever output changes.
      *      NOTE THAT THIS CAN BE NULL.
      */
-    public static void init(WaysideControllerGUI g) {
-        gui = g;
-        gui.setOccupancy("occupancy");
-        gui.setCrossing("crossing");
-        gui.setSwitch("switch");
-        gui.setSignal("signal");
-        gui.setActualAuthority("actual authority");
-        gui.setSuggestedAuthority("suggested authority");
-        gui.setSuggestedSpeed("suggested speed");
-        gui.setActualSpeed("actual speed");
+    public static void init() {
         crossings = new boolean[TRACK_LEN];
         for (int i = 0; i < TRACK_LEN; i++) {
             occupancy[i] = false;
@@ -65,20 +54,7 @@ public class TrackModel {
      */
     public static boolean setOccupancy(int blockId, boolean occ) {
         occupancy[blockId] = occ;
-        guiOccupancy();
         return occ;
-    }
-
-    private static void guiOccupancy() {
-        if (gui == null) return; // Running headless.
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < TRACK_LEN; i++) {
-            sb.append(i);
-            sb.append(": ");
-            sb.append(occupancy[i]);
-            sb.append("\n");
-        }
-        gui.setOccupancy(sb.toString());
     }
     
     /** Cheating for this TrackModel; getting authority by block ID rather than Train ID. */
@@ -111,22 +87,7 @@ public class TrackModel {
 
     public static boolean setAuthority(int blockId, boolean auth) {
         authority[blockId] = auth;
-        guiAuthority();
         return auth;
-    }
-
-    private static void guiAuthority() {
-        if (gui == null) return;
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < TRACK_LEN; i++) {
-            if (authority[i]) {
-                sb.append(i);
-                sb.append(": ");
-                sb.append(authority[i]);
-                sb.append("\n");
-            }
-        }
-        gui.setActualAuthority(sb.toString());
     }
 
     public static int setSpeed(int blockId, int s) {
