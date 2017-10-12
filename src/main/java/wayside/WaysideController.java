@@ -1,5 +1,6 @@
 package wayside;
 
+import utils.BlockStatus;
 import java.util.List;
 
 /**
@@ -61,7 +62,6 @@ public class WaysideController {
     }
 }
 
-class BlockStatus {}
 class Suggestion {}
 
 /**
