@@ -81,8 +81,8 @@ public class WaysideController {
 
         // Now act!
         if (safe) {
-            for (int block: s.authority) {
-                TrackModel.setAuthority(block, true);
+            for (int block = 0; block < TrackModel.TRACK_LEN; block++) {
+                TrackModel.setAuthority(block, safeAuthority[block]);
             }
             TrackModel.setSwitch(sw, true); // Want some logic around this.
             TrackModel.setSpeed(s.blockId, s.speed);
