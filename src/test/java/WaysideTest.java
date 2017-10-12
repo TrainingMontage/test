@@ -15,6 +15,9 @@ public class WaysideTest {
     public void test_MockTrackInit() {
         for (int i = 0; i < MockTrack.TRACK_LEN; i++) {
             Assert.assertFalse(MockTrack.isOccupied(i));
+            Assert.assertFalse(MockTrack.getSwitch(i));
+            Assert.assertFalse(MockTrack.getSignal(i));
+            Assert.assertFalse(MockTrack.getCrossing(i));
         }
     }
 }

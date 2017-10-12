@@ -11,16 +11,18 @@ import utils.BlockStatus;
  *  --------                     \              \
  *                                \             /
  *                                  ---->  ---->
+ *                                  ####o>
  * Where each dotted section is a block, as well as the pieces made of slashes.
  * You can see their directionality by the arrowheads; slash blocks can be inferred.
- * 
+ * In a second, we'll be putting a train on block 4.
  */
 public class MockTrack {
 
     public static final int TRACK_LEN = 9;
-    private static boolean[] occupancy = new boolean[TRACK_LEN];;
-    private static boolean[] switches = new boolean[TRACK_LEN];;
-    private static boolean[] crossings = new boolean[TRACK_LEN];;
+    private static boolean[] occupancy = new boolean[TRACK_LEN];
+    private static boolean[] switches = new boolean[TRACK_LEN];
+    private static boolean[] crossings = new boolean[TRACK_LEN];
+    private static boolean[] signals = new boolean[TRACK_LEN];
 
     public static void init() {
         crossings = new boolean[TRACK_LEN];
@@ -28,6 +30,7 @@ public class MockTrack {
             occupancy[i] = false;
             switches[i] = false;
             crossings[i] = false;
+            signals[i] = false;
         }
     }
     
@@ -40,15 +43,17 @@ public class MockTrack {
     }
 
     public static boolean setSignal(int blockId, boolean value) {
-        return false;
+        signals[blockId] = value;
+        return value;
     }
 
     public static boolean getSignal(int blockId) {
-        return false;
+        return signals[blockId];
     }
 
     public static boolean setSwitch(int blockId, boolean value) {
-        return false;
+        switches[blockId] = value;
+        return value;
     }
 
     public static boolean getSwitch(int blockId) {
@@ -64,7 +69,8 @@ public class MockTrack {
     }
 
     public static boolean setCrossing(int blockId, boolean active) {
-        return false;
+        crossings[blockId] = active;
+        return active;
     }
 
     public static boolean getCrossing(int blockId) {
