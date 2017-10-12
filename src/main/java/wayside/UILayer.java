@@ -24,14 +24,47 @@ public class UILayer {
     }
 
     public static void submitAction() {
+        TrackModel.init();
         System.out.println("OCCUPANCY: ");
         System.out.println(gui.getOccupancy());
+        for (String b: gui.getOccupancy().split(",")) {
+            try {
+                int block = Integer.parseInt(b.trim());
+                TrackModel.setOccupancy(block, true);
+            } catch (NumberFormatException ex) {
+                System.out.println("Please input good numbers in Occupancy tab");
+            }
+        }
         System.out.println("SWITCHES: ");
         System.out.println(gui.getSwitch());
+        for (String b: gui.getSwitch().split(",")) {
+            try {
+                int block = Integer.parseInt(b.trim());
+                TrackModel.setSwitch(block, true);
+            } catch (NumberFormatException ex) {
+                System.out.println("Please input good numbers in Switches tab");
+            }
+        }
         System.out.println("SIGNALS: ");
         System.out.println(gui.getSignal());
+        for (String b: gui.getSignal().split(",")) {
+            try {
+                int block = Integer.parseInt(b.trim());
+                TrackModel.setSignal(block, true);
+            } catch (NumberFormatException ex) {
+                System.out.println("Please input good numbers in Lights tab");
+            }
+        }
         System.out.println("CROSSINGS: ");
         System.out.println(gui.getCrossing());
+        for (String b: gui.getCrossing().split(",")) {
+            try {
+                int block = Integer.parseInt(b.trim());
+                TrackModel.setCrossing(block, true);
+            } catch (NumberFormatException ex) {
+                System.out.println("Please input good numbers in Crossings tab");
+            }
+        }
         System.out.println("SUGG SPEED: ");
         System.out.println(gui.getSuggestedSpeed());
         System.out.println("SUGG AUTH: ");
