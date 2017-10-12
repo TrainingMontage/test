@@ -30,11 +30,11 @@ public class MockTrack {
         crossings = new boolean[TRACK_LEN];
         for (int i = 0; i < TRACK_LEN; i++) {
             occupancy[i] = false;
-            switches[i] = false;
-            crossings[i] = false;
-            signals[i] = false;
-            authority[i] = false;
-            speed[i] = 0;
+            setSwitch(i, false);
+            setSignal(i, false);
+            setCrossing(i, false);
+            setAuthority(i, false);
+            setSpeed(i, 0);
         }
     }
     
