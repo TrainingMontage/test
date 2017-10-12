@@ -16,12 +16,12 @@ public class WaysideTest {
     @Test
     public void test_TrackModelInit() {
         for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
-            Assert.assertFalse(TrackModel.isOccupied(i));
-            Assert.assertFalse(TrackModel.getSwitch(i));
-            Assert.assertFalse(TrackModel.getSignal(i));
-            Assert.assertFalse(TrackModel.getCrossing(i));
-            Assert.assertFalse(TrackModel.getTrainAuthority(i));
-            Assert.assertEquals(TrackModel.getTrainSpeed(i), 0);
+            Assert.assertFalse(WaysideController.isOccupied(i));
+            Assert.assertFalse(WaysideController.getSwitch(i));
+            Assert.assertFalse(WaysideController.getSignal(i));
+            Assert.assertFalse(WaysideController.getCrossing(i));
+            Assert.assertFalse(WaysideController.getAuthority(i));
+            Assert.assertEquals(WaysideController.getSpeed(i), 0);
         }
     }
 
@@ -37,17 +37,17 @@ public class WaysideTest {
         Suggestion s = new Suggestion(0, 10, list);
         Suggestion[] res = {s};
         WaysideController.suggest(res);
-        Assert.assertTrue(TrackModel.getSwitch(2));
+        Assert.assertTrue(WaysideController.getSwitch(2));
         for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
             if (i < 6) {
-                Assert.assertTrue(TrackModel.getTrainAuthority(i));
+                Assert.assertTrue(WaysideController.getAuthority(i));
             } else {
-                Assert.assertFalse(TrackModel.getTrainAuthority(i));
+                Assert.assertFalse(WaysideController.getAuthority(i));
             }
             if (i == 0) {
-                Assert.assertTrue(TrackModel.isOccupied(i));
+                Assert.assertTrue(WaysideController.isOccupied(i));
             } else {
-                Assert.assertFalse(TrackModel.isOccupied(i));
+                Assert.assertFalse(WaysideController.isOccupied(i));
             }
         }
     }
