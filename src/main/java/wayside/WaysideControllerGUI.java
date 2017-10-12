@@ -383,24 +383,48 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
         jTextPane1.setText(text);
     }
 
+    public String getOccupancy() {
+        return jTextPane1.getText();
+    }
+
     public void setSwitch(String text) {
         jTextPane2.setText(text);
+    }
+
+    public String getSwitch() {
+        return jTextPane2.getText();
     }
 
     public void setSignal(String text) {
         jTextPane4.setText(text);
     }
 
+    public String getSignal() {
+        return jTextField4.getText();
+    }
+
     public void setCrossing(String text) {
         jTextPane3.setText(text);
+    }
+
+    public String getCrossing() {
+        return jTextPane3.getText();
     }
 
     public void setSuggestedSpeed(String text) {
         jTextField1.setText(text);
     }
 
+    public String getSuggestedSpeed() {
+        return jTextField1.getText();
+    }
+
     public void setSuggestedAuthority(String text) {
         jTextField3.setText(text);
+    }
+
+    public String getSuggestedAuthority() {
+        return jTextField3.getText();
     }
 
     public void setActualAuthority(String text) {

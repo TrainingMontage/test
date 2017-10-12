@@ -24,7 +24,18 @@ public class UILayer {
     }
 
     public static void submitAction() {
-        System.out.println("submit action!");
+        System.out.println("OCCUPANCY: ");
+        System.out.println(gui.getOccupancy());
+        System.out.println("SWITCHES: ");
+        System.out.println(gui.getSwitch());
+        System.out.println("SIGNALS: ");
+        System.out.println(gui.getSignal());
+        System.out.println("CROSSINGS: ");
+        System.out.println(gui.getCrossing());
+        System.out.println("SUGG SPEED: ");
+        System.out.println(gui.getSuggestedSpeed());
+        System.out.println("SUGG AUTH: ");
+        System.out.println(gui.getSuggestedAuthority());
     }
 
     private static void occupancy() {
