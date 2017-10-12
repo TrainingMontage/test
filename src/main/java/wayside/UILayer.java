@@ -1,6 +1,7 @@
 
 package wayside;
 
+import utils.Suggestion;
 import wayside.TrackModel;
 import wayside.WaysideController;
 import wayside.WaysideControllerGUI;
@@ -69,6 +70,20 @@ public class UILayer {
         System.out.println(gui.getSuggestedSpeed());
         System.out.println("SUGG AUTH: ");
         System.out.println(gui.getSuggestedAuthority());
+        WaysideController.suggest(craftSuggestion(
+            gui.getSuggestedSpeed(),
+            gui.getSuggestedAuthority()));
+        update();
+    }
+
+    private static Suggestion[] craftSuggestion(String speed, String auth) {
+        int iSpeed = Integer.parseInt(speed.trim());
+        String[] strAuth = auth.trim().split(",");
+        int[] authList = new int[strAuth.length];
+        for (int i = 0; i < strAuth.length; i++) {
+            authList[i] = Integer.parseInt(strAuth[i].trim());
+        }
+        return new Suggestion[] {new Suggestion(authList[0], iSpeed, authList)};
     }
 
     private static void occupancy() {
@@ -125,12 +140,10 @@ public class UILayer {
     private static void actualSpeed() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
-            if (TrackModel.getTrainSpeed(i) != 0) {
-                sb.append(i);
-                sb.append(": ");
-                sb.append(TrackModel.getTrainSpeed(i));
-                sb.append("\n");
-            }
+            sb.append(i);
+            sb.append(": ");
+            sb.append(TrackModel.getTrainSpeed(i));
+            sb.append("\n");
         }
         gui.setActualSpeed(sb.toString());
     }
@@ -139,12 +152,10 @@ public class UILayer {
         if (gui == null) return;
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
-            if (WaysideController.getAuthority(i)) {
-                sb.append(i);
-                sb.append(": ");
-                sb.append(WaysideController.getAuthority(i));
-                sb.append("\n");
-            }
+            sb.append(i);
+            sb.append(": ");
+            sb.append(WaysideController.getAuthority(i));
+            sb.append("\n");
         }
         gui.setActualAuthority(sb.toString());
     }
