@@ -61,42 +61,46 @@ public class WaysideController {
     }
     
     public static void suggest(Suggestion[] suggestion) {
-        int sw = 2; // This is basically based on the fact that I have static track info.
-        Suggestion s = suggestion[0]; // There should only be 1 for the 1 train so far.
         boolean needToMoveSwitch = false;
-
+        
         // Validate that this is a safe suggestion.
         boolean safe = true;
         boolean[] safeAuthority = new boolean[TrackModel.TRACK_LEN];
-        for (int i = 0; i < s.authority.length; i++) {
-            int block = s.authority[i];
-            if (TrackModel.isOccupied(block) && block != s.blockId) {
-                safe = false; // Authority would run over some other train.
-                break;
+        for (Suggestion s: suggestion) {
+            for (int i = 0; i < s.authority.length; i++) {
+                int block = s.authority[i];
+                if (TrackModel.isOccupied(block) && block != s.blockId) {
+                    safe = false; // Authority would run over some other train.
+                    break;
+                }
+                if (safeAuthority[block]) {
+                    safe = false; // overlapping authority
+                    break;
+                }
+                if (block == TrackModel.ACTIVE_LEAF && i > 0 && s.authority[i-1] == TrackModel.SWITCH)
+                    needToMoveSwitch = true;
+                safeAuthority[block] = true;
             }
-            if (safeAuthority[block]) {
-                safe = false; // overlapping authority
-                break;
-            }
-            if (block == TrackModel.ACTIVE_LEAF && i > 0 && s.authority[i-1] == TrackModel.SWITCH)
-                needToMoveSwitch = true;
-            safeAuthority[block] = true;
         }
 
         // Now act!
         if (safe) {
             for (int block = 0; block < TrackModel.TRACK_LEN; block++) {
                 TrackModel.setAuthority(block, safeAuthority[block]);
+                if (block == TrackModel.CROSSING && safeAuthority[block]) {
+                    TrackModel.setCrossing(TrackModel.CROSSING, true);
+                }
             }
             // The switch handling code needs to be paramaterized based on 
             // which direction the train needs to go.
             if (needToMoveSwitch) {
-                TrackModel.setSwitch(sw, true);
+                TrackModel.setSwitch(TrackModel.SWITCH, true);
                 TrackModel.setSignal(TrackModel.SWITCH, true);
                 TrackModel.setSignal(TrackModel.ACTIVE_LEAF, true);
                 TrackModel.setSignal(TrackModel.DEFAULT_LEAF, false);
             }
-            TrackModel.setSpeed(s.blockId, s.speed);
+            for (Suggestion s: suggestion)
+                TrackModel.setSpeed(s.blockId, s.speed);
         } else {
             for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
                 TrackModel.setAuthority(i, false);

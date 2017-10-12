@@ -102,28 +102,25 @@ public class WaysideTest {
         }
     }
 
-    // @Test public void test_trainSafeBothSuggestion() {
-    //     int[] auth1 = {0, 1, 2, 3};
-    //     Suggestion s1 = new Suggestion(0, 10, auth1);
-    //     int[] auth2 = {4, 5, 6, 7, 8};
-    //     Suggestion s2 = new Suggestion(4, 10, auth2);
-    //     Suggestion[] res = {s1, s2}; // Only giving a suggestion to the new train.
-    //     TrackModel.setOccupancy(4, true); // Put a train on 4.
-    //     WaysideController.suggest(res);
+    @Test public void test_trainSafeBothSuggestion() {
+        int[] auth1 = {0, 1, 2, 3};
+        Suggestion s1 = new Suggestion(0, 10, auth1);
+        int[] auth2 = {4, 5, 6, 7, 8};
+        Suggestion s2 = new Suggestion(4, 10, auth2);
+        Suggestion[] res = {s1, s2}; // Only giving a suggestion to the new train.
+        TrackModel.setOccupancy(4, true); // Put a train on 4.
+        WaysideController.suggest(res);
 
-    //     Assert.assertTrue(WaysideController.isOccupied(4));
-    //     Assert.assertTrue(WaysideController.getSwitch(2));
-    //     Assert.assertTrue(WaysideController.getCrossing(7));
-    //     Assert.assertTrue(WaysideController.getSignal(2)); // root of the switch
-    //     Assert.assertTrue(WaysideController.getSignal(3)); // leaf the new train will be on.
-    //     Assert.assertFalse(WaysideController.getSignal(8)); // the switch will be the other direction.
-    //     Assert.assertEquals(WaysideController.getSpeed(0), 10);
-    //     for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
-    //         if (i < 4) {
-    //             Assert.assertTrue(WaysideController.getAuthority(i));
-    //         } else {
-    //             Assert.assertFalse(WaysideController.getAuthority(i));
-    //         }
-    //     }
-    // }
+        Assert.assertTrue(WaysideController.isOccupied(4));
+        Assert.assertTrue(WaysideController.getSwitch(TrackModel.SWITCH));
+        Assert.assertTrue(WaysideController.getCrossing(TrackModel.CROSSING));
+        Assert.assertTrue(WaysideController.getSignal(TrackModel.SWITCH)); // root of the switch
+        Assert.assertTrue(WaysideController.getSignal(TrackModel.ACTIVE_LEAF)); // leaf the new train will be on.
+        Assert.assertFalse(WaysideController.getSignal(TrackModel.DEFAULT_LEAF)); // the switch will be the other direction.
+        Assert.assertEquals(WaysideController.getSpeed(0), 10);
+        for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
+            // Every block has assigned authority.
+            Assert.assertTrue(WaysideController.getAuthority(i));
+        }
+    }
 }
