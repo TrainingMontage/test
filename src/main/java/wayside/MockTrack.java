@@ -23,6 +23,8 @@ public class MockTrack {
     private static boolean[] switches = new boolean[TRACK_LEN];
     private static boolean[] crossings = new boolean[TRACK_LEN];
     private static boolean[] signals = new boolean[TRACK_LEN];
+    private static boolean[] authority = new boolean[TRACK_LEN];
+    private static int[] speed = new int[TRACK_LEN];
 
     public static void init() {
         crossings = new boolean[TRACK_LEN];
@@ -31,15 +33,18 @@ public class MockTrack {
             switches[i] = false;
             crossings[i] = false;
             signals[i] = false;
+            authority[i] = false;
+            speed[i] = 0;
         }
     }
     
-    public static int getTrainAuthority(int trainId) {
-        return 0;
+    /** Cheating for this MockTrack; getting authority by block ID rather than Train ID. */
+    public static boolean getTrainAuthority(int trainId) {
+        return authority[trainId];
     }
 
-    public static double getTrainSpeed(int trainId) {
-        return 0;
+    public static int getTrainSpeed(int trainId) {
+        return speed[trainId];
     }
 
     public static boolean setSignal(int blockId, boolean value) {
@@ -60,12 +65,14 @@ public class MockTrack {
         return switches[blockId];
     }
 
-    public static Authority setAuthority(int blockId, Authority auth) {
-        return null;
+    public static boolean setAuthority(int blockId, boolean auth) {
+        authority[blockId] = auth;
+        return auth;
     }
 
-    public static int setSpeed(int blockId, int speed) {
-        return 0;
+    public static int setSpeed(int blockId, int s) {
+        speed[blockId] = s;
+        return s;
     }
 
     public static boolean setCrossing(int blockId, boolean active) {
@@ -107,4 +114,3 @@ public class MockTrack {
 }
 
 class StaticBlock {}
-class Authority {}

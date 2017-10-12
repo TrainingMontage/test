@@ -9,6 +9,15 @@ import java.util.List;
  * The public interface of all wayside controllers.
  * Since there are multiple WCs all around the track,
  * we represent each of them with an object, adressable by region.
+ *
+ * Key Use Case
+ * ============
+ * [Given that PLC has been uploaded]
+ *  - Accept Suggested speed and authority per train.
+ *  - Validate that this suggested input is safe (the primary job),
+ *      pass it along to the TrackModel if it is.
+ *      default to 0 otherwise.
+ *  - Determine switches, signals, and crossing to excecute this plan.
  */
 public class WaysideController {
 
