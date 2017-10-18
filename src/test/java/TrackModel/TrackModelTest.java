@@ -25,7 +25,9 @@ public class TrackModelTest {
         Statement stmt = _tm.conn.createStatement();
         stmt.execute("DELETE FROM blocks;");
 
-        PreparedStatement _s = _tm.conn.prepareStatement("INSERT INTO blocks (id,region,grade,elevation,length,station) VALUES (?, ?, ?, ?, ?, ?);");
+        PreparedStatement _s = _tm.conn.prepareStatement("INSERT INTO blocks (id,region,grade,elevation,length,station,switch_root,switch_leaf,next) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        
+        // insert a few basic blocks
         int i = 1;
         _s.setInt(i++, 1);
         _s.setString(i++, "A");
@@ -33,6 +35,33 @@ public class TrackModelTest {
         _s.setDouble(i++, 17.2);
         _s.setInt(i++, 50);
         _s.setString(i++, "STATION");
+        _s.setInt(i++, 1);
+        _s.setNull(i++, java.sql.Types.INTEGER);
+        _s.setInt(i++, 2);
+        _s.executeUpdate();
+
+        i = 1;
+        _s.setInt(i++, 2);
+        _s.setString(i++, "A");
+        _s.setDouble(i++, 0.5);
+        _s.setDouble(i++, 17);
+        _s.setInt(i++, 50);
+        _s.setString(i++, "");
+        _s.setNull(i++, java.sql.Types.INTEGER);
+        _s.setInt(i++, 1);
+        _s.setInt(i++, 3);
+        _s.executeUpdate();
+
+        i = 1;
+        _s.setInt(i++, 3);
+        _s.setString(i++, "A");
+        _s.setDouble(i++, 0.5);
+        _s.setDouble(i++, 17);
+        _s.setInt(i++, 50);
+        _s.setString(i++, "");
+        _s.setNull(i++, java.sql.Types.INTEGER);
+        _s.setInt(i++, 1);
+        _s.setInt(i++, 4);
         _s.executeUpdate();
 
     }
@@ -77,12 +106,15 @@ public class TrackModelTest {
                 _rs.getString("grade") + "," + 
                 _rs.getString("elevation") + "," + 
                 _rs.getString("length") + "," + 
-                _rs.getString("station");
+                _rs.getString("station") + "," +
+                _rs.getString("switch_root") + "," +
+                _rs.getString("switch_leaf") + "," +
+                _rs.getString("next");
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        assertEquals("1,A,0.5,17.2,50.0,STATION", row);
+        assertEquals("1,A,0.5,17.2,50.0,STATION,null,null,2", row);
     }
 
     /**
@@ -99,11 +131,15 @@ public class TrackModelTest {
         // track_export.csv should now have csv data in it
         String header = "";
         String firstRow = "";
+        String secondRow = "";
+        String thirdRow = "";
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
             header = br.readLine();
             firstRow = br.readLine();
+            secondRow = br.readLine();
+            thirdRow = br.readLine();
             br.close();
 
         } catch (Exception e) {
@@ -112,8 +148,10 @@ public class TrackModelTest {
             fail();
         }
 
-        assertEquals("id,region,grade,elevation,length,station", header);
-        assertEquals("1,A,0.5,17.2,50.0,STATION", firstRow);
+        assertEquals("id,region,grade,elevation,length,station,switch_root,switch_leaf,next", header);
+        assertEquals("1,A,0.5,17.2,50.0,STATION,1,,2", firstRow);
+        assertEquals("2,A,0.5,17.0,50.0,,,1,3", secondRow);
+        assertEquals("3,A,0.5,17.0,50.0,,,1,4", thirdRow);
     }
 
     /**
@@ -186,8 +224,10 @@ public class TrackModelTest {
     public void testTrackModelGetBlockIds() {
         ArrayList<String> ids = TrackModel.getBlockIds();
 
-        assertEquals(1, ids.size());
+        assertEquals(3, ids.size());
         assertEquals("1", ids.get(0));
+        assertEquals("2", ids.get(1));
+        assertEquals("3", ids.get(2));
     }
 
     /**

@@ -28,13 +28,14 @@ public class TrackModel {
             "   elevation real NOT NULL,\n" +
             "   length real NOT NULL,\n" +
             "   station text,\n" +
-            // "   switch integer,\n" +
+            "   switch_root integer,\n" +
+            "   switch_leaf integer,\n" +
             // "   rr_crossing,\n" +
             // "   line text NOT NULL,\n" +
-            // "   next integer NOT NULL,\n" +
+            "   next integer NOT NULL,\n" +
             // "   bidirectional integer NOT NULL,\n" +
             // "   speed_limit integer NOT NULL,\n" +
-            // "   switch_engaged integer,\n" +  // dynamic properties
+            "   switch_engaged integer,\n" +  // dynamic properties
             "   occupied integer\n" +
             // "   speed integer,\n" +
             // "   authority text\n" +
@@ -62,8 +63,8 @@ public class TrackModel {
 
     /**
      * Initialize the track model.
-     * 
-     * @return 
+     *
+     * @return
      */
     public static TrackModel init() {
         if (model == null) {
@@ -82,7 +83,9 @@ public class TrackModel {
      * @return     True if successful, False otherwise
      */
     public static boolean importTrack(File file) {
-        String sql_load = "INSERT INTO blocks (id,region,grade,elevation,length,station) VALUES (?, ?, ?, ?, ?, ?);";
+        String sql_load = "INSERT INTO blocks " +
+                          "(id,region,grade,elevation,length,station,switch_root,switch_leaf,next) " +
+                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
         BufferedReader br;
 
         try {
@@ -95,7 +98,7 @@ public class TrackModel {
                 String[] values = line.split(",", -1);
                 int i = 0; // id
                 stmt.setInt(i + 1, Integer.parseInt(values[i]));
-                
+
                 i++; // region
                 stmt.setString(i + 1, values[i]);
 
@@ -103,13 +106,34 @@ public class TrackModel {
                 stmt.setDouble(i + 1, Double.parseDouble(values[i]));
 
                 i++; // elevation
-                stmt.setDouble(i + 1, Double.parseDouble(values[i])); 
-                
+                stmt.setDouble(i + 1, Double.parseDouble(values[i]));
+
                 i++; // length
-                stmt.setDouble(i + 1, Double.parseDouble(values[i])); 
-                
+                stmt.setDouble(i + 1, Double.parseDouble(values[i]));
+
                 i++; // station
                 stmt.setString(i + 1, values[i]);
+
+                i++; // switch_root (optional)
+                if (!values[i].equals("")) {
+                    stmt.setInt(i + 1, Integer.parseInt(values[i]));
+                } else {
+                    stmt.setNull(i + 1, java.sql.Types.INTEGER);
+                }
+
+                i++; // switch_leaf
+                if (!values[i].equals("")) {
+                    stmt.setInt(i + 1, Integer.parseInt(values[i]));
+                } else {
+                    stmt.setNull(i + 1, java.sql.Types.INTEGER);
+                }
+
+                i++; // next
+                if (!values[i].equals("")) {
+                    stmt.setInt(i + 1, Integer.parseInt(values[i]));
+                } else {
+                    stmt.setNull(i + 1, java.sql.Types.INTEGER);
+                }
 
                 stmt.executeUpdate();
             }
@@ -146,22 +170,35 @@ public class TrackModel {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
             Statement stmt = model.conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT id,region,grade,elevation,length,station FROM blocks");
+            ResultSet rs = stmt.executeQuery("SELECT id,region,grade,elevation,length,station,switch_root,switch_leaf,next FROM blocks");
 
-            writer.write("id,region,grade,elevation,length,station");
-            while(rs.next()) {
+            writer.write("id,region,grade,elevation,length,station,switch_root,switch_leaf,next");
+            while (rs.next()) {
                 String arrStr[] = {
                     rs.getString("id"),
                     rs.getString("region"),
                     rs.getString("grade"),
                     rs.getString("elevation"),
                     rs.getString("length"),
-                    rs.getString("station") };
+                    rs.getString("station"),
+                    rs.getString("switch_root"),
+                    rs.getString("switch_leaf"),
+                    rs.getString("next")
+                };
+
+                // get rid of nulls
+                for (int i = 0; i < arrStr.length; i++) {
+                    if (arrStr[i] == null) {
+                        arrStr[i] = "";
+                    }
+                }
+
+                // join
                 writer.write("\n" + String.join(",", arrStr));
             }
             writer.close();
             return true;
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -198,8 +235,8 @@ public class TrackModel {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
-        if(occupied != null) {
+
+        if (occupied != null) {
             return true;
         } else {
             return false;
@@ -275,9 +312,9 @@ public class TrackModel {
             block.setElevation(rs.getDouble("elevation"));
             block.setLength(rs.getDouble("length"));
             block.setStation(rs.getString("station"));
-            
+
             return block;
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
