@@ -2,6 +2,7 @@ language: java
 jdk:
   - oraclejdk8
 before_install:
+- "sudo rm -vf /etc/apt/sources.list.d/*riak*"
 - "sudo apt-get -qq update"
 - "sudo apt-get -qq install --no-install-recommends tree latexmk latexmk texlive-fonts-extra texlive-fonts-recommended texlive-latex-base texlive-latex-extra texlive-latex-recommended latex-xcolor"
 - "pip install --user mako click"
