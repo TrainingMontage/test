@@ -56,7 +56,8 @@ jacocoTestReport {
     afterEvaluate {
         classDirectories = files(classDirectories.files.collect {
             fileTree(dir: it,
-                    exclude: ['**/*GUI**']) // exclude GUI code
+                    exclude: ['**/*GUI**',  // exclude GUI code
+                              '**/*RunTrackModel**'])  // exclude track model runner wrapper
         })
     }
 
