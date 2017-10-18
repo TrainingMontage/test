@@ -43,6 +43,13 @@ dependencies {
     compile 'org.xerial:sqlite-jdbc:3.7.2'
 }
 
+// show a more verbose output when tests fail
+test {
+    testLogging {
+        exceptionFormat = 'full'
+    }
+}
+
 // Define the main class for the application
 mainClassName = 'App'
 
