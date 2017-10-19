@@ -1,5 +1,8 @@
 package wayside;
 
+import shared.Suggestion;
+import java.util.List;
+
 /**
  * Suggestion is a class holding speed, authority (List<blockId>).
  * BlockStatus is an enum holding {OK, BROKEN, IN_MAINTENANCE}
