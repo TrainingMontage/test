@@ -11,7 +11,7 @@ public class RunTrackModel {
             public void run() {
                 GUI.createAndShowGUI();
             }
-        });    
+        });
     }
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
