@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-// package traincontroller;
+package traincontroller;
 import java.util.Random;
 import java.lang.Math;
 
@@ -51,6 +51,22 @@ public class Train {
         brake = 1.2; // m/s^2
 //        brakePwr = 26714.8; // watts, negative
         brakePwr = (brake*brake*mass)/2;
+    }
+    
+    public Train(boolean test) {
+        super();
+        if(test)
+        {
+            power = 0;
+            velocity = 12;
+            suggested = 24;
+            authority = 1000;
+            mass = 37103.86; // kilograms
+            maxPower = (0.5*0.5*mass)/2;
+            t = 1; // time in seconds between updates (ie, period)
+            brake = 1.2; // m/s^2
+            brakePwr = (brake*brake*mass)/2; 
+        }
     }
     
     public double getVelocity(){

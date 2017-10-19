@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-// package traincontroller;
+package traincontroller;
 
 /**
  *
@@ -186,6 +186,27 @@ public class TrainController implements TrainControllerInterface {
         Pcmd = 0;
     }
     
+    public TrainController(boolean test) {
+        if(test)
+        {
+            theTrain = new Train(true);
+        }
+        else
+            theTrain = new Train();
+        t = 5;// seconds
+        // ultimate gain
+        if(test)
+            ku = 500;
+        else
+            ku = 0;
+    
+        // Set initial last values to 0
+        lastE = 0;
+        lastU = 0;
+        // Set initial power to 0
+        Pcmd = 0;
+    }
+    
     /**
      * Computes the minimum safe braking distance for a train, given its
      * authority.
@@ -203,7 +224,7 @@ public class TrainController implements TrainControllerInterface {
         // 0 = v-at
         // t = v/a
         // d = v^2/a + v^2/a = 2v^2/a
-        if(distance > auth)
+        if(distance < auth)
             return distance;
         return auth;
     }
@@ -251,11 +272,11 @@ public class TrainController implements TrainControllerInterface {
 //        System.err.println("Safe speed: " + safe);
         
         if(SP > safe) {
-            System.err.println("Setting to safer speed:\t" + safe);
+//            System.err.println("Setting to safer speed:\t" + safe);
             SP = safe;
         }
-        else
-            System.err.println("Setting to suggested speed:\t" + SP);
+//        else
+//            System.err.println("Setting to suggested speed:\t" + SP);
         
         double Kp = ku*0.45;
         double Ki = ku*1.2/t;
@@ -313,12 +334,12 @@ public class TrainController implements TrainControllerInterface {
      * 
      * @param on is true if the lights should be on, and false if the lights
      * should be off.
-     * @return true if the lights are set successfully, false if not.
+     * @return true if the lights are on, false if not.
      */
     public boolean setLights(boolean on){
         lightsShouldBeOn = on;
         UI.updateLights(this);
-        return true;
+        return lightsShouldBeOn;
     }
     
     /**
@@ -328,37 +349,42 @@ public class TrainController implements TrainControllerInterface {
      * open); false if the doors should be closed (or remain closed).
      * @param rightOpen is true if the right doors should be opened (or remain
      * open); false if the doors should be closed (or remain closed).
-     * @return true if the doors are set appropriately, false if either door
-     * cannot be set appropriately.
+     * @return status; 0 if both are closed; 1 if only right is open; 2 if only
+     * left is open; 3 if both are open.
      */
-    public boolean setDoors(boolean leftOpen, boolean rightOpen){
+    public byte setDoors(boolean leftOpen, boolean rightOpen){
         leftShouldBeOpen = leftOpen;
         rightShouldBeOpen = rightOpen;
         UI.updateDoors(this);
-        return true;
+        byte status = 0;
+        if(rightShouldBeOpen && !leftShouldBeOpen)
+            status = 1;
+        else if(!rightShouldBeOpen && leftShouldBeOpen)
+            status = 2;
+        else if(rightShouldBeOpen && leftShouldBeOpen)
+            status = 3;
+        return status;
     }
     
     /**
      * Bring the train to a complete stop regardless of circumstances as quickly
      * as safely possible.
      * 
-     * @return true if the train can be stopped; false if the train cannot be
-     * stopped
+     * @return status of variable stop
      */
     public boolean justStop(){
         stop = true;
-        return true;
+        return stop;
     }
     
     /**
      * Allow train to start up again.
      * 
-     * @return true if the train can be started; false if the train cannot be
-     * started
+     * @return value of stop
      */
     public boolean youCanGoNow(){
         stop = false;
-        return true;
+        return stop;
     }
     
     /**

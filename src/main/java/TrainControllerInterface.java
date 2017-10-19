@@ -1,4 +1,4 @@
-// package traincontroller;
+package traincontroller;
 
 /**
  * This interface defines the inputs and outputs of the Train Controller module for the TMRC.
