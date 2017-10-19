@@ -6,6 +6,16 @@
  * user guide available at https://docs.gradle.org/4.1/userguide/tutorial_java_projects.html
  */
 
+ buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+    }
+}
+apply plugin: 'com.github.johnrengelman.shadow'
+
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
 
@@ -25,17 +35,31 @@ dependencies {
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
+
+    // sqlite jdbc
+    compile 'org.xerial:sqlite-jdbc:3.7.2'
 }
 
 // Define the main class for the application
 mainClassName = 'App'
 
+<<<<<<< HEAD
 task trainControllerJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
     archiveName = 'TrainController.jar'
+=======
+task trackModelJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+    archiveName = 'TrackModel.jar'
+>>>>>>> origin
     from sourceSets.main.output //tells the task to include the project code
     configurations = [ project.configurations.runtime ] //tells the task to shadow in the jars files in the 'runtime' scope
 
     manifest {
+<<<<<<< HEAD
         attributes 'Main-Class': 'traincontroller.RunTrainController'
     }
 }
+=======
+        attributes 'Main-Class': 'trackmodel.RunTrackModel'
+    }
+}
+>>>>>>> origin
