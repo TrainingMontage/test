@@ -360,7 +360,11 @@ public class GUI {
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fc.getSelectedFile();
-                    TrackModel.importTrack(file);
+                    try {
+                        TrackModel.importTrack(file);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                     refreshGUI();
                 }
             }
@@ -378,7 +382,11 @@ public class GUI {
 
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fc.getSelectedFile();
-                    TrackModel.exportTrack(file);
+                    try {
+                        TrackModel.exportTrack(file);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         } );
@@ -404,8 +412,13 @@ public class GUI {
 
         // reset the block id combo box
         blockId.removeAllItems();
-        for (String s : TrackModel.getBlockIds()) {
-            blockId.addItem(s);
+
+        try {
+            for (String s : TrackModel.getBlockIds()) {
+                blockId.addItem(s);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -417,16 +430,21 @@ public class GUI {
     private static void loadBlock(String blockStr) {
         int blockId = Integer.parseInt(blockStr);
 
-        // static info
-        StaticBlock block = TrackModel.getStaticBlock(blockId);
+        try {
 
-        region.setText(block.getRegion());
-        grade.setText(String.format("%.2f %%", block.getGrade()));
-        elevation.setText(String.format("%.2f ft", UnitUtils.metersToFeet(block.getElevation())));
-        length.setText(String.format("%.2f ft", UnitUtils.metersToFeet(block.getLength())));
+            // static info
+            StaticBlock block = TrackModel.getStaticBlock(blockId);
 
-        // dynamic info
-        occupied.setSelected(TrackModel.isOccupied(blockId));
+            region.setText(block.getRegion());
+            grade.setText(String.format("%.2f %%", block.getGrade()));
+            elevation.setText(String.format("%.2f ft", UnitUtils.metersToFeet(block.getElevation())));
+            length.setText(String.format("%.2f ft", UnitUtils.metersToFeet(block.getLength())));
+
+            // dynamic info
+            occupied.setSelected(TrackModel.isOccupied(blockId));
+        } catch (Exception e) {
+            refreshGUI();
+        }
     }
 
     /**
@@ -438,20 +456,25 @@ public class GUI {
         int blockId = Integer.parseInt(block);
         String str;
 
-        // static data
-        TrackModel.setRegion(blockId, region.getText());
-        
-        str = grade.getText();
-        TrackModel.setGrade(blockId, Double.parseDouble(str.substring(0, str.length() - 2)));
+        try {
 
-        str = elevation.getText();
-        TrackModel.setElevation(blockId, UnitUtils.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 3))));
+            // static data
+            TrackModel.setRegion(blockId, region.getText());
 
-        str = length.getText();
-        TrackModel.setLength(blockId, UnitUtils.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 2))));
+            str = grade.getText();
+            TrackModel.setGrade(blockId, Double.parseDouble(str.substring(0, str.length() - 2)));
 
-        // dynamic data
-        TrackModel.setOccupied(blockId, occupied.isSelected());
+            str = elevation.getText();
+            TrackModel.setElevation(blockId, UnitUtils.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 3))));
+
+            str = length.getText();
+            TrackModel.setLength(blockId, UnitUtils.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 2))));
+
+            // dynamic data
+            TrackModel.setOccupied(blockId, occupied.isSelected());
+        } catch (Exception e) {
+            refreshGUI();
+        }
     }
 
     /**
