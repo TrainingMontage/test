@@ -1,15 +1,21 @@
 language: java
+jdk:
+  - oraclejdk8
 before_install:
-- "sudo apt-get update && sudo apt-get install --no-install-recommends tree latexmk latexmk texlive-fonts-extra texlive-fonts-recommended texlive-latex-base texlive-latex-extra texlive-latex-recommended latex-xcolor"
+- "sudo rm -vf /etc/apt/sources.list.d/*riak*"
+- "sudo apt-get -qq update"
+- "sudo apt-get -qq install --no-install-recommends tree latexmk latexmk texlive-fonts-extra texlive-fonts-recommended texlive-latex-base texlive-latex-extra texlive-latex-recommended latex-xcolor"
 - "pip install --user mako click"
 script:
+  - ./gradlew build
   - mkdir -p build/pages
   - ./gradlew javadoc
   - cp -r build/docs/* build/pages
-  - ./gradlew trackModelJar
   - mkdir -p build/pages/dist
   - cp build/libs/*.jar build/pages/dist
   - ./scripts/build.sh work_packages build/pages
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 deploy:
   provider: pages
   local_dir: build/pages
