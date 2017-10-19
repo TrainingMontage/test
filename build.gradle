@@ -6,11 +6,24 @@
  * user guide available at https://docs.gradle.org/4.1/userguide/tutorial_java_projects.html
  */
 
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+    }
+}
+apply plugin: 'com.github.johnrengelman.shadow'
+
 // Apply the java plugin to add support for Java
 apply plugin: 'java'
 
 // Apply the application plugin to add support for building an application
 apply plugin: 'application'
+
+// jacoco
+apply plugin: 'jacoco'
 
 // In this section you declare where to find the dependencies of your project
 repositories {
@@ -25,7 +38,49 @@ dependencies {
 
     // Use JUnit test framework
     testCompile 'junit:junit:4.12'
+
+    // sqlite jdbc
+    compile 'org.xerial:sqlite-jdbc:3.7.2'
+}
+
+// show a more verbose output when tests fail
+test {
+    testLogging {
+        exceptionFormat = 'full'
+    }
 }
 
 // Define the main class for the application
 mainClassName = 'App'
+
+// setup jacoco/code coverage tests
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    exclude: ['**/*GUI**',  // exclude GUI code
+                              '**/*RunTrackModel**'])  // exclude track model runner wrapper
+        })
+    }
+
+}
+
+check.dependsOn jacocoTestReport
+
+// setup jar generation
+task trackModelJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+    archiveName = 'TrackModel.jar'
+    from sourceSets.main.output //tells the task to include the project code
+    configurations = [ project.configurations.runtime ] //tells the task to shadow in the jars files in the 'runtime' scope
+
+    manifest {
+        attributes 'Main-Class': 'trackmodel.RunTrackModel'
+    }
+}
+
+jar.dependsOn trackModelJar
