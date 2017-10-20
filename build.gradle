@@ -53,6 +53,8 @@ task trackModelJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.Shadow
     }
 }
 
+jar.dependsOn trackModelJar
+
 task CTCModelJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
     archiveName = 'CTCModel.jar'
     from sourceSets.main.output //tells the task to include the project code
@@ -62,3 +64,5 @@ task CTCModelJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJa
         attributes 'Main-Class': 'CTCModel.UseGUI'
     }
 }
+
+jar.dependsOn CTCModelJar
