@@ -1,4 +1,4 @@
-//package CTCModel;
+package CTCModel;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -7,14 +7,14 @@ import javax.swing.border.*;
 
 public class CTCGUI {
     // dummy modules that the GUI needs to interact with
-    private static TestTrackModel trackModel;
-    private static TestTrain trainModel;
+    private static TrackModel trackModel;
+    private static TrainModel trainModel;
     // private train list
     private static boolean dataValid;
     private static int dataTrainID;
     private static int dataBlockID;
     private static int dataSpeed;
-    private static int dataAuthority;
+    private static String dataAuthority;
     private static int dataOrigin;
     private static int dataDestination;
     private static JLabel trainLabel;
@@ -59,7 +59,7 @@ public class CTCGUI {
     //has the user pushed the new train button but not yet launched it
     private static boolean isNewTrain;
     
-    CTCGUI(TestTrackModel atrackModel, TestTrain atrainModel){
+    CTCGUI(TrackModel atrackModel, TrainModel atrainModel){
         trackModel = atrackModel;
         trainModel = atrainModel;
     }
@@ -302,7 +302,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrainInfo.add(trainIDText,c);
         
-        trainBlockText = new JTextArea("2B");
+        trainBlockText = new JTextArea("2");
         trainBlockText.setEnabled(false);
         trainBlockText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -409,7 +409,7 @@ public class CTCGUI {
                     dataTrainID = 1;
                     dataBlockID = Integer.parseInt(trainBlockText.getText());
                     dataSpeed = Integer.parseInt(trainSpeedText.getText());
-                    dataAuthority = Integer.parseInt(trainAuthorityText.getText());
+                    dataAuthority = trainAuthorityText.getText();
                     dataOrigin = dataBlockID;
                     dataDestination = Integer.parseInt(trainDestinationText.getText());
                     trainLabel.setText("Train");
@@ -566,7 +566,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(label,c);
         
-        trackIDText = new JTextArea("9S");
+        trackIDText = new JTextArea("9");
         trackIDText.setEnabled(false);
         trackIDText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -867,7 +867,7 @@ public class CTCGUI {
     
     static void fillTrackInfo(int blockID){
         //fill static info
-        TestStaticBlock staticBlock = trackModel.getStaticBlock(blockID);
+        StaticBlock staticBlock = trackModel.getStaticBlock(blockID);
         trackIDText.setText("" + staticBlock.getBlockID());
         trackSpeedText.setText("" + staticBlock.getSpeedLimit() + " mph");
         trackLengthText.setText("" + staticBlock.getLength() + " ft");
@@ -954,7 +954,7 @@ public class CTCGUI {
             trainIDText.setText("" + dataTrainID);
             trainBlockText.setText("" + dataBlockID);
             trainSpeedText.setText("" + dataSpeed + " mph");
-            trainAuthorityText.setText("" + dataAuthority + " blocks");
+            trainAuthorityText.setText(dataAuthority);
             trainOriginText.setText("" + dataOrigin);
             trainDestinationText.setText("" + dataDestination);
         }else{
@@ -989,6 +989,7 @@ public class CTCGUI {
             return 2;
         }
         //authority test
+        //FIXME: fix this up; list of blocks
         try{
             tempint = Integer.parseInt(authority);
         }catch(NumberFormatException ex){
@@ -1021,7 +1022,7 @@ public class CTCGUI {
         //UIManager.put("TextArea.inactiveForeground", Color.DARK_GRAY);
         
         //Create and set up the window.
-        JFrame frame = new JFrame("GridBagLayoutDemo");
+        JFrame frame = new JFrame("CTC GUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Set up the content pane.
