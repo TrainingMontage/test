@@ -43,6 +43,11 @@ dependencies {
     compile 'org.xerial:sqlite-jdbc:3.7.2'
 }
 
+// show unchecked operations
+tasks.withType(JavaCompile) {
+  options.compilerArgs << "-Xlint:unchecked" << "-Werror"
+}
+
 // show a more verbose output when tests fail
 test {
     testLogging {
