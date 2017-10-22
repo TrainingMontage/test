@@ -719,7 +719,7 @@ public class TrainModelGUI extends javax.swing.JFrame {
 
     private void applyChangesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyChangesButtonActionPerformed
         // TODO add your handling code here:
-        
+
         if(debugModeOnButton.isSelected()){
             //debug mode is on
             Train test = new Train();
@@ -728,14 +728,14 @@ public class TrainModelGUI extends javax.swing.JFrame {
             test.setPower(Double.parseDouble(setPowerInput.getText()));
             currentTrainSpeedDisplayLabel.setText(String.format("%.2f", test.getVelocity()) + " MPH");
 
-            
+
             //take temperature and display it
             temperatureDisplayLabel.setText(setTemperatureInput.getText() + " F");
             //take power and display it
             powerDisplayLabel.setText(setPowerInput.getText() + " W");
             //take authority and display it
             authorityDisplayLabel.setText(setAuthorityInput.getText() + " mi");
-            
+
             if(emergencyBrakeOnButton.isSelected()){
                 //emergency brake on
                 emergencyBrakeDisplayLabel.setText("ON");
@@ -744,7 +744,7 @@ public class TrainModelGUI extends javax.swing.JFrame {
                 //emergency brake off
                 emergencyBrakeDisplayLabel.setText("OFF");
             }
-            
+
             if(lightsOnButton.isSelected()){
                 //lights on
                 lightsDisplayLabel.setText("ON");
@@ -753,7 +753,7 @@ public class TrainModelGUI extends javax.swing.JFrame {
                 //lights off
                 lightsDisplayLabel.setText("OFF");
             }
-            
+
             if(leftDoorOpenButton.isSelected()){
                 //left door open
                 leftDoorDisplayLabel.setText("OPEN");
@@ -762,7 +762,7 @@ public class TrainModelGUI extends javax.swing.JFrame {
                 //left door closed
                 leftDoorDisplayLabel.setText("CLOSED");
             }
-            
+
             if(rightDoorOpenButton.isSelected()){
                 //right door open
                 rightDoorDisplayLabel.setText("OPEN");
@@ -771,7 +771,7 @@ public class TrainModelGUI extends javax.swing.JFrame {
                 //right door closed
                 rightDoorDisplayLabel.setText("CLOSED");
             }
-            
+
         }
         //debug is off
         else{
@@ -787,7 +787,7 @@ public class TrainModelGUI extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {

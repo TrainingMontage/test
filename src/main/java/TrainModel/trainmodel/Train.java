@@ -77,7 +77,7 @@ public class Train {
         }
 
         if(powerInput < 0){
-
+            power = 0;
         }
         else if(powerInput >= maxPower){
             //too much power set to max
