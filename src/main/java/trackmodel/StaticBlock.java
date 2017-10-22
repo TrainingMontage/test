@@ -7,6 +7,7 @@ class StaticBlock {
     private double elevation;
     private double length;
     private String station;
+    private StaticSwitch staticSwitch;
 
     protected StaticBlock() {}
 
@@ -134,5 +135,26 @@ class StaticBlock {
      */
     public String getStation() {
         return this.station;
+    }
+
+    /**
+     * Sets the static switch.
+     *
+     * @param      staticSwitch  The static switch
+     *
+     * @return     the new switch connected to this block
+     */
+    protected StaticSwitch setStaticSwitch(StaticSwitch staticSwitch) {
+        this.staticSwitch = staticSwitch;
+        return this.staticSwitch;
+    }
+
+    /**
+     * Gets the static switch connected to this block.
+     *
+     * @return     The static switch.
+     */
+    public StaticSwitch getStaticSwitch() {
+        return this.staticSwitch;
     }
 }

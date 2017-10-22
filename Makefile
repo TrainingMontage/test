@@ -1,4 +1,3 @@
-
 .DEFAULT_GOAL := default
 .PHONY: build run clean doc test
 
