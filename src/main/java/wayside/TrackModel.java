@@ -49,7 +49,7 @@ public class TrackModel {
     }
     
     /** 
-     * Cheating for this TrackModel; getting authority by block ID rather than Train ID. 
+     * Cheating for this TrackModel, getting authority by block ID rather than Train ID. 
      * @param trainId for now, the block on which this train resides.
      * @return the authority given to that block.
      */
@@ -60,7 +60,7 @@ public class TrackModel {
     /**
      * Gets train speed.
      * @param trainId for now, the block this train is on.
-     * @return the signal value after assignment.
+     * @return the speed value after assignment.
      */
     public static int getTrainSpeed(int trainId) {
         return speed[trainId];
