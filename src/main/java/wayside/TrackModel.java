@@ -4,17 +4,6 @@ import utils.BlockStatus;
 
 /**
  * A simple static track model aganist which to test WaysideController.
- *
- * We're looking at the following track:
- *  ========                switch          crossing
- *  | YARD |<---->  <---->  <---->  <----  <----
- *  --------                     \              \
- *                                \             /
- *                                  ---->  ---->
- *                                  ####o>
- * Where each dotted section is a block, as well as the pieces made of slashes.
- * You can see their directionality by the arrowheads; slash blocks can be inferred.
- * In a second, we'll be putting a train on block 4.
  */
 public class TrackModel {
 
@@ -31,9 +20,8 @@ public class TrackModel {
     private static boolean[] authority = new boolean[TRACK_LEN];
     private static int[] speed = new int[TRACK_LEN];
 
-    /** Needed to set up initial track state.
-     * @param g The GUI, so that this layer can update the GUI whenever output changes.
-     *      NOTE THAT THIS CAN BE NULL.
+    /** 
+     * Needed to set up initial track state.
      */
     public static void init() {
         crossings = new boolean[TRACK_LEN];
@@ -51,22 +39,39 @@ public class TrackModel {
 
     /**
      * This exists only for this mock-up; not in the final code!!
+     * @param blockId position of the train.
+     * @param occ set the occupancy to either true or false.
+     * @return the occupancy of that block after assignment.
      */
     public static boolean setOccupancy(int blockId, boolean occ) {
         occupancy[blockId] = occ;
         return occ;
     }
     
-    /** Cheating for this TrackModel; getting authority by block ID rather than Train ID. */
+    /** 
+     * Cheating for this TrackModel; getting authority by block ID rather than Train ID. 
+     * @param trainId for now, the block on which this train resides.
+     * @return the authority given to that block.
+     */
     public static boolean getTrainAuthority(int trainId) {
         return authority[trainId];
     }
 
-
+    /**
+     * Gets train speed.
+     * @param trainId for now, the block this train is on.
+     * @return the signal value after assignment.
+     */
     public static int getTrainSpeed(int trainId) {
         return speed[trainId];
     }
 
+    /**
+     * Sets the signal to specified value.
+     * @param blockId the block to which this signal will be sent.
+     * @param value the value to which to set the signal.
+     * @return the signal value after assignment.
+     */
     public static boolean setSignal(int blockId, boolean value) {
         if (!(blockId == SWITCH || blockId == DEFAULT_LEAF || blockId == ACTIVE_LEAF))
             return false;
@@ -74,64 +79,138 @@ public class TrackModel {
         return value;
     }
 
+    /**
+     * Gets the signal at the specified block.
+     * @param blockId position of the signal to be read.
+     * @return the current value of the signal.
+     */
     public static boolean getSignal(int blockId) {
         return signals[blockId];
     }
 
+    /**
+     * Sets the position of the specified switch.
+     * @param blockId position of the switch.
+     * @param value sets the switch to either the default (false) or active (true) position.
+     * @return the switch value, after assignment.
+     */
     public static boolean setSwitch(int blockId, boolean value) {
         if (blockId != SWITCH) return false;
         switches[blockId] = value;
         return value;
     }
 
+    /**
+     * Gets the position of the switch at given block.
+     * @param blockId block of the switch.
+     * @return the state of the switch.
+     */
     public static boolean getSwitch(int blockId) {
         return switches[blockId];
     }
 
+    /**
+     * Sets the thing.
+     * @param blockId position.
+     * @param auth value.
+     * @return value after set.
+     */
     public static boolean setAuthority(int blockId, boolean auth) {
         authority[blockId] = auth;
         return auth;
     }
 
+    /**
+     * Sets the thing.
+     * @param blockId position.
+     * @param s value.
+     * @return value after set.
+     */
     public static int setSpeed(int blockId, int s) {
         speed[blockId] = s;
         return s;
     }
 
+    /**
+     * Sets the thing.
+     * @param blockId position.
+     * @param active value.
+     * @return value after set.
+     */
     public static boolean setCrossing(int blockId, boolean active) {
         if (blockId != CROSSING) return false;
         crossings[blockId] = active;
         return active;
     }
 
+    /**
+     * Gets the thing.
+     * @param blockId postion.
+     * @return the thing.
+     */
     public static boolean getCrossing(int blockId) {
         return crossings[blockId];
     }
 
+    /**
+     * Gets the thing.
+     * @param trainId postion.
+     * @return the thing.
+     */
     public static byte[] getTrainBeacon(int trainId) {
         return null;
     }
 
+    /**
+     * Gets the thing.
+     * @param trainId postion.
+     * @return the thing.
+     */
     public static int getPassengers(int trainId) {
         return 0;
     }
 
+    /**
+     * Gets the thing.
+     * @param trainId postion.
+     * @return the thing.
+     */
     public static boolean isIcyTrack(int trainId) {
         return false;
     }
     
+    /**
+     * Gets the thing.
+     * @param blockId postion.
+     * @return the thing.
+     */
     public static StaticBlock getStaticBlock(int blockId) {
         return null;
     }
 
+    /**
+     * Gets the thing.
+     * @param trainId postion.
+     * @return the thing.
+     */
     public static double getGrade(int trainId) {
         return 0;
     }
 
+    /**
+     * Gets the thing.
+     * @param blockId postion.
+     * @return the thing.
+     */
     public static boolean isOccupied(int blockId) {
         return occupancy[blockId];
     }
 
+    /**
+     * Gets the thing.
+     * @param blockId postion.
+     * @return the thing.
+     */
     public static BlockStatus getStatus(int blockId) {
         return null;
     }
