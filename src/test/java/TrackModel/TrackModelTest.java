@@ -410,14 +410,45 @@ public class TrackModelTest {
     public void testTrackModelSetGrade() throws SQLException {
         assertTrue(TrackModel.setGrade(1, .75));
 
-        Double grade = null;
         PreparedStatement stmt = _tm.conn.prepareStatement("SELECT grade FROM blocks WHERE id = ?;");
         stmt.setInt(1, 1);
         ResultSet rs = stmt.executeQuery();
 
         rs.next();
-        grade = rs.getDouble("grade");
+        Double grade = rs.getDouble("grade");
 
         assertEquals(grade, .75, epsilon);
+    }
+
+    /**
+     * Validate basic switch set.
+     */
+    @Test
+    public void testTrackModelSetSwitch() throws SQLException {
+        assertTrue(TrackModel.setSwitch(1, true));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT switch_engaged FROM blocks WHERE id = ?;");
+        stmt.setInt(1, 1);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        int switch_engaged = rs.getInt("switch_engaged");
+
+        assertTrue(switch_engaged > 0);
+    }
+
+    /**
+     * Validate basic switch get.
+     */
+    @Test
+    public void testTrackModelGetSwitch() throws SQLException {
+        assertFalse(TrackModel.getSwitch(1));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET switch_engaged = ? WHERE id = ?;");
+        stmt.setInt(1, 1);
+        stmt.setInt(2, 1);
+        stmt.execute();
+
+        assertTrue(TrackModel.getSwitch(1));
     }
 }
