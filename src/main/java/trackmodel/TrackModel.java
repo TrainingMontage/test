@@ -51,8 +51,8 @@ public class TrackModel {
             // "   speed_limit integer NOT NULL,\n" +
             "   switch_engaged integer,\n" +  // dynamic properties
             "   occupied integer\n" +
-            // "   speed integer,\n" +
-            // "   authority text\n" +
+            "   speed integer,\n" +
+            "   authority text\n" +
             ");";
         String sql_create_trains =
             "CREATE TABLE trains (\n" +
@@ -467,5 +467,45 @@ public class TrackModel {
         stmt.execute();
         return true;
     }
+
+    /**
+     * Sets the switch.
+     *
+     * @param      blockId       The block identifier
+     * @param      active         The active
+     *
+     * @return     new value of the switch (active/inactive)
+     *
+     * @throws     SQLException  Something went wrong, likely the block id wasn't right.
+     */
+    public static boolean setSwitch(int blockId, boolean active) throws SQLException {
+        PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET switch_engaged = ? WHERE id = ?;");
+        stmt.setInt(1, active ? 1 : 0);
+        stmt.setInt(2, blockId);
+        stmt.execute();
+        return active;
+    }
+
+    /**
+     * Gets the switch sate.
+     *
+     * @param      blockId       The block identifier
+     *
+     * @return     The switch state. (True for engaged)
+     *
+     * @throws     SQLException  Something went wrong, likely the block id wasn't right.
+     */
+    public static boolean getSwitch(int blockId) throws SQLException {
+        PreparedStatement stmt = model.conn.prepareStatement("SELECT switch_engaged FROM blocks WHERE id = ?");
+        stmt.setInt(1, blockId);
+        ResultSet rs = stmt.executeQuery();
+        rs.next();
+
+        return rs.getInt("switch_engaged") > 0 ? true : false;
+    }
+
+    // public abstract static boolean setAuthority(int blockId, boolean authority);
+    // public abstract static int setSpeed(int blockId, int speed);
+
 
 }
