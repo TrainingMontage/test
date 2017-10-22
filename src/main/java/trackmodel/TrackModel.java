@@ -373,14 +373,6 @@ public class TrackModel {
      */
     public static StaticSwitch getStaticSwitch(int switchId) throws SQLException {
         PreparedStatement stmt = model.conn.prepareStatement(
-                                     // "SELECT A.id as root_id, B.id as inactive_id, C.id as active_id " +
-                                     // "FROM blocks A " +
-                                     // "LEFT JOIN blocks B " +
-                                     // "ON (A.switch_root = B.switch_leaf and A.next = B.id) " +
-                                     // "LEFT JOIN blocks C " +
-                                     // "ON (A.switch_root = C.switch_leaf and A.next <> C.id)" +
-                                     // "WHERE A.switch_root = ?"
-
                                      "SELECT A.id as root_id, B.id as inactive_id, C.id as active_id " +
                                      "FROM blocks A " +
                                      "LEFT JOIN blocks B " +
