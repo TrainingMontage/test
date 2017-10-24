@@ -1,0 +1,261 @@
+\documentclass{scrreprt}
+\usepackage[shellescape]{gmp}
+\usepackage{listings}
+\usepackage{underscore}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usepackage{pgf-umlsd}
+
+%%%%%% header and footer info
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Software Requirements Specification}
+\lhead{Training Montage}
+\cfoot{\thepage}
+
+%%%%%% custom list definition
+\newlist{numonly}{enumerate}{10}
+\setlist[numonly]{label*=\arabic*.}
+
+\hypersetup{
+    pdftitle={Software Requirement Specification},    % title
+    pdfauthor={Training Montage},                     % author
+    pdfsubject={TeX and LaTeX},                        % subject of the document
+    pdfkeywords={TeX, LaTeX, graphics, images}, % list of keywords
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=blue,       % color of internal links
+    citecolor=black,       % color of links to bibliography
+    filecolor=black,        % color of file links
+    urlcolor=purple,        % color of external links
+    linktoc=page            % only page is linked
+}
+
+\begin{document}
+
+\begin{flushright}
+    \rule{16cm}{5pt}\vskip1cm
+    \begin{bfseries}
+        \Huge{USE CASE\\DIAGRAMS}\\
+        \vspace{.9cm}
+        for\\
+        \vspace{.9cm}
+        COE 1186 Project\\
+        \vspace{.9cm}
+        % \LARGE{Version \myversion approved}\\
+        \vspace{.9cm}
+        Prepared by:\\
+        Alec Rosenbaum\\
+        Aric Hudson\\
+        Isaac Goss\\
+        Mitch Moran\\
+        Parth Dadhania\\
+        \vspace{1.9cm}
+        Training Montage\\
+        \vspace{.9cm}
+        \today\\
+    \end{bfseries}
+\end{flushright}
+
+\tableofcontents
+
+\chapter{Track Model}
+
+\section{Use Case}
+
+\begin{center}
+\resizebox{!}{.8\textheight}{
+	\begin{mpost}
+		input metauml;
+		vardef drawComponentVisualStereotype(text ne)= relax enddef;
+		Actor.ctc("CTC");
+		Actor.wayside("Wayside");
+		Actor.trainmodel("Train Model");
+	    % 
+	    Usecase.uA("Get Static Block");
+	    Usecase.uB("Get Static Switch");
+	    %
+	    Usecase.uC("Get Occupancy");
+		Usecase.uD("Set Suggested", "Speed + Authority");
+		Usecase.uE("Set Maintainance");
+		Usecase.uF("Set Switch State");
+		Usecase.uG("Set Signals");
+		Usecase.uH("Set Railroad", "Crossing");
+		Usecase.uI("Get Block State");
+		Usecase.uJ("Get Signal");
+		Usecase.uK("Get Crossing");
+		%
+		Usecase.uL("Initalize Train");
+		Usecase.uM("Get Suggested", "Authority");
+		Usecase.uN("Get Suggested", "Speed");
+		Usecase.uO("Get Passengers");
+		Usecase.uP("Get Grade");
+		Usecase.uQ("Get If Track", "Is Icy");
+		Usecase.uR("Get Beacon Data");
+		Usecase.uS("Teardown Train");
+	    %
+	    Component.TrackModel("Track Model")(uA,uB,uC,uD,uE,uF,uG,uH,uI,uJ,uK,uL,uM,uN,uO,uP,uQ,uR,uS);
+	    % 
+		topToBottom.left(10)(uA,uB,uC,uD,uE,uF,uG,uH,uI,uJ,uK);
+		leftToRight(50)(ctc, uB);
+		leftToRight(50)(wayside, uG);
+		%
+		topToBottom.left(10)(uL,uM,uN,uO,uP,uQ,uR,uS);
+		leftToRight(10)(uA, uL);
+		leftToRight(50)(uO, trainmodel);
+	    % 
+	    drawObjects(ctc,wayside,trainmodel,TrackModel,uA,uB,uC,uD,uE,uF,uG,uH,uI,uJ,uK,uL,uM,uN,uO,uP,uQ,uR,uS);
+		%
+	    link(association)(pathCut(ctc, uA)(ctc.e -- uA.w));
+	    link(association)(pathCut(ctc, uA)(ctc.e -- uB.w));
+	    link(association)(pathCut(wayside, uA)(wayside.e -- uA.w));
+	    link(association)(pathCut(wayside, uB)(wayside.e -- uB.w));
+	    link(association)(pathCut(wayside, uC)(wayside.e -- uC.w));
+	    link(association)(pathCut(wayside, uD)(wayside.e -- uD.w));
+	    link(association)(pathCut(wayside, uE)(wayside.e -- uE.w));
+	    link(association)(pathCut(wayside, uF)(wayside.e -- uF.w));
+	    link(association)(pathCut(wayside, uG)(wayside.e -- uG.w));
+	    link(association)(pathCut(wayside, uH)(wayside.e -- uH.w));
+	    link(association)(pathCut(wayside, uI)(wayside.e -- uI.w));
+	    link(association)(pathCut(wayside, uJ)(wayside.e -- uJ.w));
+	    link(association)(pathCut(wayside, uK)(wayside.e -- uK.w));
+	    %
+	    link(association)(pathCut(trainmodel, uL)(trainmodel.w -- uL.e));
+	    link(association)(pathCut(trainmodel, uM)(trainmodel.w -- uM.e));
+	    link(association)(pathCut(trainmodel, uN)(trainmodel.w -- uN.e));
+	    link(association)(pathCut(trainmodel, uO)(trainmodel.w -- uO.e));
+	    link(association)(pathCut(trainmodel, uP)(trainmodel.w -- uP.e));
+	    link(association)(pathCut(trainmodel, uQ)(trainmodel.w -- uQ.e));
+	    link(association)(pathCut(trainmodel, uR)(trainmodel.w -- uR.e));
+	    link(association)(pathCut(trainmodel, uS)(trainmodel.w -- uS.e));
+	\end{mpost}
+}
+\end{center}
+
+\section{Class Diagram}
+
+\begin{center}
+\resizebox{!}{.9\textheight}{
+	\begin{mpost}
+		input metauml;
+	    % Track Model
+	    Class.TrackModel("TrackModel")()(
+	    	"int getTrainAuthority(int trainId)",
+			"double getTrainSpeed(int trainId)",
+			"boolean setSignal(int blockId, boolean value)",
+			"boolean getSignal(int blockId)",
+			"boolean setSwitch(int blockId, boolean value)",
+			"boolean getSwitch(int blockId)",
+			"boolean setAuthority(int blockId, boolean authority)",
+			"int setSpeed(int blockId, int speed)",
+			"boolean setCrossing(int blockId, boolean active)",
+			"boolean getCrossing(int blockId)",
+			"byte[] getTrainBeacon(int trainId)",
+			"int getPassengers(int trainId)",
+			"boolean isIcyTrack(int trainId)",
+			"StaticBlock getStaticBlock(int blockId)",
+			"double getGrade(int trainId)",
+			"boolean isOccupied(int blockId)",
+			"BlockStatus getStatus(int blockId)"
+		);
+		% 
+		% Static Block
+		Class.StaticBlock("StaticBlock")()(
+			"-int setId(int id)",
+			"int getId()",
+			"-String setRegion(String region)",
+			"String getRegion()",
+			"-double setGrade(double grade)",
+			"double getGrade()",
+			"-double setElevation(double elevation)",
+			"double getElevation()",
+			"-double setLength(double length)",
+			"double getLength()",
+			"-String setStation(String station)",
+			"String getStation()",
+			"-StaticSwitch setStaticSwitch(StaticSwitch staticSwitch)"
+		);
+	    % StaticSwitch
+	    Class.StaticSwitch("StaticSwitch")()(
+			"StaticBlock getRoot()",
+			"-StaticBlock setRoot(StaticBlock root)",
+			"StaticBlock getInactiveLeaf()",
+			"-StaticBlock setInactiveLeaf(StaticBlock inactiveLeaf)",
+			"StaticBlock getActiveLeaf()",
+			"-StaticBlock setActiveLeaf(StaticBlock activeLeaf)"
+	    );
+		% 	
+		topToBottom.left(20)(TrackModel, StaticBlock, StaticSwitch);
+		% 
+	    drawObjects(TrackModel, StaticBlock, StaticSwitch);
+		%
+		% StaticSwitch -> StaticBlock 1..3 
+	    link(compositionUni)(pathStepX(StaticBlock.e, StaticSwitch.e, 30));
+	    item(iAssoc)("1")(obj.nw = StaticSwitch.e + (15,0));
+	    item(iAssoc)("3")(obj.nw = StaticBlock.e + (5,-5));
+	    % TrackModel -> StaticSwitch 1..*
+	    link(compositionUni)(pathStepX(StaticSwitch.e + (0,-20), TrackModel.e, 55));
+	    item(iAssoc)("*")(obj.nw = StaticSwitch.e + (15,-20));
+	    item(iAssoc)("1")(obj.nw = TrackModel.e + (5,-5));
+	    % TrackModel -> StaticBlock 1..*
+	    link(compositionUni)(pathStepX(StaticBlock.w, TrackModel.w, -25));
+	    item(iAssoc)("*")(obj.nw = StaticBlock.w + (-20,0));
+	    item(iAssoc)("1")(obj.nw = TrackModel.w + (-20,0));
+	    % StaticBlock -> StaticSwitch 1..0-1
+	    link(associationUni)(pathStepX(StaticBlock.w + (0, -20), StaticSwitch.w, -25));
+	    item(iAssoc)("1")(obj.nw = StaticBlock.w + (-20,-20));
+	    item(iAssoc)("0..1")(obj.nw = StaticSwitch.w + (-20,-5));
+
+
+	\end{mpost}
+}
+\end{center}
+
+\section{Sequence Diagram}
+
+\begin{figure}
+ 	\centering
+
+ 	\begin{sequencediagram}
+	\newthread{sim}{Simulation}
+	\newinst{tm}{TrackModel}
+	\newinst{sb}{StaticBlock}
+	\newinst{ss}{StaticSwitch}
+	
+	\begin{call}{sim}{Init()}{tm}{}
+	\end{call}
+	\begin{sdblock}{Run Loop}{The Main Loop}
+		\begin{call}{sim}{getStaticBlock()}{tm}{}
+			\begin{call}{tm}{StaticBlock()}{sb}{}
+			\end{call}
+			\begin{sdblock}{If A Switch is Attached}{}
+				\begin{call}{tm}{StaticSwitch()}{ss}{}
+				\end{call}
+			\end{sdblock}
+		\end{call}
+		% \begin{call}{ss}{Update()}{ps}{}
+		% 	\begin{messcall}{ps}{PrePhysicsUpdate()}{sense}{state}
+		% 	\end{messcall}
+		% 	\begin{sdblock}{PhysicsLoop}{}
+		% 		\begin{call}{ps}{PhysicsUpdate()}{ps}{}
+		% 		\end{call}
+		% 	\end{sdblock}
+		% 	\begin{call}{ps}{PostPhysicsUpdate()}{sense}{}
+		% 	\end{call}
+		% \end{call}
+		% \begin{call}{ss}{EndCycle()}{ctr}{}
+		% 	\begin{call}{ctr}{SenseAgent()}{sense}{}
+		% 	\end{call}
+		% \end{call}
+	\end{sdblock}
+	\end{sequencediagram}
+
+  \caption{UML sequence diagram demo.}
+\end{figure}
+
+\end{document}
