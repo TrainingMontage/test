@@ -1,7 +1,5 @@
 package shared;
 
-import java.util.List;
-
 public class Suggestion {
     public final int blockId;
     public final int speed;

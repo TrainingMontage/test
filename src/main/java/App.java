@@ -11,9 +11,6 @@
  *      tell us if they fail, build the docs, and push them to a GitHub Pages site.
  * </ol>
  */
-
-import wayside.WaysideController;
-
 public class App {
     /**
      * A basic function that can be tested with simple code.
