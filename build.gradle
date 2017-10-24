@@ -82,6 +82,7 @@ task trackModelJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.Shadow
         attributes 'Main-Class': 'trackmodel.RunTrackModel'
     }
 }
+jar.dependsOn trackModelJar
 
 task waysideJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
     archiveName = 'Wayside.jar'
@@ -92,4 +93,4 @@ task waysideJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
         attributes 'Main-Class': 'App'
     }
 }
-jar.dependsOn trackModelJar
+jar.dependsOn waysideJar
