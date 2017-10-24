@@ -30,6 +30,6 @@ public class App {
      * @param args Command-line arguments.
      */
     public static void main(String[] args) {
-        WaysideController.init();
+        // TODO
     }
 }
