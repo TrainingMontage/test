@@ -1,7 +1,7 @@
 package wayside;
 
-import utils.BlockStatus;
-import utils.Suggestion;
+import shared.BlockStatus;
+import shared.Suggestion;
 import wayside.TrackModel;
 import wayside.UILayer;
 

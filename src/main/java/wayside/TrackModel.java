@@ -1,6 +1,6 @@
 package wayside;
 
-import utils.BlockStatus;
+import shared.BlockStatus;
 
 /**
  * A simple static track model aganist which to test WaysideController.

@@ -1,7 +1,7 @@
 
 package wayside;
 
-import utils.Suggestion;
+import shared.Suggestion;
 import wayside.TrackModel;
 import wayside.WaysideController;
 import wayside.WaysideControllerGUI;
