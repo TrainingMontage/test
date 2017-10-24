@@ -227,32 +227,18 @@
 	\newinst{sb}{StaticBlock}
 	\newinst{ss}{StaticSwitch}
 	
-	\begin{call}{sim}{Init()}{tm}{}
-	\end{call}
-	\begin{sdblock}{Run Loop}{The Main Loop}
-		\begin{call}{sim}{getStaticBlock()}{tm}{}
-			\begin{call}{tm}{StaticBlock()}{sb}{}
-			\end{call}
-			\begin{sdblock}{If A Switch is Attached}{}
-				\begin{call}{tm}{StaticSwitch()}{ss}{}
-				\end{call}
-			\end{sdblock}
+	\begin{sdblock}{Initialization}{Before Using the API}
+		\begin{call}{sim}{Init()}{tm}{}
 		\end{call}
-		% \begin{call}{ss}{Update()}{ps}{}
-		% 	\begin{messcall}{ps}{PrePhysicsUpdate()}{sense}{state}
-		% 	\end{messcall}
-		% 	\begin{sdblock}{PhysicsLoop}{}
-		% 		\begin{call}{ps}{PhysicsUpdate()}{ps}{}
-		% 		\end{call}
-		% 	\end{sdblock}
-		% 	\begin{call}{ps}{PostPhysicsUpdate()}{sense}{}
-		% 	\end{call}
-		% \end{call}
-		% \begin{call}{ss}{EndCycle()}{ctr}{}
-		% 	\begin{call}{ctr}{SenseAgent()}{sense}{}
-		% 	\end{call}
-		% \end{call}
 	\end{sdblock}
+	\begin{call}{sim}{getStaticBlock()}{tm}{}
+		\begin{call}{tm}{StaticBlock()}{sb}{}
+		\end{call}
+		\begin{sdblock}{If A Switch is Attached}{}
+			\begin{call}{tm}{StaticSwitch()}{ss}{}
+			\end{call}
+		\end{sdblock}
+	\end{call}
 	\end{sequencediagram}
 
   \caption{UML sequence diagram demo.}
