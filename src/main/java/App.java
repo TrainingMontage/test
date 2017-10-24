@@ -12,7 +12,6 @@
  * </ol>
  */
 
-import java.util.Scanner;
 import wayside.WaysideController;
 
 public class App {
