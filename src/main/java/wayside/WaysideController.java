@@ -12,14 +12,16 @@ import java.util.List;
  * Since there are multiple WCs all around the track,
  * we represent each of them with an object, adressable by region.
  *
- * Key Use Case
- * ============
- * [Given that PLC has been uploaded]
- *  - Accept Suggested speed and authority per train.
- *  - Validate that this suggested input is safe (the primary job),
+ * <h3> Key Use Case </h3>
+ * 
+ * <h4> [Given that PLC has been uploaded] </h4>
+ * <ul>
+ *  <li> Accept Suggested speed and authority per train.
+ *  <li> Validate that this suggested input is safe (the primary job),
  *      pass it along to the TrackModel if it is.
  *      default to 0 otherwise.
- *  - Determine switches, signals, and crossing to excecute this plan.
+ *  <li> Determine switches, signals, and crossing to excecute this plan.
+ * </ul>
  */
 public class WaysideController {
 
@@ -34,33 +36,49 @@ public class WaysideController {
      */
     public static void init() {
         UILayer.init();
-        //test_emptyTrackSafeSuggestion();
     }
 
-    private static void test_emptyTrackSafeSuggestion() {
-        int[] list = {0, 1, 2, 3, 4, 5};
-        Suggestion s = new Suggestion(0, 10, list);
-        Suggestion[] res = {s};
-        WaysideController.suggest(res);
-        UILayer.update();
-    }
-
+    /**
+     * Checks the TrackModel to determine if a block is occupied.
+     * @param blockId the line-specific number of the block in question.
+     * @return the occupancy of the block, true if it is occupied, false otherwise.
+     */
     public static boolean isOccupied(int blockId) {
         return TrackModel.isOccupied(blockId);
     }
 
+    /**
+     * Checks the TrackModel to determine if a switch is active.
+     * @param blockId the line-specific number of the block of the signal in question.
+     * @return the state of the signal, true if it is active, false otherwise.
+     */
     public static boolean getSignal(int blockId) {
         return TrackModel.getSignal(blockId);
     }
     
+    /**
+     * Checks the TrackModel to determine if a switch is active.
+     * @param blockId the line-specific number of the block of the switch in question.
+     * @return the state of the swtich, true if it is active, false otherwise.
+     */
     public static boolean getSwitch(int blockId) {
         return TrackModel.getSwitch(blockId);
     }
     
+    /**
+     * Checks the TrackModel to determine if a block is occupied.
+     * @param blockId the line-specific number of the block in question.
+     * @return the occupancy of the block, true if it is occupied, false otherwise.
+     */
     public static boolean getCrossing(int blockId) {
         return TrackModel.getCrossing(blockId);
     }
 
+    /**
+     * Checks the TrackModel to determine if a block has authority.
+     * @param blockId the line-specific number of the block in question.
+     * @return the authority of the block, true if it has authority, false otherwise.
+     */
     public static boolean getAuthority(int blockId) {
         return TrackModel.getTrainAuthority(blockId);
     }
@@ -69,6 +87,13 @@ public class WaysideController {
         return TrackModel.getTrainSpeed(blockId);
     }
     
+    /**
+     * How CTC presents a suggestion of speed and authority for each train.
+     * The form of this suggestion can be found in the {@link shared.Suggestion} class.
+     * IMPLEMENTATION SUBJECT TO CHANGE.
+     * TODO: throw custom Exception if the WC does not does not have PLC uploaded.
+     * @param suggestion an array of Suggestion objects, one for each train.
+     */
     public static void suggest(Suggestion[] suggestion) {
         boolean needToMoveSwitch = false;
         
@@ -118,6 +143,11 @@ public class WaysideController {
         }
     }
     
+    /**
+     * Checks the TrackModel to determine the status of a block. NOT YET IMPLEMENTED!!
+     * @param blockId the line-specific number of the block in question.
+     * @return the status of the block, as represented by the BlockStatus enum defined elsewhere.
+     */
     public static BlockStatus getStatus(int blockId) {
         // TODO
         return null;
@@ -137,6 +167,8 @@ public class WaysideController {
  * This could be wrapped up in the WaysideController class,
  * but for simplicity, this class contains only object code,
  * and the WaysideController class holds only static code.
+ *
+ * NOT YET IMPLEMENTED!
  */
 class WC {
     WC() {
