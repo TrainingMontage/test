@@ -1,5 +1,7 @@
 package shared;
 
-public class BlockStatus {
-    // TODO
+public enum BlockStatus {
+    OPERATIONAL,
+    BROKEN,
+    IN_REPAIR
 }
