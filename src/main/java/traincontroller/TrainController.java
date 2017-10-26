@@ -36,6 +36,7 @@ public class TrainController implements TrainControllerInterface {
      * Main simply tests basic functionality.
      * 
      * @param args the command line arguments
+     * @throws InterruptedException
      */
     public static void main(String[] args) throws InterruptedException {        
         System.err.println("Running Unit Test");
@@ -94,6 +95,7 @@ public class TrainController implements TrainControllerInterface {
      * Thirty seconds: wait at station
      * 
      * @param period is the number of iterations per second
+     * @throws InterruptedException
      */
     public static void runTest(int period) throws InterruptedException {
         int[] stations = {1,2,3,4};
@@ -235,9 +237,6 @@ public class TrainController implements TrainControllerInterface {
      /**
      * Computes the maximum safe speed for a train, given an authority.
      * 
-     * @param authority is the current authority for the train in question.
-     * @param theTrain is the object containing the information on the train in
-     * question, including its current speed.
      * @return is the maximum safe speed for the train in question.
      * 
      * NOTE: Could also simply return void and update the train.
