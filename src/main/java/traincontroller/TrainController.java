@@ -11,7 +11,7 @@ package traincontroller;
  */
 public class TrainController implements TrainControllerInterface {
 
-    static TrainControllerUI UI = new TrainControllerUI();
+    static TrainControllerUI UI;
     protected Train theTrain;
     private double t;// seconds
     // ultimate gain
@@ -192,7 +192,10 @@ public class TrainController implements TrainControllerInterface {
             theTrain = new Train(true);
         }
         else
+        {
             theTrain = new Train();
+            UI = new TrainControllerUI();
+        }
         t = 5;// seconds
         // ultimate gain
         if(test)
