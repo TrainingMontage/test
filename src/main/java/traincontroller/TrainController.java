@@ -338,7 +338,7 @@ public class TrainController implements TrainControllerInterface {
      */
     public boolean setLights(boolean on){
         lightsShouldBeOn = on;
-        UI.updateLights(this);
+//        UI.updateLights(this);
         return lightsShouldBeOn;
     }
     
@@ -355,7 +355,7 @@ public class TrainController implements TrainControllerInterface {
     public byte setDoors(boolean leftOpen, boolean rightOpen){
         leftShouldBeOpen = leftOpen;
         rightShouldBeOpen = rightOpen;
-        UI.updateDoors(this);
+//        UI.updateDoors(this);
         byte status = 0;
         if(rightShouldBeOpen && !leftShouldBeOpen)
             status = 1;
@@ -404,7 +404,7 @@ public class TrainController implements TrainControllerInterface {
      */
     public void displayStation(String name){
         station = name;
-        UI.updateStation(station);
+//        UI.updateStation(station);
     }
     
 }
