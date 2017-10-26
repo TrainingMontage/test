@@ -36,7 +36,7 @@ public class TrainController implements TrainControllerInterface {
      * Main simply tests basic functionality.
      * 
      * @param args the command line arguments
-     * @throws InterruptedException
+     * @throws InterruptedException if the thread.sleep fails.
      */
     public static void main(String[] args) throws InterruptedException {        
         System.err.println("Running Unit Test");
@@ -95,7 +95,7 @@ public class TrainController implements TrainControllerInterface {
      * Thirty seconds: wait at station
      * 
      * @param period is the number of iterations per second
-     * @throws InterruptedException
+     * @throws InterruptedException if the thread.sleep fails.
      */
     public static void runTest(int period) throws InterruptedException {
         int[] stations = {1,2,3,4};
