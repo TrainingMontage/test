@@ -82,7 +82,6 @@ task trackModelJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.Shadow
         attributes 'Main-Class': 'trackmodel.RunTrackModel'
     }
 }
-
 jar.dependsOn trackModelJar
 
 task CTCModelJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
@@ -94,5 +93,16 @@ task CTCModelJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJa
         attributes 'Main-Class': 'CTCModel.UseGUI'
     }
 }
-
 jar.dependsOn CTCModelJar
+
+task waysideJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+    archiveName = 'Wayside.jar'
+    from sourceSets.main.output //tells the task to include the project code
+    configurations = [ project.configurations.runtime ] //tells the task to shadow in the jars files in the 'runtime' scope
+
+    manifest {
+        attributes 'Main-Class': 'wayside.Runner'
+    }
+}
+jar.dependsOn waysideJar
+
