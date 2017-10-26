@@ -4,6 +4,17 @@ import java.sql.*;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Class for track model. This is a singleton class, meaning that all methods
+ * are accessed statically. Here is how to initialize the track model:
+ *
+ * <pre> {@code TrackModel.init(); } </pre>
+ * 
+ * To initalize with some test data loaded:
+ * 
+ * <pre> {@code TrackModel.initWithTestData(); } </pre>
+ * 
+ */
 public class TrackModel {
 
     // singleton object
@@ -72,6 +83,23 @@ public class TrackModel {
         if (model == null) {
             model = new TrackModel();
         }
+        return model;
+    }
+
+    /**
+     * Initialize the track model.
+     *
+     * @return     the singleton instance of the track model
+     */
+    public static TrackModel initWithTestData() throws SQLException, ClassNotFoundException, IOException {
+        // initialize model
+        init();
+
+        // import a test data track
+        File testTrackFile = new File(
+            TrackModel.class.getClassLoader().getResource("TrackModel/test_track.csv").getFile());
+        importTrack(testTrackFile);
+
         return model;
     }
 
