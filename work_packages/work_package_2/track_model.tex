@@ -216,22 +216,23 @@
 }
 \end{center}
 
-\section{Sequence Diagram}
+\section{Sequence Diagrams}
 
-\begin{figure}
- 	\centering
+\subsection{Call to TrackModel.getStaticBlock(id)}
 
+\begin{center}
+\resizebox{\textwidth}{!}{
  	\begin{sequencediagram}
-	\newthread{sim}{Simulation}
-	\newinst{tm}{TrackModel}
-	\newinst{sb}{StaticBlock}
+	\newthread{sim}{Caller}
+	\newinst[4]{tm}{TrackModel}
+	\newinst[2]{sb}{StaticBlock}
 	\newinst{ss}{StaticSwitch}
 	
 	\begin{sdblock}{Initialization}{Before Using the API}
 		\begin{call}{sim}{Init()}{tm}{}
 		\end{call}
 	\end{sdblock}
-	\begin{call}{sim}{getStaticBlock()}{tm}{}
+	\begin{call}{sim}{TrackModel.getStaticBlock(id)}{tm}{}
 		\begin{call}{tm}{StaticBlock()}{sb}{}
 		\end{call}
 		\begin{sdblock}{If A Switch is Attached}{}
@@ -240,8 +241,32 @@
 		\end{sdblock}
 	\end{call}
 	\end{sequencediagram}
+}
+\end{center}
 
-  \caption{UML sequence diagram demo.}
-\end{figure}
+\subsection{Call to TrackModel.getStaticSwitch()}
+
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{sim}{Caller}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{ss}{StaticSwitch}
+	
+	\begin{sdblock}{Initialization}{Before Using the API}
+		\begin{call}{sim}{Init()}{tm}{}
+		\end{call}
+	\end{sdblock}
+	\begin{call}{sim}{TrackModel.getStaticSwitch(id)}{tm}{}
+		\begin{call}{tm}{StaticSwitch()}{ss}{}
+		\end{call}
+		\begin{sdblock}{For Root, Default, Active}{}
+			\begin{call}{ss}{getStaticBlock(id)}{tm}{}
+			\end{call}
+		\end{sdblock}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
 
 \end{document}
