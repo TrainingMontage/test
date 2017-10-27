@@ -598,11 +598,12 @@ public class TrackModel {
      * Sets the signal on a block.
      *
      * @param      blockId       The block identifier
-     * @param      value         The value
+     * @param      active        The value
      *
      * @return     the new signal state
      *
-     * @throws     SQLException  Something went wrong, likely the block id wasn't right.
+     * @throws     SQLException  Something went wrong, likely the block id
+     *                           wasn't right.
      */
     public static boolean setSignal(int blockId, boolean active) throws SQLException {
         PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET signal = ? WHERE id = ?;");
@@ -619,7 +620,8 @@ public class TrackModel {
      *
      * @return     The signal.
      *
-     * @throws     SQLException  Something went wrong, likely the block id wasn't right.
+     * @throws     SQLException  Something went wrong, likely the block id
+     *                           wasn't right.
      */
     public static boolean getSignal(int blockId) throws SQLException {
         PreparedStatement stmt = model.conn.prepareStatement("SELECT signal FROM blocks WHERE id = ?");
