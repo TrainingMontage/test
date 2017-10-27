@@ -44,13 +44,14 @@ public class TrackModel {
             "   station text,\n" +
             "   switch_root integer,\n" +
             "   switch_leaf integer,\n" +
-            // "   rr_crossing,\n" +
-            // "   line text NOT NULL,\n" +
+            "   rr_crossing integer,\n" +
+            "   line text NOT NULL,\n" +
             "   next integer NOT NULL,\n" +
-            // "   bidirectional integer NOT NULL,\n" +
-            // "   speed_limit integer NOT NULL,\n" +
-            "   switch_engaged integer,\n" +  // dynamic properties
-            "   occupied integer\n" +
+            "   bidirectional integer NOT NULL,\n" +
+            "   speed_limit integer NOT NULL,\n" +
+            "   switch_active integer,\n" +  // dynamic properties
+            "   corssing_active integer,\n" +
+            "   occupied integer,\n" +
             "   speed integer,\n" +
             "   authority text\n" +
             ");";
@@ -117,8 +118,8 @@ public class TrackModel {
      */
     public static boolean importTrack(File file) throws SQLException, IOException {
         String sql_load = "INSERT INTO blocks " +
-                          "(id,region,grade,elevation,length,station,switch_root,switch_leaf,next) " +
-                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                          "(id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit) " +
+                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         BufferedReader br;
 
         model.clearDB();
@@ -160,7 +161,19 @@ public class TrackModel {
                 stmt.setNull(i + 1, java.sql.Types.INTEGER);
             }
 
+            i++; // rr_crossing
+            stmt.setInt(i + 1, Integer.parseInt(values[i]));
+
+            i++; // line
+            stmt.setString(i + 1, values[i]);
+
             i++; // next
+            stmt.setInt(i + 1, Integer.parseInt(values[i]));
+
+            i++; // bidirectional
+            stmt.setInt(i + 1, Integer.parseInt(values[i]));
+
+            i++; // speed limit
             stmt.setInt(i + 1, Integer.parseInt(values[i]));
 
             stmt.executeUpdate();
@@ -189,9 +202,9 @@ public class TrackModel {
         // write output to file
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         Statement stmt = model.conn.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT id,region,grade,elevation,length,station,switch_root,switch_leaf,next FROM blocks");
+        ResultSet rs = stmt.executeQuery("SELECT id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit FROM blocks");
 
-        writer.write("id,region,grade,elevation,length,station,switch_root,switch_leaf,next");
+        writer.write("id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit");
         while (rs.next()) {
             String arrStr[] = {
                 rs.getString("id"),
@@ -202,7 +215,11 @@ public class TrackModel {
                 rs.getString("station"),
                 rs.getString("switch_root"),
                 rs.getString("switch_leaf"),
-                rs.getString("next")
+                rs.getString("rr_crossing"),
+                rs.getString("line"),
+                rs.getString("next"),
+                rs.getString("bidirectional"),
+                rs.getString("speed_limit")
             };
 
             // get rid of nulls
@@ -479,7 +496,7 @@ public class TrackModel {
      * @throws     SQLException  Something went wrong, likely the block id wasn't right.
      */
     public static boolean setSwitch(int blockId, boolean active) throws SQLException {
-        PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET switch_engaged = ? WHERE id = ?;");
+        PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET switch_active = ? WHERE id = ?;");
         stmt.setInt(1, active ? 1 : 0);
         stmt.setInt(2, blockId);
         stmt.execute();
@@ -496,12 +513,12 @@ public class TrackModel {
      * @throws     SQLException  Something went wrong, likely the block id wasn't right.
      */
     public static boolean getSwitch(int blockId) throws SQLException {
-        PreparedStatement stmt = model.conn.prepareStatement("SELECT switch_engaged FROM blocks WHERE id = ?");
+        PreparedStatement stmt = model.conn.prepareStatement("SELECT switch_active FROM blocks WHERE id = ?");
         stmt.setInt(1, blockId);
         ResultSet rs = stmt.executeQuery();
         rs.next();
 
-        return rs.getInt("switch_engaged") > 0 ? true : false;
+        return rs.getInt("switch_active") > 0 ? true : false;
     }
 
     // public abstract static boolean setAuthority(int blockId, boolean authority);

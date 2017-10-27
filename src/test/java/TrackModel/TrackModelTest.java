@@ -25,55 +25,71 @@ public class TrackModelTest {
         Statement stmt = _tm.conn.createStatement();
         stmt.execute("DELETE FROM blocks;");
 
-        PreparedStatement _s = _tm.conn.prepareStatement("INSERT INTO blocks (id,region,grade,elevation,length,station,switch_root,switch_leaf,next) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement _s = _tm.conn.prepareStatement("INSERT INTO blocks (id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
         // insert a few basic blocks
         int i = 1;
-        _s.setInt(i++, 1);
-        _s.setString(i++, "A");
-        _s.setDouble(i++, 0.5);
-        _s.setDouble(i++, 17.2);
-        _s.setInt(i++, 50);
-        _s.setString(i++, "STATION");
-        _s.setInt(i++, 1);
-        _s.setNull(i++, java.sql.Types.INTEGER);
-        _s.setInt(i++, 2);
+        _s.setInt(i++, 1); // id
+        _s.setString(i++, "A"); // region
+        _s.setDouble(i++, 0.5); // grade
+        _s.setDouble(i++, 17.2); // elevation
+        _s.setInt(i++, 50); // length
+        _s.setString(i++, "STATION"); // station
+        _s.setInt(i++, 1); // switch_root
+        _s.setNull(i++, java.sql.Types.INTEGER); // switch_leaf
+        _s.setInt(i++, 1); // rr_crossing
+        _s.setString(i++, "GREEN"); // line
+        _s.setInt(i++, 2); // next
+        _s.setInt(i++, 1); // bidirectional
+        _s.setInt(i++, 15); // speed_limit
         _s.executeUpdate();
 
         i = 1;
-        _s.setInt(i++, 2);
-        _s.setString(i++, "A");
-        _s.setDouble(i++, 0.5);
-        _s.setDouble(i++, 17);
-        _s.setInt(i++, 50);
-        _s.setString(i++, "");
-        _s.setNull(i++, java.sql.Types.INTEGER);
-        _s.setInt(i++, 1);
-        _s.setInt(i++, 3);
+        _s.setInt(i++, 2); // id
+        _s.setString(i++, "A"); // region
+        _s.setDouble(i++, 0.5); // grade
+        _s.setDouble(i++, 17); // elevation
+        _s.setInt(i++, 50); // length
+        _s.setString(i++, ""); // station
+        _s.setNull(i++, java.sql.Types.INTEGER); // switch_root
+        _s.setInt(i++, 1);  // switch_leaf
+        _s.setInt(i++, 1); // rr_crossing
+        _s.setString(i++, "GREEN"); // line
+        _s.setInt(i++, 3); // next
+        _s.setInt(i++, 1);  // bidirectional
+        _s.setInt(i++, 15);  // speed_limit
         _s.executeUpdate();
 
         i = 1;
-        _s.setInt(i++, 3);
-        _s.setString(i++, "A");
-        _s.setDouble(i++, 0.5);
-        _s.setDouble(i++, 17);
-        _s.setInt(i++, 50);
-        _s.setString(i++, "");
-        _s.setNull(i++, java.sql.Types.INTEGER);
-        _s.setInt(i++, 1);
-        _s.setInt(i++, 4);
+        _s.setInt(i++, 3); // id
+        _s.setString(i++, "A"); // region
+        _s.setDouble(i++, 0.5); // grade
+        _s.setDouble(i++, 17); // elevation
+        _s.setInt(i++, 50); // length
+        _s.setString(i++, ""); // station
+        _s.setNull(i++, java.sql.Types.INTEGER); // switch_root
+        _s.setInt(i++, 1);  // switch_leaf
+        _s.setInt(i++, 1); // rr_crossing
+        _s.setString(i++, "GREEN"); // line
+        _s.setInt(i++, 4); // next
+        _s.setInt(i++, 1);  // bidirectional
+        _s.setInt(i++, 15);  // speed_limit
         _s.executeUpdate();
 
         i = 1;
-        _s.setInt(i++, 4);
-        _s.setString(i++, "A");
-        _s.setDouble(i++, 0.5);
-        _s.setDouble(i++, 17);
-        _s.setInt(i++, 50);
-        _s.setString(i++, "");
-        _s.setNull(i++, java.sql.Types.INTEGER);
-        _s.setNull(i++, java.sql.Types.INTEGER);
-        _s.setInt(i++, 1);
+        _s.setInt(i++, 4); // id
+        _s.setString(i++, "A"); // region
+        _s.setDouble(i++, 0.5); // grade
+        _s.setDouble(i++, 17); // elevation
+        _s.setInt(i++, 50); // length
+        _s.setString(i++, ""); // station
+        _s.setNull(i++, java.sql.Types.INTEGER); // switch_root
+        _s.setNull(i++, java.sql.Types.INTEGER); // switch_leaf
+        _s.setInt(i++, 1);  // rr_crossing
+        _s.setString(i++, "GREEN");  // line
+        _s.setInt(i++, 1);  // next
+        _s.setInt(i++, 1);  // bidirectional
+        _s.setInt(i++, 15);  // speed_limit
         _s.executeUpdate();
 
     }
@@ -169,10 +185,10 @@ public class TrackModelTest {
         br.close();
 
 
-        assertEquals("id,region,grade,elevation,length,station,switch_root,switch_leaf,next", header);
-        assertEquals("1,A,0.5,17.2,50.0,STATION,1,,2", firstRow);
-        assertEquals("2,A,0.5,17.0,50.0,,,1,3", secondRow);
-        assertEquals("3,A,0.5,17.0,50.0,,,1,4", thirdRow);
+        assertEquals("id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit", header);
+        assertEquals("1,A,0.5,17.2,50.0,STATION,1,,1,GREEN,2,1,15", firstRow);
+        assertEquals("2,A,0.5,17.0,50.0,,,1,1,GREEN,3,1,15", secondRow);
+        assertEquals("3,A,0.5,17.0,50.0,,,1,1,GREEN,4,1,15", thirdRow);
     }
 
     /**
@@ -198,10 +214,10 @@ public class TrackModelTest {
         thirdRow = br.readLine();
         br.close();
 
-        assertEquals("id,region,grade,elevation,length,station,switch_root,switch_leaf,next", header);
-        assertEquals("1,A,0.5,17.2,50.0,STATION,1,,2", firstRow);
-        assertEquals("2,A,0.5,17.0,50.0,,,1,3", secondRow);
-        assertEquals("3,A,0.5,17.0,50.0,,,1,4", thirdRow);
+        assertEquals("id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit", header);
+        assertEquals("1,A,0.5,17.2,50.0,STATION,1,,1,GREEN,2,1,15", firstRow);
+        assertEquals("2,A,0.5,17.0,50.0,,,1,1,GREEN,3,1,15", secondRow);
+        assertEquals("3,A,0.5,17.0,50.0,,,1,1,GREEN,4,1,15", thirdRow);
     }
 
     /**
@@ -443,14 +459,14 @@ public class TrackModelTest {
     public void testTrackModelSetSwitch() throws SQLException {
         assertTrue(TrackModel.setSwitch(1, true));
 
-        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT switch_engaged FROM blocks WHERE id = ?;");
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT switch_active FROM blocks WHERE id = ?;");
         stmt.setInt(1, 1);
         ResultSet rs = stmt.executeQuery();
 
         rs.next();
-        int switch_engaged = rs.getInt("switch_engaged");
+        int switch_active = rs.getInt("switch_active");
 
-        assertTrue(switch_engaged > 0);
+        assertTrue(switch_active > 0);
     }
 
     /**
@@ -460,7 +476,7 @@ public class TrackModelTest {
     public void testTrackModelGetSwitch() throws SQLException {
         assertFalse(TrackModel.getSwitch(1));
 
-        PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET switch_engaged = ? WHERE id = ?;");
+        PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET switch_active = ? WHERE id = ?;");
         stmt.setInt(1, 1);
         stmt.setInt(2, 1);
         stmt.execute();
