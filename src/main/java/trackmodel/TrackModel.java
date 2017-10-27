@@ -521,8 +521,39 @@ public class TrackModel {
         return rs.getInt("switch_active") > 0 ? true : false;
     }
 
-    // public abstract static boolean setAuthority(int blockId, boolean authority);
-    // public abstract static int setSpeed(int blockId, int speed);
-
-
+    /**
+     * Sets the authority.
+     *
+     * @param      blockId       The block identifier
+     * @param      authority     The authority
+     *
+     * @return     the new authority value
+     *
+     * @throws     SQLException  Something went wrong, likely the block id wasn't right.
+     */
+    public static boolean setAuthority(int blockId, boolean authority) throws SQLException {
+        PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET authority = ? WHERE id = ?;");
+        stmt.setInt(1, authority ? 1 : 0);
+        stmt.setInt(2, blockId);
+        stmt.execute();
+        return authority;
+    }
+    
+    /**
+     * Sets the suggested speed.
+     *
+     * @param      blockId       The block identifier
+     * @param      speed         The speed
+     *
+     * @return     the new suggested speed
+     *
+     * @throws     SQLException  Something went wrong, likely the block id wasn't right.
+     */
+    public static int setSpeed(int blockId, int speed) throws SQLException {
+        PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET speed = ? WHERE id = ?;");
+        stmt.setInt(1, speed);
+        stmt.setInt(2, blockId);
+        stmt.execute();
+        return speed;
+    }
 }

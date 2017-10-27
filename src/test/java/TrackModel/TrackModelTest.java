@@ -483,4 +483,38 @@ public class TrackModelTest {
 
         assertTrue(TrackModel.getSwitch(1));
     }
+
+    /**
+     * Validate basic authority set.
+     */
+    @Test
+    public void testTrackModelSetAuthority() throws SQLException {
+        assertTrue(TrackModel.setAuthority(1, true));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT authority FROM blocks WHERE id = ?;");
+        stmt.setInt(1, 1);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        int authority = rs.getInt("authority");
+
+        assertTrue(authority > 0);
+    }
+
+    /**
+     * Validate basic speed set.
+     */
+    @Test
+    public void testTrackModelSetSpeed() throws SQLException {
+        assertEquals(14, TrackModel.setSpeed(1, 14));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT speed FROM blocks WHERE id = ?;");
+        stmt.setInt(1, 1);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        int speed = rs.getInt("speed");
+
+        assertEquals(14, speed);
+    }
 }
