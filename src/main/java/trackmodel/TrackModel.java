@@ -91,6 +91,10 @@ public class TrackModel {
      * Initialize the track model.
      *
      * @return     the singleton instance of the track model
+     *
+     * @throws     SQLException            Couldn't initialize the model
+     * @throws     ClassNotFoundException  Couldn't initialize the model
+     * @throws     IOException             Couldn't import the track
      */
     public static TrackModel initWithTestData() throws SQLException, ClassNotFoundException, IOException {
         // initialize model
