@@ -566,4 +566,54 @@ public class TrackModelTest {
 
         assertTrue(TrackModel.getCrossingState(1));
     }
+
+
+    /**
+     * Validate basic Signal set.
+     */
+    @Test
+    public void testTrackModelSetSignalTrue() throws SQLException {
+        assertTrue(TrackModel.setSignal(1, true));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT signal FROM blocks WHERE id = ?;");
+        stmt.setInt(1, 1);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        int signal = rs.getInt("signal");
+
+        assertTrue(signal > 0);
+    }
+
+    /**
+     * Validate basic Signal set.
+     */
+    @Test
+    public void testTrackModelSetSignalFalse() throws SQLException {
+        assertFalse(TrackModel.setSignal(1, false));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT signal FROM blocks WHERE id = ?;");
+        stmt.setInt(1, 1);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        int signal = rs.getInt("signal");
+
+        assertEquals(0, signal);
+    }
+
+    /**
+     * Validate basic Signal get.
+     */
+    @Test
+    public void testTrackModelGetSignal() throws SQLException {
+        assertFalse(TrackModel.getSignal(1));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET signal = ? WHERE id = ?;");
+        stmt.setInt(1, 1);
+        stmt.setInt(2, 1);
+        stmt.execute();
+
+        assertTrue(TrackModel.getSignal(1));
+    }
 }

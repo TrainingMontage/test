@@ -9,11 +9,11 @@ import java.util.*;
  * are accessed statically. Here is how to initialize the track model:
  *
  * <pre> {@code TrackModel.init(); } </pre>
- * 
+ *
  * To initalize with some test data loaded:
- * 
+ *
  * <pre> {@code TrackModel.initWithTestData(); } </pre>
- * 
+ *
  */
 public class TrackModel {
 
@@ -53,7 +53,9 @@ public class TrackModel {
             "   crossing_active integer,\n" +
             "   occupied integer,\n" +
             "   speed integer,\n" +
-            "   authority text\n" +
+            "   authority text,\n" +
+            "   signal integer,\n" +
+            "   status integer\n" +
             ");";
         String sql_create_trains =
             "CREATE TABLE trains (\n" +
@@ -269,12 +271,7 @@ public class TrackModel {
         rs.next();
         occupied = (Integer) rs.getObject("occupied");
 
-
-        if (occupied != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return occupied != null;
     }
 
     /**
@@ -542,7 +539,7 @@ public class TrackModel {
         stmt.execute();
         return authority;
     }
-    
+
     /**
      * Sets the suggested speed.
      *
@@ -595,5 +592,41 @@ public class TrackModel {
         stmt.setInt(2, blockId);
         stmt.execute();
         return active;
+    }
+
+    /**
+     * Sets the signal on a block.
+     *
+     * @param      blockId       The block identifier
+     * @param      value         The value
+     *
+     * @return     the new signal state
+     *
+     * @throws     SQLException  Something went wrong, likely the block id wasn't right.
+     */
+    public static boolean setSignal(int blockId, boolean active) throws SQLException {
+        PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET signal = ? WHERE id = ?;");
+        stmt.setInt(1, active ? 1 : 0);
+        stmt.setInt(2, blockId);
+        stmt.execute();
+        return active;
+    }
+
+    /**
+     * Gets the signal of a block.
+     *
+     * @param      blockId       The block identifier
+     *
+     * @return     The signal.
+     *
+     * @throws     SQLException  Something went wrong, likely the block id wasn't right.
+     */
+    public static boolean getSignal(int blockId) throws SQLException {
+        PreparedStatement stmt = model.conn.prepareStatement("SELECT signal FROM blocks WHERE id = ?");
+        stmt.setInt(1, blockId);
+        ResultSet rs = stmt.executeQuery();
+        rs.next();
+
+        return ((Integer) rs.getObject("signal")) != null;
     }
 }
