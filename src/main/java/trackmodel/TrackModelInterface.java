@@ -20,8 +20,8 @@ public abstract class TrackModelInterface {
    // For the wayside controller
    + public abstract static boolean isOccupied(int blockId);
    public abstract static BlockStatus getStatus(int blockId);
-   public abstract static boolean setSignal(int blockId, boolean value);
-   public abstract static boolean getSignal(int blockId);
+   + public abstract static boolean setSignal(int blockId, boolean value);
+   + public abstract static boolean getSignal(int blockId);
    + public abstract static boolean setSwitch(int blockId, boolean value);
    + public abstract static boolean getSwitch(int blockId);
    + public abstract static boolean setCrossing(int blockId, boolean active); // setCrossing -> setCrossingState
