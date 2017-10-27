@@ -50,7 +50,7 @@ public class TrackModel {
             "   bidirectional integer NOT NULL,\n" +
             "   speed_limit integer NOT NULL,\n" +
             "   switch_active integer,\n" +  // dynamic properties
-            "   corssing_active integer,\n" +
+            "   crossing_active integer,\n" +
             "   occupied integer,\n" +
             "   speed integer,\n" +
             "   authority text\n" +
@@ -555,5 +555,41 @@ public class TrackModel {
         stmt.setInt(2, blockId);
         stmt.execute();
         return speed;
+    }
+
+    /**
+     * Gets the crossing state.
+     *
+     * @param      blockId       The block identifier
+     *
+     * @return     The crossing state.
+     *
+     * @throws     SQLException  Something went wrong, likely the block id wasn't right.
+     */
+    public static boolean getCrossingState(int blockId) throws SQLException {
+        PreparedStatement stmt = model.conn.prepareStatement("SELECT crossing_active FROM blocks WHERE id = ?");
+        stmt.setInt(1, blockId);
+        ResultSet rs = stmt.executeQuery();
+        rs.next();
+
+        return rs.getInt("crossing_active") > 0 ? true : false;
+    }
+
+    /**
+     * Sets the crossing state.
+     *
+     * @param      blockId       The block identifier
+     * @param      active        The active
+     *
+     * @return     The new crossing state
+     *
+     * @throws     SQLException  Something went wrong, likely the block id wasn't right.
+     */
+    public static boolean setCrossingState(int blockId, boolean active) throws SQLException {
+        PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET crossing_active = ? WHERE id = ?;");
+        stmt.setInt(1, active ? 1 : 0);
+        stmt.setInt(2, blockId);
+        stmt.execute();
+        return active;
     }
 }

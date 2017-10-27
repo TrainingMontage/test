@@ -517,4 +517,53 @@ public class TrackModelTest {
 
         assertEquals(14, speed);
     }
+
+    /**
+     * Validate basic rr crossing status set.
+     */
+    @Test
+    public void testTrackModelSetCrossingStateTrue() throws SQLException {
+        assertTrue(TrackModel.setCrossingState(1, true));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT crossing_active FROM blocks WHERE id = ?;");
+        stmt.setInt(1, 1);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        int crossing_active = rs.getInt("crossing_active");
+
+        assertTrue(crossing_active > 0);
+    }
+
+    /**
+     * Validate basic rr crossing State set.
+     */
+    @Test
+    public void testTrackModelSetCrossingStateFalse() throws SQLException {
+        assertFalse(TrackModel.setCrossingState(1, false));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT crossing_active FROM blocks WHERE id = ?;");
+        stmt.setInt(1, 1);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        int crossing_active = rs.getInt("crossing_active");
+
+        assertEquals(0, crossing_active);
+    }
+
+    /**
+     * Validate basic rr crossing State get.
+     */
+    @Test
+    public void testTrackModelGetCrossingState() throws SQLException {
+        assertFalse(TrackModel.getCrossingState(1));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET crossing_active = ? WHERE id = ?;");
+        stmt.setInt(1, 1);
+        stmt.setInt(2, 1);
+        stmt.execute();
+
+        assertTrue(TrackModel.getCrossingState(1));
+    }
 }
