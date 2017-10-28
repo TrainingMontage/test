@@ -4,6 +4,17 @@ import java.sql.*;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Class for track model. This is a singleton class, meaning that all methods
+ * are accessed statically. Here is how to initialize the track model:
+ *
+ * <pre> {@code TrackModel.init(); } </pre>
+ * 
+ * To initalize with some test data loaded:
+ * 
+ * <pre> {@code TrackModel.initWithTestData(); } </pre>
+ * 
+ */
 public class TrackModel {
 
     // singleton object
@@ -16,6 +27,9 @@ public class TrackModel {
      * Constructs the Track Model (privately).
      *
      * constructs the database.
+     *
+     * @throws SQLException could not contruct TrackModel object
+     * @throws ClassNotFoundException could not find JDBC
      */
     private TrackModel() throws SQLException, ClassNotFoundException {
 
@@ -60,12 +74,32 @@ public class TrackModel {
     /**
      * Initialize the track model.
      *
-     * @return
+     * @return this TrackModel
+     *
+     * @throws SQLException could not initialize track
+     * @throws ClassNotFoundException could not find JDBC
      */
     public static TrackModel init() throws SQLException, ClassNotFoundException {
         if (model == null) {
             model = new TrackModel();
         }
+        return model;
+    }
+
+    /**
+     * Initialize the track model.
+     *
+     * @return     the singleton instance of the track model
+     */
+    public static TrackModel initWithTestData() throws SQLException, ClassNotFoundException, IOException {
+        // initialize model
+        init();
+
+        // import a test data track
+        File testTrackFile = new File(
+            TrackModel.class.getClassLoader().getResource("TrackModel/test_track.csv").getFile());
+        importTrack(testTrackFile);
+
         return model;
     }
 
@@ -77,6 +111,9 @@ public class TrackModel {
      * @param      file  The file to import
      *
      * @return     True if successful, False otherwise
+     *
+     * @throws      SQLException could not import track
+     * @throws      IOException could not read track import
      */
     public static boolean importTrack(File file) throws SQLException, IOException {
         String sql_load = "INSERT INTO blocks " +
@@ -139,6 +176,9 @@ public class TrackModel {
      * @param      file  The file to export to
      *
      * @return     True if successful, False otherwise
+     *
+     * @throws     SQLException could not export track
+     * @throws     IOException could not write to export file
      */
     public static boolean exportTrack(File file) throws SQLException, IOException {
         // create file if it doesn't exist
@@ -196,6 +236,8 @@ public class TrackModel {
      * @param      blockId  The block identifier
      *
      * @return     True if occupied, False otherwise.
+     *
+     * @throws     SQLException could not get occupancy
      */
     public static boolean isOccupied(int blockId) throws SQLException {
         Integer occupied = null;
@@ -221,6 +263,8 @@ public class TrackModel {
      * @param      occupied  The occupied
      *
      * @return     the new value for occupied
+     *
+     * @throws     SQLException could not set occupancy
      */
     protected static boolean setOccupied(int blockId, boolean occupied) throws SQLException {
         PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET occupied = ? WHERE id = ?;");
@@ -238,6 +282,8 @@ public class TrackModel {
      * Gets the block ids. This is meant to be used from within the GUI
      *
      * @return     A lsit of block ids.
+     *
+     * @throws     SQLException could not get block ids
      */
     protected static ArrayList<String> getBlockIds() throws SQLException {
         ArrayList<String> blocks = new ArrayList<String>();
@@ -258,6 +304,8 @@ public class TrackModel {
      * @param      blockId  The block identifier
      *
      * @return     The static block.
+     *
+     * @throws     SQLException could not get static block
      */
     public static StaticBlock getStaticBlock(int blockId) throws SQLException {
         return getStaticBlock(blockId, null);
@@ -270,6 +318,8 @@ public class TrackModel {
      * @param      staticSwitch  The static switch
      *
      * @return     The static block.
+     *
+     * @throws     SQLException could not get static block
      */
     protected static StaticBlock getStaticBlock(int blockId, StaticSwitch staticSwitch) throws SQLException {
         PreparedStatement stmt = model.conn.prepareStatement("SELECT id,region,grade,elevation,length,station,switch_root,switch_leaf,next FROM blocks WHERE id = ?");
@@ -318,6 +368,8 @@ public class TrackModel {
      * @param      switchId  The switch identifier
      *
      * @return     The static switch.
+     *
+     * @throws     SQLException could not get static switch
      */
     public static StaticSwitch getStaticSwitch(int switchId) throws SQLException {
         PreparedStatement stmt = model.conn.prepareStatement(
@@ -359,6 +411,8 @@ public class TrackModel {
      * @param      region   The region
      *
      * @return     true if successful, false otherwise
+     *
+     * @throws      SQLException could not set region
      */
     protected static boolean setRegion(int blockId, String region) throws SQLException {
         PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET region = ? WHERE id = ?;");
@@ -375,6 +429,8 @@ public class TrackModel {
      * @param      length   The length
      *
      * @return     true if successful, false otherwise
+     *
+     * @throws     SQLException could not set length
      */
     protected static boolean setLength(int blockId, double length) throws SQLException {
         PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET length = ? WHERE id = ?;");
@@ -391,6 +447,8 @@ public class TrackModel {
      * @param      elevation   The elevation
      *
      * @return     true if successful, false otherwise
+     *
+     * @throws     SQLException could not set elevation
      */
     protected static boolean setElevation(int blockId, double elevation) throws SQLException {
         PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET elevation = ? WHERE id = ?;");
@@ -407,6 +465,8 @@ public class TrackModel {
      * @param      grade   The grade
      *
      * @return     true if successful, false otherwise
+     *
+     * @throws     SQLException could not set grade
      */
     protected static boolean setGrade(int blockId, double grade) throws SQLException {
         PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET grade = ? WHERE id = ?;");

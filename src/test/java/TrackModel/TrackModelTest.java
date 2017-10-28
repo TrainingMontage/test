@@ -95,6 +95,22 @@ public class TrackModelTest {
     }
 
     /**
+     * Make sure initWithTestData actually creates an object and populates some
+     * test data
+     */
+    @Test
+    public void testTrackModelInitWithTestData() throws IOException, SQLException, ClassNotFoundException {
+        _tm = TrackModel.initWithTestData();
+
+        assertNotNull(_tm);
+
+        // this is not the best way to test this, as it relies on other methods
+        // within the class
+        ArrayList<String> ids = TrackModel.getBlockIds();
+        assertEquals(8, ids.size());
+    }
+
+    /**
      * Validate basic, typical use case import.
      */
     @Test
