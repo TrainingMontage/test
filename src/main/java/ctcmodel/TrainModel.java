@@ -1,14 +1,16 @@
 package CTCModel;
 
 public class TrainModel{
-    private static TrackModel trackModel;
+    //private static TrackModel trackModel;
+    private static int trainID;
     
-    TrainModel(TrackModel trackModelA){
-        trackModel = trackModelA;
+    TrainModel(){
+        //trackModel = trackModelA;
+        trainID = 0;
     }
     
     public static int createTrain(int startingBlockID){
-        trackModel.addTrain(startingBlockID);
-        return 1;
+        TrackModel.addTrain(startingBlockID);
+        return ++trainID;
     }
 }

@@ -13,6 +13,7 @@ public class StaticBlock{
     final private String stationName;
     final private boolean hasRailway;
     final private boolean hasHeater;
+    private StaticSwitch sswitch;
     
     StaticBlock(int blockID, double speedLimit, double length, double grade,
                     double elevation, boolean isUnderground, boolean hasLight,
@@ -30,9 +31,10 @@ public class StaticBlock{
         this.stationName = stationName;
         this.hasRailway = hasRailway;
         this.hasHeater = hasHeater;
+        this.sswitch = null;
     }
     
-    public int getBlockID(){
+    public int getId(){
         return this.blockID;
     }
     public double getSpeedLimit(){
@@ -50,16 +52,16 @@ public class StaticBlock{
     public boolean isUnderground(){
         return this.isUnderground;
     }
-    public boolean hasLight(){
-        return this.hasLight;
-    }
-    public boolean hasSwitch(){
-        return this.hasSwitch;
-    }
-    public boolean hasStation(){
-        return this.hasStation;
-    }
-    public String getStationName(){
+    //public boolean hasLight(){
+    //    return this.hasLight;
+    //}
+    //public boolean hasSwitch(){
+    //    return this.hasSwitch;
+    //}
+    //public boolean hasStation(){
+    //    return this.hasStation;
+    //}
+    public String getStation(){
         return this.stationName;
     }
     public boolean hasRailway(){
@@ -67,5 +69,11 @@ public class StaticBlock{
     }
     public boolean hasHeater(){
         return this.hasHeater;
+    }
+    public void setStaticSwitch(StaticSwitch newSwitch){
+        this.sswitch = newSwitch;
+    }
+    public StaticSwitch getStaticSwitch(){
+        return this.sswitch;
     }
 }

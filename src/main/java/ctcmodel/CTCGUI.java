@@ -4,19 +4,21 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import shared.UnitUtils;
+import shared.BlockStatus;
 
 public class CTCGUI {
     // dummy modules that the GUI needs to interact with
-    private static TrackModel trackModel;
-    private static TrainModel trainModel;
+    //private static TrackModel trackModel;
+    //private static TrainModel trainModel;
     // private train list
-    private static boolean dataValid;
-    private static int dataTrainID;
-    private static int dataBlockID;
-    private static int dataSpeed;
-    private static String dataAuthority;
-    private static int dataOrigin;
-    private static int dataDestination;
+    //private static boolean dataValid;
+    //private static int dataTrainID;
+    //private static int dataBlockID;
+    //private static int dataSpeed;
+    //private static String dataAuthority;
+    //private static int dataOrigin;
+    //private static int dataDestination;
     private static JLabel trainLabel;
     // private env temperature
     private static double temperature;
@@ -59,9 +61,10 @@ public class CTCGUI {
     //has the user pushed the new train button but not yet launched it
     private static boolean isNewTrain;
     
-    CTCGUI(TrackModel atrackModel, TrainModel atrainModel){
-        trackModel = atrackModel;
-        trainModel = atrainModel;
+    //CTCGUI(TrackModel atrackModel, TrainModel atrainModel){
+    CTCGUI(){
+        //trackModel = atrackModel;
+        //trainModel = atrainModel;
     }
     
     public static void addComponentsToPane(Container pane){
@@ -69,7 +72,7 @@ public class CTCGUI {
             pane.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
         }
         isNewTrain = false;
-        dataValid = false;
+        //dataValid = false;
         temperature = 70.0;
         
         JButton button;
@@ -390,33 +393,42 @@ public class CTCGUI {
                 trainAuthorityText.setBorder(border);
                 trainDestinationText.setBorder(border);
                 //check text
-                int error = checkTrainInputs(trainBlockText.getText(),
+                int error = CTCModel.checkTrainInputs(trainBlockText.getText(),
                                              trainSpeedText.getText(),
                                              trainAuthorityText.getText(),
                                              trainDestinationText.getText());
                 switch(error){
                 case 0:
-                    //success
+                    //input valid
+                    if(WaysideController.isOccupied(Integer.parseInt(trainBlockText.getText()))){
+                        //block is occupied, can't put a train there
+                        trainBlockText.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
+                        break;
+                    }
                     //disable text boxes
                     trainBlockText.setEnabled(false);
                     trainSpeedText.setEnabled(false);
                     trainAuthorityText.setEnabled(false);
                     trainDestinationText.setEnabled(false);
                     //send to createTrain
-                    trainModel.createTrain(Integer.parseInt(trainBlockText.getText()));
+                    CTCModel.createTrain(Integer.parseInt(trainBlockText.getText()),
+                                         Integer.parseInt(trainSpeedText.getText()),
+                                         trainAuthorityText.getText(),
+                                         Integer.parseInt(trainDestinationText.getText()));
+                                         //don't send trainID get from return value
                     //update own train data
-                    dataValid = true;
-                    dataTrainID = 1;
-                    dataBlockID = Integer.parseInt(trainBlockText.getText());
-                    dataSpeed = Integer.parseInt(trainSpeedText.getText());
-                    dataAuthority = trainAuthorityText.getText();
-                    dataOrigin = dataBlockID;
-                    dataDestination = Integer.parseInt(trainDestinationText.getText());
+                    //dataValid = true;
+                    //dataTrainID = 1;
+                    //dataBlockID = Integer.parseInt(trainBlockText.getText());
+                    //dataSpeed = Integer.parseInt(trainSpeedText.getText());
+                    //dataAuthority = trainAuthorityText.getText();
+                    //dataOrigin = dataBlockID;
+                    //dataDestination = Integer.parseInt(trainDestinationText.getText());
                     trainLabel.setText("Train");
                     //disable the submit button
                     launchTrainButton.setEnabled(false);
                     isNewTrain = false;
-                    fillTrackInfo(dataBlockID);
+                    fillTrackInfo(Integer.parseInt(trainBlockText.getText()));
                     break;
                 case 1:
                     trainBlockText.setBorder(BorderFactory.createLineBorder(Color.RED));
@@ -867,28 +879,29 @@ public class CTCGUI {
     
     static void fillTrackInfo(int blockID){
         //fill static info
-        StaticBlock staticBlock = trackModel.getStaticBlock(blockID);
-        trackIDText.setText("" + staticBlock.getBlockID());
-        trackSpeedText.setText("" + staticBlock.getSpeedLimit() + " mph");
+        StaticBlock staticBlock = TrackModel.getStaticBlock(blockID);
+        StaticSwitch staticSwitch = staticBlock.getStaticSwitch();
+        trackIDText.setText("" + staticBlock.getId());
+        trackSpeedText.setText("" + UnitUtils.metersToFeet(staticBlock.getSpeedLimit())*3600.0/5280.0 + " mph");//convert units
         trackLengthText.setText("" + staticBlock.getLength() + " ft");
         trackGradeText.setText("" + staticBlock.getGrade() + "%");
         trackElevationText.setText("" + staticBlock.getElevation() + " ft");
         trackUndergroundText.setText("" + staticBlock.isUnderground());
-        boolean hasLight = staticBlock.hasLight();
-        boolean hasSwitch = staticBlock.hasSwitch();
+        //boolean hasLight = staticBlock.hasLight();
+        //boolean hasSwitch = staticBlock.hasSwitch();
+        boolean hasSwitch = (staticSwitch != null);
         boolean hasRailway = staticBlock.hasRailway();
         boolean hasHeater = staticBlock.hasHeater();
-        if(!hasLight){
-            trackLightText.setText("No Lights");
-        }
+        String stationName = staticBlock.getStation();
         if(!hasSwitch){
             trackSwitchText.setText("No Switch");
+            trackLightText.setText("No Lights");
         }
-        if(!staticBlock.hasStation()){
+        if(stationName == null){
             trackStationText.setText("No Station");
             trackPassengersText.setText("");
         }else{
-            trackStationText.setText(staticBlock.getStationName());
+            trackStationText.setText(stationName);
             trackPassengersText.setText("0");
         }
         if(!hasRailway){
@@ -899,19 +912,20 @@ public class CTCGUI {
         }
         
         //fill dynamic info
-        if(trackModel.isOccupied(blockID)){
+        if(WaysideController.isOccupied(blockID)){
             trackOccupiedText.setText("Occupied");
         }else{
             trackOccupiedText.setText("Not Occupied");
         }
-        switch(trackModel.getStatus(blockID)){
-        case 0:
+        BlockStatus asdf = WaysideController.getStatus(blockID);
+        switch(asdf){
+        case OPERATIONAL:
             trackPassableText.setText("Passable");
             break;
-        case 1:
+        case BROKEN:
             trackPassableText.setText("Broken");
             break;
-        case 2:
+        case IN_REPAIR:
             trackPassableText.setText("Maintenance");
             break;
         default:
@@ -919,22 +933,31 @@ public class CTCGUI {
             trackPassableText.setText("");
             break;
         }
-        if(hasLight){
-            if(trackModel.getSignal(blockID)){
+        if(hasSwitch){
+            if(WaysideController.getSignal(blockID)){
                 trackLightText.setText("Green");
             }else{
                 trackLightText.setText("Red");
             }
-        }
+        }//TODO should I clear the old value?
         if(hasSwitch){
-            if(trackModel.getSwitch(blockID)){
-                trackSwitchText.setText("North");
+            //TODO maybe add checks for null values?
+            //find the root
+            StaticBlock root = staticSwitch.getRoot();
+            StaticBlock selectedLeaf;
+            //get switch state (dynamic)
+            if(WaysideController.getSwitch(root.getId())){
+                //in the activated switch state
+                selectedLeaf = staticSwitch.getInactiveLeaf();
             }else{
-                trackSwitchText.setText("South");
+                //in the default switch state
+                selectedLeaf = staticSwitch.getActiveLeaf();
             }
+            //output rootID -> selectedLeafID
+            trackSwitchText.setText(root.getId() + " -> " + selectedLeaf.getId());
         }
         if(hasRailway){
-            if(trackModel.getCrossing(blockID)){
+            if(WaysideController.getCrossing(blockID)){
                 trackCrossingText.setText("Active");
             }else{
                 trackCrossingText.setText("Inactive");
@@ -950,13 +973,14 @@ public class CTCGUI {
         
         //if there is a train there, fill train info
         isNewTrain = false;
-        if(blockID == dataBlockID && dataValid){
-            trainIDText.setText("" + dataTrainID);
-            trainBlockText.setText("" + dataBlockID);
-            trainSpeedText.setText("" + dataSpeed + " mph");
-            trainAuthorityText.setText(dataAuthority);
-            trainOriginText.setText("" + dataOrigin);
-            trainDestinationText.setText("" + dataDestination);
+        CTCTrainData data = CTCModel.getTrainData(blockID);
+        if(data != null){
+            trainIDText.setText("" + data.getTrainID());
+            trainBlockText.setText("" + data.getBlockID());
+            trainSpeedText.setText("" + UnitUtils.metersToFeet(data.getSpeed())*3600.0/5280.0 + " mph");//convert m/s to mph
+            trainAuthorityText.setText(data.getAuthority());
+            trainOriginText.setText("" + data.getOrigin());
+            trainDestinationText.setText("" + data.getDestination());
         }else{
             //blank everything
             if(!isNewTrain){
@@ -969,45 +993,6 @@ public class CTCGUI {
             }
         }
         
-    }
-    
-    static int checkTrainInputs(String block, String speed, String authority, String destination){
-        int tempint;
-        //block number test
-        try{
-            tempint = Integer.parseInt(block);
-        }catch(NumberFormatException ex){
-            return 1;
-        }
-        if(tempint != 0){
-            return 1;
-        }
-        //speed test
-        try{
-            tempint = Integer.parseInt(speed);
-        }catch(NumberFormatException ex){
-            return 2;
-        }
-        //authority test
-        //FIXME: fix this up; list of blocks
-        try{
-            tempint = Integer.parseInt(authority);
-        }catch(NumberFormatException ex){
-            return 3;
-        }
-        if(tempint < 0 || tempint > 5){
-            return 3;
-        }
-        //destination test
-        try{
-            tempint = Integer.parseInt(destination);
-        }catch(NumberFormatException ex){
-            return 4;
-        }
-        if(tempint < 0 || tempint > 3){
-            return 4;
-        }
-        return 0;
     }
     
     public static void createAndShowGUI() {
