@@ -3,6 +3,7 @@ package trackmodel;
 import java.io.*;
 import java.sql.*;
 import java.util.*;
+import shared.*;
 
 import org.junit.*;
 import org.junit.rules.*;
@@ -25,7 +26,7 @@ public class TrackModelTest {
         Statement stmt = _tm.conn.createStatement();
         stmt.execute("DELETE FROM blocks;");
 
-        PreparedStatement _s = _tm.conn.prepareStatement("INSERT INTO blocks (id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement _s = _tm.conn.prepareStatement("INSERT INTO blocks (id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit,beacon,heater) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
         // insert a few basic blocks
         int i = 1;
@@ -42,6 +43,8 @@ public class TrackModelTest {
         _s.setInt(i++, 2); // next
         _s.setInt(i++, 1); // bidirectional
         _s.setInt(i++, 15); // speed_limit
+        _s.setNull(i++, java.sql.Types.INTEGER); // beacon
+        _s.setInt(i++, 0); // heater
         _s.executeUpdate();
 
         i = 1;
@@ -58,6 +61,8 @@ public class TrackModelTest {
         _s.setInt(i++, 3); // next
         _s.setInt(i++, 1);  // bidirectional
         _s.setInt(i++, 15);  // speed_limit
+        _s.setNull(i++, java.sql.Types.INTEGER); // beacon
+        _s.setInt(i++, 0); // heater
         _s.executeUpdate();
 
         i = 1;
@@ -74,6 +79,8 @@ public class TrackModelTest {
         _s.setInt(i++, 4); // next
         _s.setInt(i++, 1);  // bidirectional
         _s.setInt(i++, 15);  // speed_limit
+        _s.setNull(i++, java.sql.Types.INTEGER); // beacon
+        _s.setInt(i++, 0); // heater
         _s.executeUpdate();
 
         i = 1;
@@ -90,6 +97,19 @@ public class TrackModelTest {
         _s.setInt(i++, 1);  // next
         _s.setInt(i++, 1);  // bidirectional
         _s.setInt(i++, 15);  // speed_limit
+        _s.setNull(i++, java.sql.Types.INTEGER); // beacon
+        _s.setInt(i++, 0); // heater
+        _s.executeUpdate();
+
+        // add a train
+        stmt.execute("DELETE FROM trains;");
+
+        _s = _tm.conn.prepareStatement("INSERT INTO trains (id,curr_block,position) VALUES (?, ?, ?);");
+
+        i = 1;
+        _s.setInt(i++, 1); // id
+        _s.setInt(i++, 1); // curr_block
+        _s.setDouble(i++, 0.0); // position
         _s.executeUpdate();
 
     }
@@ -153,11 +173,17 @@ public class TrackModelTest {
             _rs.getString("station") + "," +
             _rs.getString("switch_root") + "," +
             _rs.getString("switch_leaf") + "," +
-            _rs.getString("next");
+            _rs.getString("rr_crossing") + "," +
+            _rs.getString("line") + "," +
+            _rs.getString("next") + "," +
+            _rs.getString("bidirectional") + "," +
+            _rs.getString("speed_limit") + "," +
+            _rs.getString("beacon") + "," +
+            _rs.getString("heater");
 
         // note: this string was constructed from the database; the export
         // doesn't have null strings in it
-        assertEquals("1,A,0.5,17.2,50.0,STATION,null,null,2", row);
+        assertEquals("1,A,0.5,17.2,50.0,STATION,null,null,0,GREEN,2,1,15,null,0", row);
     }
 
     /**
@@ -185,10 +211,10 @@ public class TrackModelTest {
         br.close();
 
 
-        assertEquals("id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit", header);
-        assertEquals("1,A,0.5,17.2,50.0,STATION,1,,1,GREEN,2,1,15", firstRow);
-        assertEquals("2,A,0.5,17.0,50.0,,,1,1,GREEN,3,1,15", secondRow);
-        assertEquals("3,A,0.5,17.0,50.0,,,1,1,GREEN,4,1,15", thirdRow);
+        assertEquals("id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit,beacon,heater", header);
+        assertEquals("1,A,0.5,17.2,50.0,STATION,1,,1,GREEN,2,1,15,,0", firstRow);
+        assertEquals("2,A,0.5,17.0,50.0,,,1,1,GREEN,3,1,15,,0", secondRow);
+        assertEquals("3,A,0.5,17.0,50.0,,,1,1,GREEN,4,1,15,,0", thirdRow);
     }
 
     /**
@@ -214,10 +240,10 @@ public class TrackModelTest {
         thirdRow = br.readLine();
         br.close();
 
-        assertEquals("id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit", header);
-        assertEquals("1,A,0.5,17.2,50.0,STATION,1,,1,GREEN,2,1,15", firstRow);
-        assertEquals("2,A,0.5,17.0,50.0,,,1,1,GREEN,3,1,15", secondRow);
-        assertEquals("3,A,0.5,17.0,50.0,,,1,1,GREEN,4,1,15", thirdRow);
+        assertEquals("id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit,beacon,heater", header);
+        assertEquals("1,A,0.5,17.2,50.0,STATION,1,,1,GREEN,2,1,15,,0", firstRow);
+        assertEquals("2,A,0.5,17.0,50.0,,,1,1,GREEN,3,1,15,,0", secondRow);
+        assertEquals("3,A,0.5,17.0,50.0,,,1,1,GREEN,4,1,15,,0", thirdRow);
     }
 
     /**
@@ -616,4 +642,142 @@ public class TrackModelTest {
 
         assertTrue(TrackModel.getSignal(1));
     }
+
+    /**
+     * Validate basic train initialization.
+     */
+    @Test
+    public void testTrackModelInitializeTrain() throws SQLException {
+        assertTrue(TrackModel.initializeTrain(2, 1));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT curr_block FROM trains WHERE id = ?;");
+        stmt.setInt(1, 1);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        int curr_block = rs.getInt("curr_block");
+
+        assertEquals(1, curr_block);
+    }
+
+    /**
+     * Validate basic train authority get.
+     */
+    @Test
+    public void testTrackModelGetTrainAuthority() throws SQLException {
+        assertEquals(0, TrackModel.getTrainAuthority(1));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET authority = ? WHERE id = ?;");
+        stmt.setInt(1, 1);
+        stmt.setInt(2, 1);
+        stmt.execute();
+
+        assertEquals(1, TrackModel.getTrainAuthority(1));
+    }
+
+    /**
+     * Validate basic train speed get.
+     */
+    @Test
+    public void testTrackModelGetTrainSpeed() throws SQLException {
+        assertEquals(0, TrackModel.getTrainSpeed(1), epsilon);
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET speed = ? WHERE id = ?;");
+        stmt.setInt(1, 1);
+        stmt.setInt(2, 1);
+        stmt.execute();
+
+        assertEquals(1, TrackModel.getTrainSpeed(1), epsilon);
+    }
+
+    /**
+     * Validate basic train beacon get.
+     */
+    @Test
+    public void testTrackModelGetTrainBeacon() throws SQLException {
+        assertNull(TrackModel.getTrainBeacon(1));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET beacon = ? WHERE id = ?;");
+        stmt.setInt(1, 0);
+        stmt.setInt(2, 1);
+        stmt.execute();
+
+        byte[] beacon = TrackModel.getTrainBeacon(1);
+
+        assertEquals(4, beacon.length);
+        assertEquals((byte) 0, beacon[0]);
+        assertEquals((byte) 0, beacon[1]);
+        assertEquals((byte) 0, beacon[2]);
+        assertEquals((byte) 0, beacon[3]);
+    }
+
+    /**
+     * Validate basic isTrackIcy call.
+     */
+    @Test
+    public void testTrackModelIsIcyTrack() throws SQLException {
+        assertFalse(TrackModel.isIcyTrack(1));
+
+        Environment.temperature = TrackModel.FREEZING - 1;
+
+        assertTrue(TrackModel.isIcyTrack(1));
+    }
+
+    /**
+     * Validate basic train get grade.
+     */
+    @Test
+    public void testTrackModelGetGrade() throws SQLException {
+        assertEquals(0.5, TrackModel.getGrade(1), epsilon);
+    }
+
+    /**
+    * Validate basic block status get.
+    */
+    @Test
+    public void testTrackModelGetStatus() throws SQLException {
+        assertEquals(BlockStatus.OPERATIONAL, TrackModel.getStatus(1));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET status = ? WHERE id = ?;");
+        stmt.setInt(1, BlockStatus.BROKEN.ordinal());
+        stmt.setInt(2, 1);
+        stmt.execute();
+
+        assertEquals(BlockStatus.BROKEN, TrackModel.getStatus(1));
+    }
+
+    /**
+    * Validate basic block status set.
+    */
+    @Test
+    public void testTrackModelSetStatusOperational() throws SQLException {
+        assertEquals(BlockStatus.OPERATIONAL, TrackModel.setStatus(1, BlockStatus.OPERATIONAL));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT status FROM blocks WHERE id = ?;");
+        stmt.setInt(1, 1);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        int status = rs.getInt("status");
+
+        assertEquals(BlockStatus.OPERATIONAL.ordinal(), status);
+    }
+
+    /**
+    * Validate basic block status set.
+    */
+    @Test
+    public void testTrackModelSetStatusBroken() throws SQLException {
+        assertEquals(BlockStatus.BROKEN, TrackModel.setStatus(1, BlockStatus.BROKEN));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT status FROM blocks WHERE id = ?;");
+        stmt.setInt(1, 1);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        int status = rs.getInt("status");
+
+        assertEquals(BlockStatus.BROKEN.ordinal(), status);
+    }
+
 }

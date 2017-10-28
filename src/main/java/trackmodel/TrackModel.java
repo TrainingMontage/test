@@ -3,6 +3,8 @@ package trackmodel;
 import java.sql.*;
 import java.io.*;
 import java.util.*;
+import java.nio.ByteBuffer;
+import shared.*;
 
 /**
  * Class for track model. This is a singleton class, meaning that all methods
@@ -20,6 +22,9 @@ public class TrackModel {
     // singleton object
     private static TrackModel model;
 
+    // static
+    protected static int FREEZING = 32;
+    
     // class objects
     protected Connection conn;
 
@@ -49,11 +54,13 @@ public class TrackModel {
             "   next integer NOT NULL,\n" +
             "   bidirectional integer NOT NULL,\n" +
             "   speed_limit integer NOT NULL,\n" +
+            "   beacon integer,\n" +
+            "   heater integer NOT NULL,\n" +
             "   switch_active integer,\n" +  // dynamic properties
             "   crossing_active integer,\n" +
             "   occupied integer,\n" +
             "   speed integer,\n" +
-            "   authority text,\n" +
+            "   authority integer,\n" +
             "   signal integer,\n" +
             "   status integer\n" +
             ");";
@@ -124,8 +131,8 @@ public class TrackModel {
      */
     public static boolean importTrack(File file) throws SQLException, IOException {
         String sql_load = "INSERT INTO blocks " +
-                          "(id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit) " +
-                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                          "(id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit,beacon,heater) " +
+                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         BufferedReader br;
 
         model.clearDB();
@@ -182,6 +189,16 @@ public class TrackModel {
             i++; // speed limit
             stmt.setInt(i + 1, Integer.parseInt(values[i]));
 
+            i++; // beacon
+            if (!values[i].equals("")) {
+                stmt.setInt(i + 1, Integer.parseInt(values[i]));
+            } else {
+                stmt.setNull(i + 1, java.sql.Types.INTEGER);
+            }
+
+            i++; // heater
+            stmt.setInt(i + 1, Integer.parseInt(values[i]));
+
             stmt.executeUpdate();
         }
         br.close();
@@ -208,9 +225,9 @@ public class TrackModel {
         // write output to file
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         Statement stmt = model.conn.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit FROM blocks");
+        ResultSet rs = stmt.executeQuery("SELECT id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit,beacon,heater FROM blocks");
 
-        writer.write("id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit");
+        writer.write("id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit,beacon,heater");
         while (rs.next()) {
             String arrStr[] = {
                 rs.getString("id"),
@@ -225,7 +242,9 @@ public class TrackModel {
                 rs.getString("line"),
                 rs.getString("next"),
                 rs.getString("bidirectional"),
-                rs.getString("speed_limit")
+                rs.getString("speed_limit"),
+                rs.getString("beacon"),
+                rs.getString("heater")
             };
 
             // get rid of nulls
@@ -631,4 +650,107 @@ public class TrackModel {
 
         return ((Integer) rs.getObject("signal")) != null;
     }
+
+    /**
+     * Initialize a new train
+     *
+     * @param      trainId           The train identifier
+     * @param      starting_blockId  The starting block id
+     *
+     * @return     true if successful, false otherwise
+     *
+     * @throws     SQLException      Something went wrong, likely the block id
+     *                               wasn't valid
+     */
+    public static boolean initializeTrain(int trainId, int starting_blockId) throws SQLException {
+        String sql_load = "INSERT INTO trains " +
+                          "(id,curr_block,position) " +
+                          "VALUES (?, ?, ?);";
+
+        PreparedStatement stmt = model.conn.prepareStatement(sql_load);
+
+        int i = 1;
+        stmt.setInt(i++, trainId);  // train id
+        stmt.setInt(i++, starting_blockId); // curr_block
+        stmt.setDouble(i++, 0);
+        stmt.executeUpdate();
+
+        return true;
+    }
+
+    public static int getTrainAuthority(int trainId) throws SQLException {
+        PreparedStatement stmt = model.conn.prepareStatement("SELECT authority FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
+        stmt.setInt(1, trainId);
+        ResultSet rs = stmt.executeQuery();
+        rs.next();
+
+        Integer authority = (Integer) rs.getObject("authority");
+        return authority == null ? 0 : authority;
+    }
+
+    public static double getTrainSpeed(int trainId) throws SQLException {
+        PreparedStatement stmt = model.conn.prepareStatement("SELECT speed FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
+        stmt.setInt(1, trainId);
+        ResultSet rs = stmt.executeQuery();
+        rs.next();
+
+        Integer speed = (Integer) rs.getObject("speed");
+        return speed == null ? 0 : speed;
+    }
+
+    public static byte[] getTrainBeacon(int trainId) throws SQLException {
+        PreparedStatement stmt = model.conn.prepareStatement("SELECT beacon FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
+        stmt.setInt(1, trainId);
+        ResultSet rs = stmt.executeQuery();
+        rs.next();
+
+        Integer beacon =  (Integer) rs.getObject("beacon");
+        if (beacon != null) {
+            return ByteBuffer.allocate(4).putInt(beacon).array();
+        } else {
+            return null;
+        }
+    }
+
+    public static boolean isIcyTrack(int trainId) throws SQLException {
+        if (Environment.temperature > FREEZING) {
+            return false;
+        }
+
+        PreparedStatement stmt = model.conn.prepareStatement("SELECT heater FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
+        stmt.setInt(1, trainId);
+        ResultSet rs = stmt.executeQuery();
+        rs.next();
+
+        return rs.getInt("heater") == 0;
+    }
+
+    public static double getGrade(int trainId) throws SQLException {
+        PreparedStatement stmt = model.conn.prepareStatement("SELECT grade FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
+        stmt.setInt(1, trainId);
+        ResultSet rs = stmt.executeQuery();
+        rs.next();
+
+        return rs.getDouble("grade");
+    }
+
+    public static BlockStatus getStatus(int blockId) throws SQLException {
+        PreparedStatement stmt = model.conn.prepareStatement("SELECT status FROM blocks WHERE id = ?");
+        stmt.setInt(1, blockId);
+        ResultSet rs = stmt.executeQuery();
+        rs.next();
+
+        Integer status = (Integer) rs.getObject("status");
+        return BlockStatus.values()[status == null ? 0 : status];
+    }
+
+    public static BlockStatus setStatus(int blockId, BlockStatus status) throws SQLException {
+        PreparedStatement stmt = model.conn.prepareStatement("UPDATE blocks SET status = ? WHERE id = ?;");
+        stmt.setInt(1, status.ordinal());
+        stmt.setInt(2, blockId);
+        stmt.execute();
+        return status;
+    }
+
+    // public static int getPassengers(int trainId);
 }
