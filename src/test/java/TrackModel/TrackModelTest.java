@@ -136,13 +136,13 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelInitWithTestData() throws IOException, SQLException, ClassNotFoundException {
-        _tm = TrackModel.initWithTestData();
+        _tm = _tm.initWithTestData();
 
         assertNotNull(_tm);
 
         // this is not the best way to test this, as it relies on other methods
         // within the class
-        ArrayList<String> ids = TrackModel.getBlockIds();
+        ArrayList<String> ids = _tm.getBlockIds();
         assertEquals(8, ids.size());
     }
 
@@ -155,7 +155,7 @@ public class TrackModelTest {
             this.getClass().getClassLoader().getResource("TrackModel/track.csv").getFile());
 
         // function should return true
-        assertTrue(TrackModel.importTrack(file));
+        assertTrue(_tm.importTrack(file));
 
         // database should now have csv data in it
         String row = "";
@@ -195,7 +195,7 @@ public class TrackModelTest {
         File file = new File(tempFolder.getAbsolutePath() + "/track_export_new.csv");
 
         // function should return true
-        assertTrue(TrackModel.exportTrack(file));
+        assertTrue(_tm.exportTrack(file));
 
         // track_export.csv should now have csv data in it
         String header = "";
@@ -225,7 +225,7 @@ public class TrackModelTest {
         File file = folder.newFile("track_export.csv");
 
         // function should return true
-        assertTrue(TrackModel.exportTrack(file));
+        assertTrue(_tm.exportTrack(file));
 
         // track_export.csv should now have csv data in it
         String header = "";
@@ -251,12 +251,12 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelisOccupied() throws SQLException {
-        assertFalse(TrackModel.isOccupied(1));
+        assertFalse(_tm.isOccupied(1));
 
         Statement stmt = _tm.conn.createStatement();
         stmt.execute("UPDATE blocks SET occupied = 1 WHERE id = 1;");
 
-        assertTrue(TrackModel.isOccupied(1));
+        assertTrue(_tm.isOccupied(1));
     }
 
     /**
@@ -265,7 +265,7 @@ public class TrackModelTest {
     @Test
     public void testTrackModelSetOccupiedTrue() throws SQLException {
 
-        assertTrue(TrackModel.setOccupied(1, true));
+        assertTrue(_tm.setOccupied(1, true));
 
         Integer occupied = null;
         try {
@@ -288,7 +288,7 @@ public class TrackModelTest {
     @Test
     public void testTrackModelSetOccupiedFalse() throws SQLException {
 
-        assertTrue(TrackModel.setOccupied(1, false));
+        assertTrue(_tm.setOccupied(1, false));
 
         Integer occupied = 1;
         try {
@@ -310,7 +310,7 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelGetBlockIds() throws SQLException {
-        ArrayList<String> ids = TrackModel.getBlockIds();
+        ArrayList<String> ids = _tm.getBlockIds();
 
         assertEquals(4, ids.size());
         assertEquals("1", ids.get(0));
@@ -324,7 +324,7 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelGetStaticBlockNoSwitch() throws SQLException {
-        StaticBlock block = TrackModel.getStaticBlock(4);
+        StaticBlock block = _tm.getStaticBlock(4);
 
         assertNotNull(block);
         assertEquals(4, block.getId());
@@ -341,7 +341,7 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelGetStaticBlockRootSwitch() throws SQLException {
-        StaticBlock block = TrackModel.getStaticBlock(1);
+        StaticBlock block = _tm.getStaticBlock(1);
 
         assertNotNull(block);
         assertEquals(1, block.getId());
@@ -359,7 +359,7 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelGetStaticBlockInactiveLeafSwitch() throws SQLException {
-        StaticBlock block = TrackModel.getStaticBlock(2);
+        StaticBlock block = _tm.getStaticBlock(2);
 
         assertNotNull(block);
         assertEquals(2, block.getId());
@@ -377,7 +377,7 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelGetStaticBlockActiveLeafSwitch() throws SQLException {
-        StaticBlock block = TrackModel.getStaticBlock(3);
+        StaticBlock block = _tm.getStaticBlock(3);
 
         assertNotNull(block);
         assertEquals(3, block.getId());
@@ -394,7 +394,7 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelGetStaticSwitch() throws SQLException {
-        StaticSwitch sw = TrackModel.getStaticSwitch(1);
+        StaticSwitch sw = _tm.getStaticSwitch(1);
 
         assertNotNull(sw);
         assertNotNull(sw.getRoot());
@@ -408,7 +408,7 @@ public class TrackModelTest {
     @Test
     public void testTrackModelSetRegion() throws SQLException {
 
-        assertTrue(TrackModel.setRegion(1, "B"));
+        assertTrue(_tm.setRegion(1, "B"));
 
         String region = null;
         try {
@@ -430,7 +430,7 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelSetLength() throws SQLException {
-        assertTrue(TrackModel.setLength(1, 15.0));
+        assertTrue(_tm.setLength(1, 15.0));
 
         Double length = null;
         PreparedStatement stmt = _tm.conn.prepareStatement("SELECT length FROM blocks WHERE id = ?;");
@@ -448,7 +448,7 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelSetElevation() throws SQLException {
-        assertTrue(TrackModel.setElevation(1, 15.0));
+        assertTrue(_tm.setElevation(1, 15.0));
 
         Double elevation = null;
         PreparedStatement stmt = _tm.conn.prepareStatement("SELECT elevation FROM blocks WHERE id = ?;");
@@ -466,7 +466,7 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelSetGrade() throws SQLException {
-        assertTrue(TrackModel.setGrade(1, .75));
+        assertTrue(_tm.setGrade(1, .75));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("SELECT grade FROM blocks WHERE id = ?;");
         stmt.setInt(1, 1);
@@ -483,7 +483,7 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelSetSwitch() throws SQLException {
-        assertTrue(TrackModel.setSwitch(1, true));
+        assertTrue(_tm.setSwitch(1, true));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("SELECT switch_active FROM blocks WHERE id = ?;");
         stmt.setInt(1, 1);
@@ -500,14 +500,14 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelGetSwitch() throws SQLException {
-        assertFalse(TrackModel.getSwitch(1));
+        assertFalse(_tm.getSwitch(1));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET switch_active = ? WHERE id = ?;");
         stmt.setInt(1, 1);
         stmt.setInt(2, 1);
         stmt.execute();
 
-        assertTrue(TrackModel.getSwitch(1));
+        assertTrue(_tm.getSwitch(1));
     }
 
     /**
@@ -515,7 +515,7 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelSetAuthority() throws SQLException {
-        assertTrue(TrackModel.setAuthority(1, true));
+        assertTrue(_tm.setAuthority(1, true));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("SELECT authority FROM blocks WHERE id = ?;");
         stmt.setInt(1, 1);
@@ -532,7 +532,7 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelSetSpeed() throws SQLException {
-        assertEquals(14, TrackModel.setSpeed(1, 14));
+        assertEquals(14, _tm.setSpeed(1, 14));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("SELECT speed FROM blocks WHERE id = ?;");
         stmt.setInt(1, 1);
@@ -549,7 +549,7 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelSetCrossingStateTrue() throws SQLException {
-        assertTrue(TrackModel.setCrossingState(1, true));
+        assertTrue(_tm.setCrossingState(1, true));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("SELECT crossing_active FROM blocks WHERE id = ?;");
         stmt.setInt(1, 1);
@@ -566,7 +566,7 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelSetCrossingStateFalse() throws SQLException {
-        assertFalse(TrackModel.setCrossingState(1, false));
+        assertFalse(_tm.setCrossingState(1, false));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("SELECT crossing_active FROM blocks WHERE id = ?;");
         stmt.setInt(1, 1);
@@ -583,14 +583,14 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelGetCrossingState() throws SQLException {
-        assertFalse(TrackModel.getCrossingState(1));
+        assertFalse(_tm.getCrossingState(1));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET crossing_active = ? WHERE id = ?;");
         stmt.setInt(1, 1);
         stmt.setInt(2, 1);
         stmt.execute();
 
-        assertTrue(TrackModel.getCrossingState(1));
+        assertTrue(_tm.getCrossingState(1));
     }
 
 
@@ -599,7 +599,7 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelSetSignalTrue() throws SQLException {
-        assertTrue(TrackModel.setSignal(1, true));
+        assertTrue(_tm.setSignal(1, true));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("SELECT signal FROM blocks WHERE id = ?;");
         stmt.setInt(1, 1);
@@ -616,7 +616,7 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelSetSignalFalse() throws SQLException {
-        assertFalse(TrackModel.setSignal(1, false));
+        assertFalse(_tm.setSignal(1, false));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("SELECT signal FROM blocks WHERE id = ?;");
         stmt.setInt(1, 1);
@@ -633,14 +633,14 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelGetSignal() throws SQLException {
-        assertFalse(TrackModel.getSignal(1));
+        assertFalse(_tm.getSignal(1));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET signal = ? WHERE id = ?;");
         stmt.setInt(1, 1);
         stmt.setInt(2, 1);
         stmt.execute();
 
-        assertTrue(TrackModel.getSignal(1));
+        assertTrue(_tm.getSignal(1));
     }
 
     /**
@@ -648,7 +648,7 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelInitializeTrain() throws SQLException {
-        assertTrue(TrackModel.initializeTrain(2, 1));
+        assertTrue(_tm.initializeTrain(2, 1));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("SELECT curr_block FROM trains WHERE id = ?;");
         stmt.setInt(1, 1);
@@ -665,14 +665,14 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelGetTrainAuthority() throws SQLException {
-        assertEquals(0, TrackModel.getTrainAuthority(1));
+        assertEquals(0, _tm.getTrainAuthority(1));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET authority = ? WHERE id = ?;");
         stmt.setInt(1, 1);
         stmt.setInt(2, 1);
         stmt.execute();
 
-        assertEquals(1, TrackModel.getTrainAuthority(1));
+        assertEquals(1, _tm.getTrainAuthority(1));
     }
 
     /**
@@ -680,14 +680,14 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelGetTrainSpeed() throws SQLException {
-        assertEquals(0, TrackModel.getTrainSpeed(1), epsilon);
+        assertEquals(0, _tm.getTrainSpeed(1), epsilon);
 
         PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET speed = ? WHERE id = ?;");
         stmt.setInt(1, 1);
         stmt.setInt(2, 1);
         stmt.execute();
 
-        assertEquals(1, TrackModel.getTrainSpeed(1), epsilon);
+        assertEquals(1, _tm.getTrainSpeed(1), epsilon);
     }
 
     /**
@@ -695,14 +695,14 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelGetTrainBeacon() throws SQLException {
-        assertNull(TrackModel.getTrainBeacon(1));
+        assertNull(_tm.getTrainBeacon(1));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET beacon = ? WHERE id = ?;");
         stmt.setInt(1, 0);
         stmt.setInt(2, 1);
         stmt.execute();
 
-        byte[] beacon = TrackModel.getTrainBeacon(1);
+        byte[] beacon = _tm.getTrainBeacon(1);
 
         assertEquals(4, beacon.length);
         assertEquals((byte) 0, beacon[0]);
@@ -716,11 +716,11 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelIsIcyTrack() throws SQLException {
-        assertFalse(TrackModel.isIcyTrack(1));
+        assertFalse(_tm.isIcyTrack(1));
 
         Environment.temperature = TrackModel.FREEZING - 1;
 
-        assertTrue(TrackModel.isIcyTrack(1));
+        assertTrue(_tm.isIcyTrack(1));
     }
 
     /**
@@ -728,7 +728,7 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelGetGrade() throws SQLException {
-        assertEquals(0.5, TrackModel.getGrade(1), epsilon);
+        assertEquals(0.5, _tm.getGrade(1), epsilon);
     }
 
     /**
@@ -736,14 +736,14 @@ public class TrackModelTest {
     */
     @Test
     public void testTrackModelGetStatus() throws SQLException {
-        assertEquals(BlockStatus.OPERATIONAL, TrackModel.getStatus(1));
+        assertEquals(BlockStatus.OPERATIONAL, _tm.getStatus(1));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET status = ? WHERE id = ?;");
         stmt.setInt(1, BlockStatus.BROKEN.ordinal());
         stmt.setInt(2, 1);
         stmt.execute();
 
-        assertEquals(BlockStatus.BROKEN, TrackModel.getStatus(1));
+        assertEquals(BlockStatus.BROKEN, _tm.getStatus(1));
     }
 
     /**
@@ -751,7 +751,7 @@ public class TrackModelTest {
     */
     @Test
     public void testTrackModelSetStatusOperational() throws SQLException {
-        assertEquals(BlockStatus.OPERATIONAL, TrackModel.setStatus(1, BlockStatus.OPERATIONAL));
+        assertEquals(BlockStatus.OPERATIONAL, _tm.setStatus(1, BlockStatus.OPERATIONAL));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("SELECT status FROM blocks WHERE id = ?;");
         stmt.setInt(1, 1);
@@ -768,7 +768,7 @@ public class TrackModelTest {
     */
     @Test
     public void testTrackModelSetStatusBroken() throws SQLException {
-        assertEquals(BlockStatus.BROKEN, TrackModel.setStatus(1, BlockStatus.BROKEN));
+        assertEquals(BlockStatus.BROKEN, _tm.setStatus(1, BlockStatus.BROKEN));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("SELECT status FROM blocks WHERE id = ?;");
         stmt.setInt(1, 1);
