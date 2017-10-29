@@ -690,6 +690,16 @@ public class TrackModel {
         return true;
     }
 
+    /**
+     * Gets the train's commanded authority.
+     *
+     * @param      trainId       The train identifier
+     *
+     * @return     The train authority.
+     *
+     * @throws     SQLException  Something went wrong, likely the block id
+     *                           wasn't valid
+     */
     public int getTrainAuthority(int trainId) throws SQLException {
         PreparedStatement stmt = this.conn.prepareStatement("SELECT authority FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
         stmt.setInt(1, trainId);
@@ -700,6 +710,16 @@ public class TrackModel {
         return authority == null ? 0 : authority;
     }
 
+    /**
+     * Gets the train's suggested speed.
+     *
+     * @param      trainId       The train identifier
+     *
+     * @return     The train speed.
+     *
+     * @throws     SQLException  Something went wrong, likely the block id
+     *                           wasn't valid
+     */
     public double getTrainSpeed(int trainId) throws SQLException {
         PreparedStatement stmt = this.conn.prepareStatement("SELECT speed FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
         stmt.setInt(1, trainId);
@@ -710,6 +730,16 @@ public class TrackModel {
         return speed == null ? 0 : speed;
     }
 
+    /**
+     * Returns beacon information if train in within range of a beacon.
+     *
+     * @param      trainId       The train identifier
+     *
+     * @return     The train beacon.
+     *
+     * @throws     SQLException  Something went wrong, likely the block id
+     *                           wasn't valid
+     */
     public byte[] getTrainBeacon(int trainId) throws SQLException {
         PreparedStatement stmt = this.conn.prepareStatement("SELECT beacon FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
         stmt.setInt(1, trainId);
@@ -724,6 +754,16 @@ public class TrackModel {
         }
     }
 
+    /**
+     * Determines if track is icy.
+     *
+     * @param      trainId       The train identifier
+     *
+     * @return     True if icy track, False otherwise.
+     *
+     * @throws     SQLException  Something went wrong, likely the block id
+     *                           wasn't valid
+     */
     public boolean isIcyTrack(int trainId) throws SQLException {
         if (Environment.temperature > FREEZING) {
             return false;
@@ -737,6 +777,16 @@ public class TrackModel {
         return rs.getInt("heater") == 0;
     }
 
+    /**
+     * Gets the grade of the block a train is on.
+     *
+     * @param      trainId       The train identifier
+     *
+     * @return     The grade.
+     *
+     * @throws     SQLException  Something went wrong, likely the block id
+     *                           wasn't valid
+     */
     public double getGrade(int trainId) throws SQLException {
         PreparedStatement stmt = this.conn.prepareStatement("SELECT grade FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
         stmt.setInt(1, trainId);
@@ -746,6 +796,16 @@ public class TrackModel {
         return rs.getDouble("grade");
     }
 
+    /**
+     * Gets the status of a block.
+     *
+     * @param      blockId       The block identifier
+     *
+     * @return     The status.
+     *
+     * @throws     SQLException  Something went wrong, likely the block id
+     *                           wasn't valid
+     */
     public BlockStatus getStatus(int blockId) throws SQLException {
         PreparedStatement stmt = this.conn.prepareStatement("SELECT status FROM blocks WHERE id = ?");
         stmt.setInt(1, blockId);
@@ -756,6 +816,17 @@ public class TrackModel {
         return BlockStatus.values()[status == null ? 0 : status];
     }
 
+    /**
+     * Sets the status of a block.
+     *
+     * @param      blockId       The block identifier
+     * @param      status        The status
+     *
+     * @return     { description_of_the_return_value }
+     *
+     * @throws     SQLException  Something went wrong, likely the block id
+     *                           wasn't valid
+     */
     public BlockStatus setStatus(int blockId, BlockStatus status) throws SQLException {
         PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET status = ? WHERE id = ?;");
         stmt.setInt(1, status.ordinal());
