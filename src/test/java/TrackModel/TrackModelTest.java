@@ -44,7 +44,7 @@ public class TrackModelTest {
         _s.setInt(i++, 1); // bidirectional
         _s.setInt(i++, 15); // speed_limit
         _s.setNull(i++, java.sql.Types.INTEGER); // beacon
-        _s.setInt(i++, 0); // heater
+        _s.setInt(i++, 1); // heater
         _s.executeUpdate();
 
         i = 1;
@@ -62,7 +62,7 @@ public class TrackModelTest {
         _s.setInt(i++, 1);  // bidirectional
         _s.setInt(i++, 15);  // speed_limit
         _s.setNull(i++, java.sql.Types.INTEGER); // beacon
-        _s.setInt(i++, 0); // heater
+        _s.setInt(i++, 1); // heater
         _s.executeUpdate();
 
         i = 1;
@@ -212,8 +212,8 @@ public class TrackModelTest {
 
 
         assertEquals("id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit,beacon,heater", header);
-        assertEquals("1,A,0.5,17.2,50.0,STATION,1,,1,GREEN,2,1,15,,0", firstRow);
-        assertEquals("2,A,0.5,17.0,50.0,,,1,1,GREEN,3,1,15,,0", secondRow);
+        assertEquals("1,A,0.5,17.2,50.0,STATION,1,,1,GREEN,2,1,15,,1", firstRow);
+        assertEquals("2,A,0.5,17.0,50.0,,,1,1,GREEN,3,1,15,,1", secondRow);
         assertEquals("3,A,0.5,17.0,50.0,,,1,1,GREEN,4,1,15,,0", thirdRow);
     }
 
@@ -241,8 +241,8 @@ public class TrackModelTest {
         br.close();
 
         assertEquals("id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit,beacon,heater", header);
-        assertEquals("1,A,0.5,17.2,50.0,STATION,1,,1,GREEN,2,1,15,,0", firstRow);
-        assertEquals("2,A,0.5,17.0,50.0,,,1,1,GREEN,3,1,15,,0", secondRow);
+        assertEquals("1,A,0.5,17.2,50.0,STATION,1,,1,GREEN,2,1,15,,1", firstRow);
+        assertEquals("2,A,0.5,17.0,50.0,,,1,1,GREEN,3,1,15,,1", secondRow);
         assertEquals("3,A,0.5,17.0,50.0,,,1,1,GREEN,4,1,15,,0", thirdRow);
     }
 
@@ -482,7 +482,7 @@ public class TrackModelTest {
      * Validate basic switch set.
      */
     @Test
-    public void testTrackModelSetSwitch() throws SQLException {
+    public void testTrackModelSetSwitchActive() throws SQLException {
         assertTrue(_tm.setSwitch(1, true));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("SELECT switch_active FROM blocks WHERE id = ?;");
@@ -493,6 +493,23 @@ public class TrackModelTest {
         int switch_active = rs.getInt("switch_active");
 
         assertTrue(switch_active > 0);
+    }
+
+    /**
+     * Validate basic switch set.
+     */
+    @Test
+    public void testTrackModelSetSwitchFalse() throws SQLException {
+        assertFalse(_tm.setSwitch(1, false));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT switch_active FROM blocks WHERE id = ?;");
+        stmt.setInt(1, 1);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        int switch_active = rs.getInt("switch_active");
+
+        assertEquals(0, switch_active);
     }
 
     /**
@@ -514,7 +531,7 @@ public class TrackModelTest {
      * Validate basic authority set.
      */
     @Test
-    public void testTrackModelSetAuthority() throws SQLException {
+    public void testTrackModelSetAuthorityTrue() throws SQLException {
         assertTrue(_tm.setAuthority(1, true));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("SELECT authority FROM blocks WHERE id = ?;");
@@ -525,6 +542,23 @@ public class TrackModelTest {
         int authority = rs.getInt("authority");
 
         assertTrue(authority > 0);
+    }
+
+    /**
+     * Validate basic authority set.
+     */
+    @Test
+    public void testTrackModelSetAuthorityFalse() throws SQLException {
+        assertFalse(_tm.setAuthority(1, false));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT authority FROM blocks WHERE id = ?;");
+        stmt.setInt(1, 1);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        int authority = rs.getInt("authority");
+
+        assertEquals(0, authority);
     }
 
     /**
@@ -719,6 +753,13 @@ public class TrackModelTest {
         assertFalse(_tm.isIcyTrack(1));
 
         Environment.temperature = TrackModel.FREEZING - 1;
+
+        assertFalse(_tm.isIcyTrack(1));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE trains SET curr_block = ? WHERE id = ?;");
+        stmt.setInt(1, 3);
+        stmt.setInt(2, 1);
+        stmt.execute();
 
         assertTrue(_tm.isIcyTrack(1));
     }
