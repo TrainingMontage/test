@@ -41,7 +41,11 @@
 \begin{flushright}
     \rule{16cm}{5pt}\vskip1cm
     \begin{bfseries}
+<<<<<<< HEAD
         \Huge{TRACK MODEL USE CASE, CLASS, AND SEQUENCE DIAGRAMS}\\
+=======
+        \Huge{USE CASE\\DIAGRAMS}\\
+>>>>>>> cb0fef120287901a33f813028471c4ba040b38ff
         \vspace{.9cm}
         for\\
         \vspace{.9cm}
@@ -51,7 +55,15 @@
         \vspace{.9cm}
         Prepared by:\\
         Alec Rosenbaum\\
+<<<<<<< HEAD
         \vspace{4.9cm}
+=======
+        Aric Hudson\\
+        Isaac Goss\\
+        Mitch Moran\\
+        Parth Dadhania\\
+        \vspace{1.9cm}
+>>>>>>> cb0fef120287901a33f813028471c4ba040b38ff
         Training Montage\\
         \vspace{.9cm}
         \today\\
@@ -62,7 +74,11 @@
 
 \chapter{Track Model}
 
+<<<<<<< HEAD
 \section{Use Cases}
+=======
+\section{Use Case}
+>>>>>>> cb0fef120287901a33f813028471c4ba040b38ff
 
 \begin{center}
 \resizebox{!}{.8\textheight}{
@@ -72,16 +88,24 @@
 		Actor.ctc("CTC");
 		Actor.wayside("Wayside");
 		Actor.trainmodel("Train Model");
+<<<<<<< HEAD
 		Actor.traincontroller("Train Controller");
 		Actor.simrunner("SimulationRunner");
 	    % 
 	    Usecase.uO("Get Passengers Departed");
+=======
+	    % 
+>>>>>>> cb0fef120287901a33f813028471c4ba040b38ff
 	    Usecase.uA("Get Static Block");
 	    Usecase.uB("Get Static Switch");
 	    %
 	    Usecase.uC("Get Occupancy");
+<<<<<<< HEAD
 		Usecase.uD("Set Suggested", "Speed");
 		Usecase.uDD("Set Suggested", "Authority");
+=======
+		Usecase.uD("Set Suggested", "Speed + Authority");
+>>>>>>> cb0fef120287901a33f813028471c4ba040b38ff
 		Usecase.uE("Set Maintainance");
 		Usecase.uF("Set Switch State");
 		Usecase.uG("Set Signals");
@@ -90,16 +114,24 @@
 		Usecase.uJ("Get Signal");
 		Usecase.uK("Get Crossing");
 		%
+<<<<<<< HEAD
 		Usecase.uKK("Initalize TrackModel");
 		%
 		Usecase.uL("Initalize Train");
 		Usecase.uM("Get Suggested", "Authority");
 		Usecase.uN("Get Suggested", "Speed");
+=======
+		Usecase.uL("Initalize Train");
+		Usecase.uM("Get Suggested", "Authority");
+		Usecase.uN("Get Suggested", "Speed");
+		Usecase.uO("Get Passengers");
+>>>>>>> cb0fef120287901a33f813028471c4ba040b38ff
 		Usecase.uP("Get Grade");
 		Usecase.uQ("Get If Track", "Is Icy");
 		Usecase.uR("Get Beacon Data");
 		Usecase.uS("Teardown Train");
 	    %
+<<<<<<< HEAD
 	    Component.TrackModel("Track Model")(uA,uB,uC,uD,uDD,uE,uF,uG,uH,uI,uJ,uK,uKK,uL,uM,uN,uO,uP,uQ,uR,uS);
 	    % 
 		topToBottom.left(10)(uO,uA,uB,uC,uD,uDD,uE,uF,uG,uH,uI,uJ,uK);
@@ -121,6 +153,22 @@
 	    link(association)(pathCut(traincontroller, uA)(traincontroller.e -- uA.w));
 	    link(association)(pathCut(traincontroller, uA)(traincontroller.e -- uB.w));
 	    %
+=======
+	    Component.TrackModel("Track Model")(uA,uB,uC,uD,uE,uF,uG,uH,uI,uJ,uK,uL,uM,uN,uO,uP,uQ,uR,uS);
+	    % 
+		topToBottom.left(10)(uA,uB,uC,uD,uE,uF,uG,uH,uI,uJ,uK);
+		leftToRight(50)(ctc, uB);
+		leftToRight(50)(wayside, uG);
+		%
+		topToBottom.left(10)(uL,uM,uN,uO,uP,uQ,uR,uS);
+		leftToRight(10)(uA, uL);
+		leftToRight(50)(uO, trainmodel);
+	    % 
+	    drawObjects(ctc,wayside,trainmodel,TrackModel,uA,uB,uC,uD,uE,uF,uG,uH,uI,uJ,uK,uL,uM,uN,uO,uP,uQ,uR,uS);
+		%
+	    link(association)(pathCut(ctc, uA)(ctc.e -- uA.w));
+	    link(association)(pathCut(ctc, uA)(ctc.e -- uB.w));
+>>>>>>> cb0fef120287901a33f813028471c4ba040b38ff
 	    link(association)(pathCut(wayside, uA)(wayside.e -- uA.w));
 	    link(association)(pathCut(wayside, uB)(wayside.e -- uB.w));
 	    link(association)(pathCut(wayside, uC)(wayside.e -- uC.w));
@@ -133,6 +181,7 @@
 	    link(association)(pathCut(wayside, uJ)(wayside.e -- uJ.w));
 	    link(association)(pathCut(wayside, uK)(wayside.e -- uK.w));
 	    %
+<<<<<<< HEAD
 	    link(association)(pathCut(simrunner, uKK)(simrunner.w -- uKK.e));
 	    %
 	    link(association)(pathCut(trainmodel, uA)(trainmodel.w -- uA.e));
@@ -140,6 +189,12 @@
 	    link(association)(pathCut(trainmodel, uL)(trainmodel.w -- uL.e));
 	    link(association)(pathCut(trainmodel, uM)(trainmodel.w -- uM.e));
 	    link(association)(pathCut(trainmodel, uN)(trainmodel.w -- uN.e));
+=======
+	    link(association)(pathCut(trainmodel, uL)(trainmodel.w -- uL.e));
+	    link(association)(pathCut(trainmodel, uM)(trainmodel.w -- uM.e));
+	    link(association)(pathCut(trainmodel, uN)(trainmodel.w -- uN.e));
+	    link(association)(pathCut(trainmodel, uO)(trainmodel.w -- uO.e));
+>>>>>>> cb0fef120287901a33f813028471c4ba040b38ff
 	    link(association)(pathCut(trainmodel, uP)(trainmodel.w -- uP.e));
 	    link(association)(pathCut(trainmodel, uQ)(trainmodel.w -- uQ.e));
 	    link(association)(pathCut(trainmodel, uR)(trainmodel.w -- uR.e));
@@ -148,6 +203,7 @@
 }
 \end{center}
 
+<<<<<<< HEAD
 \subsection{Use Case: Get Passengers Departed}
 \begin{enumerate}
 	\item CTC calls getPassengers(trainId)
@@ -275,6 +331,8 @@
 \end{enumerate}
 
 
+=======
+>>>>>>> cb0fef120287901a33f813028471c4ba040b38ff
 \section{Class Diagram}
 
 \begin{center}
@@ -283,7 +341,10 @@
 		input metauml;
 	    % Track Model
 	    Class.TrackModel("TrackModel")()(
+<<<<<<< HEAD
 	    	"TrackModel init()",
+=======
+>>>>>>> cb0fef120287901a33f813028471c4ba040b38ff
 	    	"int getTrainAuthority(int trainId)",
 			"double getTrainSpeed(int trainId)",
 			"boolean setSignal(int blockId, boolean value)",
@@ -302,10 +363,14 @@
 			"boolean isOccupied(int blockId)",
 			"BlockStatus getStatus(int blockId)"
 		);
+<<<<<<< HEAD
 		% Database
 	    Class.Database("Database")()(
 	    	"ResultSet execute(Statement)",
 		);
+=======
+		% 
+>>>>>>> cb0fef120287901a33f813028471c4ba040b38ff
 		% Static Block
 		Class.StaticBlock("StaticBlock")()(
 			"-int setId(int id)",
@@ -332,9 +397,15 @@
 			"-StaticBlock setActiveLeaf(StaticBlock activeLeaf)"
 	    );
 		% 	
+<<<<<<< HEAD
 		topToBottom(30)(TrackModel, Database, StaticBlock, StaticSwitch);
 		% 
 	    drawObjects(TrackModel, Database, StaticBlock, StaticSwitch);
+=======
+		topToBottom.left(20)(TrackModel, StaticBlock, StaticSwitch);
+		% 
+	    drawObjects(TrackModel, StaticBlock, StaticSwitch);
+>>>>>>> cb0fef120287901a33f813028471c4ba040b38ff
 		%
 		% StaticSwitch -> StaticBlock 1..3 
 	    link(compositionUni)(pathStepX(StaticBlock.e, StaticSwitch.e, 30));
@@ -348,18 +419,27 @@
 	    link(compositionUni)(pathStepX(StaticBlock.w, TrackModel.w, -25));
 	    item(iAssoc)("*")(obj.nw = StaticBlock.w + (-20,0));
 	    item(iAssoc)("1")(obj.nw = TrackModel.w + (-20,0));
+<<<<<<< HEAD
 	    % TrackModel -> Database 1..1
 	    link(associationUni)(pathStepX(Database.n, TrackModel.s, 0));
 	    item(iAssoc)("1")(obj.ne = TrackModel.s + (-5,-10));
 	    item(iAssoc)("1")(obj.ne = Database.n + (0,10));
+=======
+>>>>>>> cb0fef120287901a33f813028471c4ba040b38ff
 	    % StaticBlock -> StaticSwitch 1..0-1
 	    link(associationUni)(pathStepX(StaticBlock.w + (0, -20), StaticSwitch.w, -25));
 	    item(iAssoc)("1")(obj.nw = StaticBlock.w + (-20,-20));
 	    item(iAssoc)("0..1")(obj.nw = StaticSwitch.w + (-20,-5));
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> cb0fef120287901a33f813028471c4ba040b38ff
 	\end{mpost}
 }
 \end{center}
 
+<<<<<<< HEAD
 
 \section{Sequence Diagrams}
 
@@ -404,10 +484,17 @@
 \end{center}
 
 \subsection{Sequence Diargam: Get Static Block}
+=======
+\section{Sequence Diagrams}
+
+\subsection{Call to TrackModel.getStaticBlock(id)}
+
+>>>>>>> cb0fef120287901a33f813028471c4ba040b38ff
 \begin{center}
 \resizebox{\textwidth}{!}{
  	\begin{sequencediagram}
 	\newthread{sim}{Caller}
+<<<<<<< HEAD
 	\newinst[3]{tm}{TrackModel}
 	\newinst[2]{db}{Database}
 	\newinst{sb}{StaticBlock}
@@ -416,6 +503,17 @@
 	\begin{call}{sim}{getStaticBlock(id)}{tm}{}
 		\begin{call}{tm}{execute(statement)}{db}{}
 		\end{call}
+=======
+	\newinst[4]{tm}{TrackModel}
+	\newinst[2]{sb}{StaticBlock}
+	\newinst{ss}{StaticSwitch}
+	
+	\begin{sdblock}{Initialization}{Before Using the API}
+		\begin{call}{sim}{Init()}{tm}{}
+		\end{call}
+	\end{sdblock}
+	\begin{call}{sim}{TrackModel.getStaticBlock(id)}{tm}{}
+>>>>>>> cb0fef120287901a33f813028471c4ba040b38ff
 		\begin{call}{tm}{StaticBlock()}{sb}{}
 		\end{call}
 		\begin{sdblock}{If A Switch is Attached}{}
@@ -427,7 +525,12 @@
 }
 \end{center}
 
+<<<<<<< HEAD
 \subsection{Sequence Diargam: Get Static Switch}
+=======
+\subsection{Call to TrackModel.getStaticSwitch(id)}
+
+>>>>>>> cb0fef120287901a33f813028471c4ba040b38ff
 \begin{center}
 \resizebox{\textwidth}{!}{
  	\begin{sequencediagram}
@@ -435,7 +538,15 @@
 	\newinst[5]{tm}{TrackModel}
 	\newinst[2]{ss}{StaticSwitch}
 	
+<<<<<<< HEAD
 	\begin{call}{sim}{getStaticSwitch(id)}{tm}{}
+=======
+	\begin{sdblock}{Initialization}{Before Using the API}
+		\begin{call}{sim}{Init()}{tm}{}
+		\end{call}
+	\end{sdblock}
+	\begin{call}{sim}{TrackModel.getStaticSwitch(id)}{tm}{}
+>>>>>>> cb0fef120287901a33f813028471c4ba040b38ff
 		\begin{call}{tm}{StaticSwitch()}{ss}{}
 		\end{call}
 		\begin{sdblock}{For Root, Default, Active}{}
@@ -447,6 +558,7 @@
 }
 \end{center}
 
+<<<<<<< HEAD
 \subsection{Sequence Diargam: Get Occupancy}
 
 \subsection{Sequence Diargam: Set Suggested Speed}
@@ -481,4 +593,6 @@
 
 \subsection{Sequence Diargam: Get Beacon Data}
 
+=======
+>>>>>>> cb0fef120287901a33f813028471c4ba040b38ff
 \end{document}
