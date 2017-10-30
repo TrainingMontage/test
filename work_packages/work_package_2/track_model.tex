@@ -41,7 +41,7 @@
 \begin{flushright}
     \rule{16cm}{5pt}\vskip1cm
     \begin{bfseries}
-        \Huge{USE CASE\\DIAGRAMS}\\
+        \Huge{TRACK MODEL USE CASE, CLASS, AND SEQUENCE DIAGRAMS}\\
         \vspace{.9cm}
         for\\
         \vspace{.9cm}
@@ -51,11 +51,7 @@
         \vspace{.9cm}
         Prepared by:\\
         Alec Rosenbaum\\
-        Aric Hudson\\
-        Isaac Goss\\
-        Mitch Moran\\
-        Parth Dadhania\\
-        \vspace{1.9cm}
+        \vspace{4.9cm}
         Training Montage\\
         \vspace{.9cm}
         \today\\
@@ -66,7 +62,7 @@
 
 \chapter{Track Model}
 
-\section{Use Case}
+\section{Use Cases}
 
 \begin{center}
 \resizebox{!}{.8\textheight}{
@@ -76,12 +72,14 @@
 		Actor.ctc("CTC");
 		Actor.wayside("Wayside");
 		Actor.trainmodel("Train Model");
+		Actor.traincontroller("Train Controller");
 	    % 
 	    Usecase.uA("Get Static Block");
 	    Usecase.uB("Get Static Switch");
 	    %
 	    Usecase.uC("Get Occupancy");
-		Usecase.uD("Set Suggested", "Speed + Authority");
+		Usecase.uD("Set Suggested", "Speed");
+		Usecase.uDD("Set Suggested", "Authority");
 		Usecase.uE("Set Maintainance");
 		Usecase.uF("Set Switch State");
 		Usecase.uG("Set Signals");
@@ -99,20 +97,23 @@
 		Usecase.uR("Get Beacon Data");
 		Usecase.uS("Teardown Train");
 	    %
-	    Component.TrackModel("Track Model")(uA,uB,uC,uD,uE,uF,uG,uH,uI,uJ,uK,uL,uM,uN,uO,uP,uQ,uR,uS);
+	    Component.TrackModel("Track Model")(uA,uB,uC,uD,uDD,uE,uF,uG,uH,uI,uJ,uK,uL,uM,uN,uO,uP,uQ,uR,uS);
 	    % 
-		topToBottom.left(10)(uA,uB,uC,uD,uE,uF,uG,uH,uI,uJ,uK);
+		topToBottom.left(10)(uA,uB,uC,uD,uDD,uE,uF,uG,uH,uI,uJ,uK);
 		leftToRight(50)(ctc, uB);
+		leftToRight(50)(traincontroller, uD);
 		leftToRight(50)(wayside, uG);
 		%
-		topToBottom.left(10)(uL,uM,uN,uO,uP,uQ,uR,uS);
-		leftToRight(10)(uA, uL);
-		leftToRight(50)(uO, trainmodel);
+		topToBottom.right(10)(uL,uM,uN,uO,uP,uQ,uR,uS);
+		leftToRight(100)(uC, uL);
+		leftToRight(50)(uL, trainmodel);
 	    % 
-	    drawObjects(ctc,wayside,trainmodel,TrackModel,uA,uB,uC,uD,uE,uF,uG,uH,uI,uJ,uK,uL,uM,uN,uO,uP,uQ,uR,uS);
+	    drawObjects(ctc,wayside,trainmodel,traincontroller,TrackModel,uA,uB,uC,uD,uDD,uE,uF,uG,uH,uI,uJ,uK,uL,uM,uN,uO,uP,uQ,uR,uS);
 		%
 	    link(association)(pathCut(ctc, uA)(ctc.e -- uA.w));
 	    link(association)(pathCut(ctc, uA)(ctc.e -- uB.w));
+	    link(association)(pathCut(traincontroller, uA)(traincontroller.e -- uA.w));
+	    link(association)(pathCut(traincontroller, uA)(traincontroller.e -- uB.w));
 	    link(association)(pathCut(wayside, uA)(wayside.e -- uA.w));
 	    link(association)(pathCut(wayside, uB)(wayside.e -- uB.w));
 	    link(association)(pathCut(wayside, uC)(wayside.e -- uC.w));
@@ -125,6 +126,8 @@
 	    link(association)(pathCut(wayside, uJ)(wayside.e -- uJ.w));
 	    link(association)(pathCut(wayside, uK)(wayside.e -- uK.w));
 	    %
+	    link(association)(pathCut(trainmodel, uA)(trainmodel.w -- uA.e));
+	    link(association)(pathCut(trainmodel, uB)(trainmodel.w -- uB.e));
 	    link(association)(pathCut(trainmodel, uL)(trainmodel.w -- uL.e));
 	    link(association)(pathCut(trainmodel, uM)(trainmodel.w -- uM.e));
 	    link(association)(pathCut(trainmodel, uN)(trainmodel.w -- uN.e));
@@ -136,6 +139,43 @@
 	\end{mpost}
 }
 \end{center}
+
+\subsection{Use Case: Get Static Block}
+\begin{enumerate}
+	\item User calls getStaticBlock(blockId)
+	\item Intstance of StaticBlock populated with static data is returned.
+\end{enumerate}
+
+\subsection{Use Case: Get Static Switch}
+\begin{enumerate}
+	\item User calls getStaticSwitch(switchId)
+	\item Intstance of StaticSwitch populated with static data is returned.
+\end{enumerate}
+
+\subsection{Use Case: Get Occupancy}
+\begin{enumerate}
+	\item Wayside Actor calls isOccupied(blockId)
+	\item True is returned if block is occupied, False if block is unoccupied.
+\end{enumerate}
+
+\subsection{Use Case: Set Suggested Speed}
+\begin{enumerate}
+	\item Wayside calls setSpeed(blockId, speed)
+	\item Suggested speed is set for that block.
+\end{enumerate}
+
+\subsection{Use Case: Set Suggested Speed}
+\begin{enumerate}
+	\item Wayside calls setAuthority(blockId, authority)
+	\item Authority is set for that block.
+\end{enumerate}
+
+\subsection{Use Case: Set Maintainance}
+\begin{enumerate}
+	\item Wayside calls setStatus(blockId, BlockStatus.MAINTAIN)
+	\item The block status of blockId is set to be Maintainance.
+\end{enumerate}
+
 
 \section{Class Diagram}
 
@@ -163,7 +203,10 @@
 			"boolean isOccupied(int blockId)",
 			"BlockStatus getStatus(int blockId)"
 		);
-		% 
+		% Database
+	    Class.Database("Database")()(
+	    	"ResultSet execute(Statement)",
+		);
 		% Static Block
 		Class.StaticBlock("StaticBlock")()(
 			"-int setId(int id)",
@@ -190,9 +233,9 @@
 			"-StaticBlock setActiveLeaf(StaticBlock activeLeaf)"
 	    );
 		% 	
-		topToBottom.left(20)(TrackModel, StaticBlock, StaticSwitch);
+		topToBottom(30)(TrackModel, Database, StaticBlock, StaticSwitch);
 		% 
-	    drawObjects(TrackModel, StaticBlock, StaticSwitch);
+	    drawObjects(TrackModel, Database, StaticBlock, StaticSwitch);
 		%
 		% StaticSwitch -> StaticBlock 1..3 
 	    link(compositionUni)(pathStepX(StaticBlock.e, StaticSwitch.e, 30));
@@ -206,12 +249,14 @@
 	    link(compositionUni)(pathStepX(StaticBlock.w, TrackModel.w, -25));
 	    item(iAssoc)("*")(obj.nw = StaticBlock.w + (-20,0));
 	    item(iAssoc)("1")(obj.nw = TrackModel.w + (-20,0));
+	    % TrackModel -> Database 1..1
+	    link(associationUni)(pathStepX(Database.n, TrackModel.s, 0));
+	    item(iAssoc)("1")(obj.ne = TrackModel.s + (-5,-10));
+	    item(iAssoc)("1")(obj.ne = Database.n + (0,10));
 	    % StaticBlock -> StaticSwitch 1..0-1
 	    link(associationUni)(pathStepX(StaticBlock.w + (0, -20), StaticSwitch.w, -25));
 	    item(iAssoc)("1")(obj.nw = StaticBlock.w + (-20,-20));
 	    item(iAssoc)("0..1")(obj.nw = StaticSwitch.w + (-20,-5));
-
-
 	\end{mpost}
 }
 \end{center}
