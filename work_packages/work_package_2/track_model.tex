@@ -73,7 +73,9 @@
 		Actor.wayside("Wayside");
 		Actor.trainmodel("Train Model");
 		Actor.traincontroller("Train Controller");
+		Actor.simrunner("SimulationRunner");
 	    % 
+	    Usecase.uO("Get Passengers Departed");
 	    Usecase.uA("Get Static Block");
 	    Usecase.uB("Get Static Switch");
 	    %
@@ -88,32 +90,37 @@
 		Usecase.uJ("Get Signal");
 		Usecase.uK("Get Crossing");
 		%
+		Usecase.uKK("Initalize TrackModel");
+		%
 		Usecase.uL("Initalize Train");
 		Usecase.uM("Get Suggested", "Authority");
 		Usecase.uN("Get Suggested", "Speed");
-		Usecase.uO("Get Passengers");
 		Usecase.uP("Get Grade");
 		Usecase.uQ("Get If Track", "Is Icy");
 		Usecase.uR("Get Beacon Data");
 		Usecase.uS("Teardown Train");
 	    %
-	    Component.TrackModel("Track Model")(uA,uB,uC,uD,uDD,uE,uF,uG,uH,uI,uJ,uK,uL,uM,uN,uO,uP,uQ,uR,uS);
+	    Component.TrackModel("Track Model")(uA,uB,uC,uD,uDD,uE,uF,uG,uH,uI,uJ,uK,uKK,uL,uM,uN,uO,uP,uQ,uR,uS);
 	    % 
-		topToBottom.left(10)(uA,uB,uC,uD,uDD,uE,uF,uG,uH,uI,uJ,uK);
-		leftToRight(50)(ctc, uB);
+		topToBottom.left(10)(uO,uA,uB,uC,uD,uDD,uE,uF,uG,uH,uI,uJ,uK);
+		leftToRight(50)(ctc, uA);
 		leftToRight(50)(traincontroller, uD);
 		leftToRight(50)(wayside, uG);
 		%
-		topToBottom.right(10)(uL,uM,uN,uO,uP,uQ,uR,uS);
+		topToBottom.right(10)(uL,uM,uN,uP,uQ,uR,uS,uKK);
 		leftToRight(100)(uC, uL);
 		leftToRight(50)(uL, trainmodel);
+		leftToRight(50)(uKK, simrunner);
 	    % 
-	    drawObjects(ctc,wayside,trainmodel,traincontroller,TrackModel,uA,uB,uC,uD,uDD,uE,uF,uG,uH,uI,uJ,uK,uL,uM,uN,uO,uP,uQ,uR,uS);
+	    drawObjects(ctc,wayside,trainmodel,traincontroller,simrunner,TrackModel,uA,uB,uC,uD,uDD,uE,uF,uG,uH,uI,uJ,uK,uL,uM,uN,uO,uP,uQ,uR,uS);
 		%
 	    link(association)(pathCut(ctc, uA)(ctc.e -- uA.w));
 	    link(association)(pathCut(ctc, uA)(ctc.e -- uB.w));
+	    link(association)(pathCut(ctc, uO)(ctc.e -- uO.w));
+	    %
 	    link(association)(pathCut(traincontroller, uA)(traincontroller.e -- uA.w));
 	    link(association)(pathCut(traincontroller, uA)(traincontroller.e -- uB.w));
+	    %
 	    link(association)(pathCut(wayside, uA)(wayside.e -- uA.w));
 	    link(association)(pathCut(wayside, uB)(wayside.e -- uB.w));
 	    link(association)(pathCut(wayside, uC)(wayside.e -- uC.w));
@@ -126,12 +133,13 @@
 	    link(association)(pathCut(wayside, uJ)(wayside.e -- uJ.w));
 	    link(association)(pathCut(wayside, uK)(wayside.e -- uK.w));
 	    %
+	    link(association)(pathCut(simrunner, uKK)(simrunner.w -- uKK.e));
+	    %
 	    link(association)(pathCut(trainmodel, uA)(trainmodel.w -- uA.e));
 	    link(association)(pathCut(trainmodel, uB)(trainmodel.w -- uB.e));
 	    link(association)(pathCut(trainmodel, uL)(trainmodel.w -- uL.e));
 	    link(association)(pathCut(trainmodel, uM)(trainmodel.w -- uM.e));
 	    link(association)(pathCut(trainmodel, uN)(trainmodel.w -- uN.e));
-	    link(association)(pathCut(trainmodel, uO)(trainmodel.w -- uO.e));
 	    link(association)(pathCut(trainmodel, uP)(trainmodel.w -- uP.e));
 	    link(association)(pathCut(trainmodel, uQ)(trainmodel.w -- uQ.e));
 	    link(association)(pathCut(trainmodel, uR)(trainmodel.w -- uR.e));
@@ -140,10 +148,16 @@
 }
 \end{center}
 
+\subsection{Use Case: Get Passengers Departed}
+\begin{enumerate}
+	\item CTC calls getPassengers(trainId)
+	\item If train is at a station, number of passengers who left train is returned. Otherwise, 0 is returned.
+\end{enumerate}
+
 \subsection{Use Case: Get Static Block}
 \begin{enumerate}
 	\item User calls getStaticBlock(blockId)
-	\item Intstance of StaticBlock populated with static data is returned.
+	\item Instance of StaticBlock populated with static data is returned.
 \end{enumerate}
 
 \subsection{Use Case: Get Static Switch}
@@ -176,6 +190,90 @@
 	\item The block status of blockId is set to be Maintainance.
 \end{enumerate}
 
+\subsection{Use Case: Set Switch State}
+\begin{enumerate}
+	\item Wayside calls setStatus(blockId, BlockStatus.MAINTAIN)
+	\item The block status of blockId is set to be Maintainance.
+\end{enumerate}
+
+\subsection{Use Case: Set Signal}
+\begin{enumerate}
+	\item Wayside calls setSignal(blockId, signal)
+	\item The signal on block blockId is set to <signal> (true for green, false for red).
+\end{enumerate}
+
+\subsection{Use Case: Get Signal}
+\begin{enumerate}
+	\item Wayside calls getSignal(blockId)
+	\item The signal state on blockId is returned (true for green, false for red).
+\end{enumerate}
+
+\subsection{Use Case: Set Railroad Crossing}
+\begin{enumerate}
+	\item Wayside calls setCrossing(blockId, state)
+	\item The state of the crossing is set to <state> (true for active, false for inactive).
+\end{enumerate}
+
+\subsection{Use Case: Get Crossing}
+\begin{enumerate}
+	\item Wayside calls getCrossing(blockId)
+	\item The corssing status of blockId is returned (true for active, false for inactive).
+\end{enumerate}
+
+\subsection{Use Case: Get Block State}
+\begin{enumerate}
+	\item Wayside calls getStatus(blockId)
+	\item The block status of blockId is returned (an option from enum BlockStatus).
+\end{enumerate}
+
+\subsection{Use Case: Initialize Train}
+\begin{enumerate}
+	\item Train Model calls initializeTrain(trainId, blockId)
+	\item The train is placed on to the track.
+\end{enumerate}
+
+\subsection{Use Case: Teardown Train}
+\begin{enumerate}
+	\item Train Model calls teardownTrain(trainId)
+	\item The train is removed from the track.
+\end{enumerate}
+
+\subsection{Use Case: Get Suggested Authority}
+\begin{enumerate}
+	\item Train Model calls getTrainAuthority(trainId)
+	\item The track model determines the location of the train, and returns the authority.
+\end{enumerate}
+
+\subsection{Use Case: Get Suggested Speed}
+\begin{enumerate}
+	\item Train Model calls getTrainSpeed(trainId)
+	\item The track model determines the location or the train, and returns the suggested speed.
+\end{enumerate}
+
+\subsection{Use Case: Get Grade}
+\begin{enumerate}
+	\item Train Model calls getGrade(trainId)
+	\item The track model determines the location or the train, and returns the grade of that block.
+\end{enumerate}
+
+\subsection{Use Case: Get If Track is Icy}
+\begin{enumerate}
+	\item Train Model calls isTrackIcy(trainId)
+	\item The track model determines the location or the train, and returns if the track is icy (true for icy, false otherwise).
+\end{enumerate}
+
+\subsection{Use Case: Get Beacon Data}
+\begin{enumerate}
+	\item Train Model calls getBeacon(trainId)
+	\item The track model determines the location or the train, and returns the beacon data at that block if a beacon is present (null if no beacon is present).
+\end{enumerate}
+
+\subsection{Use Case: Initialize TrackModel}
+\begin{enumerate}
+	\item SimulationRunner calls init()
+	\item The track model performs initialization tasks and returns the singleton TrackModel instance.
+\end{enumerate}
+
 
 \section{Class Diagram}
 
@@ -185,6 +283,7 @@
 		input metauml;
 	    % Track Model
 	    Class.TrackModel("TrackModel")()(
+	    	"TrackModel init()",
 	    	"int getTrainAuthority(int trainId)",
 			"double getTrainSpeed(int trainId)",
 			"boolean setSignal(int blockId, boolean value)",
@@ -261,23 +360,62 @@
 }
 \end{center}
 
+
 \section{Sequence Diagrams}
 
-\subsection{Call to TrackModel.getStaticBlock(id)}
+% \begin{center}
+% \resizebox{\textwidth}{!}{
+%  	\begin{sequencediagram}
+% 	\newthread{sim}{Caller}
+% 	\newinst[4]{tm}{TrackModel}
+% 	\newinst[2]{sb}{StaticBlock}
+% 	\newinst{ss}{StaticSwitch}
+	
+% 	\begin{sdblock}{Initialization}{Before Using the API}
+% 		\begin{call}{sim}{Init()}{tm}{}
+% 		\end{call}
+% 	\end{sdblock}
+% 	\begin{call}{sim}{TrackModel.getStaticBlock(id)}{tm}{}
+% 		\begin{call}{tm}{StaticBlock()}{sb}{}
+% 		\end{call}
+% 		\begin{sdblock}{If A Switch is Attached}{}
+% 			\begin{call}{tm}{StaticSwitch()}{ss}{}
+% 			\end{call}
+% 		\end{sdblock}
+% 	\end{call}
+% 	\end{sequencediagram}
+% }
+% \end{center}
 
+\subsection{Sequence Diargam: Get Passengers Departed}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{ctc}{CTC}
+	\newinst[4]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{ctc}{getPassengers(trainId)}{tm}{}
+		\begin{call}{tm}{execute(statement)}{db}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diargam: Get Static Block}
 \begin{center}
 \resizebox{\textwidth}{!}{
  	\begin{sequencediagram}
 	\newthread{sim}{Caller}
-	\newinst[4]{tm}{TrackModel}
-	\newinst[2]{sb}{StaticBlock}
+	\newinst[3]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	\newinst{sb}{StaticBlock}
 	\newinst{ss}{StaticSwitch}
 	
-	\begin{sdblock}{Initialization}{Before Using the API}
-		\begin{call}{sim}{Init()}{tm}{}
+	\begin{call}{sim}{getStaticBlock(id)}{tm}{}
+		\begin{call}{tm}{execute(statement)}{db}{}
 		\end{call}
-	\end{sdblock}
-	\begin{call}{sim}{TrackModel.getStaticBlock(id)}{tm}{}
 		\begin{call}{tm}{StaticBlock()}{sb}{}
 		\end{call}
 		\begin{sdblock}{If A Switch is Attached}{}
@@ -289,8 +427,7 @@
 }
 \end{center}
 
-\subsection{Call to TrackModel.getStaticSwitch(id)}
-
+\subsection{Sequence Diargam: Get Static Switch}
 \begin{center}
 \resizebox{\textwidth}{!}{
  	\begin{sequencediagram}
@@ -298,11 +435,7 @@
 	\newinst[5]{tm}{TrackModel}
 	\newinst[2]{ss}{StaticSwitch}
 	
-	\begin{sdblock}{Initialization}{Before Using the API}
-		\begin{call}{sim}{Init()}{tm}{}
-		\end{call}
-	\end{sdblock}
-	\begin{call}{sim}{TrackModel.getStaticSwitch(id)}{tm}{}
+	\begin{call}{sim}{getStaticSwitch(id)}{tm}{}
 		\begin{call}{tm}{StaticSwitch()}{ss}{}
 		\end{call}
 		\begin{sdblock}{For Root, Default, Active}{}
@@ -313,5 +446,39 @@
 	\end{sequencediagram}
 }
 \end{center}
+
+\subsection{Sequence Diargam: Get Occupancy}
+
+\subsection{Sequence Diargam: Set Suggested Speed}
+
+\subsection{Sequence Diargam: Set Suggested Speed}
+
+\subsection{Sequence Diargam: Set Maintainance}
+
+\subsection{Sequence Diargam: Set Switch State}
+
+\subsection{Sequence Diargam: Set Signal}
+
+\subsection{Sequence Diargam: Get Signal}
+
+\subsection{Sequence Diargam: Set Railroad Crossing}
+
+\subsection{Sequence Diargam: Get Crossing}
+
+\subsection{Sequence Diargam: Get Block State}
+
+\subsection{Sequence Diargam: Initialize Train}
+
+\subsection{Sequence Diargam: Teardown Train}
+
+\subsection{Sequence Diargam: Get Suggested Authority}
+
+\subsection{Sequence Diargam: Get Suggested Speed}
+
+\subsection{Sequence Diargam: Get Grade}
+
+\subsection{Sequence Diargam: Get If Track is Icy}
+
+\subsection{Sequence Diargam: Get Beacon Data}
 
 \end{document}
