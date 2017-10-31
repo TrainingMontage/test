@@ -437,8 +437,8 @@ public class GUI {
 
             region.setText(block.getRegion());
             grade.setText(String.format("%.2f %%", block.getGrade()));
-            elevation.setText(String.format("%.2f ft", UnitUtils.metersToFeet(block.getElevation())));
-            length.setText(String.format("%.2f ft", UnitUtils.metersToFeet(block.getLength())));
+            elevation.setText(String.format("%.2f ft", Convert.metersToFeet(block.getElevation())));
+            length.setText(String.format("%.2f ft", Convert.metersToFeet(block.getLength())));
 
             // dynamic info
             occupied.setSelected(TrackModel.isOccupied(blockId));
@@ -465,10 +465,10 @@ public class GUI {
             TrackModel.setGrade(blockId, Double.parseDouble(str.substring(0, str.length() - 2)));
 
             str = elevation.getText();
-            TrackModel.setElevation(blockId, UnitUtils.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 3))));
+            TrackModel.setElevation(blockId, Convert.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 3))));
 
             str = length.getText();
-            TrackModel.setLength(blockId, UnitUtils.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 2))));
+            TrackModel.setLength(blockId, Convert.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 2))));
 
             // dynamic data
             TrackModel.setOccupied(blockId, occupied.isSelected());
