@@ -897,7 +897,7 @@ public class CTCGUI {
             trackSwitchText.setText("No Switch");
             trackLightText.setText("No Lights");
         }
-        if(stationName == null){
+        if(stationName == null || stationName.equals("")){
             trackStationText.setText("No Station");
             trackPassengersText.setText("");
         }else{
