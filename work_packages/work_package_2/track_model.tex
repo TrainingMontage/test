@@ -723,48 +723,23 @@
 \subsection{Approach}
 
 \subsubsection{Introduction}
-The overall project will simulate the 
+The overall project will simulate the operation of a public rail system. The role of the Track Model within the context of the overall system is to simulate the physical properties of the track, and keep track of where moving trains are. The Track Model provides an interface for other modules to retrieve static data about blocks on the track and provides an interface to the wayside controller and train model.
 
-Brief introduction about the project and objective of the current release. Project could be platform configuration tool and objective could new mobile App interface or new feature / enhancement in existing product or defect fixes.
+\subsubsection{Features Test}
+The features within the scope of this test plan include the storing/modifying the state of the track directly, the UI for interacting with the Track Model, the interface between the Track Model and the Wayside module, and the interface between the Track Model and the Train model. Interface must be tested to ensure functionality consistent with agreed-upon interfaces. The Track Model UI must be tested to allow full control and modification of data within the track model.
 
-\subsubsection{Test item}
-Introduction and overview of Software Under Test. Detailed information about the SUT.
-
-\subsubsection{Features to test}
-In scope features. This could be newly added or updated features. Indirect features that has technical or functional dependency on newly added or updated features.
-
-\subsubsection{Features not to test}
-Out of scope feature. Excluded product features from current Test Plan. [Note: Provide reasoning for exclusion, like, non-impacted / less impacted / less priority features, as applicable.]
+\subsubsection{Features Not Tested}
+This test plan will not include any features outside the scope of the Track Model. In this case, all functions not directly interacting with the track model are not included in the scope.
 
 \subsubsection{Approach}
-Strategy to test the software. Includes types of tests and how to test. Functional, performance, security testing using combined [manual + automation], manual only, automation only approach.
+The primary form of tests performed will be functional tests. Interfaces will be tested using an array of automated tests that validate the expected function of each method included in the interface. Manual tests are also to be conducted for verification of UI functionality. Requirements state that the system must operate at 10x wall-clock speed. The track model is not expected bottleneck performance, thus performance testing will not be conducted unless the manual tests indicate that ther may be performance issues.
 
 \subsubsection{Test deliverables}
-All the deliverables from the testing e.g. approaches, test cases, reports etc.
-
-\subsubsection{Item pass/fail criteria}
- Entry and Exit criteria for all items. E.g.
-
-TestCase: All Steps passed
-Feature: All test cases executed and no P1, P2 defects are open.
-Testing tasks: All tasks / steps to execute for test planning and execution
-
-\subsubsection{Environmental needs}
-Infrastructure required for application and testing.
-
-\subsubsection{Responsibilities}
-Roles and responsibilities for various testing / supported activities.
-
-\subsubsection{Staffing and training needs}
-Training / hiring needs to bridge the gap of available and expected skill.
-
-\subsubsection{Schedule}
-Test estimation (Efforts) and high-level schedule. Schedule should be for key deliverables or important milestones. Ideally, all test deliverables included in the test plan should be scheduled. Detailed test schedule (at feature or defects or resource level) is prepared at appropriate time during test execution.
-
-\subsubsection{Risks and Mitigation}
-Risk identification for applicable items, assumptions, and mitigation plan.
+All tests desribed by this plan will be executed in order to ensure quality. All automated tests must be passing; automated tests run automatically every time the software changes. Manual tests must be performed before every deliverable. An executed test plan and defect report will be delivered with Work Package 3.
 
 \subsection{Test Cases}
+
+\subsubsection{Case 1}
 
 \subsection{Tracibility Matrix}
 
