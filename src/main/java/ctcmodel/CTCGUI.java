@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
-import shared.UnitUtils;
+import shared.Convert;
 import shared.BlockStatus;
 
 public class CTCGUI {
@@ -882,7 +882,7 @@ public class CTCGUI {
         StaticBlock staticBlock = TrackModel.getStaticBlock(blockID);
         StaticSwitch staticSwitch = staticBlock.getStaticSwitch();
         trackIDText.setText("" + staticBlock.getId());
-        trackSpeedText.setText("" + UnitUtils.metersToFeet(staticBlock.getSpeedLimit())*3600.0/5280.0 + " mph");//convert units
+        trackSpeedText.setText("" + Convert.metersToFeet(staticBlock.getSpeedLimit())*3600.0/5280.0 + " mph");//convert units
         trackLengthText.setText("" + staticBlock.getLength() + " ft");
         trackGradeText.setText("" + staticBlock.getGrade() + "%");
         trackElevationText.setText("" + staticBlock.getElevation() + " ft");
@@ -977,7 +977,7 @@ public class CTCGUI {
         if(data != null){
             trainIDText.setText("" + data.getTrainID());
             trainBlockText.setText("" + data.getBlockID());
-            trainSpeedText.setText("" + UnitUtils.metersToFeet(data.getSpeed())*3600.0/5280.0 + " mph");//convert m/s to mph
+            trainSpeedText.setText("" + Convert.metersToFeet(data.getSpeed())*3600.0/5280.0 + " mph");//convert m/s to mph
             trainAuthorityText.setText(data.getAuthority());
             trainOriginText.setText("" + data.getOrigin());
             trainDestinationText.setText("" + data.getDestination());
