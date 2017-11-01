@@ -259,6 +259,19 @@
         \item If SU enters an invalid block ID, then a popup will appear reporting the error.
     \end{enumerate}
 
+    \use{Initialize Wayside Controller}
+    \begin{enumerate}
+        \item Simulation Runner (SR) calls ``WaysideController.init()''.
+        \item WC constructs all WC objects, and makes all windows visible to allow SU to upload PLC.
+    \end{enumerate}
+
+    \use{Initialize Wayside Controller with Default Data}
+    \begin{enumerate}
+        \item SR calls ``WaysideController.init(String[])'' with the PLC code per wayside controller.
+        \item WC constructs all WC objects, and gives them the PLC code given in ``init()''.
+        \item The WC objects then compile their respective PLC.
+    \end{enumerate}
+
     \section{Class Diagram}
     
     \begin{center}
