@@ -615,4 +615,93 @@
         \end{sequencediagram}
     }
     \end{center}
+
+    \subsection{Sequence Diargam: Manually Suggest Speed \& Authority}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{su}{Simulation User}
+            \newinst[5]{wc}{Wayside}
+            \newinst[5]{tm}{TrackModel}
+            
+            \begin{call}{su}
+                {submit(Suggestion[])}{wc}{}
+                \begin{call}
+                    {wc}{validate()}{wc}{}
+                \end{call}
+
+                \begin{call}
+                    {wc}{setSpeed(blockId, value)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setAuthority(blockId, value)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setSwitch(blockId, value)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setSignal(blockId, value)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setCrossing(blockId, value)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Manually Suggest Speed \& Authority (Variant: Unsafe Suggestion)}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{su}{Simulation User}
+            \newinst[5]{wc}{Wayside}
+            \newinst[5]{tm}{TrackModel}
+            
+            \begin{call}{su}
+                {submit(Suggestion[])}{wc}{}
+                \begin{call}
+                    {wc}{validate()}{wc}{}
+                \end{call}
+
+                \begin{call}
+                    {wc}{setSpeed(blockId, 0)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setAuthority(blockId, false)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setSignal(blockId, false)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setCrossing(blockId, false)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: View Multiple Wayside Controller Windows}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{su}{Simulation User}
+            \newinst[5]{wc}{Wayside}
+            \newinst[5]{pop}{Popup}
+            
+            \begin{call}
+                {su}{openWC()}{wc}{}
+                \begin{call}
+                    {wc}{getBlockId()}{pop}{blockId}
+                \end{call}
+                \begin{call}
+                    {wc}{findWC(block)}{wc}{WaysideController}
+                \end{call}
+                \begin{call}
+                    {wc}{setVisible()}{wc}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
 \end{document}
