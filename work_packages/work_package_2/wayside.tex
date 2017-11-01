@@ -197,16 +197,42 @@
     %========== Sim User ===========
     \use{Manually Suggest Speed \& Authority}
     \begin{enumerate}
-        \item Simulation User (SU) 
+        \item Simulation User (SU) suggestion into table of the GUI, as per the Users' Manual.
+        \item SU then hits the ``Submit'' button.
+        \item WC reads this information, and verifies that the suggestion is safe.
+        \item WC then sends the following to TrackModel:
+        \begin{itemize}
+            \item The given speed and authority.
+            \item The position of switches necessary for this route.
+            \item Activates any crossings necessary for this route.
+            \item The state of all signals necessary for this route.
+        \end{itemize}
+    \end{enumerate}
+    \subsubsection{Variant: Unsafe Suggestion}
+    \begin{enumerate}[label=\arabic*a., start=4]
+        \item If WC does not find this suggestion to be safe, then it will instead send the following to the TrackModel:
+            \begin{itemize}
+                \item No authority to all blocks.
+                \item 0 speed to all blocks.
+                \item Deactivates all crossing which are not currently occupied.
+                \item Deactivates all signals.
+            \end{itemize}
     \end{enumerate}
 
     \use{View Track State}
     \begin{enumerate}
-        \item 
+        \item An automatically updating table of track state will be visible in the WC window.
     \end{enumerate}
 
     \use{Open Multiple Wayside Contolle Windows}
     \begin{enumerate}
-        \item 
+        \item SU pushes the ``Open Wayside'' button.
+        \item A popup with a text field appears.
+        \item SU enters a block ID into this field, and hits the ``Open'' button.
+        \item A new WC window appears representing the controller which has control over the given block.
+    \end{enumerate}
+    \subsubsection{Variant: Invalid Block}
+    \begin{enumerate}[label = \arabic*a., start = 4]
+        \item If SU enters an invalid block ID, then a popup will appear reporting the error.
     \end{enumerate}
 \end{document}
