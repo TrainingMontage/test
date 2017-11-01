@@ -21,6 +21,7 @@
                 Actor.ctc("CTC");
                 Actor.weng("Wayside", "Engineer");
                 Actor.simuser("Simulation", "User");
+                Actor.simrunner("Simulation", "Runner");
                 %======== CTC Uses =========
                 Usecase.uGetOcc      ("Get Occupancy");
                 Usecase.uGetStatus   ("Get Block Status");
@@ -36,6 +37,9 @@
                 Usecase.uManSuggest("Manual Suggestion");
                 Usecase.uViewData("View Track State");
                 Usecase.uMultWindow("Open Multiple", "Windows");
+                %======== SimRunner Uses ========
+                Usecase.uInit("Initialize");
+                Usecase.uInitWData("Initialize", "With Data");
                 %======== This Component? =========
                 Component.Wayside("WaysideController")(
                     uGetOcc,
@@ -49,7 +53,9 @@
                     uPLC,
                     uManSuggest,
                     uViewData,
-                    uMultWindow
+                    uMultWindow,
+                    uInit,
+                    uInitWData
                 );
                 %======== CTC use cases ========
                 topToBottom.left(10)(
@@ -67,15 +73,20 @@
                 topToBottom.right(10)(
                     uManSuggest,
                     uViewData,
-                    uMultWindow
+                    uMultWindow,
+                );
+                topToBottom.right(10)(
+                    uInit,
+                    uInitWData
                 );
                 leftToRight(70)(uGetOcc, uPLC);
                 leftToRight(25)(uPLC, weng);
                 leftToRight(25)(uViewData, simuser);
-                topToBottom(100)(weng, simuser);
+                leftToRight(25)(uInitWData, simrunner);
+                topToBottom(100)(weng, simuser, simrunner);
                 %======== Draw that shit!! ========
                 drawObjects(
-                    ctc,weng,simuser,WaysideController,
+                    ctc,weng,simuser,WaysideController,simrunner,
                     uGetOcc,
                     uGetStatus,
                     uGetSig,
@@ -87,7 +98,9 @@
                     uPLC,
                     uManSuggest,
                     uViewData,
-                    uMultWindow
+                    uMultWindow,
+                    uInit,
+                    uInitWData
                 );
                 %======== CTC Lines ========
                 link(association)(pathCut(ctc, uGetOcc)      (ctc.e -- uGetOcc.w));
@@ -104,6 +117,9 @@
                 link(association)(pathCut(simuser, uManSuggest)(simuser.w -- uManSuggest.e));
                 link(association)(pathCut(simuser, uViewData)(simuser.w -- uViewData.e));
                 link(association)(pathCut(simuser, uMultWindow)(simuser.w -- uMultWindow.e));
+                %======== SimRunner Lines =======
+                link(association)(simrunner.w -- uInit.e);
+                link(association)(simrunner.w -- uInitWData.e);
             \end{mpost}
         }
     \end{center}
