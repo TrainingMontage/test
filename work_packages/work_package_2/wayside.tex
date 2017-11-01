@@ -1,5 +1,6 @@
 \documentclass{scrreprt}
 \usepackage[shellescape]{gmp}
+\usepackage{enumitem}
 \begin{document}
 
     \chapter{Wayside Controller}
@@ -105,42 +106,75 @@
     %========= CTC User Stories ========
     \use{Get Occupancy}
     \begin{enumerate}
-        \item 
+        \item CTC calls ``isOccupied()'' with the proper block ID.
+        \item WC returns true if block is occupied, false otherwise.
     \end{enumerate}
 
     \use{Get Block Status}
     \begin{enumerate}
-        \item 
+        \item CTC calls ``getBlockStatus()'' with the proper block ID.
+        \item WC returns one of ``OPERATIONAL'', ``BROKEN'', ``REPAIR''.
     \end{enumerate}
 
     \use{Get Signal}
     \begin{enumerate}
-        \item 
+        \item CTC calls ``getSignal()'' with the proper block ID.
+        \item WC returns true if signal is active, false otherwise.
     \end{enumerate}
 
     \use{Get Crossing}
     \begin{enumerate}
-        \item 
+        \item CTC calls ``getCrossing()'' with the proper block ID.
+        \item WC returns true if railroad crossing is active, false otherwise.
     \end{enumerate}
 
     \use{Get Switch State}
     \begin{enumerate}
-        \item 
+        \item CTC calls ``getSwtich()'' with the proper block ID.
+        \item WC returns true if switch is in active position, false otherwise.
     \end{enumerate}
 
     \use{Set Block Status}
     \begin{enumerate}
-        \item 
+        \item CTC calls ``setBlockStatus()'' with the proper block ID, and the desired state.
+        \item WC sends signal to TrackModel to set the status of the block with the given ID to the desired state.
+        \item WC then returns the actual status of the block after assignment.
     \end{enumerate}
 
     \use{Toggle Switch State}
     \begin{enumerate}
-        \item 
+        \item CTC calls ``toggleSwitch()'' with the proper block ID.
+        \item WC validates this is safe.
+        \item WC sends signal to TrackModel to toggle specified switch.
+        \item WC then returns switch position.
+    \end{enumerate}
+    \subsubsection{Variant: Unsafe Toggle}
+    \begin{enumerate}[label=3\alph*.]
+        \item If WC fails to validate that this is safe, it does not send this message to TrackModel.
     \end{enumerate}
 
     \use{Suggest Speed \& Authority}
     \begin{enumerate}
-        \item 
+        \item CTC calls ``suggest()'' with suggestion encoded in the proper format.
+        \item WC validates that this input is safe.
+        \item WC then sends the following to TrackModel:
+            \begin{itemize}
+                \item The given speed and authority.
+                \item The position of switches necessary for this route.
+                \item Activates any crossings necessary for this route.
+                \item The state of all signals necessary for this route.
+            \end{itemize}
+    \end{enumerate}
+
+    \subsubsection{Variant: Unsafe Suggestion}
+    \begin{enumerate}[label=\arabic*a., start=3]
+        \item If WC does not find this suggestion to be safe, then it will instead send the following to the TrackModel:
+            \begin{itemize}
+                \item No authority to all blocks.
+                \item 0 speed to all blocks.
+                \item Deactivates all crossing which are not currently occupied.
+                \item Deactivates all signals.
+            \end{itemize}
     \end{enumerate}
 
     %========== Wayside Users =========
