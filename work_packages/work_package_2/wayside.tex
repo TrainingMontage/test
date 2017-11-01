@@ -13,7 +13,7 @@
                 vardef drawComponentVisualStereotype(text ne)= relax enddef;
                 Actor.ctc("CTC");
                 Actor.weng("Wayside", "Engineer");
-                Actor.simrunner("Simulation", "Runner");
+                Actor.simuser("Simulation", "User");
                 %======== CTC Uses =========
                 Usecase.uGetOcc      ("Get Occupancy");
                 Usecase.uGetStatus   ("Get Block Status");
@@ -25,7 +25,7 @@
                 Usecase.uSuggest     ("Suggest Speed", "& Authority");
                 %======== Wayside Engineer Uses =========
                 Usecase.uPLC("Upload PLC");
-                %======== SimRunner Uses =========
+                %======== simuser Uses =========
                 Usecase.uManSuggest("Manual Suggestion");
                 Usecase.uViewData("View Track State");
                 Usecase.uMultWindow("Open Multiple", "Windows");
@@ -56,7 +56,7 @@
                     uSuggest
                 );
                 leftToRight(25)(ctc, uGetCross);
-                %======== WaysideEngineer/SimRunner use cases ========
+                %======== WaysideEngineer/simuser use cases ========
                 topToBottom.right(10)(
                     uManSuggest,
                     uViewData,
@@ -64,11 +64,11 @@
                 );
                 leftToRight(70)(uGetOcc, uPLC);
                 leftToRight(25)(uPLC, weng);
-                leftToRight(25)(uViewData, simrunner);
-                topToBottom(100)(weng, simrunner);
+                leftToRight(25)(uViewData, simuser);
+                topToBottom(100)(weng, simuser);
                 %======== Draw that shit!! ========
                 drawObjects(
-                    ctc,weng,simrunner,TrackModel,
+                    ctc,weng,simuser,TrackModel,
                     uGetOcc,
                     uGetStatus,
                     uGetSig,
@@ -93,10 +93,10 @@
                 link(association)(pathCut(ctc, uSuggest)     (ctc.e -- uSuggest.w));
                 %======== WaysdideEng Lines ========
                 link(association)(pathCut(weng, uPLC)(weng.w -- uPLC.e));
-                %======== SimRunner Lines ========
-                link(association)(pathCut(simrunner, uManSuggest)(simrunner.w -- uManSuggest.e));
-                link(association)(pathCut(simrunner, uViewData)(simrunner.w -- uViewData.e));
-                link(association)(pathCut(simrunner, uMultWindow)(simrunner.w -- uMultWindow.e));
+                %======== simuser Lines ========
+                link(association)(pathCut(simuser, uManSuggest)(simuser.w -- uManSuggest.e));
+                link(association)(pathCut(simuser, uViewData)(simuser.w -- uViewData.e));
+                link(association)(pathCut(simuser, uMultWindow)(simuser.w -- uMultWindow.e));
             \end{mpost}
         }
     \end{center}
@@ -180,12 +180,24 @@
     %========== Wayside Users =========
     \use{Upload PLC}
     \begin{enumerate}
-        \item 
+        \item Wayside Engineer (WE) pushes ``Upload PLC'' button.
+        \item A File Chooser popup appears.
+        \item WE chooses desired file.
+        \item Popup appears stating PLC has successfully been uploaded.
+    \end{enumerate}
+    \subsubsection{Variant: Unable to Read File}
+    \begin{enumerate}[label = \arabic*a., start = 4]
+        \item If the selected file cannot be read for any reason, then a popup will appear reporting the error.
+    \end{enumerate}
+    \subsubsection{Variant: Invalid PLC}
+    \begin{enumerate}[label = \arabic*b., start = 4]
+        \item If the selected file does not contain valid PLC code, then a popup will appear reporting the error.
     \end{enumerate}
 
+    %========== Sim User ===========
     \use{Manually Suggest Speed \& Authority}
     \begin{enumerate}
-        \item 
+        \item Simulation User (SU) 
     \end{enumerate}
 
     \use{View Track State}
