@@ -1,0 +1,133 @@
+\documentclass{scrreprt}
+\usepackage[shellescape]{gmp}
+\begin{document}
+
+    \chapter{Wayside Controller}
+    \section{Use Cases}
+
+    \begin{center}
+        \resizebox{!}{.8\textheight}{
+            \begin{mpost}
+                input metauml;
+                vardef drawComponentVisualStereotype(text ne)= relax enddef;
+                Actor.ctc("CTC");
+                Actor.weng("Wayside", "Engineer");
+                Actor.simrunner("Simulation", "Runner");
+                %======== CTC Uses =========
+                Usecase.uGetOcc      ("Get Occupancy");
+                Usecase.uGetStatus   ("Get Block Status");
+                Usecase.uGetSig      ("Get Signal");
+                Usecase.uGetCross    ("Get Crossing");
+                Usecase.uGetSwitch   ("Get Switch State");
+                Usecase.uSetStatus   ("Set Block Status");
+                Usecase.uToggleSwitch("Toggle Switch");
+                Usecase.uSuggest     ("Suggest Speed", "& Authority");
+                %======== Wayside Engineer Uses =========
+                Usecase.uPLC("Upload PLC");
+                %======== SimRunner Uses =========
+                Usecase.uManSuggest("Manual Suggestion");
+                Usecase.uViewData("View Track State");
+                Usecase.uMultWindow("Open Multiple", "Windows");
+                %======== This Component? =========
+                Component.Wayside("WaysideController")(
+                    uGetOcc,
+                    uGetStatus,
+                    uGetSig,
+                    uGetCross,
+                    uGetSwitch,
+                    uSetStatus,
+                    uToggleSwitch,
+                    uSuggest,
+                    uPLC,
+                    uManSuggest,
+                    uViewData,
+                    uMultWindow
+                );
+                %======== CTC use cases ========
+                topToBottom.left(10)(
+                    uGetOcc,
+                    uGetStatus,
+                    uGetSig,
+                    uGetCross,
+                    uGetSwitch,
+                    uSetStatus,
+                    uToggleSwitch,
+                    uSuggest
+                );
+                leftToRight(25)(ctc, uGetCross);
+                %======== WaysideEngineer/SimRunner use cases ========
+                topToBottom.right(10)(
+                    uManSuggest,
+                    uViewData,
+                    uMultWindow
+                );
+                leftToRight(70)(uGetOcc, uPLC);
+                leftToRight(25)(uPLC, weng);
+                leftToRight(25)(uViewData, simrunner);
+                topToBottom(100)(weng, simrunner);
+                %======== Draw that shit!! ========
+                drawObjects(
+                    ctc,weng,simrunner,TrackModel,
+                    uGetOcc,
+                    uGetStatus,
+                    uGetSig,
+                    uGetCross,
+                    uGetSwitch,
+                    uSetStatus,
+                    uToggleSwitch,
+                    uSuggest,
+                    uPLC,
+                    uManSuggest,
+                    uViewData,
+                    uMultWindow
+                );
+                %======== CTC Lines ========
+                link(association)(pathCut(ctc, uGetOcc)      (ctc.e -- uGetOcc.w));
+                link(association)(pathCut(ctc, uGetStatus)   (ctc.e -- uGetStatus.w));
+                link(association)(pathCut(ctc, uGetSig)      (ctc.e -- uGetSig.w));
+                link(association)(pathCut(ctc, uGetCross)    (ctc.e -- uGetCross.w));
+                link(association)(pathCut(ctc, uGetSwitch)   (ctc.e -- uGetSwitch.w));
+                link(association)(pathCut(ctc, uSetStatus)   (ctc.e -- uSetStatus.w));
+                link(association)(pathCut(ctc, uToggleSwitch)(ctc.e -- uToggleSwitch.w));
+                link(association)(pathCut(ctc, uSuggest)     (ctc.e -- uSuggest.w));
+                %======== WaysdideEng Lines ========
+                link(association)(pathCut(weng, uPLC)(weng.w -- uPLC.e));
+                %======== SimRunner Lines ========
+                link(association)(pathCut(simrunner, uManSuggest)(simrunner.w -- uManSuggest.e));
+                link(association)(pathCut(simrunner, uViewData)(simrunner.w -- uViewData.e));
+                link(association)(pathCut(simrunner, uMultWindow)(simrunner.w -- uMultWindow.e));
+                % link(association)(pathCut(ctc, uA)(ctc.e -- uA.w));
+                % link(association)(pathCut(ctc, uA)(ctc.e -- uB.w));
+                % link(association)(pathCut(ctc, uO)(ctc.e -- uO.w));
+                % %
+                % link(association)(pathCut(traincontroller, uA)(traincontroller.e -- uA.w));
+                % link(association)(pathCut(traincontroller, uA)(traincontroller.e -- uB.w));
+                % %
+                % link(association)(pathCut(wayside, uA)(wayside.e -- uA.w));
+                % link(association)(pathCut(wayside, uB)(wayside.e -- uB.w));
+                % link(association)(pathCut(wayside, uC)(wayside.e -- uC.w));
+                % link(association)(pathCut(wayside, uD)(wayside.e -- uD.w));
+                % link(association)(pathCut(wayside, uE)(wayside.e -- uE.w));
+                % link(association)(pathCut(wayside, uF)(wayside.e -- uF.w));
+                % link(association)(pathCut(wayside, uG)(wayside.e -- uG.w));
+                % link(association)(pathCut(wayside, uH)(wayside.e -- uH.w));
+                % link(association)(pathCut(wayside, uI)(wayside.e -- uI.w));
+                % link(association)(pathCut(wayside, uJ)(wayside.e -- uJ.w));
+                % link(association)(pathCut(wayside, uK)(wayside.e -- uK.w));
+                % %
+                % link(association)(pathCut(simrunner, uKK)(simrunner.w -- uKK.e));
+                % %
+                % link(association)(pathCut(trainmodel, uA)(trainmodel.w -- uA.e));
+                % link(association)(pathCut(trainmodel, uB)(trainmodel.w -- uB.e));
+                % link(association)(pathCut(trainmodel, uL)(trainmodel.w -- uL.e));
+                % link(association)(pathCut(trainmodel, uM)(trainmodel.w -- uM.e));
+                % link(association)(pathCut(trainmodel, uN)(trainmodel.w -- uN.e));
+                % link(association)(pathCut(trainmodel, uP)(trainmodel.w -- uP.e));
+                % link(association)(pathCut(trainmodel, uQ)(trainmodel.w -- uQ.e));
+                % link(association)(pathCut(trainmodel, uR)(trainmodel.w -- uR.e));
+                % link(association)(pathCut(trainmodel, uS)(trainmodel.w -- uS.e));
+            \end{mpost}
+        }
+    \end{center}
+
+\end{document}
