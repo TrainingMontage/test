@@ -1,6 +1,13 @@
 \documentclass{scrreprt}
 \usepackage[shellescape]{gmp}
 \usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usepackage{pgf-umlsd}
+
+
 \begin{document}
 
     \chapter{Wayside Controller}
@@ -320,6 +327,158 @@
             % WaysideController -> View 1..1
             link(associationUni)(WaysideController.e -- View.w);
         \end{mpost}
+    }
+    \end{center}
+
+    \section{Sequence Diagrams}
+
+    \subsection{Sequence Diargam: Get Occupancy}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[3]{wc}{Wayside}
+            \newinst[3]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {isOccupied(blockId)}{wc}{}
+                \begin{call}{wc}
+                    {isOccupied(blockId)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Get Block Status}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[3]{wc}{Wayside}
+            \newinst[3]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {getStatus(blockId)}{wc}{BlockStatus}
+                \begin{call}{wc}
+                    {getStatus(blockId)}{tm}{BlockStatus}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Get Signal}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[3]{wc}{Wayside}
+            \newinst[3]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {getSignal(blockId)}{wc}{}
+                \begin{call}{wc}
+                    {getSignal(blockId)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Get Crossing}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[3]{wc}{Wayside}
+            \newinst[3]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {getCrossing(blockId)}{wc}{}
+                \begin{call}{wc}
+                    {getCrossing(blockId)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Get Switch State}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[3]{wc}{Wayside}
+            \newinst[3]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {getSwitch(blockId)}{wc}{}
+                \begin{call}{wc}
+                    {getSwitch(blockId)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Set Block Status}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[5]{wc}{Wayside}
+            \newinst[5]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {setStatus(blockId, BlockStatus)}{wc}{}
+                \begin{call}{wc}
+                    {setStatus(blockId, BlockStatus)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Toggle Switch State}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[5]{wc}{Wayside}
+            \newinst[5]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {toggleSwitch(blockId)}{wc}{}
+                \begin{call}
+                    {wc}{validate()}{wc}{}
+                \end{call}
+                \begin{call}
+                    {wc}{getSwitch(blockId)}{tm}{current}
+                \end{call}
+                \begin{call}{wc}
+                    {setSwitch(blockId, !current)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Toggle Switch State (Variation: Unsafe Toggle)}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[3]{wc}{Wayside}
+            \newinst[3]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {toggleSwitch(blockId)}{wc}{}
+                \begin{call}
+                    {wc}{validate()}{wc}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
     }
     \end{center}
 \end{document}
