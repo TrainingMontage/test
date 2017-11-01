@@ -739,11 +739,277 @@ All tests desribed by this plan will be executed in order to ensure quality. All
 
 \subsection{Test Cases}
 
-\subsubsection{Case 1}
+\subsubsection{IDENTIFIER: 000-GET-PASSENGERS-DEPARTED}
+TEST CASE: Get the number of passengers who get off a train at a station.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A populated train (id of 1) exists on block 1. Block 1 has a station on it.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.getPassengers(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tm.getPassengers(1) should return a number between 0 and the train's maximum capacity.
+\end{enumerate}
 
-TODO
+\subsubsection{IDENTIFIER: 000-GET-STATIC-BLOCK}
+TEST CASE: Get a StaticBlock populated with the information pertaining to a block.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.getStaticBlock(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tm.getStaticBlock() should return an instance of StaticBlock.
+	\item The instance should contain static data matching the test track data.
+\end{enumerate}
 
-\subsection{Tracibility Matrix}
+\subsubsection{IDENTIFIER: 000-GET-STATIC-SWITCH}
+TEST CASE: Get a StaticSwitch populated with the information pertaining to that switch.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.getStaticSwitch(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tm.getStaicSwitch should return an instance of StaticSwitch.
+	\item The instance should have non-null StaticBlocks set as the Root, Default, and Active nodes.
+	\item The StaticBlock for the Root node should be block 1
+	\item The StaticBlock for the Default node should be block 2
+	\item The StaticBlock for the Active node should be block 3
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-OCCUPANCY}
+TEST CASE: Get the occupancy of a block.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train exists on block 1.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.isOccupied(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tm.isOccupied(1) should return True
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-GET-OCCUPANCY}
+TEST CASE: Get the occupancy of a block.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train exists on block 1.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.isOccupied(2)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tm.isOccupied(2) should return False
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-SET-SUGGESTED-SPEED}
+TEST CASE: Set the suggested speed for a block
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.setSpeed(1, 15)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The suggested speed for block 1 within the database should be set to 15
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-SET-AUTHORITY}
+TEST CASE: Set the commanded authority for a block
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.setAuthority(1, true)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The authority for block 1 within the database should be set to 1
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-SET-AUTHORITY}
+TEST CASE: Set the commanded authority for a block
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.setAuthority(1, false)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The authority for block 1 within the database should be set to 0
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-SET-MAINTAINANCE}
+TEST CASE: Set a block's status to Maintainance
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-SET-SWITCH-STATE}
+TEST CASE:
+PRECONDITIONS:
+EXECUTION STEPS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-SET-SIGNAL}
+TEST CASE:
+PRECONDITIONS:
+EXECUTION STEPS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-SIGNAL}
+TEST CASE:
+PRECONDITIONS:
+EXECUTION STEPS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-SET-RAILROAD-CROSSING}
+TEST CASE:
+PRECONDITIONS:
+EXECUTION STEPS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-CROSSING}
+TEST CASE:
+PRECONDITIONS:
+EXECUTION STEPS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-BLOCK-STATE}
+TEST CASE:
+PRECONDITIONS:
+EXECUTION STEPS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-INITIALIZE-TRAIN}
+TEST CASE:
+PRECONDITIONS:
+EXECUTION STEPS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-TEARDOWN-TRAIN}
+TEST CASE:
+PRECONDITIONS:
+EXECUTION STEPS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-SUGGESTED-AUTHORITY}
+TEST CASE:
+PRECONDITIONS:
+EXECUTION STEPS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-SUGGESTED-SPEED}
+TEST CASE:
+PRECONDITIONS:
+EXECUTION STEPS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-GRADE}
+TEST CASE:
+PRECONDITIONS:
+EXECUTION STEPS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-IF-TRACK-IS-ICY}
+TEST CASE:
+PRECONDITIONS:
+EXECUTION STEPS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-BEACON-DATA}
+TEST CASE:
+PRECONDITIONS:
+EXECUTION STEPS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item asdf
+\end{enumerate}
+
+
+\subsection{Traceability Matrix}
 
 TODO
 
