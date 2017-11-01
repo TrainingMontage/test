@@ -68,7 +68,7 @@
                 topToBottom(100)(weng, simuser);
                 %======== Draw that shit!! ========
                 drawObjects(
-                    ctc,weng,simuser,TrackModel,
+                    ctc,weng,simuser,WaysideController,
                     uGetOcc,
                     uGetStatus,
                     uGetSig,
@@ -235,4 +235,91 @@
     \begin{enumerate}[label = \arabic*a., start = 4]
         \item If SU enters an invalid block ID, then a popup will appear reporting the error.
     \end{enumerate}
+
+    \section{Class Diagram}
+    
+    \begin{center}
+    \resizebox{.9\textwidth}{!}{
+        \begin{mpost}
+            input metauml;
+
+            Class.WaysideController("WaysideController")()(
+                "static void init()",
+                "static void init(String[])",
+                "boolean getSignal(int blockId)",
+                "boolean getSwitch(int blockId)",
+                "boolean getCrossing(int blockId)",
+                "boolean isOccupied(int blockId)",
+                "BlockStatus getStatus(int blockId)",
+                "boolean toggleSwitch(int blockId)",
+                "void suggest(List<Suggestion>)"
+            );
+            
+            Class.Compiler("Compiler")()(
+                "Instruction[] compile(String code)",
+            );
+            
+            Class.VirtualMachine("VirtualMachine")()(
+                "void load(Instruction[] program)",
+                "void run()"
+            );
+           
+            Class.View("View")()(
+                "boolean getSignal(int blockId)",
+                "boolean getSwitch(int blockId)",
+                "boolean getCrossing(int blockId)",
+                "boolean isOccupied(int blockId)",
+                "BlockStatus getStatus(int blockId)",
+                "boolean getAuthority(blockId)",
+                "int getSpeed(int blockId)",
+                "boolean setSignal(int blockId, boolean value)",
+                "boolean setSwitch(int blockId, boolean value)",
+                "boolean setCrossing(int blockId, boolean value)",
+                "boolean setOccupancy(int blockId, boolean value)",
+                "BlockStatus setStatus(int blockId, BlockStatus value)",
+                "boolean setAuthority(int blockId, boolean value)",
+                "int setSpeed(int blockId, int value)",
+                "boolean show()"
+            );
+
+            Class.RegFile("RegFile")()(
+                "boolean read(Register reg)",
+                "boolean write(Register reg, boolean value)"
+            );
+
+            Class.Instruction("Instruction")(
+                "int operation",
+                "Register src1",
+                "Register src2",
+                "Register dest",
+                "int target"
+            )();
+
+            %=========== Now to actually lay it aht! ===========
+            topToBottom(40)(View, Compiler, Instruction);
+            leftToRight(30)(WaysideController, View);
+            VirtualMachine.n = WaysideController.s + (0, -60);
+            RegFile.n = VirtualMachine.s + (0, -60);
+            
+            drawObjects(WaysideController, Compiler, VirtualMachine, View, Instruction, RegFile);
+            
+            % WaysideController -> VirtualMachine 1..1 
+            link(associationUni)(WaysideController.s -- VirtualMachine.n);
+            
+            % VirtualMachine -> Instruction 1..*
+            link(compositionUni)(Instruction.nw -- VirtualMachine.se);
+            item(iAssoc)("*")(obj.nw = Instruction.nw + (-16, 17));
+            item(iAssoc)("1")(obj.nw = VirtualMachine.se + (12, 7));
+            
+            % VirtualMachine -> RegFile 1..1
+            link(associationUni)(VirtualMachine.s -- RegFile.n);
+            
+            % WaysideController -> Compiler 1..1
+            link(associationUni)(WaysideController.s + (20, 0) -- Compiler.nw);
+            
+            % WaysideController -> View 1..1
+            link(associationUni)(WaysideController.e -- View.w);
+        \end{mpost}
+    }
+    \end{center}
 \end{document}
