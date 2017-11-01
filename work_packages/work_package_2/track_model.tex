@@ -845,173 +845,309 @@ TEST CASE: Set a block's status to Maintainance
 PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item asdf
+	\item Call _tm.setStatus(1, BlockStatus.BROKEN)
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item asdf
+	\item The status for block 1 within the database should be set to the ordinal value of BlockStatus.BROKEN (BlockStatus.BROKEN.ordinal())
 \end{enumerate}
 
 \subsubsection{IDENTIFIER: 000-SET-SWITCH-STATE}
-TEST CASE:
-PRECONDITIONS:
+TEST CASE: Set the state of a switch
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item asdf
+	\item Call _tm.setSwitch(1, true)
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item asdf
+	\item The switch attached to block 1 should be makred active in the database.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-SET-SWITCH-STATE}
+TEST CASE: Set the state of a switch
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.setSwitch(1, false)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The switch attached to block 1 should not be marked active in the database. 
 \end{enumerate}
 
 \subsubsection{IDENTIFIER: 000-SET-SIGNAL}
-TEST CASE:
-PRECONDITIONS:
+TEST CASE: Set the state of a signal
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item asdf
+	\item Call _tm.setSignal(1, true)
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item asdf
+	\item The signal attached to block 1 should be marked as green in the database.
 \end{enumerate}
 
 \subsubsection{IDENTIFIER: 000-GET-SIGNAL}
-TEST CASE:
-PRECONDITIONS:
+TEST CASE: Get the state of a signal
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item asdf
+	\item Call _tm.getSignal(1)
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item asdf
+	\item The value returned by _tm.getSignal(1) should be false. This indicates that the signal is not active.
 \end{enumerate}
 
-\subsubsection{IDENTIFIER: 000-SET-RAILROAD-CROSSING}
-TEST CASE:
-PRECONDITIONS:
+\subsubsection{IDENTIFIER: 001-GET-SIGNAL}
+TEST CASE: Get the state of a signal
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. Set the signal on block 1 to active within the database.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item asdf
+	\item Call _tm.getSignal(1)
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item asdf
+	\item The value returned by _tm.getSignal(1) should be true. This indicates that the signal is active.
 \end{enumerate}
 
-\subsubsection{IDENTIFIER: 000-GET-CROSSING}
-TEST CASE:
-PRECONDITIONS:
+\subsubsection{IDENTIFIER: 000-GET-RAILROAD-CROSSING}
+TEST CASE: Get the state of a railroad crossing
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item asdf
+	\item Call _tm.getCrossingState(1)
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item asdf
+	\item The value returned by _tm.getCrossingState(1) should be false. This indicates that the crossing is not active.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-GET-RAILROAD-CROSSING}
+TEST CASE: Get the state of a railroad crossing
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.getCrossingState(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned by _tm.getCrossingState(1) should be false. This indicates that the crossing is not active.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-SET-CROSSING}
+TEST CASE: Set the state of a crossing
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.setCrossingState(1, true)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The crossing state attached to block 1 should be marked as active in the database.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-SET-CROSSING}
+TEST CASE: Set the state of a crossing
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.setCrossingState(1, false)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The crossing state attached to block 1 should be marked as inactive in the database.
 \end{enumerate}
 
 \subsubsection{IDENTIFIER: 000-GET-BLOCK-STATE}
-TEST CASE:
-PRECONDITIONS:
+TEST CASE: Get the state of a block
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item asdf
+	\item call _tm.getStatus(1)
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item asdf
+	\item The value returned by _tm.getStatus(1) should be BlockStatus.OPERATIONAL
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-GET-BLOCK-STATE}
+TEST CASE: Get the state of a block
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. The state of block 1 has been set to BlockStatus.BROKEN.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.getStatus(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned by _tm.getStatus(1) should be BlockStatus.BROKEN
 \end{enumerate}
 
 \subsubsection{IDENTIFIER: 000-INITIALIZE-TRAIN}
-TEST CASE:
-PRECONDITIONS:
+TEST CASE: Initialize a train on the track
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item asdf
+	\item call _tm.initializeTrain(2, 1)
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item asdf
+	\item The database should reflect that a train with an id of 2 exists on block 1.
 \end{enumerate}
 
 \subsubsection{IDENTIFIER: 000-TEARDOWN-TRAIN}
-TEST CASE:
-PRECONDITIONS:
+TEST CASE: Teardown a train
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train with an id of 1 has been initialized.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item asdf
+	\item Call _tm.teardownTrain(1)
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item asdf
+	\item The database should reflect that no train with an id of 1 exists on the track.
 \end{enumerate}
 
 \subsubsection{IDENTIFIER: 000-GET-SUGGESTED-AUTHORITY}
-TEST CASE:
-PRECONDITIONS:
+TEST CASE: Get the authority corresponding to a train's location on the track
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item asdf
+	\item call _tm.getTrainAuthority(1)
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item asdf
+	\item The value returned should be equal to 0.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-GET-SUGGESTED-AUTHORITY}
+TEST CASE: Get the authority corresponding to a train's location on the track
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1. The authority on block 1 has been set to 1.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.getTrainAuthority(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned should be equal to 1.
 \end{enumerate}
 
 \subsubsection{IDENTIFIER: 000-GET-SUGGESTED-SPEED}
-TEST CASE:
-PRECONDITIONS:
+TEST CASE: Get the suggested speed corresponding to a train's location on the track
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item asdf
+	\item Call _tm.getTrainSpeed(1)
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item asdf
+	\item The value returned should be equal to 0.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-GET-SUGGESTED-SPEED}
+TEST CASE: Get the suggested speed corresponding to a train's location on the track
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1. The suggested speed on block 1 has been set to 15.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.getTrainSpeed(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned should be equal to 15.
 \end{enumerate}
 
 \subsubsection{IDENTIFIER: 000-GET-GRADE}
-TEST CASE:
-PRECONDITIONS:
+TEST CASE: Get the grade corresponding to a train's location
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item asdf
+	\item _tm.getGrade(1)
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item asdf
+	\item The value returned should be equal to .5.
 \end{enumerate}
 
 \subsubsection{IDENTIFIER: 000-GET-IF-TRACK-IS-ICY}
-TEST CASE:
-PRECONDITIONS:
+TEST CASE: Return whether or not a train is on icy track.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1. The global environment temperature is set to 76.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item asdf
+	\item call _tm.isIcyTrack(1)
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item asdf
+	\item The value returned should be false.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-GET-IF-TRACK-IS-ICY}
+TEST CASE: Return whether or not a train is on icy track.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1. The global environment temperature is set to 31.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.isIcyTrack(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned should be false.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 002-GET-IF-TRACK-IS-ICY}
+TEST CASE: Return whether or not a train is on icy track.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 3. The global environment temperature is set to 31.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.isIcyTrack(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned should be true.
 \end{enumerate}
 
 \subsubsection{IDENTIFIER: 000-GET-BEACON-DATA}
-TEST CASE:
-PRECONDITIONS:
+TEST CASE: Return the information on a beacon if a train is on a block containing a beacon.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item asdf
+	\item Call _tm.getTrainBeacon(1)
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item asdf
+	\item The value returned should be null, indicating that no beacon is present.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-GET-BEACON-DATA}
+TEST CASE: Return the information on a beacon if a train is on a block containing a beacon.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1. A beacon with value 0 has been placed on block 1.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.getTrainBeacon(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned should be four bytes containing zeros.
 \end{enumerate}
 
 
 \subsection{Traceability Matrix}
 
-TODO
+1. The Track Model shall consider grade and elevation.
+2. The Track Model shall be configurable.
+3. The Track Model shall consider allowable directions of travel, branching, and speed limits.
+4. The Track Model shall be able to export and import track layouts.
+5. The Track Model shall consider block size.
+5.1. Blocks shall be shown and configurable.
+6. The Track Model shall signals and switch machines.
+7. The Track Model shall implement track circuits for presence detection.
+8. The Track Model shall consider railway crossings.
+9. The Track Model shall include stations.
+9.1. Passengers shall be loaded and unloaded at stations.
+10. The Track Model shall implement the following failure modes:
+10.1. Broken rail
+10.2. Track Circuit failure
+10.3. Extra or no trains detected
+10.4. Power failure
+10.5. No communication going to train
 
 
 \end{document}
