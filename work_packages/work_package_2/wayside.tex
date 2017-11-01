@@ -464,7 +464,7 @@
     }
     \end{center}
 
-    \subsection{Sequence Diargam: Toggle Switch State (Variation: Unsafe Toggle)}
+    \subsection{Sequence Diargam: Toggle Switch State (Variant: Unsafe Toggle)}
     \begin{center}
     \resizebox{\textwidth}{!}{
         \begin{sequencediagram}
@@ -516,7 +516,7 @@
     }
     \end{center}
 
-    \subsection{Sequence Diargam: Suggest Speed \& Authority (Variation: Unsafe Suggestion)}
+    \subsection{Sequence Diargam: Suggest Speed \& Authority (Variant: Unsafe Suggestion)}
     \begin{center}
     \resizebox{\textwidth}{!}{
         \begin{sequencediagram}
@@ -541,6 +541,75 @@
                 \end{call}
                 \begin{call}
                     {wc}{setCrossing(blockId, false)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Upload PLC}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{weng}{Wayside Engineer}
+            \newinst[3]{wc}{Wayside}
+            \newinst[3]{comp}{Compiler}
+            \newinst[3]{rf}{RegFile}
+            \newinst[3]{pop}{Popup}
+            
+            \begin{call}
+                {weng}{chooseFile()}{wc}{}
+                \begin{call}
+                    {wc}{compile(file)}{comp}{Instruction[]}
+                \end{call}
+                \begin{call}
+                    {wc}{load(Instruction[])}{rf}{}
+                \end{call}
+                \begin{call}
+                    {wc}{success()}{pop}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Upload PLC (Variant: Unable to Read File)}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{weng}{Wayside Engineer}
+            \newinst[3]{wc}{Wayside}
+            \newinst[3]{comp}{Compiler}
+            \newinst[3]{rf}{RegFile}
+            \newinst[3]{pop}{Popup}
+            
+            \begin{call}
+                {weng}{chooseFile()}{wc}{}
+                \begin{call}
+                    {wc}{fileReadFailure()}{pop}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Upload PLC (Variant: Invalid PLC Code)}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{weng}{Wayside Engineer}
+            \newinst[3]{wc}{Wayside}
+            \newinst[3]{comp}{Compiler}
+            \newinst[3]{rf}{RegFile}
+            \newinst[3]{pop}{Popup}
+            
+            \begin{call}
+                {weng}{chooseFile()}{wc}{}
+                \begin{call}
+                    {wc}{compile(file)}{comp}{Instruction[]}
+                \end{call}
+                \begin{call}
+                    {wc}{compileError()}{pop}{}
                 \end{call}
             \end{call}
         \end{sequencediagram}
