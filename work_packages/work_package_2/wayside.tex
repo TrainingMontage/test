@@ -259,7 +259,7 @@
                 "boolean isOccupied(int blockId)",
                 "BlockStatus getStatus(int blockId)",
                 "boolean toggleSwitch(int blockId)",
-                "void suggest(List<Suggestion>)"
+                "void suggest(Suggestion[])"
             );
             
             Class.Compiler("Compiler")()(
@@ -476,6 +476,71 @@
                 {toggleSwitch(blockId)}{wc}{}
                 \begin{call}
                     {wc}{validate()}{wc}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Suggest Speed \& Authority}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[5]{wc}{Wayside}
+            \newinst[5]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {suggest(Suggestion[])}{wc}{}
+                \begin{call}
+                    {wc}{validate()}{wc}{}
+                \end{call}
+
+                \begin{call}
+                    {wc}{setSpeed(blockId, value)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setAuthority(blockId, value)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setSwitch(blockId, value)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setSignal(blockId, value)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setCrossing(blockId, value)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Suggest Speed \& Authority (Variation: Unsafe Suggestion)}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[5]{wc}{Wayside}
+            \newinst[5]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {suggest(Suggestion[])}{wc}{}
+                \begin{call}
+                    {wc}{validate()}{wc}{}
+                \end{call}
+
+                \begin{call}
+                    {wc}{setSpeed(blockId, 0)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setAuthority(blockId, false)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setSignal(blockId, false)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setCrossing(blockId, false)}{tm}{}
                 \end{call}
             \end{call}
         \end{sequencediagram}
