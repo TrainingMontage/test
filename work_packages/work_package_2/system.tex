@@ -69,7 +69,7 @@
 \section{Use Cases}
 
 \begin{center}
-\resizebox{!}{.8\textheight}{
+\resizebox{!}{.7\textheight}{
 	\begin{mpost}
 	    input metauml;
 	    vardef drawComponentVisualStereotype(text ne)= relax enddef;
@@ -86,20 +86,27 @@
 	    Usecase.uE("Upload PLC");
 	    Usecase.uF("Set Kp and Ki");
 	    Usecase.uG("Set Target Velocity");
-	    Usecase.uH("Apply Service Brake");
-	    Usecase.uI("Turn Lights On and Off");
-	    Usecase.uJ("Open and Close Doors");
-	    Usecase.uK("Set Internal Temperature");
-	    Usecase.uL("Apply Emergency Brake");
+	    Usecase.uH("Apply Service", "Brake");
+	    Usecase.uI("Turn Lights", "On and Off");
+	    Usecase.uJ("Open and", "Close Doors");
+	    Usecase.uK("Set Internal", "Temperature");
+	    Usecase.uL("Apply Emergency", "Brake");
 	    %
 	    Component.System("System")(uA,uB,uC,uD,uE,uF,uG,uH,uI,uJ,uK,uL);
 	    % 
-	    topToBottom.left(10)(uA,uB,uC,uD,uE,uF,uG,uH,uI,uJ,uK,uL);
-	    leftToRight(50)(dispatch, uA);
-	    leftToRight(50)(weng, uE);
-	    leftToRight(100)(uF, teng);
-	    leftToRight(50)(driver, uG);
-	    leftToRight(50)(pass, uL);
+	    topToBottom.left(10)(uE,uA,uB,uC,uD,uF);
+	    topToBottom.right(10)(uG,uH,uI,uJ,uK,uL);
+	    leftToRight(30)(dispatch, uB);
+	    leftToRight(30)(weng, uE);
+	    leftToRight(30)(teng, uF);
+	    leftToRight(30)(uI, driver);
+	    leftToRight(30)(uL, pass);
+	    leftToRight(10)(uE, uG);
+	    leftToRight(10)(uA, uH);
+	    leftToRight(10)(uB, uI);
+	    leftToRight(10)(uC, uJ);
+	    leftToRight(10)(uD, uK);
+	    leftToRight(10)(uF, uL);
 	    %
 	    % 
 	    drawObjects(dispatch,weng,teng,driver,pass,System,uA,uB,uC,uD,uE,uF,uG,uH,uI,uJ,uK,uL);
@@ -111,16 +118,16 @@
 	    %
 	    link(association)(pathCut(weng, uE)(weng.e -- uE.w));
 	    %
-	    link(association)(pathCut(teng, uF)(teng.w -- uF.e));
+	    link(association)(pathCut(teng, uF)(teng.e -- uF.w));
 	    %
-	    link(association)(pathCut(driver, uG)(driver.e -- uG.w));
-	    link(association)(pathCut(driver, uH)(driver.e -- uH.w));
-	    link(association)(pathCut(driver, uI)(driver.e -- uI.w));
-	    link(association)(pathCut(driver, uJ)(driver.e -- uJ.w));
-	    link(association)(pathCut(driver, uK)(driver.e -- uK.w));
-	    link(association)(pathCut(driver, uL)(driver.e -- uL.w));
+	    link(association)(pathCut(driver, uG)(driver.w -- uG.e));
+	    link(association)(pathCut(driver, uH)(driver.w -- uH.e));
+	    link(association)(pathCut(driver, uI)(driver.w -- uI.e));
+	    link(association)(pathCut(driver, uJ)(driver.w -- uJ.e));
+	    link(association)(pathCut(driver, uK)(driver.w -- uK.e));
+	    link(association)(pathCut(driver, uL)(driver.w -- uL.e));
 	    %
-	    link(association)(pathCut(pass, uL)(pass.e -- uL.w));
+	    link(association)(pathCut(pass, uL)(pass.w -- uL.e));
 	    %
 	\end{mpost}
 }
