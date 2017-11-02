@@ -183,17 +183,15 @@
 		input metauml;
 	    % Train Controller
 	    Class.TrainController("Train Controller")()(
-	    	"double computeSafeBrake()",
-	    	"double computeSafeSpeed()",
 	    	"double getPower()",
-	    	"void setKu(double newVal)",
+	    	"void setKiKp(double newKi, double newKp)",
 	    	"boolean setLights(boolean on)",
 	    	"byte setDoors(boolean leftOpen, boolean rightOpen)",
-	    	"boolean justStop()",
-	    	"boolean youCanGoNow()",
+	    	"double setTemp(double temperature)",
 	    	"boolean sendForService()",
 	    	"void displayStation()",
 	    	"void setKiKip()",
+	    	"TrainController getTrainControllerByID(int traincontroller)",
 		);
 		% 	
 		topToBottom(30)(TrainController);
