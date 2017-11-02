@@ -328,3 +328,6 @@ work_packages/*/*.pdf
 
 # ignore Mac image cache files
 *.DS_Store
+
+# ignore filetype from latex generation
+*.mps
