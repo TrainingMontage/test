@@ -1,0 +1,14 @@
+\documentclass{article}
+\usepackage[shellescape]{gmp}
+\begin{document}
+
+% latexmk example.tex -pdf --shell-escape -quiet
+
+\begin{mpost*}
+input metauml;
+beginfig(1);
+    Class.A("Point")("+x: int", "+y:int")();
+    drawObject(A);
+endfig;
+\end{mpost*}
+\end{document}
