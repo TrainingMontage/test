@@ -111,12 +111,6 @@
 }
 \end{center}
 
-\subsection{Use Case: Set Speed}
-\begin{enumerate}
-	\item The driver manually sets the train to a desired speed
-	\item Future calls to Get Power create power commands to approach this manually-entered speed.
-\end{enumerate}
-
 \subsection{Use Case: Get Power}
 \begin{enumerate}
 	\item If the Train needs to stop, or slow down, the Train Controller applies the brake.
@@ -130,48 +124,59 @@
 
 \subsection{Use Case: Set Target Velocity}
 \begin{enumerate}
-	\item The driver manually sets the train to a desired speed
-	\item Future calls to Get Power create power commands to approach this manually-entered speed.
+	\item The Driver toggles “manual mode” on the UI.
+	\item The Driver manually sets the train to a desired speed.
+	\item The Driver hits “Apply Changes”
+	\item Future calls to Get Power create power commands to approach this manually entered speed while “manual mode” is active.
 \end{enumerate}
 
 \subsection{Use Case: Apply Service Brakes}
 \begin{enumerate}
-	\item The driver applies the service brakes
-	\item Future calls to Get Power utilize the standard brake settings while active.
+	\item The Driver toggles “manual mode” on the UI.
+	\item The Driver presses the "Service Brake" button.
+	\item Future calls to Get Power apply the service brake while the button is toggled.
 \end{enumerate}
 
 \subsection{Use Case: Apply Emergency Brakes}
 \begin{enumerate}
-	\item The driver applies the emergency brakes
-	\item Future calls to Get Power utilize the emergency brake settings while active.
+	\item The Driver toggles “manual mode” on the UI.
+	\item The Driver presses the "Emergency Brake" button.
+	\item Future calls to Get Power apply the emergency brake while the button is toggled.
 \end{enumerate}
 
 \subsection{Use Case: Operate Lights}
 \begin{enumerate}
-	\item The driver manually turns the lights on or off
+	\item The Driver toggles “manual mode” on the UI.
+	\item The Driver toggles the lights "ON" or "OFF" buttons
+	\item The Train Controller switches the lights to be "on" or "off" accordingly.
 \end{enumerate}
 
 \subsection{Use Case: Operate Doors}
 \begin{enumerate}
-	\item The driver manually opens or closes the doors
-	\item Doors may have the following configurations:
-		\begin{enumerate}
-			\item Both doors open
-			\item Both doors closed
-			\item Left doors only open
-			\item Right doors only open
-		\end{enumerate}
+	\item The Driver toggles “manual mode” on the UI.
+	\item The Driver toggles the door "OPEN" or "CLOSED" buttons
+	\begin{enumerate}
+		\item There are options for both the right and left doors.
+	\end{enumerate}
+	\item The Train Controller switches the appropriate doors to be "open" or "closed" accordingly.
 \end{enumerate}
 
 \subsection{Use Case: Set Temperature}
 \begin{enumerate}
-	\item The driver manually sets the internal temperature of the train
+	\item The Driver toggles “manual mode” on the UI.
+	\item The Driver manually sets the train's internal temperature
+	\item The Driver hits “Apply Changes”
+	\item The Train Controller applies the desired temperature to the train interior while manual mode is active.
 \end{enumerate}
 
 \subsection{Use Case: Initialize TrainController}
 \begin{enumerate}
+	\item Either the SimulationRunner or the Train Model calls the basic constructor or init() function.
 	\item A train controller is initialized with an ID of 0 and using the default constructor for a Train.
-	\item The actor will then be able to set Ki and Kp if desired.
+	\begin{enumerate}
+		\item Alternative constructors exist to set a specific train.
+	\end{enumerate}
+	\item The actor will then be able to set Ki and Kp, if desired.
 \end{enumerate}
 
 
@@ -704,26 +709,23 @@ POSTCONDITIONS:
   \begin{tabular}{ l | l }
     Requirement & Test Case \\
     \hline
-    1. The Train Controller shall deliver safe power commands to the Train Model. & 000-COMPUTE-SAFE-BRAKE \\
+    1. The Train Controller shall have an algorithm capable of calculating a maximum safe speed for the train in question. & 000-COMPUTE-SAFE-BRAKE \\
     & 001-COMPUTE-SAFE-BRAKE \\
-    & 002-COMPUTE-SAFE-BRAKE \\
-    & 000-COMPUTE-SAFE-SPEED \\
-    & 001-COMPUTE-SAFE-SPEED \\
-    & 000-GET-POWER \\
+    & 002-COMPUTE-SAFE-BRAKE \\ \hline
+    2. The Train Controller shall select a safe speed for the train. & 000-COMPUTE-SAFE-SPEED \\
+    & 001-COMPUTE-SAFE-SPEED \\ \hline
+    3. The module, once it has chosen a speed for the train, shall require an algorithm to convert that desired speed into either (1) a power setting for the train, or (2) an application of the brake for a certain amount of time. & 000-GET-POWER \\
     & 001-GET-POWER \\
     & 002-GET-POWER \\ \hline
-	2. The Train Controller shall control lights, doors, and temperature. & 000-SET-LIGHTS \\
-	& 001-SET-LIGHTS \\
-	& 000-SET-DOORS \\
+	4. The Train Controller shall dictate that lights should be turned on or off. & 000-SET-LIGHTS \\
+	& 001-SET-LIGHTS \\ \hline
+	5. The Train Controller shall dictate that train doors should open. & 000-SET-DOORS \\
 	& 001-SET-DOORS \\
 	& 002-SET-DOORS \\
-	& 003-SET-DOORS \\	
-	& 000-SET-TEMP \\ \hline
-	3. The Train Controller shall display upcoming and current station names. & 000-DISPLAY-STATION \\ \hline
+	& 003-SET-DOORS \\ \hline
+	6. The Train Controller shall display stops and stations. & 000-DISPLAY-STATION \\ \hline
   \end{tabular}
 }
 \end{center}
-
-
 
 \end{document}
