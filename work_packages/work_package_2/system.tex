@@ -287,28 +287,20 @@
 \resizebox{\textwidth}{!}{
  	\begin{sequencediagram}
 	\newthread{disp}{Dispatcher}
-	\newinst{ctcgui}{CTCGUI}
-	\newinst{ctc}{CTCModel}
-	\newinst{ctcdat}{CTCTrainData}
+	\newinst[1.8]{ctc}{CTCModel}
 	%\newinst{ws}{Wayside}
 	\newinst{tm}{TrackModel}
-	\newinst{train}{TrainModel}
-	\newinst{trainc}{TrainController}
-	\newinst{ui}{UI}
+	\newinst[1.5]{train}{TrainModel}
+	\newinst[2]{trainc}{TrainController}
+	\newinst[1.5]{ui}{UI}
 	
-	\begin{call}{disp}{Dispatch Train}{ctcgui}{}
-		\begin{call}{ctcgui}{checkTrainInputs(block, speed, authority, destination)}{ctc}{}
-		\end{call}
-		\begin{call}{ctcgui}{createTrain(block, speed, authority, destination)}{ctc}{}
-			\begin{call}{ctc}{new CTCTrainData(block, speed, authority, destination)}{ctcdat}{}
+	\begin{call}{disp}{Dispatch Train}{ctc}{}
+		\begin{call}{ctc}{createTrain(...)}{train}{}
+			\begin{call}{train}{new TrainController()}{trainc}{}
+				\begin{call}{trainc}{kp and ki popup}{ui}{}
+				\end{call}
 			\end{call}
-			\begin{call}{ctc}{createTrain(block, speed, authority, destination)}{train}{}
-				\begin{call}{train}{new TrainController()}{trainc}{}
-					\begin{call}{trainc}{set kp and ki popup}{ui}{}
-					\end{call}
-				\end{call}
-				\begin{call}{train}{initializeTrain()}{tm}{}
-				\end{call}
+			\begin{call}{train}{initializeTrain()}{tm}{}
 			\end{call}
 		\end{call}
 	\end{call}
