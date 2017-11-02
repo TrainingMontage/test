@@ -54,7 +54,7 @@
         Aric Hudson\\
         Isaac Goss\\
         Mitch Moran\\
-	Parth Dadhania\\
+	    Parth Dadhania\\
         \vspace{1.9cm}
         Training Montage\\
         \vspace{.9cm}
@@ -169,16 +169,118 @@
 
 \section{Class Diagram}
 
-\begin{center}
-\resizebox{!}{.9\textheight}{
-	\begin{mpost}
-		input metauml;
+% \begin{center}
+% \resizebox{!}{.9\textheight}{
+% 	\begin{mpost}
+% 		input metauml;
 	 	
-	\end{mpost}
+% 	\end{mpost}
+% }
+% \end{center}
+
+\section{Sequence Diagrams}
+
+\subsection{Sequence Diagram: Initialize Simulation}
+\begin{center}
+\resizebox{\textwidth}{!}{
+    \begin{sequencediagram}
+    \newthread{sim}{SimRunner}
+    \newinst{ctc}{CTC}
+    \newinst{ws}{Wayside}
+    \newinst{trackm}{TrackModel}
+    \newinst{trainm}{TrainModel}
+    \newinst{trainc}{TrainController}
+    
+    \begin{call}{sim}{init()}{trackm}{}
+    \end{call}
+
+    \begin{call}{sim}{init()}{ws}{}
+    \end{call}
+
+    \begin{call}{sim}{init()}{ctc}{}
+    \end{call}
+
+    \begin{call}{sim}{init()}{trainm}{}
+    \end{call}
+
+    \begin{call}{sim}{init()}{trainc}{}
+    \end{call}
+
+    \begin{sdblock}{Begin Simulation Loop}{}
+        \begin{call}{sim}{...}{ctc}{}
+        \end{call}
+    \end{sdblock}
+    \end{sequencediagram}
 }
 \end{center}
 
-\section{Sequence Diagrams}
+\subsection{Sequence Diagram: Run Simulation}
+\begin{center}
+\resizebox{!}{.9\textheight}{
+    \begin{sequencediagram}
+    \newthread{sim}{SimRunner}
+    \newinst{ctc}{CTC}
+    \newinst[3]{ws}{Wayside}
+    \newinst[3]{trackm}{TrackModel}
+    \newinst[3]{trainm}{TrainModel}
+    \newinst[3]{trainc}{TrainController}
+    
+    \begin{call}{sim}{Increment Time}{sim}{}
+    \end{call}
+
+    \begin{call}{sim}{suggest()}{ctc}{}
+        \begin{call}{ctc}{isOccupied(id)}{ws}{True/False}
+            \begin{call}{ws}{isOccupied(id)}{trackm}{True/False}
+                \begin{sdblock}{Update}{For Each Train}
+                    \begin{call}{trackm}{getDisplacement(id)}{trainm}{displacement}
+                        \begin{call}{trainm}{getPower()}{trainc}{power}
+                            \begin{call}{trainc}{getSuggestedSpeed()}{trainm}{}
+                                \begin{call}{trainm}{getSuggestedSpeed(id)}{trackm}{}
+                                \end{call}
+                            \end{call}
+                            \begin{call}{trainc}{getSuggestedAuthority()}{trainm}{}
+                                \begin{call}{trainm}{getSuggestedAuthority(id)}{trackm}{}
+                                \end{call}
+                            \end{call}
+                            \begin{call}{trainc}{getBeacon()}{trainm}{}
+                                \begin{call}{trainm}{getBeacon(id)}{trackm}{}
+                                \end{call}
+                            \end{call}
+                            \begin{call}{trainc}{getBlockChange()}{trainm}{}
+                                \begin{call}{trainm}{getBlockChange(id)}{trackm}{}
+                                \end{call}
+                            \end{call}
+                        \end{call}
+                    \end{call}
+                \end{sdblock}
+            \end{call}
+        \end{call}
+        \begin{sdblock}{Shallow Calls as Needed}{}
+            \begin{call}{ctc}{getOccupancy(id), ...}{ws}{}
+                \begin{call}{ws}{getOccupancy(id), ...()}{trackm}{}
+                \end{call}
+            \end{call}
+        \end{sdblock}
+        \begin{call}{ctc}{suggest(suggestions)}{ws}{}
+            \begin{sdblock}{For Each Block}{}
+                \begin{call}{ws}{setSpeed(...)}{trackm}{}
+                \end{call}
+                \begin{call}{ws}{setAuthority(...)}{trackm}{}
+                \end{call}
+                \begin{sdblock}{If a RR Crossing}{}
+                    \begin{call}{ws}{setCrossingState(...)}{trackm}{}
+                    \end{call}
+                \end{sdblock}
+            \end{sdblock}
+            \begin{sdblock}{For Each Switch}{}
+                \begin{call}{ws}{setSwitch(...)}{trackm}{}
+                \end{call}
+            \end{sdblock}
+        \end{call}
+    \end{call}
+    \end{sequencediagram}
+}
+\end{center}
 
 \subsection{Sequence Diagram: Dispatch Train}
 \begin{center}
