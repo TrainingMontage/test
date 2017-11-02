@@ -267,7 +267,7 @@
 
     \use{Initialize Wayside Controller with Default Data}
     \begin{enumerate}
-        \item SR calls ``WaysideController.init(String[])'' with the PLC code per wayside controller.
+        \item SR calls ``WaysideController.init(String[])'' with the filename of the PLC code per wayside controller.
         \item WC constructs all WC objects, and gives them the PLC code given in ``init()''.
         \item The WC objects then compile their respective PLC.
     \end{enumerate}
@@ -878,5 +878,68 @@
                 \item Deactivates all crossing which are not currently occupied.
                 \item Deactivates all signals.
             \end{itemize}
+        \end{enumerate}
+
+        \test{Upload-PLC-0}
+        TEST CASE: Upload PLC to a WC.\\
+        PRECONDITIONS: TrackModel objects have been or are being created.
+        ``wc'' is an instance of the ``WaysideController'' class.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``wc.uploadPLC(filename)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC reads, compiles, and stores the code in this WC.
+            \item Popup appears stating PLC has successfully been uploaded.
+            \item WC returns true.
+        \end{enumerate}
+
+        \test{Upload-PLC-1}
+        TEST CASE: Attempt to upload PLC; file could not be read.\\
+        PRECONDITIONS: TrackModel objects have been or are being created.
+        ``wc'' is an instance of the ``WaysideController'' class.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``wc.uploadPLC(filename)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item Popup appears detailing the error.
+            \item WC returns false.
+        \end{enumerate}
+
+        \test{Upload-PLC-2}
+        TEST CASE: Attempt to upload PLC; file contains invalid code.\\
+        PRECONDITIONS: TrackModel objects have been or are being created.
+        ``wc'' is an instance of the ``WaysideController'' class.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``wc.uploadPLC(filename)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item Popup appears detailing the error.
+            \item WC returns false.
+        \end{enumerate}
+
+        \test{Open-Multi-Windows-0}
+        TEST CASE: Open multiple WC windows.\\
+        PRECONDITIONS: TrackModel objects have been or are being created.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Push ``Open Wayside'' button.
+            \item Type a valid blockId in the text field.
+            \item Push ``Open'' button.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item Popup with a text field appears.
+            \item The window corresponding to the WC which manages the given block is now visible.
+        \end{enumerate}
+
+        \test{Open-Multi-Windows-1}
+        TEST CASE: Attempt to open multiple WC windows; enter invalid block ID.\\
+        PRECONDITIONS: TrackModel objects have been or are being created.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Push ``Open Wayside'' button.
+            \item Type a blockId in the text field.
+            \item Push ``Open'' button.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item Popup with a text field appears.
+            \item Popup appears detailing the error.
         \end{enumerate}
 \end{document}
