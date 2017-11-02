@@ -966,29 +966,30 @@
     \subsection{Tracability Matrix}
 
     \begin{center}
-            \begin{tabular}{p{0.6\textwidth} | l}
+            \begin{tabular}{p{0.6\textwidth} | p{0.4\textwidth}}
                 Requirement & Test Case\\
                 \hline\hline
 The Wayside Controller shall accept suggested (non-vital) speed and authority (per train) from the CTC. & Suggest-SnA-0, Suggest-SnA-1\\\hline
-The Wayside Controller shall accept block occupancy and switch positions from the Track Model. & \\\hline
-The Wayside Controller shall have vital output to the TrackModel: Speed \& Authority per train. & \\\hline
-The Wayside Controller shall have vital output to the TrackModel: Light colors per track block. & \\\hline
-The Wayside Controller shall have vital output to the TrackModel: Switch positions. & \\\hline
-The Wayside Controller shall have vital output to the TrackModel: Railway crossings. & \\\hline
-The Wayside Controller shall report the following back to the CTC: Broken rail. & \\\hline
-The Wayside Controller shall report the following back to the CTC: Railway crossings. & \\\hline
-The Wayside Controller shall report the following back to the CTC: Block occupancy. & \\\hline
-The Wayside Controller shall report the following back to the CTC: Switch positions. & \\\hline
-The Wayside Controller shall report the following back to the CTC: Light colors. & \\\hline
+The Wayside Controller shall accept block occupancy and switch positions from the Track Model. & Get-Occupancy-0, Get-Switch-State-0 \\\hline
+The Wayside Controller shall have vital output to the TrackModel: Speed \& Authority per train. & Suggest-SnA-0, Suggest-SnA-1\\\hline
+The Wayside Controller shall have vital output to the TrackModel: Light colors per track block. & Suggest-SnA-0, Suggest-SnA-1\\\hline
+The Wayside Controller shall have vital output to the TrackModel: Switch positions. & Suggest-SnA-0, Suggest-SnA-1\\\hline
+The Wayside Controller shall have vital output to the TrackModel: Railway crossings. & Suggest-SnA-0, Suggest-SnA-1\\\hline
+
+The Wayside Controller shall report the following back to the CTC: Broken rail. & Get-Block-Status-0 \\\hline
+The Wayside Controller shall report the following back to the CTC: Railway crossings. & Get-Crossing-0 \\\hline
+The Wayside Controller shall report the following back to the CTC: Block occupancy. & Get-Occupancy-0 \\\hline
+The Wayside Controller shall report the following back to the CTC: Switch positions. & Get-Switch-State-0\\\hline
+The Wayside Controller shall report the following back to the CTC: Light colors. & Get-Signal-0\\\hline
 The Wayside Controller shall be a vital computing platform. & Architecture. \\\hline
 The Wayside Controller shall receive suggested speed and authority from the CTC
 per train, and output safe speed and authority per train. & Suggest-SnA-0, Suggest-SnA-1\\\hline
-The Wayside Controller shall control the switching of the track. & \\\hline
-The Wayside Controller shall detect broken blocks of rail. & \\\hline
+The Wayside Controller shall control the switching of the track. & Suggest-SnA-0,Suggest-SnA-1, Toggle-Switch-Position-0, Toggle-Switch-Position-1 \\\hline
+The Wayside Controller shall detect broken blocks of rail. & Get-Block-Status-0\\\hline
 The Wayside Controller shall report the state of the track, railway crossings, signals,
-and occupancy to the CTC. & \\\hline
+and occupancy to the CTC. & Get-Block-Status-0, Get-Crossing-0, Get-Occupancy-0, Get-Switch-State-0, Get-Signal-0 \\\hline
 This is a PLC, and shall allow a user, a Wayside Engineer, to upload a code to
-control it. It is assumed that this Wayside Engineer’s code is vital. & \\
+control it. It is assumed that this Wayside Engineer’s code is vital. & Upload-PLC-0, Upload-PLC-1, Upload-PLC-2\\
             \end{tabular}
     \end{center}
 \end{document}
