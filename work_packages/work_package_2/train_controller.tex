@@ -1,0 +1,731 @@
+\documentclass{scrreprt}
+\usepackage[shellescape]{gmp}
+\usepackage{listings}
+\usepackage{underscore}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usepackage{pgf-umlsd}
+
+%%%%%% header and footer info
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Software Requirements Specification}
+\lhead{Training Montage}
+\cfoot{\thepage}
+
+%%%%%% custom list definition
+\newlist{numonly}{enumerate}{10}
+\setlist[numonly]{label*=\arabic*.}
+
+\hypersetup{
+    pdftitle={Software Requirement Specification},    % title
+    pdfauthor={Training Montage},                     % author
+    pdfsubject={TeX and LaTeX},                        % subject of the document
+    pdfkeywords={TeX, LaTeX, graphics, images}, % list of keywords
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=blue,       % color of internal links
+    citecolor=black,       % color of links to bibliography
+    filecolor=black,        % color of file links
+    urlcolor=purple,        % color of external links
+    linktoc=page            % only page is linked
+}
+
+\begin{document}
+
+\begin{flushright}
+    \rule{16cm}{5pt}\vskip1cm
+    \begin{bfseries}
+        \Huge{TRAIN CONTROLLER USE CASE, CLASS, AND SEQUENCE DIAGRAMS}\\
+        \vspace{.9cm}
+        for\\
+        \vspace{.9cm}
+        COE 1186 Project\\
+        \vspace{.9cm}
+        % \LARGE{Version \myversion approved}\\
+        \vspace{.9cm}
+        Prepared by:\\
+        Aric Hudson\\
+        \vspace{4.9cm}
+        Training Montage\\
+        \vspace{.9cm}
+        \today\\
+    \end{bfseries}
+\end{flushright}
+
+\tableofcontents
+
+\chapter{Train Controller}
+
+\section{Use Cases}
+
+\begin{center}
+\resizebox{!}{.8\textheight}{
+	\begin{mpost}
+		input metauml;
+		vardef drawComponentVisualStereotype(text ne)= relax enddef;
+		Actor.trainmodel("Train Model");
+		Actor.simrunner("SimulationRunner");
+		Actor.driver("Driver");
+	    % 
+	    Usecase.uA("Set Target Velocity");
+	    Usecase.uB("Apply Service Brakes");
+	    Usecase.uC("Apply Emergency Brakes");
+	    Usecase.uD("Operate Lights");
+	    Usecase.uE("Operate Doors");
+	    Usecase.uF("Set Temperature");
+	    Usecase.uW("Get Power");
+	    Usecase.uX("Initialize");
+	    %
+	    Component.TrainController("Train Controller")(uA, uB, uC, uD, uE, uF, uW, uX);
+	    % 
+		topToBottom.left(20)(uA, uB, uC, uD, uE, uF, uW, uX);
+		%leftToRight(50)(driver, uA, uB, uC, uD, uE, uF);
+		leftToRight(50)(driver, uA);
+		leftToRight(50)(uB);
+		leftToRight(50)(uC);
+		leftToRight(50)(uD);
+		leftToRight(50)(uE);
+		leftToRight(50)(uF);
+		leftToRight(50)(trainmodel, uW);
+		leftToRight(50)(simrunner, uX);
+	    % 
+	    drawObjects(trainmodel,simrunner,driver,TrainController,uA, uB, uC, uD, uE, uF, uW, uX);
+		%
+	    link(association)(pathCut(driver, uA)(driver.e -- uA.w));
+	    link(association)(pathCut(driver, uB)(driver.e -- uB.w));
+	    link(association)(pathCut(driver, uC)(driver.e -- uC.w));
+	    link(association)(pathCut(driver, uD)(driver.e -- uD.w));
+	    link(association)(pathCut(driver, uE)(driver.e -- uE.w));
+	    link(association)(pathCut(driver, uF)(driver.e -- uF.w));
+	    link(association)(pathCut(trainmodel, uB)(trainmodel.e -- uW.w));
+	    link(association)(pathCut(trainmodel, uX)(trainmodel.e -- uX.w));
+	    link(association)(pathCut(simrunner, uX)(simrunner.e -- uX.w));
+	    %
+	\end{mpost}
+}
+\end{center}
+
+\subsection{Use Case: Set Speed}
+\begin{enumerate}
+	\item The driver manually sets the train to a desired speed
+	\item Future calls to Get Power create power commands to approach this manually-entered speed.
+\end{enumerate}
+
+\subsection{Use Case: Get Power}
+\begin{enumerate}
+	\item If the Train needs to stop, or slow down, the Train Controller applies the brake.
+	\item Train Controller calls getSuggestedSpeed from the Train Model
+	\item Train Controller calls getMaxPower from the Train Model
+	\item Train Controller calls getVelocity from the Train Model
+	\item Train Controller calls getAuthority from the Train Model
+	\item Train Controller calculates the safe speed for the train, given its authority.
+	\item Train Controller returns a power command for the  train, taking into account its power limits, suggested speed, and current velocity.
+\end{enumerate}
+
+\subsection{Use Case: Set Target Velocity}
+\begin{enumerate}
+	\item The driver manually sets the train to a desired speed
+	\item Future calls to Get Power create power commands to approach this manually-entered speed.
+\end{enumerate}
+
+\subsection{Use Case: Apply Service Brakes}
+\begin{enumerate}
+	\item The driver applies the service brakes
+	\item Future calls to Get Power utilize the standard brake settings while active.
+\end{enumerate}
+
+\subsection{Use Case: Apply Emergency Brakes}
+\begin{enumerate}
+	\item The driver applies the emergency brakes
+	\item Future calls to Get Power utilize the emergency brake settings while active.
+\end{enumerate}
+
+\subsection{Use Case: Operate Lights}
+\begin{enumerate}
+	\item The driver manually turns the lights on or off
+\end{enumerate}
+
+\subsection{Use Case: Operate Doors}
+\begin{enumerate}
+	\item The driver manually opens or closes the doors
+	\item Doors may have the following configurations:
+		\begin{enumerate}
+			\item Both doors open
+			\item Both doors closed
+			\item Left doors only open
+			\item Right doors only open
+		\end{enumerate}
+\end{enumerate}
+
+\subsection{Use Case: Set Temperature}
+\begin{enumerate}
+	\item The driver manually sets the internal temperature of the train
+\end{enumerate}
+
+\subsection{Use Case: Initialize TrainController}
+\begin{enumerate}
+	\item A train controller is initialized with an ID of 0 and using the default constructor for a Train.
+	\item The actor will then be able to set Ki and Kp if desired.
+\end{enumerate}
+
+
+\section{Class Diagram}
+
+\begin{center}
+\resizebox{!}{.3\textheight}{
+	\begin{mpost}
+		input metauml;
+	    % Train Controller
+	    Class.TrainController("Train Controller")()(
+	    	"double computeSafeBrake()",
+	    	"double computeSafeSpeed()",
+	    	"double getPower()",
+	    	"void setKu(double newVal)",
+	    	"boolean setLights(boolean on)",
+	    	"byte setDoors(boolean leftOpen, boolean rightOpen)",
+	    	"boolean justStop()",
+	    	"boolean youCanGoNow()",
+	    	"boolean sendForService()",
+	    	"void displayStation()",
+	    	"void setKiKip()",
+		);
+		% 	
+		topToBottom(30)(TrainController);
+		% 
+	    drawObjects(TrainController);
+	    %
+	\end{mpost}
+}
+\end{center}
+
+\section{Sequence Diagrams}
+
+\subsection{Sequence Diagram: Set Target Velocity}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{dr}{Driver}
+	\newinst[4]{ui}{UI}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{dr}{setVelocity()}{ui}{}
+		\begin{call}{ui}{setVelocity()}{tc}{}
+			\begin{call}{tc}{validate}{tc}{}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Get Power}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tm}{TrainModel}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{tm}{getPower()}{tc}{double power}
+		\begin{call}{tc}{getSuggestedSpeed()}{tm}{double speed}
+		\end{call}
+		\begin{call}{tc}{getMaxPower()}{tm}{double power}
+		\end{call}
+		\begin{call}{tc}{getVelocity()}{tm}{double speed}
+		\end{call}
+		\begin{call}{tc}{getAuthority()}{tm}{double authority}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Apply Service Brakes}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{dr}{Driver}
+	\newinst[4]{ui}{UI}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{dr}{applySBrakes()}{ui}{}
+		\begin{call}{ui}{applySBrakes()}{tc}{}
+			\begin{call}{tc}{validate}{tc}{}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Apply Emergency Brakes}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{dr}{Driver}
+	\newinst[4]{ui}{UI}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{dr}{applyEBrakes()}{ui}{}
+		\begin{call}{ui}{applyEBrakes()}{tc}{}
+			\begin{call}{tc}{validate}{tc}{}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Operate Lights}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{dr}{Driver}
+	\newinst[4]{ui}{UI}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{dr}{setLights(T/F)}{ui}{T/F}
+		\begin{call}{ui}{setLights(T/F)}{tc}{T/F}
+			\begin{call}{tc}{validate}{tc}{}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Operate Doors}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{dr}{Driver}
+	\newinst[4]{ui}{UI}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{dr}{setDoors(T/F, T/F)}{ui}{byte status}
+		\begin{call}{ui}{setDoors(T/F, T/F)}{tc}{byte status}
+			\begin{call}{tc}{validate}{tc}{}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Set Temperature}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{dr}{Driver}
+	\newinst[4]{ui}{UI}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{dr}{setTemp(temperature)}{ui}{double temperature}
+		\begin{call}{ui}{setTemp(temperature)}{tc}{double temperature}
+			\begin{call}{tc}{validate}{tc}{}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Initialize}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tm}{TrainModel or Simulation Runner}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{tm}{initialize}{tc}{Train Controller Instance}
+		\begin{call}{tc}{setKi()}{tc}{}
+		\end{call}
+		\begin{call}{tc}{setKp()}{tc}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\section{Test Plan}
+
+\subsection{Approach}
+
+\subsubsection{Introduction}
+The overall project will simulate the operation of a public rail system. The role of the Train Controller is to ensure safe power (or brake) commands are passed to the Train Model, as well as controlling the operation of the external doors, interior lights, and interior temperature, and to display upcoming and current station information. The Train Controller provides an interface for the Train Model to obtain safe power commands for a given suggested speed.
+
+\subsubsection{Features Test}
+The features within the scope of this test plan include the calculation of power to produce a desired (and safe) speed over a given time, the operation of doors, lights, and temperature and the display of station names.
+
+\subsubsection{Features Not Tested}
+This test plan will not include any features outside the scope of the Train Controller. In this case, all functions not directly interacting with the train controller are not included in the scope.
+
+\subsubsection{Approach}
+The primary form of tests performed will be functional tests. Interfaces will be tested using an array of automated tests that validate the expected function of each method included in the interface. Manual tests are also to be conducted for verification of UI functionality.  Additional functional tests will be performed for key non-interface functions. Requirements state that the system must operate at 10x wall-clock speed. The train controller is not expected bottleneck performance, thus performance testing will not be conducted unless the manual tests indicate that there may be performance issues.
+
+\subsubsection{Test deliverables}
+All tests described by this plan will be executed in order to ensure quality. All automated tests must be passing; automated tests run automatically every time the software changes. Manual tests must be performed before every deliverable. An executed test plan and defect report will be delivered with Work Package 3.
+
+\subsection{Test Cases}
+
+\subsubsection{IDENTIFIER: 000-COMPUTE-SAFE-BRAKE}
+TEST CASE: Compute the safe braking distance for a train in motion.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.computeSafeBrake()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.computeSafeBrake() should return a double that represents the safe braking distance in meters for the train.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-COMPUTE-SAFE-BRAKE}
+TEST CASE: Compute the safe braking distance for a train in motion.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object with a speed of 0 and an authority of 1000.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.computeSafeBrake()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.computeSafeBrake() should return 0 m.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-COMPUTE-SAFE-BRAKE}
+TEST CASE: Compute the safe braking distance for a train in motion.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object with a speed of 12 and an authority of 1000.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.computeSafeBrake()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.computeSafeBrake() should return 240 m.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 002-COMPUTE-SAFE-BRAKE}
+TEST CASE: Compute the safe braking distance for a train in motion.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object with a speed of 12 and an authority of 200.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.computeSafeBrake()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.computeSafeBrake() should return 200 m.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-COMPUTE-SAFE-SPEED}
+TEST CASE: Compute the safe speed for a train.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object with an authority of 1000 and a suggested speed of of 0.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.computeSafeSpeed()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.computeSafeSpeed() should return 0 m/s.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-COMPUTE-SAFE-SPEED}
+TEST CASE: Compute the safe speed for a train.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object with an authority of 1000 and a suggested speed of of 24.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.computeSafeSpeed()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.computeSafeSpeed() should return 24 m/s.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-POWER}
+TEST CASE: Compute a single power command for a train.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object with a suggested speed of of 0.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.getPower()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.getPower() should return 0 W.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-GET-POWER}
+TEST CASE: Compute a single power command for a train.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object with a suggested speed of of 24.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.getPower()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.getPower() should return 2700 W.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 002-GET-POWER}
+TEST CASE: Compute the power for a train in a loop and verify that these power commands produce a steady speed.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object with a suggested speed of of 24.  The test train has a consistent method for transforming a power command into velocity over time.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.getPower() 200 times.
+	\item Each time getPower is called, the Train is set to that power for one second.
+	\item get the train's velocity
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.getPower() should 24 m/s, ± 1 m/s.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-SET-LIGHTS}
+TEST CASE: Set the lights to be "on."
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.setLights(true)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.setLights(true) should return true.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-SET-LIGHTS}
+TEST CASE: Set the lights to be "off."
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.setLights(false)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.setLights(false) should return false.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-SET-DOORS}
+TEST CASE: Set both left and right doors to be closed.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.setDoors(false, false)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.setDoors(false, false) should return 0.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-SET-DOORS}
+TEST CASE: Set left doors to be closed and right doors to be open.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.setDoors(false, true)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.setDoors(false, true) should return 1.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 002-SET-DOORS}
+TEST CASE: Set left doors to be open and right doors to be closed.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.setDoors(true, false)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.setDoors(false, true) should return 2.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 003-SET-DOORS}
+TEST CASE: Set both left and right doors to be open.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.setDoors(true, true)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.setDoors(true, true) should return 3.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-SET-TEMP}
+TEST CASE: Set the temperature.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.setTemp(72)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.setTemp(72) should return 72.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-JUST-STOP}
+TEST CASE: Send a signal to the controller to stop the train as soon as possible using the brake regardless of other signals.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.justStop()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.justStop() should return true.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-YOU-CAN-GO-NOW}
+TEST CASE: Send a signal to the controller that allows the train to move normally if instructed.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.youCanGoNow()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.youCanGoNow() should return false.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-SEND-FOR-SERVICE}
+TEST CASE: Send a signal to the controller that indicates the train should be sent for service.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.sendForService()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.sendForService() should return true.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-DISPLAY-STATION}
+TEST CASE: Update the controller to display a string.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object. A string variable \textit{name} has been prepared that says "Test Passes".
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.displayStation(name)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item the Train Controller's \textit{station} variable should be equal to "Test Passes".
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-ID}
+TEST CASE: Access the ID of TrackController.
+PRECONDITIONS: The TrainController has been created as _tc with an ID of 1, and test train (id of 1) data has been inserted into the controller object.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.getID()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.getID() should return 1.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-GET-ID}
+TEST CASE: Access the ID of TrackController.
+PRECONDITIONS: The TrainController has been created as _tc with an id of 2, and test train (id of 1) data has been inserted into the controller object.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.getID()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.getID() should return 2.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 002-GET-ID}
+TEST CASE: Access the ID of TrackController.
+PRECONDITIONS: The TrainController has been created as _tc with an id of -1, and test train (id of 1) data has been inserted into the controller object.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.getID()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.getID() should return -1.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 003-GET-ID}
+TEST CASE: Access the ID of TrackController.
+PRECONDITIONS: The TrainController has been created as _tc with an id of 0, and test train (id of 1) data has been inserted into the controller object.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.getID()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.getID() should return 0.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-TRAIN-CONTROLLER-BY-ID}
+TEST CASE: Access a different, preexisting TrainController.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object. _tc has been populated with an internal list of other TrainControllers with IDs of 2, 3, and 4.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.getTrainControllerByID(3)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.getTrainControllerByID(3) should return the TrainController with ID 3.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-GET-TRAIN-CONTROLLER-BY-ID}
+TEST CASE: Attempt to access a train controller that does not exist.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object. _tc has been populated with an internal list of other TrainControllers with IDs of 2, 3, and 4.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.getTrainControllerByID(5)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.getTrainControllerByID(10) should return null.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 002-GET-TRAIN-CONTROLLER-BY-ID}
+TEST CASE: Attempt to access the only one existing TrainController.
+PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tc.getTrainControllerByID(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tc.getTrainControllerByID(1) should return _tc.
+\end{enumerate}
+
+\subsection{Traceability Matrix}
+
+\begin{center}
+\resizebox{\textwidth}{!}{
+  \begin{tabular}{ l | l }
+    Requirement & Test Case \\
+    \hline
+    1. The Train Controller shall deliver safe power commands to the Train Model. & 000-COMPUTE-SAFE-BRAKE \\
+    & 001-COMPUTE-SAFE-BRAKE \\
+    & 002-COMPUTE-SAFE-BRAKE \\
+    & 000-COMPUTE-SAFE-SPEED \\
+    & 001-COMPUTE-SAFE-SPEED \\
+    & 000-GET-POWER \\
+    & 001-GET-POWER \\
+    & 002-GET-POWER \\ \hline
+	2. The Train Controller shall control lights, doors, and temperature. & 000-SET-LIGHTS \\
+	& 001-SET-LIGHTS \\
+	& 000-SET-DOORS \\
+	& 001-SET-DOORS \\
+	& 002-SET-DOORS \\
+	& 003-SET-DOORS \\	
+	& 000-SET-TEMP \\ \hline
+	3. The Train Controller shall display upcoming and current station names. & 000-DISPLAY-STATION \\ \hline
+  \end{tabular}
+}
+\end{center}
+
+
+
+\end{document}
