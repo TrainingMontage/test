@@ -114,10 +114,10 @@
 \subsection{Use Case: Get Power}
 \begin{enumerate}
 	\item If the Train needs to stop, or slow down, the Train Controller applies the brake.
-	\item Train Controller calls getSuggestedSpeed from the Train Model
-	\item Train Controller calls getMaxPower from the Train Model
-	\item Train Controller calls getVelocity from the Train Model
-	\item Train Controller calls getAuthority from the Train Model
+	\item Train Controller calls getSuggestedSpeed from the Train Model to obtain the suggested velocity for the Train.
+	\item Train Controller calls getMaxPower from the Train Model to obtain the maximum power output for the Train.
+	\item Train Controller calls getVelocity from the Train Model to obtain the Train's current velocity.
+	\item Train Controller calls getAuthority from the Train Model to obtain the Train's current authority.
 	\item Train Controller calculates the safe speed for the train, given its authority.
 	\item Train Controller returns a power command for the  train, taking into account its power limits, suggested speed, and current velocity.
 \end{enumerate}
@@ -379,6 +379,7 @@ All tests described by this plan will be executed in order to ensure quality. Al
 \subsubsection{IDENTIFIER: 000-COMPUTE-SAFE-BRAKE}
 TEST CASE: Compute the safe braking distance for a train in motion.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.computeSafeBrake()
@@ -391,6 +392,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 000-COMPUTE-SAFE-BRAKE}
 TEST CASE: Compute the safe braking distance for a train in motion.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object with a speed of 0 and an authority of 1000.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.computeSafeBrake()
@@ -403,6 +405,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 001-COMPUTE-SAFE-BRAKE}
 TEST CASE: Compute the safe braking distance for a train in motion.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object with a speed of 12 and an authority of 1000.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.computeSafeBrake()
@@ -415,6 +418,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 002-COMPUTE-SAFE-BRAKE}
 TEST CASE: Compute the safe braking distance for a train in motion.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object with a speed of 12 and an authority of 200.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.computeSafeBrake()
@@ -427,6 +431,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 000-COMPUTE-SAFE-SPEED}
 TEST CASE: Compute the safe speed for a train.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object with an authority of 1000 and a suggested speed of of 0.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.computeSafeSpeed()
@@ -439,6 +444,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 001-COMPUTE-SAFE-SPEED}
 TEST CASE: Compute the safe speed for a train.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object with an authority of 1000 and a suggested speed of of 24.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.computeSafeSpeed()
@@ -451,6 +457,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 000-GET-POWER}
 TEST CASE: Compute a single power command for a train.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object with a suggested speed of of 0.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.getPower()
@@ -463,6 +470,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 001-GET-POWER}
 TEST CASE: Compute a single power command for a train.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object with a suggested speed of of 24.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.getPower()
@@ -475,6 +483,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 002-GET-POWER}
 TEST CASE: Compute the power for a train in a loop and verify that these power commands produce a steady speed.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object with a suggested speed of of 24.  The test train has a consistent method for transforming a power command into velocity over time.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.getPower() 200 times.
@@ -489,6 +498,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 000-SET-LIGHTS}
 TEST CASE: Set the lights to be "on."
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.setLights(true)
@@ -501,6 +511,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 001-SET-LIGHTS}
 TEST CASE: Set the lights to be "off."
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.setLights(false)
@@ -513,6 +524,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 000-SET-DOORS}
 TEST CASE: Set both left and right doors to be closed.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.setDoors(false, false)
@@ -525,6 +537,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 001-SET-DOORS}
 TEST CASE: Set left doors to be closed and right doors to be open.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.setDoors(false, true)
@@ -537,6 +550,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 002-SET-DOORS}
 TEST CASE: Set left doors to be open and right doors to be closed.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.setDoors(true, false)
@@ -549,6 +563,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 003-SET-DOORS}
 TEST CASE: Set both left and right doors to be open.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.setDoors(true, true)
@@ -561,6 +576,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 000-SET-TEMP}
 TEST CASE: Set the temperature.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.setTemp(72)
@@ -573,6 +589,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 000-JUST-STOP}
 TEST CASE: Send a signal to the controller to stop the train as soon as possible using the brake regardless of other signals.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.justStop()
@@ -585,6 +602,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 000-YOU-CAN-GO-NOW}
 TEST CASE: Send a signal to the controller that allows the train to move normally if instructed.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.youCanGoNow()
@@ -597,6 +615,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 000-SEND-FOR-SERVICE}
 TEST CASE: Send a signal to the controller that indicates the train should be sent for service.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.sendForService()
@@ -609,6 +628,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 000-DISPLAY-STATION}
 TEST CASE: Update the controller to display a string.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object. A string variable \textit{name} has been prepared that says "Test Passes".
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.displayStation(name)
@@ -621,6 +641,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 000-GET-ID}
 TEST CASE: Access the ID of TrackController.
 PRECONDITIONS: The TrainController has been created as _tc with an ID of 1, and test train (id of 1) data has been inserted into the controller object.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.getID()
@@ -633,6 +654,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 001-GET-ID}
 TEST CASE: Access the ID of TrackController.
 PRECONDITIONS: The TrainController has been created as _tc with an id of 2, and test train (id of 1) data has been inserted into the controller object.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.getID()
@@ -645,6 +667,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 002-GET-ID}
 TEST CASE: Access the ID of TrackController.
 PRECONDITIONS: The TrainController has been created as _tc with an id of -1, and test train (id of 1) data has been inserted into the controller object.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.getID()
@@ -657,6 +680,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 003-GET-ID}
 TEST CASE: Access the ID of TrackController.
 PRECONDITIONS: The TrainController has been created as _tc with an id of 0, and test train (id of 1) data has been inserted into the controller object.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.getID()
@@ -669,6 +693,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 000-GET-TRAIN-CONTROLLER-BY-ID}
 TEST CASE: Access a different, preexisting TrainController.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object. _tc has been populated with an internal list of other TrainControllers with IDs of 2, 3, and 4.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.getTrainControllerByID(3)
@@ -681,6 +706,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 001-GET-TRAIN-CONTROLLER-BY-ID}
 TEST CASE: Attempt to access a train controller that does not exist.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object. _tc has been populated with an internal list of other TrainControllers with IDs of 2, 3, and 4.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.getTrainControllerByID(5)
@@ -693,6 +719,7 @@ POSTCONDITIONS:
 \subsubsection{IDENTIFIER: 002-GET-TRAIN-CONTROLLER-BY-ID}
 TEST CASE: Attempt to access the only one existing TrainController.
 PRECONDITIONS: The TrainController has been created as _tc, and test train (id of 1) data has been inserted into the controller object.
+
 EXECUTION STEPS:
 \begin{enumerate}
 	\item Call _tc.getTrainControllerByID(1)
@@ -706,7 +733,7 @@ POSTCONDITIONS:
 
 \begin{center}
 \resizebox{\textwidth}{!}{
-  \begin{tabular}{ l | l }
+  \begin{tabular}{ p{0.5\textwidth} | l }
     Requirement & Test Case \\
     \hline
     1. The Train Controller shall have an algorithm capable of calculating a maximum safe speed for the train in question. & 000-COMPUTE-SAFE-BRAKE \\
