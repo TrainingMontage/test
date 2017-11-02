@@ -224,31 +224,7 @@
             "speed",
             "..."
         )();
-        % % Static Block
-        % Class.StaticBlock("StaticBlock")()(
-        %     "-int setId(int id)",
-        %     "int getId()",
-        %     "-String setRegion(String region)",
-        %     "String getRegion()",
-        %     "-double setGrade(double grade)",
-        %     "double getGrade()",
-        %     "-double setElevation(double elevation)",
-        %     "double getElevation()",
-        %     "-double setLength(double length)",
-        %     "double getLength()",
-        %     "-String setStation(String station)",
-        %     "String getStation()",
-        %     "-StaticSwitch setStaticSwitch(StaticSwitch staticSwitch)"
-        % );
-        % % StaticSwitch
-        % Class.StaticSwitch("StaticSwitch")()(
-        %     "StaticBlock getRoot()",
-        %     "-StaticBlock setRoot(StaticBlock root)",
-        %     "StaticBlock getInactiveLeaf()",
-        %     "-StaticBlock setInactiveLeaf(StaticBlock inactiveLeaf)",
-        %     "StaticBlock getActiveLeaf()",
-        %     "-StaticBlock setActiveLeaf(StaticBlock activeLeaf)"
-        % );
+        %
         leftToRight.top(30)(CTC, Wayside, TrackModel, TrainModel, TrainController);
         leftToRight(30)(Convert, BlockStatus, Suggestion);
         topToBottom(60)(Environment, Wayside);
