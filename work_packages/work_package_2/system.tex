@@ -189,6 +189,74 @@
     \item If the selected file does not contain valid PLC code, then a popup will appear reporting the error.
 \end{enumerate}
 
+\subsection{Use Case: Get Power}
+\begin{enumerate}
+	\item If the Train needs to stop, or slow down, the Train Controller applies the brake.
+	\item Train Controller calls getSuggestedSpeed from the Train Model to obtain the suggested velocity for the Train.
+	\item Train Controller calls getMaxPower from the Train Model to obtain the maximum power output for the Train.
+	\item Train Controller calls getVelocity from the Train Model to obtain the Train's current velocity.
+	\item Train Controller calls getAuthority from the Train Model to obtain the Train's current authority.
+	\item Train Controller calculates the safe speed for the train, given its authority.
+	\item Train Controller returns a power command for the  train, taking into account its power limits, suggested speed, and current velocity.
+\end{enumerate}
+
+\subsection{Use Case: Set Target Velocity}
+\begin{enumerate}
+	\item The Driver toggles “manual mode” on the UI.
+	\item The Driver manually sets the train to a desired speed.
+	\item The Driver hits “Apply Changes”
+	\item Future calls to Get Power create power commands to approach this manually entered speed while “manual mode” is active.
+\end{enumerate}
+
+\subsection{Use Case: Apply Service Brakes}
+\begin{enumerate}
+	\item The Driver toggles “manual mode” on the UI.
+	\item The Driver presses the "Service Brake" button.
+	\item Future calls to Get Power apply the service brake while the button is toggled.
+\end{enumerate}
+
+\subsection{Use Case: Apply Emergency Brakes}
+\begin{enumerate}
+	\item The Driver toggles “manual mode” on the UI.
+	\item The Driver presses the "Emergency Brake" button.
+	\item Future calls to Get Power apply the emergency brake while the button is toggled.
+\end{enumerate}
+
+\subsection{Use Case: Operate Lights}
+\begin{enumerate}
+	\item The Driver toggles “manual mode” on the UI.
+	\item The Driver toggles the lights "ON" or "OFF" buttons
+	\item The Train Controller switches the lights to be "on" or "off" accordingly.
+\end{enumerate}
+
+\subsection{Use Case: Operate Doors}
+\begin{enumerate}
+	\item The Driver toggles “manual mode” on the UI.
+	\item The Driver toggles the door "OPEN" or "CLOSED" buttons
+	\begin{enumerate}
+		\item There are options for both the right and left doors.
+	\end{enumerate}
+	\item The Train Controller switches the appropriate doors to be "open" or "closed" accordingly.
+\end{enumerate}
+
+\subsection{Use Case: Set Temperature}
+\begin{enumerate}
+	\item The Driver toggles “manual mode” on the UI.
+	\item The Driver manually sets the train's internal temperature
+	\item The Driver hits “Apply Changes”
+	\item The Train Controller applies the desired temperature to the train interior while manual mode is active.
+\end{enumerate}
+
+\subsection{Use Case: Initialize TrainController}
+\begin{enumerate}
+	\item Either the SimulationRunner or the Train Model calls the basic constructor or init() function.
+	\item A train controller is initialized with an ID of 0 and using the default constructor for a Train.
+	\begin{enumerate}
+		\item Alternative constructors exist to set a specific train.
+	\end{enumerate}
+	\item The actor will then be able to set Ki and Kp, if desired.
+\end{enumerate}
+
 
 \section{Class Diagram}
 
@@ -491,7 +559,7 @@
 }
 \end{center}
 
-\subsection{Sequence Diargam: Upload PLC}
+\subsection{Sequence Diagram: Upload PLC}
 \begin{center}
 \resizebox{\textwidth}{!}{
     \begin{sequencediagram}
@@ -517,7 +585,7 @@
 }
 \end{center}
 
-\subsection{Sequence Diargam: Upload PLC (Variant: Unable to Read File)}
+\subsection{Sequence Diagram: Upload PLC (Variant: Unable to Read File)}
 \begin{center}
 \resizebox{\textwidth}{!}{
     \begin{sequencediagram}
@@ -537,7 +605,7 @@
 }
 \end{center}
 
-\subsection{Sequence Diargam: Upload PLC (Variant: Invalid PLC Code)}
+\subsection{Sequence Diagram: Upload PLC (Variant: Invalid PLC Code)}
 \begin{center}
 \resizebox{\textwidth}{!}{
     \begin{sequencediagram}
@@ -559,6 +627,154 @@
     \end{sequencediagram}
 }
 \end{center}
+
+\subsection{Sequence Diagram: Set Target Velocity}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{dr}{Driver}
+	\newinst[4]{ui}{UI}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{dr}{setVelocity()}{ui}{}
+		\begin{call}{ui}{setVelocity()}{tc}{}
+			\begin{call}{tc}{validate}{tc}{}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Get Power}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tm}{TrainModel}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{tm}{getPower()}{tc}{double power}
+		\begin{call}{tc}{getSuggestedSpeed()}{tm}{double speed}
+		\end{call}
+		\begin{call}{tc}{getMaxPower()}{tm}{double power}
+		\end{call}
+		\begin{call}{tc}{getVelocity()}{tm}{double speed}
+		\end{call}
+		\begin{call}{tc}{getAuthority()}{tm}{double authority}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Apply Service Brakes}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{dr}{Driver}
+	\newinst[4]{ui}{UI}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{dr}{applySBrakes()}{ui}{}
+		\begin{call}{ui}{applySBrakes()}{tc}{}
+			\begin{call}{tc}{validate}{tc}{}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Apply Emergency Brakes}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{dr}{Driver}
+	\newinst[4]{ui}{UI}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{dr}{applyEBrakes()}{ui}{}
+		\begin{call}{ui}{applyEBrakes()}{tc}{}
+			\begin{call}{tc}{validate}{tc}{}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Operate Lights}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{dr}{Driver}
+	\newinst[4]{ui}{UI}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{dr}{setLights(T/F)}{ui}{T/F}
+		\begin{call}{ui}{setLights(T/F)}{tc}{T/F}
+			\begin{call}{tc}{validate}{tc}{}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Operate Doors}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{dr}{Driver}
+	\newinst[4]{ui}{UI}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{dr}{setDoors(T/F, T/F)}{ui}{byte status}
+		\begin{call}{ui}{setDoors(T/F, T/F)}{tc}{byte status}
+			\begin{call}{tc}{validate}{tc}{}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Set Temperature}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{dr}{Driver}
+	\newinst[4]{ui}{UI}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{dr}{setTemp(temperature)}{ui}{double temperature}
+		\begin{call}{ui}{setTemp(temperature)}{tc}{double temperature}
+			\begin{call}{tc}{validate}{tc}{}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Initialize Train Controller}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tm}{TrainModel or Simulation Runner}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{tm}{initialize}{tc}{Train Controller Instance}
+		\begin{call}{tc}{setKi()}{tc}{}
+		\end{call}
+		\begin{call}{tc}{setKp()}{tc}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+
 
 % THIS IS WHAT YOU WANT TO EDIT!
 % ...if you want to include your own file in the full document.
