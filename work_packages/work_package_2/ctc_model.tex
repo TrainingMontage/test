@@ -207,24 +207,24 @@
 \resizebox{\textwidth}{!}{
  	\begin{sequencediagram}
 	\newthread{disp}{Dispatcher}
-	\newinst{ctcgui}{CTCGUI}
-	\newinst{ctc}{CTCModel}
-	\newinst{ctcdat}{CTCTrainData}
+	\newinst[1.8]{ctcgui}{CTCGUI}
+	\newinst[2]{ctc}{CTCModel}
+	\newinst[2]{ctcdat}{CTCTrainData}
 	%\newinst{ws}{Wayside}
 	\newinst{tm}{TrackModel}
-	\newinst{train}{TrainModel}
-	\newinst{trainc}{TrainController}
-	\newinst{ui}{UI}
+	\newinst[1.5]{train}{TrainModel}
+	\newinst[2]{trainc}{TrainController}
+	\newinst[1.5]{ui}{UI}
 	
 	\begin{call}{disp}{Dispatch Train}{ctcgui}{}
-		\begin{call}{ctcgui}{checkTrainInputs(block, speed, authority, destination)}{ctc}{}
+		\begin{call}{ctcgui}{checkTrainInputs(...)}{ctc}{}
 		\end{call}
-		\begin{call}{ctcgui}{createTrain(block, speed, authority, destination)}{ctc}{}
-			\begin{call}{ctc}{new CTCTrainData(block, speed, authority, destination)}{ctcdat}{}
+		\begin{call}{ctcgui}{createTrain(...)}{ctc}{}
+			\begin{call}{ctc}{new CTCTrainData(...)}{ctcdat}{}
 			\end{call}
-			\begin{call}{ctc}{createTrain(block, speed, authority, destination)}{train}{}
+			\begin{call}{ctc}{createTrain(...)}{train}{}
 				\begin{call}{train}{new TrainController()}{trainc}{}
-					\begin{call}{trainc}{set kp and ki popup}{ui}{}
+					\begin{call}{trainc}{kp and ki popup}{ui}{}
 					\end{call}
 				\end{call}
 				\begin{call}{train}{initializeTrain()}{tm}{}
@@ -241,8 +241,8 @@
 \resizebox{\textwidth}{!}{
  	\begin{sequencediagram}
 	\newthread{disp}{Dispatcher}
-	\newinst{ctcgui}{CTCGUI}
-	\newinst{ctc}{CTCModel}
+	\newinst[1]{ctcgui}{CTCGUI}
+	\newinst[8]{ctc}{CTCModel}
 	%\newinst{ctcdat}{CTCTrainData}
 	%\newinst{ws}{Wayside}
 	%\newinst{tm}{TrackModel}
@@ -264,9 +264,9 @@
 \resizebox{\textwidth}{!}{
 	\begin{sequencediagram}
 	\newthread{disp}{Dispatcher}
-	\newinst{ctcgui}{CTCGUI}
-	\newinst{ctc}{CTCModel}
-	\newinst{ctcdat}{CTCTrainData}
+	\newinst[2]{ctcgui}{CTCGUI}
+	\newinst[2]{ctc}{CTCModel}
+	\newinst[8]{ctcdat}{CTCTrainData}
 	
 	\begin{call}{disp}{Read Schedule}{ctcgui}{}
 		\begin{call}{ctcgui}{ParseSchedule(file)}{ctc}{}
@@ -285,15 +285,15 @@
 \resizebox{\textwidth}{!}{
 	\begin{sequencediagram}
 	\newthread{disp}{Dispatcher}
-	\newinst{ctcgui}{CTCGUI}
-	\newinst{ctc}{CTCModel}
+	\newinst[3]{ctcgui}{CTCGUI}
+	\newinst[3]{ctc}{CTCModel}
 	%\newinst{ctcdat}{CTCTrainData}
 	
-	\begin{call}{disp}{Read Schedule}{ctcgui}{}
+	\begin{call}{disp}{Read Schedule}{ctcgui}{error popup}
 		\begin{call}{ctcgui}{ParseSchedule(file)}{ctc}{}
 		\end{call}
-		\begin{call}{ctcgui}{error popup}{disp}{}
-		\end{call}
+		%\begin{call}{ctcgui}{}{disp}{}
+		%\end{call}
 	\end{call}
 	\end{sequencediagram}
 }
@@ -304,10 +304,10 @@
 \resizebox{\textwidth}{!}{
 	\begin{sequencediagram}
 	\newthread{disp}{Dispatcher}
-	\newinst{ctcgui}{CTCGUI}
-	\newinst{ctc}{CTCModel}
-	\newinst{ws}{Wayside}
-	\newinst{tm}{TrackModel}
+	\newinst[2]{ctcgui}{CTCGUI}
+	\newinst[2]{ctc}{CTCModel}
+	\newinst[2]{ws}{Wayside}
+	\newinst[2]{tm}{TrackModel}
 	
 	\begin{call}{disp}{fillTrackInfo(block)}{ctcgui}{}
 	\end{call}
@@ -328,10 +328,10 @@
 \resizebox{\textwidth}{!}{
 	\begin{sequencediagram}
 	\newthread{disp}{Dispatcher}
-	\newinst{ctcgui}{CTCGUI}
-	\newinst{ctc}{CTCModel}
-	\newinst{ws}{Wayside}
-	\newinst{tm}{TrackModel}
+	\newinst[2]{ctcgui}{CTCGUI}
+	\newinst[2]{ctc}{CTCModel}
+	\newinst[2]{ws}{Wayside}
+	\newinst[2]{tm}{TrackModel}
 	
 	\begin{call}{disp}{fillTrackInfo(block)}{ctcgui}{}
 	\end{call}
@@ -341,6 +341,22 @@
 				\begin{call}{ws}{toggleSwitch(block)}{tm}{}
 				\end{call}
 			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Initialize CTCModel}
+\begin{center}
+\resizebox{\textwidth}{!}{
+	\begin{sequencediagram}
+	\newthread{sim}{simrunner}
+	\newinst[3]{ctc}{CTCModel}
+	\newinst[3]{ctcgui}{CTCGUI}
+	
+	\begin{call}{sim}{init()}{ctc}{}
+		\begin{call}{ctc}{createAndShowGUI()}{ctcgui}{}
 		\end{call}
 	\end{call}
 	\end{sequencediagram}
