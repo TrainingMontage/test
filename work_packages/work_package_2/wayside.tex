@@ -882,7 +882,7 @@
 
         \test{Upload-PLC-0}
         TEST CASE: Upload PLC to a WC.\\
-        PRECONDITIONS: TrackModel objects have been or are being created.
+        PRECONDITIONS: WaysideController objects have been or are being created.
         ``wc'' is an instance of the ``WaysideController'' class.\\
         EXECUTION STEPS: \begin{enumerate}
             \item Call ``wc.uploadPLC(filename)''.
@@ -895,7 +895,7 @@
 
         \test{Upload-PLC-1}
         TEST CASE: Attempt to upload PLC; file could not be read.\\
-        PRECONDITIONS: TrackModel objects have been or are being created.
+        PRECONDITIONS: WaysideController objects have been or are being created.
         ``wc'' is an instance of the ``WaysideController'' class.\\
         EXECUTION STEPS: \begin{enumerate}
             \item Call ``wc.uploadPLC(filename)''.
@@ -907,7 +907,7 @@
 
         \test{Upload-PLC-2}
         TEST CASE: Attempt to upload PLC; file contains invalid code.\\
-        PRECONDITIONS: TrackModel objects have been or are being created.
+        PRECONDITIONS: WaysideController objects have been or are being created.
         ``wc'' is an instance of the ``WaysideController'' class.\\
         EXECUTION STEPS: \begin{enumerate}
             \item Call ``wc.uploadPLC(filename)''.
@@ -919,7 +919,7 @@
 
         \test{Open-Multi-Windows-0}
         TEST CASE: Open multiple WC windows.\\
-        PRECONDITIONS: TrackModel objects have been or are being created.\\
+        PRECONDITIONS: WaysideController objects have been or are being created.\\
         EXECUTION STEPS: \begin{enumerate}
             \item Push ``Open Wayside'' button.
             \item Type a valid blockId in the text field.
@@ -932,7 +932,7 @@
 
         \test{Open-Multi-Windows-1}
         TEST CASE: Attempt to open multiple WC windows; enter invalid block ID.\\
-        PRECONDITIONS: TrackModel objects have been or are being created.\\
+        PRECONDITIONS: WaysideController objects have been or are being created.\\
         EXECUTION STEPS: \begin{enumerate}
             \item Push ``Open Wayside'' button.
             \item Type a blockId in the text field.
@@ -941,5 +941,25 @@
         POST CONDITIONS: \begin{enumerate}
             \item Popup with a text field appears.
             \item Popup appears detailing the error.
+        \end{enumerate}
+
+        \test{Init-WC-0}
+        TEST CASE: Initialize the WaysideController class.\\
+        PRECONDITIONS: None.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.init()''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item A window appears for each WC on the track.
+        \end{enumerate}
+
+        \test{Init-WC-0}
+        TEST CASE: Initialize the WaysideController class, with PLC code.\\
+        PRECONDITIONS: None.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.init(filenames)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC reads, compiles, and stores code.
         \end{enumerate}
 \end{document}
