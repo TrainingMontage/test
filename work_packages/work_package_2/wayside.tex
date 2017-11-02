@@ -6,11 +6,58 @@
 \usepackage{fancyhdr}
 \usepackage{tikz}
 \usepackage{pgf-umlsd}
+\usepackage[bookmarks=true]{hyperref}
 
+
+%%%%%% header and footer info
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Software Design Description}
+\lhead{Training Montage}
+\cfoot{\thepage}
+
+%%%%%% custom list definition
+\newlist{numonly}{enumerate}{10}
+\setlist[numonly]{label*=\arabic*.}
+
+\hypersetup{
+    pdftitle={Software Design Description},    % title
+    pdfauthor={Training Montage},                     % author
+    pdfsubject={TeX and LaTeX},                        % subject of the document
+    pdfkeywords={TeX, LaTeX, graphics, images}, % list of keywords
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=blue,       % color of internal links
+    citecolor=black,       % color of links to bibliography
+    filecolor=black,        % color of file links
+    urlcolor=purple,        % color of external links
+    linktoc=page            % only page is linked
+}
 
 \begin{document}
 
-    % \chapter{Wayside Controller}
+\begin{flushright}
+    \rule{16cm}{5pt}\vskip1cm
+    \begin{bfseries}
+        \Huge{WAYSIDE CONTROLLER SOFTWARE DESIGN DESCRIPTION}\\
+        \vspace{.9cm}
+        for\\
+        \vspace{.9cm}
+        COE 1186 Project\\
+        \vspace{.9cm}
+        % \LARGE{Version \myversion approved}\\
+        \vspace{.9cm}
+        Prepared by:\\
+        Isaac B Goss\\
+        \vspace{3.9cm}
+        Training Montage\\
+        \vspace{.9cm}
+        \today\\
+    \end{bfseries}
+\end{flushright}
+
+\tableofcontents
+
+    \chapter{Wayside Controller}
     \section{Use Cases}
 
     \begin{center}
