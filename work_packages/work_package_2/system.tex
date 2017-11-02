@@ -15,7 +15,7 @@
 %%%%%% header and footer info
 \pagestyle{fancy}
 \fancyhf{}
-\rhead{System Use Case, Class, and Sequence Diagrams}
+\rhead{System Software Design Description}
 \lhead{Training Montage}
 \cfoot{\thepage}
 
@@ -24,7 +24,7 @@
 \setlist[numonly]{label*=\arabic*.}
 
 \hypersetup{
-    pdftitle={CTC Model Use Case, Class, and Sequence Diagrams},    % title
+    pdftitle={System Software Design Description},    % title
     pdfauthor={Training Montage},                     % author
     pdfsubject={TeX and LaTeX},                        % subject of the document
     pdfkeywords={TeX, LaTeX, graphics, images}, % list of keywords
@@ -41,7 +41,7 @@
 \begin{flushright}
     \rule{16cm}{5pt}\vskip1cm
     \begin{bfseries}
-        \Huge{SYSTEM USE CASE, CLASS, AND SEQUENCE DIAGRAMS}\\
+        \Huge{SYSTEM SOFTWARE DESIGN DESCRIPTION}\\
         \vspace{.9cm}
         for\\
         \vspace{.9cm}
@@ -171,6 +171,22 @@
 	\item Dispatcher selects a block with a switch from the map.
 	\item Dispatcher clicks "Toggle Switch" GUI button.
 	\item If wayside deems it safe, switch state will change and be displayed to the dispatcher.
+\end{enumerate}
+
+\subsection{Use Case: Upload PLC}
+\begin{enumerate}
+    \item Wayside Engineer (WE) pushes ``Upload PLC'' button.
+    \item A File Chooser popup appears.
+    \item WE chooses desired file.
+    \item Popup appears stating PLC has successfully been uploaded.
+\end{enumerate}
+\subsubsection{Variant: Unable to Read File}
+\begin{enumerate}[label = \arabic*a., start = 4]
+    \item If the selected file cannot be read for any reason, then a popup will appear reporting the error.
+\end{enumerate}
+\subsubsection{Variant: Invalid PLC}
+\begin{enumerate}[label = \arabic*b., start = 4]
+    \item If the selected file does not contain valid PLC code, then a popup will appear reporting the error.
 \end{enumerate}
 
 
@@ -472,6 +488,75 @@
 	\end{call}
 	
 	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diargam: Upload PLC}
+\begin{center}
+\resizebox{\textwidth}{!}{
+    \begin{sequencediagram}
+        \newthread{weng}{Wayside Engineer}
+        \newinst[3]{wc}{Wayside}
+        \newinst[3]{comp}{Compiler}
+        \newinst[3]{rf}{RegFile}
+        \newinst[3]{pop}{Popup}
+        
+        \begin{call}
+            {weng}{chooseFile()}{wc}{}
+            \begin{call}
+                {wc}{compile(file)}{comp}{Instruction[]}
+            \end{call}
+            \begin{call}
+                {wc}{load(Instruction[])}{rf}{}
+            \end{call}
+            \begin{call}
+                {wc}{success()}{pop}{}
+            \end{call}
+        \end{call}
+    \end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diargam: Upload PLC (Variant: Unable to Read File)}
+\begin{center}
+\resizebox{\textwidth}{!}{
+    \begin{sequencediagram}
+        \newthread{weng}{Wayside Engineer}
+        \newinst[3]{wc}{Wayside}
+        \newinst[3]{comp}{Compiler}
+        \newinst[3]{rf}{RegFile}
+        \newinst[3]{pop}{Popup}
+        
+        \begin{call}
+            {weng}{chooseFile()}{wc}{}
+            \begin{call}
+                {wc}{fileReadFailure()}{pop}{}
+            \end{call}
+        \end{call}
+    \end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diargam: Upload PLC (Variant: Invalid PLC Code)}
+\begin{center}
+\resizebox{\textwidth}{!}{
+    \begin{sequencediagram}
+        \newthread{weng}{Wayside Engineer}
+        \newinst[3]{wc}{Wayside}
+        \newinst[3]{comp}{Compiler}
+        \newinst[3]{rf}{RegFile}
+        \newinst[3]{pop}{Popup}
+        
+        \begin{call}
+            {weng}{chooseFile()}{wc}{}
+            \begin{call}
+                {wc}{compile(file)}{comp}{Instruction[]}
+            \end{call}
+            \begin{call}
+                {wc}{compileError()}{pop}{}
+            \end{call}
+        \end{call}
+    \end{sequencediagram}
 }
 \end{center}
 
