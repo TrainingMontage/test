@@ -1,0 +1,606 @@
+\documentclass{scrreprt}
+\usepackage[shellescape]{gmp}
+\usepackage{listings}
+\usepackage{underscore}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usepackage{pgf-umlsd}
+
+%%%%%% header and footer info
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{CTC Model Use Case, Class, and Sequence Diagrams}
+\lhead{Training Montage}
+\cfoot{\thepage}
+
+%%%%%% custom list definition
+\newlist{numonly}{enumerate}{10}
+\setlist[numonly]{label*=\arabic*.}
+
+\hypersetup{
+    pdftitle={CTC Model Use Case, Class, and Sequence Diagrams},    % title
+    pdfauthor={Training Montage},                     % author
+    pdfsubject={TeX and LaTeX},                        % subject of the document
+    pdfkeywords={TeX, LaTeX, graphics, images}, % list of keywords
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=blue,       % color of internal links
+    citecolor=black,       % color of links to bibliography
+    filecolor=black,        % color of file links
+    urlcolor=purple,        % color of external links
+    linktoc=page            % only page is linked
+}
+
+\begin{document}
+
+\begin{flushright}
+    \rule{16cm}{5pt}\vskip1cm
+    \begin{bfseries}
+        \Huge{CTC MODEL USE CASE, CLASS, AND SEQUENCE DIAGRAMS}\\
+        \vspace{.9cm}
+        for\\
+        \vspace{.9cm}
+        COE 1186 Project\\
+        \vspace{.9cm}
+        % \LARGE{Version \myversion approved}\\
+        \vspace{.9cm}
+        Prepared by:\\
+        Mitchell Moran\\
+        \vspace{4.9cm}
+        Training Montage\\
+        \vspace{.9cm}
+        \today\\
+    \end{bfseries}
+\end{flushright}
+
+\tableofcontents
+
+\chapter{CTC Model}
+
+\section{Use Cases}
+
+\begin{center}
+\resizebox{!}{.8\textheight}{
+	\begin{mpost}
+	    input metauml;
+	    vardef drawComponentVisualStereotype(text ne)= relax enddef;
+	    Actor.dispatch("Dispatcher");
+	    Actor.simrunner("SimulationRunner");
+	    % 
+	    Usecase.uA("Dispatch Train");
+	    Usecase.uB("Upload Schedule");
+	    Usecase.uC("Close Track for", "Maintenance");
+	    Usecase.uD("Toggle Switch", "for Testing");
+	    Usecase.uE("Initialize CTCModel");
+	    %
+	    Component.CTCModel("CTC Model")(uA,uB,uC,uD,uE);
+	    % 
+	    topToBottom.left(10)(uA,uB,uC,uD,uE);
+	    leftToRight(50)(dispatch, uA);
+	    leftToRight(50)(simrunner, uE);
+	    %
+	    % 
+	    drawObjects(dispatch,simrunner,CTCModel,uA,uB,uC,uD,uE);
+		%
+	    link(association)(pathCut(dispatch, uA)(dispatch.e -- uA.w));
+	    link(association)(pathCut(dispatch, uB)(dispatch.e -- uB.w));
+	    link(association)(pathCut(dispatch, uC)(dispatch.e -- uC.w));
+	    link(association)(pathCut(dispatch, uD)(dispatch.e -- uD.w));
+	    %
+	    link(association)(pathCut(simrunner, uE)(simrunner.e -- uE.w));
+	    %
+	\end{mpost}
+}
+\end{center}
+
+\subsection{Use Case: Dispatch Train}
+\begin{enumerate}
+	\item Dispatcher clicks the "New Train" GUI button.
+	\item Dispatcher fill the fields (block number, suggested speed, suggested authority, and destination block) and presses "Dispatch Train" GUI button.
+	\item CTC will call the train model to create a new train and train controller.
+	\item The train register itself with the track model.
+	\item The dispatcher will now see a train on the specified block on the map.
+\end{enumerate}
+
+\subsection{Variant: Invalid Inputs}
+\begin{enumerate}[label=\arabic*a., start=3]
+	\item If the starting block is not next to the yard or an input is invalid, no train will be created and the invalid input will be outlined in red.
+\end{enumerate}
+
+\subsection{Use Case: Upload Schedule}
+\begin{enumerate}
+	\item Dispatcher selects "Upload Schedule" from the File menu.
+	\item Dispatcher selects a schedule file on the computer.
+	\item Schedule is parsed and is displayed by train to the dispatcher.
+\end{enumerate}
+
+\subsection{Variant: Unable to Read File}
+\begin{enumerate}[label=\arabic*a., start=3]
+	\item If the file could not be read, a popup will report the error to the dispatcher.
+\end{enumerate}
+
+\subsection{Use Case: Close Track for Maintenance}
+\begin{enumerate}
+	\item Dispatcher selects a block from the map.
+	\item Dispatcher clicks "Close for Maintenance" GUI button.
+	\item Block state displays "Maintenance" to the dispatcher.
+\end{enumerate}
+
+\subsection{Variant: Selected Track is Already Closed}
+\begin{enumerate}[label=\arabic*a., start=2]
+	\item Dispatcher clicks "Open from Maintenance" GUI button
+	\item Block state displays "Operational" to the dispatcher.
+\end{enumerate}
+
+\subsection{Use Case: Toggle Switch for Testing}
+\begin{enumerate}
+	\item Dispatcher selects a block with a switch from the map.
+	\item Dispatcher clicks "Toggle Switch" GUI button.
+	\item If wayside deems it safe, switch state will change and be displayed to the dispatcher.
+\end{enumerate}
+
+\subsection{Use Case: Initialize CTCModel}
+\begin{enumerate}
+	\item SimulationRunner calls init()
+	\item The CTC model performs initialization tasks and returns the singleton CTCModel instance.
+\end{enumerate}
+
+
+\section{Class Diagram}
+
+\begin{center}
+\resizebox{!}{.9\textheight}{
+	\begin{mpost}
+		input metauml;
+	 	% CTC Model
+		Class.CTCModel("CTCModel")()(
+	    		"CTCModel init()",
+	    		"int checkTrainInputs(String block, String speed,", 
+			"                                 String authority, String destination)",
+			"int createTrain(int startingBlockID, int suggestedSpeed,",
+			"                        String suggestedAuth, int destBlockID)",
+			"void addSuggestion(int trainID, int suggestedSpeed,",
+			"                                String suggestedAuthority)",
+			"void sendSuggestions()",
+			"void parseSchedule(String file)",
+			"void closeBlock(int blockID)"
+		);
+		% CTC Train Data
+	    	Class.CTCTrainData("CTCTrainData")()(
+	    		"int getTrainID()",
+	    		"int getBlockID()",
+	    		"int getSpeed()",
+	    		"String getAuthority()",
+	    		"int getOrigin()",
+	    		"int getDestination()",
+			"void getTrainID(int trainID)",
+	    		"void getBlockID(int blockID)",
+	    		"void getSpeed(int speed)",
+	    		"void getAuthority(int authority)",
+	    		"void getOrigin(int origin)",
+	    		"void getDestination(int destination)"
+		);
+		% CTC GUI
+		Class.CTCGUI("CTCGUI")()(
+			"void fillTrackInfo(int blockID)"
+		);
+		% 	
+		topToBottom(30)(CTCModel, CTCGUI, CTCTrainData);
+		% 
+	    	drawObjects(CTCModel, CTCGUI, CTCTrainData);
+		%
+		% CTCModel -> CTCGUI 1..1
+	    	link(associationUni)(pathStepX(CTCGUI.n, CTCModel.s, 0));
+	    	item(iAssoc)("1")(obj.ne = CTCModel.s + (-5,-10));
+	    	item(iAssoc)("1")(obj.ne = CTCGUI.n + (0,10));
+		% CTCModel -> CTCTrainData 1..*
+	    	link(compositionUni)(pathStepX(CTCTrainData.e + (0,-20), CTCModel.e, 55));
+	    	item(iAssoc)("*")(obj.nw = CTCTrainData.e + (15,-20));
+	    	item(iAssoc)("1")(obj.nw = CTCModel.e + (5,-5));
+	\end{mpost}
+}
+\end{center}
+
+\section{Sequence Diagrams}
+
+\subsection{Sequence Diagram: Dispatch Train}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{disp}{Dispatcher}
+	\newinst[1.8]{ctcgui}{CTCGUI}
+	\newinst[2]{ctc}{CTCModel}
+	\newinst[2]{ctcdat}{CTCTrainData}
+	%\newinst{ws}{Wayside}
+	\newinst{tm}{TrackModel}
+	\newinst[1.5]{train}{TrainModel}
+	\newinst[2]{trainc}{TrainController}
+	\newinst[1.5]{ui}{UI}
+	
+	\begin{call}{disp}{Dispatch Train}{ctcgui}{}
+		\begin{call}{ctcgui}{checkTrainInputs(...)}{ctc}{}
+		\end{call}
+		\begin{call}{ctcgui}{createTrain(...)}{ctc}{}
+			\begin{call}{ctc}{new CTCTrainData(...)}{ctcdat}{}
+			\end{call}
+			\begin{call}{ctc}{createTrain(...)}{train}{}
+				\begin{call}{train}{new TrainController()}{trainc}{}
+					\begin{call}{trainc}{kp and ki popup}{ui}{}
+					\end{call}
+				\end{call}
+				\begin{call}{train}{initializeTrain()}{tm}{}
+				\end{call}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Dispatch Train (Variant: Invalid Inputs)}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{disp}{Dispatcher}
+	\newinst[1]{ctcgui}{CTCGUI}
+	\newinst[8]{ctc}{CTCModel}
+	%\newinst{ctcdat}{CTCTrainData}
+	%\newinst{ws}{Wayside}
+	%\newinst{tm}{TrackModel}
+	%\newinst{train}{TrainModel}
+	%\newinst{trainc}{TrainController}
+	%\newinst{ui}{UI}
+	
+	\begin{call}{disp}{Dispatch Train}{ctcgui}{}
+		\begin{call}{ctcgui}{checkTrainInputs(block, speed, authority, destination)}{ctc}{}
+		\end{call}
+	\end{call}
+	
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Upload Schedule}
+\begin{center}
+\resizebox{\textwidth}{!}{
+	\begin{sequencediagram}
+	\newthread{disp}{Dispatcher}
+	\newinst[2]{ctcgui}{CTCGUI}
+	\newinst[2]{ctc}{CTCModel}
+	\newinst[8]{ctcdat}{CTCTrainData}
+	
+	\begin{call}{disp}{Read Schedule}{ctcgui}{}
+		\begin{call}{ctcgui}{ParseSchedule(file)}{ctc}{}
+			\begin{sdblock}{For Each Train in Schedule}{}
+				\begin{call}{ctc}{new CTCTrainData(block, speed, authority, destination)}{ctcdat}{}
+				\end{call}
+			\end{sdblock}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Upload Schedule (Variant: Unable to Read File)}
+\begin{center}
+\resizebox{\textwidth}{!}{
+	\begin{sequencediagram}
+	\newthread{disp}{Dispatcher}
+	\newinst[3]{ctcgui}{CTCGUI}
+	\newinst[3]{ctc}{CTCModel}
+	%\newinst{ctcdat}{CTCTrainData}
+	
+	\begin{call}{disp}{Read Schedule}{ctcgui}{error popup}
+		\begin{call}{ctcgui}{ParseSchedule(file)}{ctc}{}
+		\end{call}
+		%\begin{call}{ctcgui}{}{disp}{}
+		%\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Close Track for Maintenance}
+\begin{center}
+\resizebox{\textwidth}{!}{
+	\begin{sequencediagram}
+	\newthread{disp}{Dispatcher}
+	\newinst[2]{ctcgui}{CTCGUI}
+	\newinst[3]{ctc}{CTCModel}
+	\newinst[3]{ws}{Wayside}
+	\newinst[3]{tm}{TrackModel}
+	
+	\begin{call}{disp}{fillTrackInfo(block)}{ctcgui}{}
+	\end{call}
+	\begin{call}{disp}{Close Track}{ctcgui}{}
+		\begin{call}{ctcgui}{setMaintenance(block,bool)}{ctc}{}
+			\begin{call}{ctc}{setMaintenance(block,bool)}{ws}{}
+				\begin{call}{ws}{setMaintenance(block,bool)}{tm}{}
+				\end{call}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Close Track for Maintenance (Variant: Track Already Closed)}
+\begin{center}
+\resizebox{\textwidth}{!}{
+	\begin{sequencediagram}
+	\newthread{disp}{Dispatcher}
+	\newinst[2]{ctcgui}{CTCGUI}
+	\newinst[3]{ctc}{CTCModel}
+	\newinst[3]{ws}{Wayside}
+	\newinst[3]{tm}{TrackModel}
+	
+	\begin{call}{disp}{fillTrackInfo(block)}{ctcgui}{}
+	\end{call}
+	\begin{call}{disp}{Open Track}{ctcgui}{}
+		\begin{call}{ctcgui}{setMaintenance(block,bool)}{ctc}{}
+			\begin{call}{ctc}{setMaintenance(block,bool)}{ws}{}
+				\begin{call}{ws}{setMaintenance(block,bool)}{tm}{}
+				\end{call}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Toggle Switch for Testing}
+\begin{center}
+\resizebox{\textwidth}{!}{
+	\begin{sequencediagram}
+	\newthread{disp}{Dispatcher}
+	\newinst[2]{ctcgui}{CTCGUI}
+	\newinst[2]{ctc}{CTCModel}
+	\newinst[2]{ws}{Wayside}
+	\newinst[2]{tm}{TrackModel}
+	
+	\begin{call}{disp}{fillTrackInfo(block)}{ctcgui}{}
+	\end{call}
+	\begin{call}{disp}{Toggle Switch}{ctcgui}{}
+		\begin{call}{ctcgui}{toggleSwitch(block)}{ctc}{}
+			\begin{call}{ctc}{toggleSwitch(block)}{ws}{}
+				\begin{call}{ws}{toggleSwitch(block)}{tm}{}
+				\end{call}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Initialize CTCModel}
+\begin{center}
+\resizebox{\textwidth}{!}{
+	\begin{sequencediagram}
+	\newthread{sim}{simrunner}
+	\newinst[3]{ctc}{CTCModel}
+	\newinst[3]{ctcgui}{CTCGUI}
+	
+	\begin{call}{sim}{init()}{ctc}{}
+		\begin{call}{ctc}{createAndShowGUI()}{ctcgui}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\section{Test Plan}
+
+\subsection{Approach}
+
+\subsubsection{Introduction}
+The overall project will simulate the operation of a public rail system. The role of the Centralized Traffic Controller (CTC) within the context of the overall system is to simulate the interface with the human dispatcher. The CTC gets data about the state of the track to display to the dispatcher. The CTC must also route trains according to a schedule, in a safe manner.
+
+\subsubsection{Features Test}
+The features within the scope of this test plan include the actions performed by the dispatcher on the UI, and the interfaces with the Wayside Controller, Track Model, and Train Model. Interface must be tested to ensure functionality consistent with agreed-upon interfaces. The CTC UI must be tested to allow the dispatcher to perform all of the CTC's automatic functionality while in manual mode.
+
+\subsubsection{Features Not Tested}
+This test plan will not include any features outside the scope of the CTC Model. In this case, all functions not directly interacting with the CTC Model are not included in the scope.
+
+\subsubsection{Approach}
+The primary form of tests performed will be manual tests for verification of UI functionality, as the CTC is primarily simulating a human interface. Module interfaces will be tested using an array of automated tests that validate the expected function of each method included in the interface. Requirements state that the system must operate at 10x wall-clock speed. The CTC Model is not expected bottleneck performance, thus performance testing will not be conducted unless the manual tests indicate that there may be performance issues.
+
+\subsubsection{Test Deliverables}
+All tests described by this plan will be executed in order to ensure quality. All automated tests must be passing; automated tests run automatically every time the software changes. Manual tests must be performed before every deliverable. An executed test plan and defect report will be delivered with Work Package 3.
+
+\subsection{Test Cases}
+
+\subsubsection{IDENTIFIER: 000-DISPATCH-TRAIN}
+TEST CASE: Create a train in manual mode and position it on a starting block.
+PRECONDITIONS: The CTCModel has been created as ctcModel. Block 1 is unoccupied and connected to the yard. Block 2 exists and is connected to block 1. Block 1 is specified as the starting block. Desired train speed is 10 mph. Train is given authority on blocks 1 and 2. Destination block is block 2.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Click the "Manual" button
+	\item Click the "New Train" button
+	\item Enter the specified inputs in their text fields
+	\item Click the "Dispatch Train" button
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item A train will be created and dispatched on block 1 toward block 2.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-DISPATCH-TRAIN}
+TEST CASE: Create a train in manual mode and position it on a starting block.
+PRECONDITIONS: The CTCModel has been created as ctcModel. Block 1 is occupied and connected to the yard. Block 2 exists and is connected to block 1. Block 1 is specified as the starting block. Desired train speed is 10 mph. Train is given authority on blocks 1 and 2. Destination block is block 2.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Click the "Manual" button
+	\item Click the "New Train" button
+	\item Enter the specified inputs in their text fields
+	\item Click the "Dispatch Train" button
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item A popup will display that the starting block is occupied and a train cannot be dispatched there. No train is created.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 002-DISPATCH-TRAIN}
+TEST CASE: Create a train in manual mode and position it on a starting block.
+PRECONDITIONS: The CTCModel has been created as ctcModel. Block 1 is unoccupied but not connected to the yard. Block 2 exists and is connected to block 1. Block 1 is specified as the starting block. Desired train speed is 10 mph. Train is given authority on blocks 1 and 2. Destination block is block 2.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Click the "Manual" button
+	\item Click the "New Train" button
+	\item Enter the specified inputs in their text fields
+	\item Click the "Dispatch Train" button
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item A popup will display that the starting block is not connected to the yard so a train cannot be dispatched there. No train is created.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 003-DISPATCH-TRAIN}
+TEST CASE: Create a train in manual mode and position it on a starting block.
+PRECONDITIONS: The CTCModel has been created as ctcModel. Block 1 is unoccupied and connected to the yard. Block 2 exists and is connected to block 1. Block 1 is specified as the starting block. Desired train speed is 10 mph. Train authority is mistakenly entered as "1,a". Destination block is block 2.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Click the "Manual" button
+	\item Click the "New Train" button
+	\item Enter the specified inputs in their text fields
+	\item Click the "Dispatch Train" button
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The authority text field will be highlighted in red. No train is created.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 004-DISPATCH-TRAIN}
+TEST CASE: Create a train in manual mode and position it on a starting block.
+PRECONDITIONS: The CTCModel has been created as ctcModel. Block 1 is unoccupied and connected to the yard. Block 2 exists and is connected to block 1. Block 1 is mistyped as 1.1. Desired train speed is 10 mph. Train is given authority on blocks 1 and 2. Destination block is block 2.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Click the "Manual" button
+	\item Click the "New Train" button
+	\item Enter the specified inputs in their text fields
+	\item Click the "Dispatch Train" button
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The starting block text field will be highlighted in red. No train is created.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-UPLOAD-SCHEDULE}
+TEST CASE: Upload a schedule file from disk for operation in automatic mode.
+PRECONDITIONS: The CTCModel has been created as ctcModel. "Schedule.sch" is a file on disk and follows the format specified in the user manual.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Select "Upload Schedule" from the File menu
+	\item Select "Schedule.sch" in the file browser
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The schedule is parsed and displayed in the schedule area.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-UPLOAD-SCHEDULE}
+TEST CASE: Upload a schedule file from disk for operation in automatic mode.
+PRECONDITIONS: The CTCModel has been created as ctcModel. "Schedule.sch" is a file on disk but does not follow the format specified in the user manual.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Select "Upload Schedule" from the File menu
+	\item Select "Schedule.sch" in the file browser
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item An popup will report that the schedule format is not correct. No schedule changes will be made.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 002-UPLOAD-SCHEDULE}
+TEST CASE: Upload a schedule file from disk for operation in automatic mode.
+PRECONDITIONS: The CTCModel has been created as ctcModel. "Schedule.sch" does not exist on disk.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Select "Upload Schedule" from the File menu
+	\item Select "Schedule.sch" in the file browser
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item An popup will report that the file does not exist. No schedule changes will be made.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-CLOSE-TRACK-FOR-MAINTENANCE}
+TEST CASE: Close a block for maintenance.
+PRECONDITIONS: The CTCModel has been created as ctcModel. Block 1 exists in the track and is operational.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Select block 1
+	\item Click the "Close for Maintenance" button
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item Block 1 will be closed and the changed state will be displayed to the dispatcher.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-CLOSE-TRACK-FOR-MAINTENANCE}
+TEST CASE: Open a block for maintenance.
+PRECONDITIONS: The CTCModel has been created as ctcModel. Block 1 exists in the track and is closed for maintenance.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Select block 1
+	\item Click the "Open from Maintenance" button
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item Block 1 will be operational and the changed state will be displayed to the dispatcher.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-TOGGLE-SWITCH-FOR-TESTING}
+TEST CASE: Change the switch state for debugging.
+PRECONDITIONS: The CTCModel has been created as ctcModel. Block 1 exists in the track and is the root of a switch.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Select block 1
+	\item Click "Toggle Switch" button
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item If the wayside deems it safe, the switch will change state and the change will be displayed to the dispatcher.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-TOGGLE-SWITCH-FOR-TESTING}
+TEST CASE: Change the switch state for debugging.
+PRECONDITIONS: The CTCModel has been created as ctcModel. Block 1 exists in the track and is not the root of a switch.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Select block 1
+	\item Click "Toggle Switch" button
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item A popup will report there is no switch on this block and no change will be made to the track state.
+\end{enumerate}
+
+\subsection{Traceability Matrix}
+
+\begin{center}
+\resizebox{\textwidth}{!}{
+  \begin{tabular}{ l | l }
+    Requirement & Test Case \\
+    \hline
+    1. The CTC Model shall let the dispatcher dispatch & 000-DISPATCH-TRAIN \\
+     trains in manual mode. & 001-DISPATCH-TRAIN \\
+     & 002-DISPATCH-TRAIN \\
+     & 003-DISPATCH-TRAIN \\
+     & 004-DISPATCH-TRAIN \\ \hline
+	2. The CTC Model shall operate on a schedule. & 000-UPLOAD-SCHEDULE \\ 
+	& 001-UPLOAD-SCHEDULE \\ 
+	& 002-UPLOAD-SCHEDULE \\ \hline
+	3. The CTC Model shall allow the dispatcher & 000-CLOSE-TRACK-FOR-MAINTENANCE \\ 
+	to close and open track blocks for maintenance. & 001-CLOSE-TRACK-FOR-MAINTENANCE \\ \hline
+	4. The CTC Model shall allow the dispatcher to & 000-TOGGLE-SWITCH-FOR-TESTING \\
+	   toggle switch states on the track. & 001-TOGGLE-SWITCH-FOR-TESTING \\ 
+  \end{tabular}
+}
+\end{center}
+
+\end{document}
