@@ -1,0 +1,1058 @@
+\documentclass{scrreprt}
+\usepackage[shellescape]{gmp}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usepackage{pgf-umlsd}
+\usepackage[bookmarks=true]{hyperref}
+
+
+%%%%%% header and footer info
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Software Design Description}
+\lhead{Training Montage}
+\cfoot{\thepage}
+
+%%%%%% custom list definition
+\newlist{numonly}{enumerate}{10}
+\setlist[numonly]{label*=\arabic*.}
+
+\hypersetup{
+    pdftitle={Software Design Description},    % title
+    pdfauthor={Training Montage},                     % author
+    pdfsubject={TeX and LaTeX},                        % subject of the document
+    pdfkeywords={TeX, LaTeX, graphics, images}, % list of keywords
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=blue,       % color of internal links
+    citecolor=black,       % color of links to bibliography
+    filecolor=black,        % color of file links
+    urlcolor=purple,        % color of external links
+    linktoc=page            % only page is linked
+}
+
+\begin{document}
+
+\begin{flushright}
+    \rule{16cm}{5pt}\vskip1cm
+    \begin{bfseries}
+        \Huge{WAYSIDE CONTROLLER SOFTWARE DESIGN DESCRIPTION}\\
+        \vspace{.9cm}
+        for\\
+        \vspace{.9cm}
+        COE 1186 Project\\
+        \vspace{.9cm}
+        % \LARGE{Version \myversion approved}\\
+        \vspace{.9cm}
+        Prepared by:\\
+        Isaac B Goss\\
+        \vspace{3.9cm}
+        Training Montage\\
+        \vspace{.9cm}
+        \today\\
+    \end{bfseries}
+\end{flushright}
+
+\tableofcontents
+
+    \chapter{Wayside Controller}
+    \section{Use Cases}
+
+    \begin{center}
+        \resizebox{!}{.8\textheight}{
+            \begin{mpost}
+                input metauml;
+                vardef drawComponentVisualStereotype(text ne)= relax enddef;
+                Actor.ctc("CTC");
+                Actor.weng("Wayside", "Engineer");
+                Actor.simuser("Simulation", "User");
+                Actor.simrunner("Simulation", "Runner");
+                %======== CTC Uses =========
+                Usecase.uGetOcc      ("Get Occupancy");
+                Usecase.uGetStatus   ("Get Block Status");
+                Usecase.uGetSig      ("Get Signal");
+                Usecase.uGetCross    ("Get Crossing");
+                Usecase.uGetSwitch   ("Get Switch State");
+                Usecase.uSetStatus   ("Set Block Status");
+                Usecase.uToggleSwitch("Toggle Switch");
+                Usecase.uSuggest     ("Suggest Speed", "& Authority");
+                %======== Wayside Engineer Uses =========
+                Usecase.uPLC("Upload PLC");
+                %======== simuser Uses =========
+                Usecase.uManSuggest("Manual Suggestion");
+                Usecase.uViewData("View Track State");
+                Usecase.uMultWindow("Open Multiple", "Windows");
+                %======== SimRunner Uses ========
+                Usecase.uInit("Initialize");
+                Usecase.uInitWData("Initialize", "With Data");
+                %======== This Component? =========
+                Component.Wayside("WaysideController")(
+                    uGetOcc,
+                    uGetStatus,
+                    uGetSig,
+                    uGetCross,
+                    uGetSwitch,
+                    uSetStatus,
+                    uToggleSwitch,
+                    uSuggest,
+                    uPLC,
+                    uManSuggest,
+                    uViewData,
+                    uMultWindow,
+                    uInit,
+                    uInitWData
+                );
+                %======== CTC use cases ========
+                topToBottom.left(10)(
+                    uGetOcc,
+                    uGetStatus,
+                    uGetSig,
+                    uGetCross,
+                    uGetSwitch,
+                    uSetStatus,
+                    uToggleSwitch,
+                    uSuggest
+                );
+                leftToRight(25)(ctc, uGetCross);
+                %======== WaysideEngineer/simuser use cases ========
+                topToBottom.right(10)(
+                    uManSuggest,
+                    uViewData,
+                    uMultWindow,
+                );
+                topToBottom.right(10)(
+                    uInit,
+                    uInitWData
+                );
+                leftToRight(70)(uGetOcc, uPLC);
+                leftToRight(25)(uPLC, weng);
+                leftToRight(25)(uViewData, simuser);
+                leftToRight(25)(uInitWData, simrunner);
+                topToBottom(100)(weng, simuser, simrunner);
+                %======== Draw that shit!! ========
+                drawObjects(
+                    ctc,weng,simuser,WaysideController,simrunner,
+                    uGetOcc,
+                    uGetStatus,
+                    uGetSig,
+                    uGetCross,
+                    uGetSwitch,
+                    uSetStatus,
+                    uToggleSwitch,
+                    uSuggest,
+                    uPLC,
+                    uManSuggest,
+                    uViewData,
+                    uMultWindow,
+                    uInit,
+                    uInitWData
+                );
+                %======== CTC Lines ========
+                link(association)(pathCut(ctc, uGetOcc)      (ctc.e -- uGetOcc.w));
+                link(association)(pathCut(ctc, uGetStatus)   (ctc.e -- uGetStatus.w));
+                link(association)(pathCut(ctc, uGetSig)      (ctc.e -- uGetSig.w));
+                link(association)(pathCut(ctc, uGetCross)    (ctc.e -- uGetCross.w));
+                link(association)(pathCut(ctc, uGetSwitch)   (ctc.e -- uGetSwitch.w));
+                link(association)(pathCut(ctc, uSetStatus)   (ctc.e -- uSetStatus.w));
+                link(association)(pathCut(ctc, uToggleSwitch)(ctc.e -- uToggleSwitch.w));
+                link(association)(pathCut(ctc, uSuggest)     (ctc.e -- uSuggest.w));
+                %======== WaysdideEng Lines ========
+                link(association)(pathCut(weng, uPLC)(weng.w -- uPLC.e));
+                %======== simuser Lines ========
+                link(association)(pathCut(simuser, uManSuggest)(simuser.w -- uManSuggest.e));
+                link(association)(pathCut(simuser, uViewData)(simuser.w -- uViewData.e));
+                link(association)(pathCut(simuser, uMultWindow)(simuser.w -- uMultWindow.e));
+                %======== SimRunner Lines =======
+                link(association)(simrunner.w -- uInit.e);
+                link(association)(simrunner.w -- uInitWData.e);
+            \end{mpost}
+        }
+    \end{center}
+
+\providecommand{\use}[1]{\subsection{Use Case: #1}}
+
+    %========= CTC User Stories ========
+    \use{Get Occupancy}
+    \begin{enumerate}
+        \item CTC calls ``isOccupied()'' with the proper block ID.
+        \item WC returns true if block is occupied, false otherwise.
+    \end{enumerate}
+
+    \use{Get Block Status}
+    \begin{enumerate}
+        \item CTC calls ``getBlockStatus()'' with the proper block ID.
+        \item WC returns one of ``OPERATIONAL'', ``BROKEN'', ``REPAIR''.
+    \end{enumerate}
+
+    \use{Get Signal}
+    \begin{enumerate}
+        \item CTC calls ``getSignal()'' with the proper block ID.
+        \item WC returns true if signal is active, false otherwise.
+    \end{enumerate}
+
+    \use{Get Crossing}
+    \begin{enumerate}
+        \item CTC calls ``getCrossing()'' with the proper block ID.
+        \item WC returns true if railroad crossing is active, false otherwise.
+    \end{enumerate}
+
+    \use{Get Switch State}
+    \begin{enumerate}
+        \item CTC calls ``getSwtich()'' with the proper block ID.
+        \item WC returns true if switch is in active position, false otherwise.
+    \end{enumerate}
+
+    \use{Set Block Status}
+    \begin{enumerate}
+        \item CTC calls ``setBlockStatus()'' with the proper block ID, and the desired state.
+        \item WC sends signal to TrackModel to set the status of the block with the given ID to the desired state.
+        \item WC then returns the actual status of the block after assignment.
+    \end{enumerate}
+
+    \use{Toggle Switch State}
+    \begin{enumerate}
+        \item CTC calls ``toggleSwitch()'' with the proper block ID.
+        \item WC validates this is safe.
+        \item WC sends signal to TrackModel to toggle specified switch.
+        \item WC then returns switch position.
+    \end{enumerate}
+    \subsubsection{Variant: Unsafe Toggle}
+    \begin{enumerate}[label=3\alph*.]
+        \item If WC fails to validate that this is safe, it does not send this message to TrackModel.
+    \end{enumerate}
+
+    \use{Suggest Speed \& Authority}
+    \begin{enumerate}
+        \item CTC calls ``suggest()'' with suggestion encoded in the proper format.
+        \item WC validates that this input is safe.
+        \item WC then sends the following to TrackModel:
+            \begin{itemize}
+                \item The given speed and authority.
+                \item The position of switches necessary for this route.
+                \item Activates any crossings necessary for this route.
+                \item The state of all signals necessary for this route.
+            \end{itemize}
+    \end{enumerate}
+
+    \subsubsection{Variant: Unsafe Suggestion}
+    \begin{enumerate}[label=\arabic*a., start=3]
+        \item If WC does not find this suggestion to be safe, then it will instead send the following to the TrackModel:
+            \begin{itemize}
+                \item No authority to all blocks.
+                \item 0 speed to all blocks.
+                \item Deactivates all crossing which are not currently occupied.
+                \item Deactivates all signals.
+            \end{itemize}
+    \end{enumerate}
+
+    %========== Wayside Users =========
+    \use{Upload PLC}
+    \begin{enumerate}
+        \item Wayside Engineer (WE) pushes ``Upload PLC'' button.
+        \item A File Chooser popup appears.
+        \item WE chooses desired file.
+        \item Popup appears stating PLC has successfully been uploaded.
+    \end{enumerate}
+    \subsubsection{Variant: Unable to Read File}
+    \begin{enumerate}[label = \arabic*a., start = 4]
+        \item If the selected file cannot be read for any reason, then a popup will appear reporting the error.
+    \end{enumerate}
+    \subsubsection{Variant: Invalid PLC}
+    \begin{enumerate}[label = \arabic*b., start = 4]
+        \item If the selected file does not contain valid PLC code, then a popup will appear reporting the error.
+    \end{enumerate}
+
+    %========== Sim User ===========
+    \use{Manually Suggest Speed \& Authority}
+    \begin{enumerate}
+        \item Simulation User (SU) suggestion into table of the GUI, as per the Users' Manual.
+        \item SU then hits the ``Submit'' button.
+        \item WC reads this information, and verifies that the suggestion is safe.
+        \item WC then sends the following to TrackModel:
+        \begin{itemize}
+            \item The given speed and authority.
+            \item The position of switches necessary for this route.
+            \item Activates any crossings necessary for this route.
+            \item The state of all signals necessary for this route.
+        \end{itemize}
+    \end{enumerate}
+    \subsubsection{Variant: Unsafe Suggestion}
+    \begin{enumerate}[label=\arabic*a., start=4]
+        \item If WC does not find this suggestion to be safe, then it will instead send the following to the TrackModel:
+            \begin{itemize}
+                \item No authority to all blocks.
+                \item 0 speed to all blocks.
+                \item Deactivates all crossing which are not currently occupied.
+                \item Deactivates all signals.
+            \end{itemize}
+    \end{enumerate}
+
+    \use{View Track State}
+    \begin{enumerate}
+        \item An automatically updating table of track state will be visible in the WC window.
+    \end{enumerate}
+
+    \use{Open Multiple Wayside Contoller Windows}
+    \begin{enumerate}
+        \item SU pushes the ``Open Wayside'' button.
+        \item A popup with a text field appears.
+        \item SU enters a block ID into this field, and hits the ``Open'' button.
+        \item A new WC window appears representing the controller which has control over the given block.
+    \end{enumerate}
+    \subsubsection{Variant: Invalid Block}
+    \begin{enumerate}[label = \arabic*a., start = 4]
+        \item If SU enters an invalid block ID, then a popup will appear reporting the error.
+    \end{enumerate}
+
+    \use{Initialize Wayside Controller}
+    \begin{enumerate}
+        \item Simulation Runner (SR) calls ``WaysideController.init()''.
+        \item WC constructs all WC objects, and makes all windows visible to allow SU to upload PLC.
+    \end{enumerate}
+
+    \use{Initialize Wayside Controller with Default Data}
+    \begin{enumerate}
+        \item SR calls ``WaysideController.init(String[])'' with the filename of the PLC code per wayside controller.
+        \item WC constructs all WC objects, and gives them the PLC code given in ``init()''.
+        \item The WC objects then compile their respective PLC.
+    \end{enumerate}
+
+    \section{Class Diagram}
+    
+    \begin{center}
+    \resizebox{.9\textwidth}{!}{
+        \begin{mpost}
+            input metauml;
+
+            Class.WaysideController("WaysideController")()(
+                "static void init()",
+                "static void init(String[])",
+                "boolean getSignal(int blockId)",
+                "boolean getSwitch(int blockId)",
+                "boolean getCrossing(int blockId)",
+                "boolean isOccupied(int blockId)",
+                "BlockStatus getStatus(int blockId)",
+                "boolean toggleSwitch(int blockId)",
+                "void suggest(Suggestion[])"
+            );
+            
+            Class.Compiler("Compiler")()(
+                "Instruction[] compile(String code)",
+            );
+            
+            Class.VirtualMachine("VirtualMachine")()(
+                "void load(Instruction[] program)",
+                "void run()"
+            );
+           
+            Class.View("View")()(
+                "boolean getSignal(int blockId)",
+                "boolean getSwitch(int blockId)",
+                "boolean getCrossing(int blockId)",
+                "boolean isOccupied(int blockId)",
+                "BlockStatus getStatus(int blockId)",
+                "boolean getAuthority(blockId)",
+                "int getSpeed(int blockId)",
+                "boolean setSignal(int blockId, boolean value)",
+                "boolean setSwitch(int blockId, boolean value)",
+                "boolean setCrossing(int blockId, boolean value)",
+                "boolean setOccupancy(int blockId, boolean value)",
+                "BlockStatus setStatus(int blockId, BlockStatus value)",
+                "boolean setAuthority(int blockId, boolean value)",
+                "int setSpeed(int blockId, int value)",
+                "boolean show()"
+            );
+
+            Class.RegFile("RegFile")()(
+                "boolean read(Register reg)",
+                "boolean write(Register reg, boolean value)"
+            );
+
+            Class.Instruction("Instruction")(
+                "int operation",
+                "Register src1",
+                "Register src2",
+                "Register dest",
+                "int target"
+            )();
+
+            %=========== Now to actually lay it aht! ===========
+            topToBottom(40)(View, Compiler, Instruction);
+            leftToRight(30)(WaysideController, View);
+            VirtualMachine.n = WaysideController.s + (0, -60);
+            RegFile.n = VirtualMachine.s + (0, -60);
+            
+            drawObjects(WaysideController, Compiler, VirtualMachine, View, Instruction, RegFile);
+            
+            % WaysideController -> VirtualMachine 1..1 
+            link(associationUni)(WaysideController.s -- VirtualMachine.n);
+            
+            % VirtualMachine -> Instruction 1..*
+            link(compositionUni)(Instruction.nw -- VirtualMachine.se);
+            item(iAssoc)("*")(obj.nw = Instruction.nw + (-16, 17));
+            item(iAssoc)("1")(obj.nw = VirtualMachine.se + (12, 7));
+            
+            % VirtualMachine -> RegFile 1..1
+            link(associationUni)(VirtualMachine.s -- RegFile.n);
+            
+            % WaysideController -> Compiler 1..1
+            link(associationUni)(WaysideController.s + (20, 0) -- Compiler.nw);
+            
+            % WaysideController -> View 1..1
+            link(associationUni)(WaysideController.e -- View.w);
+        \end{mpost}
+    }
+    \end{center}
+
+    \section{Sequence Diagrams}
+
+    \subsection{Sequence Diargam: Get Occupancy}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[3]{wc}{Wayside}
+            \newinst[3]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {isOccupied(blockId)}{wc}{}
+                \begin{call}{wc}
+                    {isOccupied(blockId)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Get Block Status}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[3]{wc}{Wayside}
+            \newinst[3]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {getStatus(blockId)}{wc}{BlockStatus}
+                \begin{call}{wc}
+                    {getStatus(blockId)}{tm}{BlockStatus}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Get Signal}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[3]{wc}{Wayside}
+            \newinst[3]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {getSignal(blockId)}{wc}{}
+                \begin{call}{wc}
+                    {getSignal(blockId)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Get Crossing}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[3]{wc}{Wayside}
+            \newinst[3]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {getCrossing(blockId)}{wc}{}
+                \begin{call}{wc}
+                    {getCrossing(blockId)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Get Switch State}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[3]{wc}{Wayside}
+            \newinst[3]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {getSwitch(blockId)}{wc}{}
+                \begin{call}{wc}
+                    {getSwitch(blockId)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Set Block Status}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[5]{wc}{Wayside}
+            \newinst[5]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {setStatus(blockId, BlockStatus)}{wc}{}
+                \begin{call}{wc}
+                    {setStatus(blockId, BlockStatus)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Toggle Switch State}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[5]{wc}{Wayside}
+            \newinst[5]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {toggleSwitch(blockId)}{wc}{}
+                \begin{call}
+                    {wc}{validate()}{wc}{}
+                \end{call}
+                \begin{call}
+                    {wc}{getSwitch(blockId)}{tm}{current}
+                \end{call}
+                \begin{call}{wc}
+                    {setSwitch(blockId, !current)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Toggle Switch State (Variant: Unsafe Toggle)}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[3]{wc}{Wayside}
+            \newinst[3]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {toggleSwitch(blockId)}{wc}{}
+                \begin{call}
+                    {wc}{validate()}{wc}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Suggest Speed \& Authority}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[5]{wc}{Wayside}
+            \newinst[5]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {suggest(Suggestion[])}{wc}{}
+                \begin{call}
+                    {wc}{validate()}{wc}{}
+                \end{call}
+
+                \begin{call}
+                    {wc}{setSpeed(blockId, value)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setAuthority(blockId, value)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setSwitch(blockId, value)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setSignal(blockId, value)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setCrossing(blockId, value)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Suggest Speed \& Authority (Variant: Unsafe Suggestion)}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{ctc}{CTC}
+            \newinst[5]{wc}{Wayside}
+            \newinst[5]{tm}{TrackModel}
+            
+            \begin{call}{ctc}
+                {suggest(Suggestion[])}{wc}{}
+                \begin{call}
+                    {wc}{validate()}{wc}{}
+                \end{call}
+
+                \begin{call}
+                    {wc}{setSpeed(blockId, 0)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setAuthority(blockId, false)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setSignal(blockId, false)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setCrossing(blockId, false)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Upload PLC}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{weng}{Wayside Engineer}
+            \newinst[3]{wc}{Wayside}
+            \newinst[3]{comp}{Compiler}
+            \newinst[3]{rf}{RegFile}
+            \newinst[3]{pop}{Popup}
+            
+            \begin{call}
+                {weng}{chooseFile()}{wc}{}
+                \begin{call}
+                    {wc}{compile(file)}{comp}{Instruction[]}
+                \end{call}
+                \begin{call}
+                    {wc}{load(Instruction[])}{rf}{}
+                \end{call}
+                \begin{call}
+                    {wc}{success()}{pop}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Upload PLC (Variant: Unable to Read File)}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{weng}{Wayside Engineer}
+            \newinst[3]{wc}{Wayside}
+            \newinst[3]{comp}{Compiler}
+            \newinst[3]{rf}{RegFile}
+            \newinst[3]{pop}{Popup}
+            
+            \begin{call}
+                {weng}{chooseFile()}{wc}{}
+                \begin{call}
+                    {wc}{fileReadFailure()}{pop}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Upload PLC (Variant: Invalid PLC Code)}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{weng}{Wayside Engineer}
+            \newinst[3]{wc}{Wayside}
+            \newinst[3]{comp}{Compiler}
+            \newinst[3]{rf}{RegFile}
+            \newinst[3]{pop}{Popup}
+            
+            \begin{call}
+                {weng}{chooseFile()}{wc}{}
+                \begin{call}
+                    {wc}{compile(file)}{comp}{Instruction[]}
+                \end{call}
+                \begin{call}
+                    {wc}{compileError()}{pop}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Manually Suggest Speed \& Authority}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{su}{Simulation User}
+            \newinst[5]{wc}{Wayside}
+            \newinst[5]{tm}{TrackModel}
+            
+            \begin{call}{su}
+                {submit(Suggestion[])}{wc}{}
+                \begin{call}
+                    {wc}{validate()}{wc}{}
+                \end{call}
+
+                \begin{call}
+                    {wc}{setSpeed(blockId, value)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setAuthority(blockId, value)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setSwitch(blockId, value)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setSignal(blockId, value)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setCrossing(blockId, value)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: Manually Suggest Speed \& Authority (Variant: Unsafe Suggestion)}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{su}{Simulation User}
+            \newinst[5]{wc}{Wayside}
+            \newinst[5]{tm}{TrackModel}
+            
+            \begin{call}{su}
+                {submit(Suggestion[])}{wc}{}
+                \begin{call}
+                    {wc}{validate()}{wc}{}
+                \end{call}
+
+                \begin{call}
+                    {wc}{setSpeed(blockId, 0)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setAuthority(blockId, false)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setSignal(blockId, false)}{tm}{}
+                \end{call}
+                \begin{call}
+                    {wc}{setCrossing(blockId, false)}{tm}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+    \subsection{Sequence Diargam: View Multiple Wayside Controller Windows}
+    \begin{center}
+    \resizebox{\textwidth}{!}{
+        \begin{sequencediagram}
+            \newthread{su}{Simulation User}
+            \newinst[5]{wc}{Wayside}
+            \newinst[5]{pop}{Popup}
+            
+            \begin{call}
+                {su}{openWC()}{wc}{}
+                \begin{call}
+                    {wc}{getBlockId()}{pop}{blockId}
+                \end{call}
+                \begin{call}
+                    {wc}{findWC(block)}{wc}{WaysideController}
+                \end{call}
+                \begin{call}
+                    {wc}{setVisible()}{wc}{}
+                \end{call}
+            \end{call}
+        \end{sequencediagram}
+    }
+    \end{center}
+
+
+\providecommand{\test}[1]{\subsubsection{IDENTIFIER: #1}}
+    \section{Test Plan}
+
+        \subsection{Approach}
+
+        \subsubsection{Introduction}
+        The overall project will simulate the operation of a public rail system. The role of the Wayside Controller is as a vital platform to ensure the safety of the routes generated by the CTC, and also to ferry information between the track circuits and the CTC.
+        
+        \subsubsection{Features Test}
+        The features within the scope of this test plan include providing track data to the CTC, allowing the CTC to toggle switch positions, accepting suggestions of speed and authority from the CTC, allowing a Wayside Engineer to upload PLC code to control the WC, allowing a Simulation User to provide a manual suggestion of speed and authority and open multiple WC windows, and allowing a SimRunner class to initialize the WC with or without default PLC code.
+        
+        \subsubsection{Features Not Tested}
+        This test plan will not include any features outside the scope of the Wayside Controller. In this case, all functions not directly interacting with the track model are not included in the scope.
+        
+        \subsubsection{Approach}
+        The primary form of tests performed will be functional tests. Interfaces will be tested using an array of automated tests that validate the expected function of each method included in the interface. Manual tests are also to be conducted for verification of UI functionality. Requirements state that the system must operate at 10x wall-clock speed. The Wayside Controller is not expected bottleneck performance, thus performance testing will not be conducted unless the manual tests indicate that there may be performance issues.
+        
+        \subsubsection{Test Deliverables}
+        All tests described by this plan will be executed in order to ensure quality. All automated tests must be passing; automated tests run automatically every time the software changes. Manual tests must be performed before every deliverable. An executed test plan and defect report will be delivered with Work Package 3.
+        
+
+        \subsection{Test Cases}
+
+        % BASIC FORM:
+        % \test{}
+        % TEST CASE: \\
+        % PRECONDITIONS: \\
+        % EXECUTION STEPS: \begin{enumerate}
+        %     \item
+        % \end{enumerate}
+        % POST CONDITIONS: \begin{enumerate}
+        %     \item
+        % \end{enumerate}
+
+        \test{Get-Occupancy-0}
+        TEST CASE: Get the occupancy of a block.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+            TrackModel has been initialized with some track.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.isOccupied(blockId)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC will return the expected occupancy of the block.
+        \end{enumerate}
+
+        \test{Get-Block-Status-0}
+        TEST CASE: Get the repair status of a block.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+        TrackModel has been initialized with some track.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.getStatus(blockId)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC will return the expected status of the given block, represented as a ``BlockStatus'' object.
+        \end{enumerate}
+
+        \test{Get-Signal-0}
+        TEST CASE: Get the signal of a block.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+        TrackModel has been initialized with some track.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.getSignal(blockId)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC will return the expected signal of the given block.
+        \end{enumerate}
+
+        \test{Get-Crossing-0}
+        TEST CASE: Get the state of a railroad crossing.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+        TrackModel has been initialized with some track.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.getCrossing(blockId)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC will return the expected state of the given crossing.
+        \end{enumerate}
+
+        \test{Get-Switch-State-0}
+        TEST CASE: Get the current position of a switch.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+        TrackModel has been initialized with some track.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.getSwitch(blockId)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC will return the expected position of the switch.
+        \end{enumerate}
+
+        \test{Set-Block-Status-0}
+        TEST CASE: Get the repair status of a block.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+        TrackModel has been initialized with some track.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.setStatus(blockId, status)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC will call ``TrackModel.setStatus(blockId, status)''.
+            \item WC will return the given status of the given block, represented as a ``BlockStatus'' object.
+        \end{enumerate}
+
+        \test{Toggle-Switch-Position-0}
+        TEST CASE: Toggle the position of a switch.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+        TrackModel has been initialized with some track.
+        The switch in question is in position ``pos''.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.toggleSwitch(blockId)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC will call ``TrackModel.setSwitch(blockId, !pos)''.
+            \item WC will return the new switch position.
+        \end{enumerate}
+
+        \test{Toggle-Switch-Position-1}
+        TEST CASE: Suggest to toggle the position of a switch, but the suggestion is found to be unsafe.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+        TrackModel has been initialized with some track.
+        The switch in question is in position ``pos''.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.toggleSwitch(blockId)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC finds that the toggle will be unsafe.
+            \item WC will return the current switch position.
+        \end{enumerate}
+
+        \test{Suggest-SnA-0}
+        TEST CASE: Suggest safe speed and authority.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+        TrackModel has been initialized with some track.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.suggest(Suggestion[])''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC sends the following signals to TrackModel:
+            \begin{itemize}
+                \item The given speed and authority.
+                \item The position of switches necessary for this route.
+                \item Activates any crossings necessary for this route.
+                \item The state of all signals necessary for this route.
+            \end{itemize}
+        \end{enumerate}
+
+        \test{Suggest-SnA-1}
+        TEST CASE: Suggest unsafe speed and authority.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+        TrackModel has been initialized with some track.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.suggest(Suggestion[])''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC sends the following signals to TrackModel:
+            \begin{itemize}
+                \item No authority to all blocks.
+                \item 0 speed to all blocks.
+                \item Deactivates all crossing which are not currently occupied.
+                \item Deactivates all signals.
+            \end{itemize}
+        \end{enumerate}
+
+        \test{Upload-PLC-0}
+        TEST CASE: Upload PLC to a WC.\\
+        PRECONDITIONS: WaysideController objects have been or are being created.
+        ``wc'' is an instance of the ``WaysideController'' class.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``wc.uploadPLC(filename)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC reads, compiles, and stores the code in this WC.
+            \item Popup appears stating PLC has successfully been uploaded.
+            \item WC returns true.
+        \end{enumerate}
+
+        \test{Upload-PLC-1}
+        TEST CASE: Attempt to upload PLC; file could not be read.\\
+        PRECONDITIONS: WaysideController objects have been or are being created.
+        ``wc'' is an instance of the ``WaysideController'' class.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``wc.uploadPLC(filename)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item Popup appears detailing the error.
+            \item WC returns false.
+        \end{enumerate}
+
+        \test{Upload-PLC-2}
+        TEST CASE: Attempt to upload PLC; file contains invalid code.\\
+        PRECONDITIONS: WaysideController objects have been or are being created.
+        ``wc'' is an instance of the ``WaysideController'' class.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``wc.uploadPLC(filename)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item Popup appears detailing the error.
+            \item WC returns false.
+        \end{enumerate}
+
+        \test{Open-Multi-Windows-0}
+        TEST CASE: Open multiple WC windows.\\
+        PRECONDITIONS: WaysideController objects have been or are being created.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Push ``Open Wayside'' button.
+            \item Type a valid blockId in the text field.
+            \item Push ``Open'' button.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item Popup with a text field appears.
+            \item The window corresponding to the WC which manages the given block is now visible.
+        \end{enumerate}
+
+        \test{Open-Multi-Windows-1}
+        TEST CASE: Attempt to open multiple WC windows; enter invalid block ID.\\
+        PRECONDITIONS: WaysideController objects have been or are being created.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Push ``Open Wayside'' button.
+            \item Type a blockId in the text field.
+            \item Push ``Open'' button.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item Popup with a text field appears.
+            \item Popup appears detailing the error.
+        \end{enumerate}
+
+        \test{Init-WC-0}
+        TEST CASE: Initialize the WaysideController class.\\
+        PRECONDITIONS: None.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.init()''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item A window appears for each WC on the track.
+        \end{enumerate}
+
+        \test{Init-WC-1}
+        TEST CASE: Initialize the WaysideController class, with PLC code.\\
+        PRECONDITIONS: None.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.init(filenames)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC reads, compiles, and stores code.
+        \end{enumerate}
+
+    \subsection{Tracability Matrix}
+
+    \begin{center}
+            \begin{tabular}{p{0.6\textwidth} | p{0.4\textwidth}}
+                Requirement & Test Case\\
+                \hline\hline
+The Wayside Controller shall accept suggested (non-vital) speed and authority (per train) from the CTC. & Suggest-SnA-0, Suggest-SnA-1\\\hline
+The Wayside Controller shall accept block occupancy and switch positions from the Track Model. & Get-Occupancy-0, Get-Switch-State-0 \\\hline
+The Wayside Controller shall have vital output to the TrackModel: Speed \& Authority per train. & Suggest-SnA-0, Suggest-SnA-1\\\hline
+The Wayside Controller shall have vital output to the TrackModel: Light colors per track block. & Suggest-SnA-0, Suggest-SnA-1\\\hline
+The Wayside Controller shall have vital output to the TrackModel: Switch positions. & Suggest-SnA-0, Suggest-SnA-1\\\hline
+The Wayside Controller shall have vital output to the TrackModel: Railway crossings. & Suggest-SnA-0, Suggest-SnA-1\\\hline
+
+The Wayside Controller shall report the following back to the CTC: Broken rail. & Get-Block-Status-0 \\\hline
+The Wayside Controller shall report the following back to the CTC: Railway crossings. & Get-Crossing-0 \\\hline
+The Wayside Controller shall report the following back to the CTC: Block occupancy. & Get-Occupancy-0 \\\hline
+The Wayside Controller shall report the following back to the CTC: Switch positions. & Get-Switch-State-0\\\hline
+The Wayside Controller shall report the following back to the CTC: Light colors. & Get-Signal-0\\\hline
+The Wayside Controller shall be a vital computing platform. & Architecture. \\\hline
+The Wayside Controller shall receive suggested speed and authority from the CTC
+per train, and output safe speed and authority per train. & Suggest-SnA-0, Suggest-SnA-1\\\hline
+The Wayside Controller shall control the switching of the track. & Suggest-SnA-0,Suggest-SnA-1, Toggle-Switch-Position-0, Toggle-Switch-Position-1 \\\hline
+The Wayside Controller shall detect broken blocks of rail. & Get-Block-Status-0\\\hline
+The Wayside Controller shall report the state of the track, railway crossings, signals,
+and occupancy to the CTC. & Get-Block-Status-0, Get-Crossing-0, Get-Occupancy-0, Get-Switch-State-0, Get-Signal-0 \\\hline
+This is a PLC, and shall allow a user, a Wayside Engineer, to upload a code to
+control it. It is assumed that this Wayside Engineer’s code is vital. & Upload-PLC-0, Upload-PLC-1, Upload-PLC-2\\
+            \end{tabular}
+    \end{center}
+\end{document}
