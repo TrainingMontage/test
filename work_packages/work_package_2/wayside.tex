@@ -733,4 +733,150 @@
         \end{sequencediagram}
     }
     \end{center}
+
+
+\providecommand{\test}[1]{\subsubsection{IDENTIFIER: #1}}
+    \section{Test Plan}
+
+        \subsection{Approach}
+
+        \subsection{Test Cases}
+
+        % BASIC FORM:
+        % \test{}
+        % TEST CASE: \\
+        % PRECONDITIONS: \\
+        % EXECUTION STEPS: \begin{enumerate}
+        %     \item
+        % \end{enumerate}
+        % POST CONDITIONS: \begin{enumerate}
+        %     \item
+        % \end{enumerate}
+
+        \test{Get-Occupancy-0}
+        TEST CASE: Get the occupancy of a block.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+            TrackModel has been initialized with some track.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.isOccupied(blockId)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC will return the expected occupancy of the block.
+        \end{enumerate}
+
+        \test{Get-Block-Status-0}
+        TEST CASE: Get the repair status of a block.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+        TrackModel has been initialized with some track.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.getStatus(blockId)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC will return the expected status of the given block, represented as a ``BlockStatus'' object.
+        \end{enumerate}
+
+        \test{Get-Signal-0}
+        TEST CASE: Get the signal of a block.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+        TrackModel has been initialized with some track.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.getSignal(blockId)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC will return the expected signal of the given block.
+        \end{enumerate}
+
+        \test{Get-Crossing-0}
+        TEST CASE: Get the state of a railroad crossing.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+        TrackModel has been initialized with some track.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.getCrossing(blockId)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC will return the expected state of the given crossing.
+        \end{enumerate}
+
+        \test{Get-Switch-State-0}
+        TEST CASE: Get the current position of a switch.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+        TrackModel has been initialized with some track.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.getSwitch(blockId)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC will return the expected position of the switch.
+        \end{enumerate}
+
+        \test{Set-Block-Status-0}
+        TEST CASE: Get the repair status of a block.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+        TrackModel has been initialized with some track.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.setStatus(blockId, status)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC will call ``TrackModel.setStatus(blockId, status)''.
+            \item WC will return the given status of the given block, represented as a ``BlockStatus'' object.
+        \end{enumerate}
+
+        \test{Toggle-Switch-Position-0}
+        TEST CASE: Toggle the position of a switch.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+        TrackModel has been initialized with some track.
+        The switch in question is in position ``pos''.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.toggleSwitch(blockId)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC will call ``TrackModel.setSwitch(blockId, !pos)''.
+            \item WC will return the new switch position.
+        \end{enumerate}
+
+        \test{Toggle-Switch-Position-1}
+        TEST CASE: Suggest to toggle the position of a switch, but the suggestion is found to be unsafe.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+        TrackModel has been initialized with some track.
+        The switch in question is in position ``pos''.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.toggleSwitch(blockId)''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC finds that the toggle will be unsafe.
+            \item WC will return the current switch position.
+        \end{enumerate}
+
+        \test{Suggest-SnA-0}
+        TEST CASE: Suggest safe speed and authority.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+        TrackModel has been initialized with some track.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.suggest(Suggestion[])''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC sends the following signals to TrackModel:
+            \begin{itemize}
+                \item The given speed and authority.
+                \item The position of switches necessary for this route.
+                \item Activates any crossings necessary for this route.
+                \item The state of all signals necessary for this route.
+            \end{itemize}
+        \end{enumerate}
+
+        \test{Suggest-SnA-1}
+        TEST CASE: Suggest unsafe speed and authority.\\
+        PRECONDITIONS: WaysideController class has been initialized, by calling ``init()'' method.
+        TrackModel has been initialized with some track.\\
+        EXECUTION STEPS: \begin{enumerate}
+            \item Call ``WaysideController.suggest(Suggestion[])''.
+        \end{enumerate}
+        POST CONDITIONS: \begin{enumerate}
+            \item WC sends the following signals to TrackModel:
+            \begin{itemize}
+                \item No authority to all blocks.
+                \item 0 speed to all blocks.
+                \item Deactivates all crossing which are not currently occupied.
+                \item Deactivates all signals.
+            \end{itemize}
+        \end{enumerate}
 \end{document}
