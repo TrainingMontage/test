@@ -128,7 +128,13 @@
 \begin{enumerate}
 	\item Dispatcher selects a block from the map.
 	\item Dispatcher clicks "Close for Maintenance" GUI button.
-	\item Block state displays "Maintenance" to the dispatcher
+	\item Block state displays "Maintenance" to the dispatcher.
+\end{enumerate}
+
+\subsection{Variant: Selected Track is Already Closed}
+\begin{enumerate}[label=\arabic*a., start=2]
+	\item Dispatcher clicks "Open from Maintenance" GUI button
+	\item Block state displays "Operational" to the dispatcher.
 \end{enumerate}
 
 \subsection{Use Case: Toggle Switch for Testing}
@@ -305,16 +311,40 @@
 	\begin{sequencediagram}
 	\newthread{disp}{Dispatcher}
 	\newinst[2]{ctcgui}{CTCGUI}
-	\newinst[2]{ctc}{CTCModel}
-	\newinst[2]{ws}{Wayside}
-	\newinst[2]{tm}{TrackModel}
+	\newinst[3]{ctc}{CTCModel}
+	\newinst[3]{ws}{Wayside}
+	\newinst[3]{tm}{TrackModel}
 	
 	\begin{call}{disp}{fillTrackInfo(block)}{ctcgui}{}
 	\end{call}
 	\begin{call}{disp}{Close Track}{ctcgui}{}
-		\begin{call}{ctcgui}{closeTrack(block)}{ctc}{}
-			\begin{call}{ctc}{closeTrack(block)}{ws}{}
-				\begin{call}{ws}{closeTrack(block)}{tm}{}
+		\begin{call}{ctcgui}{setMaintenance(block,bool)}{ctc}{}
+			\begin{call}{ctc}{setMaintenance(block,bool)}{ws}{}
+				\begin{call}{ws}{setMaintenance(block,bool)}{tm}{}
+				\end{call}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Close Track for Maintenance (Variant: Track Already Closed)}
+\begin{center}
+\resizebox{\textwidth}{!}{
+	\begin{sequencediagram}
+	\newthread{disp}{Dispatcher}
+	\newinst[2]{ctcgui}{CTCGUI}
+	\newinst[3]{ctc}{CTCModel}
+	\newinst[3]{ws}{Wayside}
+	\newinst[3]{tm}{TrackModel}
+	
+	\begin{call}{disp}{fillTrackInfo(block)}{ctcgui}{}
+	\end{call}
+	\begin{call}{disp}{Open Track}{ctcgui}{}
+		\begin{call}{ctcgui}{setMaintenance(block,bool)}{ctc}{}
+			\begin{call}{ctc}{setMaintenance(block,bool)}{ws}{}
+				\begin{call}{ws}{setMaintenance(block,bool)}{tm}{}
 				\end{call}
 			\end{call}
 		\end{call}
@@ -368,463 +398,186 @@
 \subsection{Approach}
 
 \subsubsection{Introduction}
-The overall project will simulate the operation of a public rail system. The role of the Track Model within the context of the overall system is to simulate the physical properties of the track, and keep track of where moving trains are. The Track Model provides an interface for other modules to retrieve static data about blocks on the track and provides an interface to the wayside controller and train model.
+The overall project will simulate the operation of a public rail system. The role of the Centralized Traffic Controller (CTC) within the context of the overall system is to simulate the interface with the human dispatcher. The CTC gets data about the state of the track to display to the dispatcher. The CTC must also route trains according to a schedule, in a safe manner.
 
 \subsubsection{Features Test}
-The features within the scope of this test plan include the storing/modifying the state of the track directly, the UI for interacting with the Track Model, the interface between the Track Model and the Wayside module, and the interface between the Track Model and the Train model. Interface must be tested to ensure functionality consistent with agreed-upon interfaces. The Track Model UI must be tested to allow full control and modification of data within the track model.
+The features within the scope of this test plan include the actions performed by the dispatcher on the UI, and the interfaces with the Wayside Controller, Track Model, and Train Model. Interface must be tested to ensure functionality consistent with agreed-upon interfaces. The CTC UI must be tested to allow the dispatcher to perform all of the CTC's automatic functionality while in manual mode.
 
 \subsubsection{Features Not Tested}
-This test plan will not include any features outside the scope of the Track Model. In this case, all functions not directly interacting with the track model are not included in the scope.
+This test plan will not include any features outside the scope of the CTC Model. In this case, all functions not directly interacting with the CTC Model are not included in the scope.
 
 \subsubsection{Approach}
-The primary form of tests performed will be functional tests. Interfaces will be tested using an array of automated tests that validate the expected function of each method included in the interface. Manual tests are also to be conducted for verification of UI functionality. Requirements state that the system must operate at 10x wall-clock speed. The track model is not expected bottleneck performance, thus performance testing will not be conducted unless the manual tests indicate that there may be performance issues.
+The primary form of tests performed will be manual tests for verification of UI functionality, as the CTC is primarily simulating a human interface. Module interfaces will be tested using an array of automated tests that validate the expected function of each method included in the interface. Requirements state that the system must operate at 10x wall-clock speed. The CTC Model is not expected bottleneck performance, thus performance testing will not be conducted unless the manual tests indicate that there may be performance issues.
 
 \subsubsection{Test Deliverables}
 All tests described by this plan will be executed in order to ensure quality. All automated tests must be passing; automated tests run automatically every time the software changes. Manual tests must be performed before every deliverable. An executed test plan and defect report will be delivered with Work Package 3.
 
 \subsection{Test Cases}
 
-\subsubsection{IDENTIFIER: 000-GET-PASSENGERS-DEPARTED}
-TEST CASE: Get the number of passengers who get off a train at a station.
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A populated train (id of 1) exists on block 1. Block 1 has a station on it.
+\subsubsection{IDENTIFIER: 000-DISPATCH-TRAIN}
+TEST CASE: Create a train in manual mode and position it on a starting block.
+PRECONDITIONS: The CTCModel has been created as ctcModel. Block 1 is unoccupied and connected to the yard. Block 2 exists and is connected to block 1. Block 1 is specified as the starting block. Desired train speed is 10 mph. Train is given authority on blocks 1 and 2. Destination block is block 2.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item Call _tm.getPassengers(1)
+	\item Click the "Manual" button
+	\item Click the "New Train" button
+	\item Enter the specified inputs in their text fields
+	\item Click the "Dispatch Train" button
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item _tm.getPassengers(1) should return a number between 0 and the trains maximum capacity.
+	\item A train will be created and dispatched on block 1 toward block 2.
 \end{enumerate}
 
-\subsubsection{IDENTIFIER: 000-GET-STATIC-BLOCK}
-TEST CASE: Get a StaticBlock populated with the information pertaining to a block.
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+\subsubsection{IDENTIFIER: 001-DISPATCH-TRAIN}
+TEST CASE: Create a train in manual mode and position it on a starting block.
+PRECONDITIONS: The CTCModel has been created as ctcModel. Block 1 is occupied and connected to the yard. Block 2 exists and is connected to block 1. Block 1 is specified as the starting block. Desired train speed is 10 mph. Train is given authority on blocks 1 and 2. Destination block is block 2.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item call _tm.getStaticBlock(1)
+	\item Click the "Manual" button
+	\item Click the "New Train" button
+	\item Enter the specified inputs in their text fields
+	\item Click the "Dispatch Train" button
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item _tm.getStaticBlock() should return an instance of StaticBlock.
-	\item The instance should contain static data matching the test track data.
+	\item A popup will display that the starting block is occupied and a train cannot be dispatched there. No train is created.
 \end{enumerate}
 
-\subsubsection{IDENTIFIER: 000-GET-STATIC-SWITCH}
-TEST CASE: Get a StaticSwitch populated with the information pertaining to that switch.
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+\subsubsection{IDENTIFIER: 002-DISPATCH-TRAIN}
+TEST CASE: Create a train in manual mode and position it on a starting block.
+PRECONDITIONS: The CTCModel has been created as ctcModel. Block 1 is unoccupied but not connected to the yard. Block 2 exists and is connected to block 1. Block 1 is specified as the starting block. Desired train speed is 10 mph. Train is given authority on blocks 1 and 2. Destination block is block 2.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item Call _tm.getStaticSwitch(1)
+	\item Click the "Manual" button
+	\item Click the "New Train" button
+	\item Enter the specified inputs in their text fields
+	\item Click the "Dispatch Train" button
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item _tm.getStaicSwitch should return an instance of StaticSwitch.
-	\item The instance should have non-null StaticBlocks set as the Root, Default, and Active nodes.
-	\item The StaticBlock for the Root node should be block 1
-	\item The StaticBlock for the Default node should be block 2
-	\item The StaticBlock for the Active node should be block 3
+	\item A popup will display that the starting block is not connected to the yard so a train cannot be dispatched there. No train is created.
 \end{enumerate}
 
-\subsubsection{IDENTIFIER: 000-GET-OCCUPANCY}
-TEST CASE: Get the occupancy of a block.
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train exists on block 1.
+\subsubsection{IDENTIFIER: 003-DISPATCH-TRAIN}
+TEST CASE: Create a train in manual mode and position it on a starting block.
+PRECONDITIONS: The CTCModel has been created as ctcModel. Block 1 is unoccupied and connected to the yard. Block 2 exists and is connected to block 1. Block 1 is specified as the starting block. Desired train speed is 10 mph. Train authority is mistakenly entered as "1,a". Destination block is block 2.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item Call _tm.isOccupied(1)
+	\item Click the "Manual" button
+	\item Click the "New Train" button
+	\item Enter the specified inputs in their text fields
+	\item Click the "Dispatch Train" button
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item _tm.isOccupied(1) should return True
+	\item The authority text field will be highlighted in red. No train is created.
 \end{enumerate}
 
-\subsubsection{IDENTIFIER: 001-GET-OCCUPANCY}
-TEST CASE: Get the occupancy of a block.
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train exists on block 1.
+\subsubsection{IDENTIFIER: 004-DISPATCH-TRAIN}
+TEST CASE: Create a train in manual mode and position it on a starting block.
+PRECONDITIONS: The CTCModel has been created as ctcModel. Block 1 is unoccupied and connected to the yard. Block 2 exists and is connected to block 1. Block 1 is mistyped as 1.1. Desired train speed is 10 mph. Train is given authority on blocks 1 and 2. Destination block is block 2.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item Call _tm.isOccupied(2)
+	\item Click the "Manual" button
+	\item Click the "New Train" button
+	\item Enter the specified inputs in their text fields
+	\item Click the "Dispatch Train" button
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item _tm.isOccupied(2) should return False
+	\item The starting block text field will be highlighted in red. No train is created.
 \end{enumerate}
 
-\subsubsection{IDENTIFIER: 000-SET-SUGGESTED-SPEED}
-TEST CASE: Set the suggested speed for a block
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+\subsubsection{IDENTIFIER: 000-UPLOAD-SCHEDULE}
+TEST CASE: Upload a schedule file from disk for operation in automatic mode.
+PRECONDITIONS: The CTCModel has been created as ctcModel. "Schedule.sch" is a file on disk and follows the format specified in the user manual.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item call _tm.setSpeed(1, 15)
+	\item Select "Upload Schedule" from the File menu
+	\item Select "Schedule.sch" in the file browser
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item The suggested speed for block 1 within the database should be set to 15
+	\item The schedule is parsed and displayed in the schedule area.
 \end{enumerate}
 
-\subsubsection{IDENTIFIER: 000-SET-AUTHORITY}
-TEST CASE: Set the commanded authority for a block
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+\subsubsection{IDENTIFIER: 001-UPLOAD-SCHEDULE}
+TEST CASE: Upload a schedule file from disk for operation in automatic mode.
+PRECONDITIONS: The CTCModel has been created as ctcModel. "Schedule.sch" is a file on disk but does not follow the format specified in the user manual.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item call _tm.setAuthority(1, true)
+	\item Select "Upload Schedule" from the File menu
+	\item Select "Schedule.sch" in the file browser
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item The authority for block 1 within the database should be set to 1
+	\item An popup will report that the schedule format is not correct. No schedule changes will be made.
 \end{enumerate}
 
-\subsubsection{IDENTIFIER: 001-SET-AUTHORITY}
-TEST CASE: Set the commanded authority for a block
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+\subsubsection{IDENTIFIER: 002-UPLOAD-SCHEDULE}
+TEST CASE: Upload a schedule file from disk for operation in automatic mode.
+PRECONDITIONS: The CTCModel has been created as ctcModel. "Schedule.sch" does not exist on disk.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item call _tm.setAuthority(1, false)
+	\item Select "Upload Schedule" from the File menu
+	\item Select "Schedule.sch" in the file browser
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item The authority for block 1 within the database should be set to 0
+	\item An popup will report that the file does not exist. No schedule changes will be made.
 \end{enumerate}
 
-\subsubsection{IDENTIFIER: 000-SET-MAINTAINANCE}
-TEST CASE: Set a block's status to Maintenance
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+\subsubsection{IDENTIFIER: 000-CLOSE-TRACK-FOR-MAINTENANCE}
+TEST CASE: Close a block for maintenance.
+PRECONDITIONS: The CTCModel has been created as ctcModel. Block 1 exists in the track and is operational.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item Call _tm.setStatus(1, BlockStatus.BROKEN)
+	\item Select block 1
+	\item Click the "Close for Maintenance" button
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item The status for block 1 within the database should be set to the ordinal value of BlockStatus.BROKEN (BlockStatus.BROKEN.ordinal())
+	\item Block 1 will be closed and the changed state will be displayed to the dispatcher.
 \end{enumerate}
 
-\subsubsection{IDENTIFIER: 000-SET-SWITCH-STATE}
-TEST CASE: Set the state of a switch
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+\subsubsection{IDENTIFIER: 001-CLOSE-TRACK-FOR-MAINTENANCE}
+TEST CASE: Open a block for maintenance.
+PRECONDITIONS: The CTCModel has been created as ctcModel. Block 1 exists in the track and is closed for maintenance.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item Call _tm.setSwitch(1, true)
+	\item Select block 1
+	\item Click the "Open from Maintenance" button
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item The switch attached to block 1 should be marked active in the database.
+	\item Block 1 will be operational and the changed state will be displayed to the dispatcher.
 \end{enumerate}
 
-\subsubsection{IDENTIFIER: 001-SET-SWITCH-STATE}
-TEST CASE: Set the state of a switch
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+\subsubsection{IDENTIFIER: 000-TOGGLE-SWITCH-FOR-TESTING}
+TEST CASE: Change the switch state for debugging.
+PRECONDITIONS: The CTCModel has been created as ctcModel. Block 1 exists in the track and is the root of a switch.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item Call _tm.setSwitch(1, false)
+	\item Select block 1
+	\item Click "Toggle Switch" button
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item The switch attached to block 1 should not be marked active in the database. 
+	\item If the wayside deems it safe, the switch will change state and the change will be displayed to the dispatcher.
 \end{enumerate}
 
-\subsubsection{IDENTIFIER: 000-SET-SIGNAL}
-TEST CASE: Set the state of a signal
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+\subsubsection{IDENTIFIER: 001-TOGGLE-SWITCH-FOR-TESTING}
+TEST CASE: Change the switch state for debugging.
+PRECONDITIONS: The CTCModel has been created as ctcModel. Block 1 exists in the track and is not the root of a switch.
 EXECUTION STEPS:
 \begin{enumerate}
-	\item Call _tm.setSignal(1, true)
+	\item Select block 1
+	\item Click "Toggle Switch" button
 \end{enumerate}
 POSTCONDITIONS:
 \begin{enumerate}
-	\item The signal attached to block 1 should be marked as green in the database.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 000-GET-SIGNAL}
-TEST CASE: Get the state of a signal
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item Call _tm.getSignal(1)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The value returned by _tm.getSignal(1) should be false. This indicates that the signal is not active.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 001-GET-SIGNAL}
-TEST CASE: Get the state of a signal
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. Set the signal on block 1 to active within the database.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item Call _tm.getSignal(1)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The value returned by _tm.getSignal(1) should be true. This indicates that the signal is active.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 000-GET-RAILROAD-CROSSING}
-TEST CASE: Get the state of a railroad crossing
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item Call _tm.getCrossingState(1)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The value returned by _tm.getCrossingState(1) should be false. This indicates that the crossing is not active.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 001-GET-RAILROAD-CROSSING}
-TEST CASE: Get the state of a railroad crossing
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item Call _tm.getCrossingState(1)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The value returned by _tm.getCrossingState(1) should be false. This indicates that the crossing is not active.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 000-SET-CROSSING}
-TEST CASE: Set the state of a crossing
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item call _tm.setCrossingState(1, true)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The crossing state attached to block 1 should be marked as active in the database.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 001-SET-CROSSING}
-TEST CASE: Set the state of a crossing
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item call _tm.setCrossingState(1, false)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The crossing state attached to block 1 should be marked as inactive in the database.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 000-GET-BLOCK-STATE}
-TEST CASE: Get the state of a block
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item call _tm.getStatus(1)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The value returned by _tm.getStatus(1) should be BlockStatus.OPERATIONAL
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 001-GET-BLOCK-STATE}
-TEST CASE: Get the state of a block
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. The state of block 1 has been set to BlockStatus.BROKEN.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item call _tm.getStatus(1)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The value returned by _tm.getStatus(1) should be BlockStatus.BROKEN
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 000-INITIALIZE-TRAIN}
-TEST CASE: Initialize a train on the track
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item call _tm.initializeTrain(2, 1)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The database should reflect that a train with an id of 2 exists on block 1.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 000-TEARDOWN-TRAIN}
-TEST CASE: Teardown a train
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train with an id of 1 has been initialized.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item Call _tm.teardownTrain(1)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The database should reflect that no train with an id of 1 exists on the track.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 000-GET-SUGGESTED-AUTHORITY}
-TEST CASE: Get the authority corresponding to a trains location on the track
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item call _tm.getTrainAuthority(1)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The value returned should be equal to 0.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 001-GET-SUGGESTED-AUTHORITY}
-TEST CASE: Get the authority corresponding to a trains location on the track
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1. The authority on block 1 has been set to 1.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item call _tm.getTrainAuthority(1)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The value returned should be equal to 1.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 000-GET-SUGGESTED-SPEED}
-TEST CASE: Get the suggested speed corresponding to a trains location on the track
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item Call _tm.getTrainSpeed(1)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The value returned should be equal to 0.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 001-GET-SUGGESTED-SPEED}
-TEST CASE: Get the suggested speed corresponding to a trains location on the track
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1. The suggested speed on block 1 has been set to 15.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item Call _tm.getTrainSpeed(1)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The value returned should be equal to 15.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 000-GET-GRADE}
-TEST CASE: Get the grade corresponding to a trains location
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item _tm.getGrade(1)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The value returned should be equal to .5.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 000-GET-IF-TRACK-IS-ICY}
-TEST CASE: Return whether or not a train is on icy track.
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1. The global environment temperature is set to 76.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item call _tm.isIcyTrack(1)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The value returned should be false.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 001-GET-IF-TRACK-IS-ICY}
-TEST CASE: Return whether or not a train is on icy track.
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1. The global environment temperature is set to 31.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item call _tm.isIcyTrack(1)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The value returned should be false.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 002-GET-IF-TRACK-IS-ICY}
-TEST CASE: Return whether or not a train is on icy track.
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 3. The global environment temperature is set to 31.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item call _tm.isIcyTrack(1)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The value returned should be true.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 000-GET-BEACON-DATA}
-TEST CASE: Return the information on a beacon if a train is on a block containing a beacon.
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item Call _tm.getTrainBeacon(1)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The value returned should be null, indicating that no beacon is present.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 001-GET-BEACON-DATA}
-TEST CASE: Return the information on a beacon if a train is on a block containing a beacon.
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1. A beacon with value 0 has been placed on block 1.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item Call _tm.getTrainBeacon(1)
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The value returned should be four bytes containing zeros.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 000-CONFIGURE-TRACK}
-TEST CASE: Test that the track is configurable from the Track Model UI
-PRECONDITIONS: The TrackModel UI has been launched, and the test track has been imported.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item Select Block 2
-	\item Set the grade to 1
-	\item Set the elevation to 4
-	\item Set the length to 55
-	\item Uncheck the bidirectional flag
-	\item Set the speed limit to 7
-	\item Set the beacon to 4
-	\item Click the button "Submit Changes"
-	\item Select Block 3
-	\item Select Block 2
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The grade should be 1
-	\item The elevation should be 4
-	\item The length should be 55
-	\item The bidirectional flag should be unchecked
-	\item The speed limit should be 7
-	\item The beacon should be set to 4
-\end{enumerate}
-
-Note that this test is to be manually executed.
-
-\subsubsection{IDENTIFIER: 000-IMPORT-TRACK}
-TEST CASE: Import a track file.
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A test track file has been prepared.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item Call _tm.importTrack(new File("TrackModel/track.csv"))
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item Previous test track data should be gone from the database.
-	\item New data in the database should reflect the imported data.
-\end{enumerate}
-
-\subsubsection{IDENTIFIER: 000-EXPORT-TRACK}
-TEST CASE: Export a track
-PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
-EXECUTION STEPS:
-\begin{enumerate}
-	\item Call _tm.exportTrack(new File("TrackModel/track.csv"))
-\end{enumerate}
-POSTCONDITIONS:
-\begin{enumerate}
-	\item The file "TrackModel/track.csv" should exist.
-	\item The contents of track.csv should match the test track data.
+	\item A popup will report there is no switch on this block and no change will be made to the track state.
 \end{enumerate}
 
 \subsection{Traceability Matrix}
@@ -834,43 +587,18 @@ POSTCONDITIONS:
   \begin{tabular}{ l | l }
     Requirement & Test Case \\
     \hline
-    1. The Track Model shall consider grade and elevation. & 000-GET-STATIC-BLOCK \\
-     & 000-GET-GRADE \\ \hline
-	2. The Track Model shall be configurable. & 000-CONFIGURE-TRACK \\ \hline
-	3. The Track Model shall consider allowable & 000-GET-STATIC-BLOCK \\ 
-	directions of travel, branching, and speed limits. & 000-GET-STATIC-SWITCH  \\ \hline
-	4. The Track Model shall be able to export and & 000-IMPORT-TRACK \\
-	   import track layouts. & 000-EXPORT-TRACK \\ \hline
-	5. The Track Model shall consider block size. & 000-GET-STATIC-BLOCK  \\ \hline
-	5.1. Blocks shall be shown and configurable. & 000-CONFIGURE-TRACK \\ \hline
-	6. The Track Model shall implement signals and & 000-SET-SWITCH-STATE \\
-	   switch machines. & 001-SET-SWITCH-STATE \\ 
-	 & 000-SET-SIGNAL \\ 
-	 & 000-GET-SIGNAL \\ 
-	 & 001-GET-SIGNAL \\ \hline
-	7. The Track Model shall implement track circuits & 000-GET-OCCUPANCY \\
-	   for presence detection. & 001-GET-OCCUPANCY \\
-	 & 000-SET-SUGGESTED-SPEED \\
-	 & 000-SET-AUTHORITY \\
-	 & 001-SET-AUTHORITY \\
-	 & 000-GET-SUGGESTED-AUTHORITY \\
-	 & 001-GET-SUGGESTED-AUTHORITY \\
-	 & 000-GET-SUGGESTED-SPEED \\
-	 & 001-GET-SUGGESTED-SPEED \\ \hline
-	8. The Track Model shall consider railway crossings. & 000-GET-RAILROAD-CROSSING \\
-	 & 001-GET-RAILROAD-CROSSING \\
-	 & 000-SET-CROSSING \\
-	 & 001-SET-CROSSING \\ \hline
-	9. The Track Model shall include stations. & 000-GET-STATIC-BLOCK \\
-	9.1. Passengers shall be loaded and unloaded at & 000-GET-PASSENGERS-DEPARTED \\
-	     stations. & \\ \hline
-	10. The Track Model shall implement the following & 000-SET-MAINTAINANCE \\
-	    failure modes: & 000-GET-BLOCK-STATE \\
-	10.1. Broken rail & 001-GET-BLOCK-STATE \\
-	10.2. Track Circuit failure & \\
-	10.3. Extra or no trains detected & \\
-	10.4. Power failure & \\
-	10.5. No communication going to train & \\
+    1. The CTC Model shall let the dispatcher dispatch & 000-DISPATCH-TRAIN \\
+     trains in manual mode. & 001-DISPATCH-TRAIN \\
+     & 002-DISPATCH-TRAIN \\
+     & 003-DISPATCH-TRAIN \\
+     & 004-DISPATCH-TRAIN \\ \hline
+	2. The CTC Model shall operate on a schedule. & 000-UPLOAD-SCHEDULE \\ 
+	& 001-UPLOAD-SCHEDULE \\ 
+	& 002-UPLOAD-SCHEDULE \\ \hline
+	3. The CTC Model shall allow the dispatcher & 000-CLOSE-TRACK-FOR-MAINTENANCE \\ 
+	to close and open track blocks for maintenance. & 001-CLOSE-TRACK-FOR-MAINTENANCE \\ \hline
+	4. The CTC Model shall allow the dispatcher to & 000-TOGGLE-SWITCH-FOR-TESTING \\
+	   toggle switch states on the track. & 001-TOGGLE-SWITCH-FOR-TESTING \\ 
   \end{tabular}
 }
 \end{center}
