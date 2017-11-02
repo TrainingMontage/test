@@ -15,7 +15,7 @@
 %%%%%% header and footer info
 \pagestyle{fancy}
 \fancyhf{}
-\rhead{Software Requirements Specification}
+\rhead{TRACK MODEL USE CASE, CLASS DIAGRAMS, SEQUENCE DIAGRAMS, AND TEST PLAN}
 \lhead{Training Montage}
 \cfoot{\thepage}
 
@@ -24,7 +24,7 @@
 \setlist[numonly]{label*=\arabic*.}
 
 \hypersetup{
-    pdftitle={Software Requirement Specification},    % title
+    pdftitle={TRACK MODEL USE CASE, CLASS DIAGRAMS, SEQUENCE DIAGRAMS, AND TEST PLAN},    % title
     pdfauthor={Training Montage},                     % author
     pdfsubject={TeX and LaTeX},                        % subject of the document
     pdfkeywords={TeX, LaTeX, graphics, images}, % list of keywords
@@ -301,6 +301,8 @@
 			"double getGrade(int trainId)",
 			"boolean isOccupied(int blockId)",
 			"BlockStatus getStatus(int blockId)"
+			"BlockStatus getBeacon(int trainId)"
+			"BlockStatus getBlockChange(int trainId)"
 		);
 		% Database
 	    Class.Database("Database")()(
