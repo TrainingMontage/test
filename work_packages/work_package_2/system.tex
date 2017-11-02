@@ -169,14 +169,151 @@
 
 \section{Class Diagram}
 
-% \begin{center}
-% \resizebox{!}{.9\textheight}{
-% 	\begin{mpost}
-% 		input metauml;
-	 	
-% 	\end{mpost}
-% }
-% \end{center}
+\begin{center}
+\resizebox{\textwidth}{!}{
+	\begin{mpost}
+		input metauml;
+        % CTC
+        Class.CTC("CTC")()(
+            "init()",
+            "..."
+        );
+        % Wayside
+        Class.Wayside("Wayside")()(
+            "init()",
+            "..."
+        );
+	 	% Track Model
+        Class.TrackModel("TrackModel")()(
+            "init()",
+            "..."
+        );
+        % Train Model
+        Class.TrainModel("TrainModel")()(
+            "init()",
+            "..."
+        );
+        % Train Controller
+        Class.TrainController("TrainController")()(
+            "init()",
+            "..."
+        );
+        % Environment
+        Class.Environment("Environment")(
+            "time",
+            "temperature"
+        )();
+        % SimRunner
+        Class.SimRunner("SimRunner")()(
+            "main(args[])"
+        );
+        % Convert
+        Class.Convert("Convert")()(
+            "metersToFeet()",
+            "..."
+        );
+        % BlockStatus
+        Class.BlockStatus("BlockStatus")(
+            "OPERATIONAL",
+            "BROKEN",
+            "..."
+        )();
+        % Suggestion
+        Class.Suggestion("Suggestion")(
+            "authority",
+            "speed",
+            "..."
+        )();
+        % % Static Block
+        % Class.StaticBlock("StaticBlock")()(
+        %     "-int setId(int id)",
+        %     "int getId()",
+        %     "-String setRegion(String region)",
+        %     "String getRegion()",
+        %     "-double setGrade(double grade)",
+        %     "double getGrade()",
+        %     "-double setElevation(double elevation)",
+        %     "double getElevation()",
+        %     "-double setLength(double length)",
+        %     "double getLength()",
+        %     "-String setStation(String station)",
+        %     "String getStation()",
+        %     "-StaticSwitch setStaticSwitch(StaticSwitch staticSwitch)"
+        % );
+        % % StaticSwitch
+        % Class.StaticSwitch("StaticSwitch")()(
+        %     "StaticBlock getRoot()",
+        %     "-StaticBlock setRoot(StaticBlock root)",
+        %     "StaticBlock getInactiveLeaf()",
+        %     "-StaticBlock setInactiveLeaf(StaticBlock inactiveLeaf)",
+        %     "StaticBlock getActiveLeaf()",
+        %     "-StaticBlock setActiveLeaf(StaticBlock activeLeaf)"
+        % );
+        leftToRight.top(30)(CTC, Wayside, TrackModel, TrainModel, TrainController);
+        leftToRight(30)(Convert, BlockStatus, Suggestion);
+        topToBottom(60)(Environment, Wayside);
+        topToBottom(60)(SimRunner, TrainModel);
+        topToBottom(60)(TrackModel, BlockStatus);
+        % 
+        drawObjects(CTC, Wayside, TrackModel, TrainModel, TrainController, Environment, SimRunner, Convert, BlockStatus, Suggestion);
+        %
+        % CTC, Wayside, TrackModel, TrainModel, TrainController, SimRunner ->  Environment
+        link(associationUni)(CTC.n -- Environment.s);
+        link(associationUni)(Wayside.n -- Environment.s);
+        link(associationUni)(TrackModel.n -- Environment.s);
+        link(associationUni)(TrainModel.n -- Environment.s);
+        link(associationUni)(TrainController.n -- Environment.s);
+        link(associationUni)(SimRunner.w -- Environment.e);
+        % SimRunner -> CTC, Wayside, TrackModel, TrainModel, TrainController
+        link(associationUni)(SimRunner.s -- CTC.n);
+        link(associationUni)(SimRunner.s -- Wayside.n);
+        link(associationUni)(SimRunner.s -- TrackModel.n);
+        link(associationUni)(SimRunner.s -- TrainModel.n);
+        link(associationUni)(SimRunner.s -- TrainController.n);
+        % CTC <-> Wayside
+        link(association)(CTC.e -- Wayside.w);
+        % Wayside <-> TrackModel
+        link(association)(Wayside.e -- TrackModel.w);
+        % TrackModel <-> TrainModel
+        link(association)(TrackModel.e -- TrainModel.w);
+        % TrainModel <-> TrainController
+        link(association)(TrainModel.e -- TrainController.w);
+        % CTC, Wayside, TrackModel, TrainModel, TrainController ->  Convert
+        link(associationUni)(CTC.s -- Convert.n);
+        link(associationUni)(Wayside.s -- Convert.n);
+        link(associationUni)(TrackModel.s -- Convert.n);
+        link(associationUni)(TrainModel.s -- Convert.n);
+        link(associationUni)(TrainController.s -- Convert.n);
+        % CTC, Wayside ->  Suggestion
+        link(associationUni)(CTC.s -- Suggestion.n);
+        link(associationUni)(Wayside.s -- Suggestion.n);
+        % CTC, Wayside, TrackModel ->  BlockStatus
+        link(associationUni)(CTC.s -- BlockStatus.n);
+        link(associationUni)(Wayside.s -- BlockStatus.n);
+        link(associationUni)(TrackModel.s -- BlockStatus.n);
+        % % StaticSwitch -> StaticBlock 1..3 
+        % link(compositionUni)(pathStepX(StaticBlock.e, StaticSwitch.e, 30));
+        % item(iAssoc)("1")(obj.nw = StaticSwitch.e + (15,0));
+        % item(iAssoc)("3")(obj.nw = StaticBlock.e + (5,-5));
+        % % TrackModel -> StaticSwitch 1..*
+        % link(compositionUni)(pathStepX(StaticSwitch.e + (0,-20), TrackModel.e, 55));
+        % item(iAssoc)("*")(obj.nw = StaticSwitch.e + (15,-20));
+        % item(iAssoc)("1")(obj.nw = TrackModel.e + (5,-5));
+        % % TrackModel -> StaticBlock 1..*
+        % link(compositionUni)(pathStepX(StaticBlock.w, TrackModel.w, -25));
+        % item(iAssoc)("*")(obj.nw = StaticBlock.w + (-20,0));
+        % item(iAssoc)("1")(obj.nw = TrackModel.w + (-20,0));
+        % % TrackModel -> Database 1..1
+        % link(associationUni)(pathStepX(Database.n, TrackModel.s, 0));
+        % item(iAssoc)("1")(obj.ne = TrackModel.s + (-5,-10));
+        % item(iAssoc)("1")(obj.ne = Database.n + (0,10));
+        % % StaticBlock -> StaticSwitch 1..0-1
+        % link(associationUni)(pathStepX(StaticBlock.w + (0, -20), StaticSwitch.w, -25));
+        % item(iAssoc)("1")(obj.nw = StaticBlock.w + (-20,-20));
+        % item(iAssoc)("0..1")(obj.nw = StaticSwitch.w + (-20,-5));
+	\end{mpost}
+}
+\end{center}
 
 \section{Sequence Diagrams}
 
