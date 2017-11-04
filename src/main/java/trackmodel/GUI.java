@@ -468,10 +468,10 @@ public class GUI {
             tm.setGrade(blockId, Double.parseDouble(str.substring(0, str.length() - 2)));
 
             str = elevation.getText();
-            TrackModel.setElevation(blockId, Convert.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 3))));
+            tm.setElevation(blockId, Convert.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 3))));
 
             str = length.getText();
-            TrackModel.setLength(blockId, Convert.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 2))));
+            tm.setLength(blockId, Convert.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 2))));
 
             // dynamic data
             tm.setOccupied(blockId, occupied.isSelected());
