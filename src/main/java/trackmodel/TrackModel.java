@@ -21,12 +21,14 @@ public class TrackModel {
 
     // singleton object
     private static TrackModel model;
+    private static StaticTrack staticTrack = null;
 
     // static
     protected static int FREEZING = 32;
-    
+
     // class objects
     protected Connection conn;
+    protected int last_updated = 0;
 
     /**
      * Constructs the Track Model (privately).
@@ -328,23 +330,63 @@ public class TrackModel {
     }
 
     /**
-     * Gets the block ids. This is meant to be used from within the GUI
+     * Gets the block ids
      *
-     * @return     A lsit of block ids.
+     * @return     A list of block ids.
      *
      * @throws     SQLException could not get block ids
      */
-    protected ArrayList<String> getBlockIds() throws SQLException {
-        ArrayList<String> blocks = new ArrayList<String>();
+    public ArrayList<Integer> getBlockIds() throws SQLException {
+        ArrayList<Integer> blocks = new ArrayList<Integer>();
 
         Statement stmt = this.conn.createStatement();
         ResultSet rs = stmt.executeQuery("SELECT id FROM blocks;");
 
         while (rs.next()) {
-            blocks.add(rs.getString("id"));
+            blocks.add(rs.getInt("id"));
         }
 
         return blocks;
+    }
+
+    /**
+     * Gets the switch ids
+     *
+     * @return     A list of switch ids.
+     *
+     * @throws     SQLException could not get switch ids
+     */
+    public ArrayList<Integer> getSwitchIds() throws SQLException {
+        ArrayList<Integer> switches = new ArrayList<Integer>();
+
+        Statement stmt = this.conn.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT DISTINCT switch_root as id FROM blocks where switch_root is not NULL;");
+
+        while (rs.next()) {
+            switches.add(rs.getInt("id"));
+        }
+
+        return switches;
+    }
+
+    /**
+     * Gets the train ids
+     *
+     * @return     A list of train ids.
+     *
+     * @throws     SQLException could not get train ids
+     */
+    public ArrayList<Integer> getTrainIds() throws SQLException {
+        ArrayList<Integer> trains = new ArrayList<Integer>();
+
+        Statement stmt = this.conn.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT id FROM trains;");
+
+        while (rs.next()) {
+            trains.add(rs.getInt("id"));
+        }
+
+        return trains;
     }
 
     /**
@@ -422,7 +464,7 @@ public class TrackModel {
      */
     public StaticSwitch getStaticSwitch(int switchId) throws SQLException {
         PreparedStatement stmt = this.conn.prepareStatement(
-                                     "SELECT A.id as root_id, B.id as inactive_id, C.id as active_id " +
+                                     "SELECT A.switch_root as switch_id, A.id as root_id, B.id as inactive_id, C.id as active_id " +
                                      "FROM blocks A " +
                                      "LEFT JOIN blocks B " +
                                      "ON (A.switch_root = B.switch_leaf and A.next = B.id) " +
@@ -433,11 +475,11 @@ public class TrackModel {
         ResultSet rs = stmt.executeQuery();
         rs.next();
 
-        int root_id = 1; // rs.getInt("root_id");
-        int inactive_id = 2; // rs.getInt("inactive_id");
-        int active_id = 3; // rs.getInt("active_id");
+        int root_id = rs.getInt("root_id");
+        int inactive_id = rs.getInt("inactive_id");
+        int active_id = rs.getInt("active_id");
 
-        StaticSwitch sw = new StaticSwitch();
+        StaticSwitch sw = new StaticSwitch(rs.getInt("switch_id"));
         sw.setRoot(getStaticBlock(root_id, sw));
         sw.setInactiveLeaf(getStaticBlock(inactive_id, sw));
         sw.setActiveLeaf(getStaticBlock(active_id, sw));
@@ -835,5 +877,46 @@ public class TrackModel {
         return status;
     }
 
+    /**
+     * Gets the static track.
+     *
+     * @return     The static track.
+     *
+     * @throws     SQLException  Something went wrong, I don't know what would cause this
+     */
+    public StaticTrack getStaticTrack() throws SQLException {
+        if (this.staticTrack == null) {
+            this.staticTrack = new StaticTrack();
+            for (Integer blockId : this.getBlockIds()) {
+                this.staticTrack.putStaticBlock(this.getStaticBlock(blockId));
+            }
+            for (Integer switchId : this.getSwitchIds()) {
+                this.staticTrack.putStaticSwitch(this.getStaticSwitch(switchId));
+            }
+        }
+
+        return this.staticTrack;
+    }
+
     // public int getPassengers(int trainId);
+
+    public void update() throws SQLException {
+        if (this.last_updated == Environment.clock) {
+            return;
+        }
+
+        for (int trainId : this.getTrainIds()) {
+            updateTrain(trainId);
+        }
+        this.last_updated = Environment.clock;
+    }
+
+    public void updateTrain(int trainId) {
+        // TODO
+        // fake actuall calling a train until there's something there to call
+        // ...getDisplacement()
+        double displacement = 2.50; // hardcode 2.5m displacement for now
+
+
+    }
 }

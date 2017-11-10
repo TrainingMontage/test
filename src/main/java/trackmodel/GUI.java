@@ -11,7 +11,7 @@ public class GUI {
 
     protected static JButton reloadBlockInfo, submitChanges;
     protected static JCheckBox occupied;
-    protected static JComboBox<String> blockIdComboBox;
+    protected static JComboBox<Integer> blockIdComboBox;
     protected static JTextArea speed_limit, length, grade, elevation, region, station;
 
 
@@ -414,7 +414,7 @@ public class GUI {
         blockIdComboBox.removeAllItems();
 
         try {
-            for (String s : TrackModel.getTrackModel().getBlockIds()) {
+            for (int s : TrackModel.getTrackModel().getBlockIds()) {
                 blockIdComboBox.addItem(s);
             }
         } catch (Exception e) {

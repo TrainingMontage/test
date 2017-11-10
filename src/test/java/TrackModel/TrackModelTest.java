@@ -142,7 +142,7 @@ public class TrackModelTest {
 
         // this is not the best way to test this, as it relies on other methods
         // within the class
-        ArrayList<String> ids = _tm.getBlockIds();
+        ArrayList<Integer> ids = _tm.getBlockIds();
         assertEquals(8, ids.size());
     }
 
@@ -310,13 +310,24 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelGetBlockIds() throws SQLException {
-        ArrayList<String> ids = _tm.getBlockIds();
+        ArrayList<Integer> ids = _tm.getBlockIds();
 
         assertEquals(4, ids.size());
-        assertEquals("1", ids.get(0));
-        assertEquals("2", ids.get(1));
-        assertEquals("3", ids.get(2));
-        assertEquals("4", ids.get(3));
+        assertEquals(1, (int) ids.get(0));
+        assertEquals(2, (int) ids.get(1));
+        assertEquals(3, (int) ids.get(2));
+        assertEquals(4, (int) ids.get(3));
+    }
+
+    /**
+     * Validate basic getswitchids call.
+     */
+    @Test
+    public void testTrackModelGetSwitchIds() throws SQLException {
+        ArrayList<Integer> ids = _tm.getSwitchIds();
+
+        assertEquals(1, ids.size());
+        assertEquals(1, (int) ids.get(0));
     }
 
     /**
@@ -819,6 +830,18 @@ public class TrackModelTest {
         int status = rs.getInt("status");
 
         assertEquals(BlockStatus.BROKEN.ordinal(), status);
+    }
+
+    /**
+     * Test getStaticTrack
+     */
+    @Test
+    public void testGetStaticTrack() throws SQLException {
+        StaticTrack st = _tm.getStaticTrack();
+
+        assertNotNull(st.getStaticBlock(1));
+        assertNotNull(st.getStaticBlock(2));
+        assertNotNull(st.getStaticSwitch(1));
     }
 
 }

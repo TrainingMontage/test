@@ -5,16 +5,21 @@ public class StaticSwitch {
 	private StaticBlock root;
 	private StaticBlock inactiveLeaf;
 	private StaticBlock activeLeaf;
+	private int id;
 
 	/**
 	 * Constructs the Static Switch. Sets all attributes to null by default.
 	 */
-	protected StaticSwitch() {
+	protected StaticSwitch(int id) {
+		this.id = id;
 		this.root = null;
 		this.inactiveLeaf = null;
 		this.activeLeaf = null;
 	}
 
+	public int getId() {
+		return this.id;
+	}
 
 	/**
 	 * Gets the root of the switch.
