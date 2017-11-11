@@ -46,9 +46,7 @@ public class TrainModelGUI extends javax.swing.JFrame {
         currentTrainSpeedDisplayLabel = new javax.swing.JLabel();
         massLabel = new javax.swing.JLabel();
         temperatureLabel = new javax.swing.JLabel();
-        speedLimitLabel = new javax.swing.JLabel();
         emergencyBrakeLabel = new javax.swing.JLabel();
-        speedLimitDisplayLabel = new javax.swing.JLabel();
         temperatureDisplayLabel = new javax.swing.JLabel();
         accelerationDisplayLabel = new javax.swing.JLabel();
         emergencyBrakeDisplayLabel = new javax.swing.JLabel();
@@ -121,206 +119,169 @@ public class TrainModelGUI extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
-        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         passengersDisplayLabel.setBackground(new java.awt.Color(183, 183, 183));
         passengersDisplayLabel.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         passengersDisplayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         passengersDisplayLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         passengersDisplayLabel.setOpaque(true);
-        getContentPane().add(passengersDisplayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(116, 411, 75, 32));
 
         currentTrainSpeedDisplayLabel.setBackground(new java.awt.Color(183, 183, 183));
         currentTrainSpeedDisplayLabel.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         currentTrainSpeedDisplayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         currentTrainSpeedDisplayLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         currentTrainSpeedDisplayLabel.setOpaque(true);
-        getContentPane().add(currentTrainSpeedDisplayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(184, 177, 75, 32));
 
         massLabel.setBackground(new java.awt.Color(153, 204, 255));
         massLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         massLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         massLabel.setText("Mass");
         massLabel.setOpaque(true);
-        getContentPane().add(massLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 294, 136, 32));
 
         temperatureLabel.setBackground(new java.awt.Color(153, 204, 255));
         temperatureLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         temperatureLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         temperatureLabel.setText("Temperature");
         temperatureLabel.setOpaque(true);
-        getContentPane().add(temperatureLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 99, 165, 32));
-
-        speedLimitLabel.setBackground(new java.awt.Color(153, 204, 255));
-        speedLimitLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
-        speedLimitLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        speedLimitLabel.setText("Speed Limit");
-        speedLimitLabel.setOpaque(true);
-        getContentPane().add(speedLimitLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 60, 165, 32));
 
         emergencyBrakeLabel.setBackground(new java.awt.Color(153, 204, 255));
         emergencyBrakeLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         emergencyBrakeLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         emergencyBrakeLabel.setText("Emergency Brake");
         emergencyBrakeLabel.setOpaque(true);
-        getContentPane().add(emergencyBrakeLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 216, 165, 32));
-
-        speedLimitDisplayLabel.setBackground(new java.awt.Color(183, 183, 183));
-        speedLimitDisplayLabel.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
-        speedLimitDisplayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        speedLimitDisplayLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
-        speedLimitDisplayLabel.setOpaque(true);
-        getContentPane().add(speedLimitDisplayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(402, 60, 75, 32));
 
         temperatureDisplayLabel.setBackground(new java.awt.Color(183, 183, 183));
         temperatureDisplayLabel.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         temperatureDisplayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         temperatureDisplayLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         temperatureDisplayLabel.setOpaque(true);
-        getContentPane().add(temperatureDisplayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(402, 99, 75, 32));
 
         accelerationDisplayLabel.setBackground(new java.awt.Color(183, 183, 183));
         accelerationDisplayLabel.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         accelerationDisplayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         accelerationDisplayLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         accelerationDisplayLabel.setOpaque(true);
-        getContentPane().add(accelerationDisplayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(402, 138, 75, 32));
 
         emergencyBrakeDisplayLabel.setBackground(new java.awt.Color(183, 183, 183));
         emergencyBrakeDisplayLabel.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         emergencyBrakeDisplayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         emergencyBrakeDisplayLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         emergencyBrakeDisplayLabel.setOpaque(true);
-        getContentPane().add(emergencyBrakeDisplayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(402, 216, 75, 32));
 
         leftDoorLabel.setBackground(new java.awt.Color(153, 204, 255));
         leftDoorLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         leftDoorLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         leftDoorLabel.setText("Left");
         leftDoorLabel.setOpaque(true);
-        getContentPane().add(leftDoorLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 294, 97, 32));
 
         jLabel30.setBackground(new java.awt.Color(213, 166, 189));
         jLabel30.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel30.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel30.setText("Dimensions");
         jLabel30.setOpaque(true);
-        getContentPane().add(jLabel30, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 255, 247, 32));
 
         rightDoorLabel.setBackground(new java.awt.Color(153, 204, 255));
         rightDoorLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         rightDoorLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         rightDoorLabel.setText("Right");
         rightDoorLabel.setOpaque(true);
-        getContentPane().add(rightDoorLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 333, 97, 32));
 
         accelerationLabel.setBackground(new java.awt.Color(153, 204, 255));
         accelerationLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         accelerationLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         accelerationLabel.setText("Acceleration");
         accelerationLabel.setOpaque(true);
-        getContentPane().add(accelerationLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 138, 165, 32));
 
         jLabel11.setBackground(new java.awt.Color(213, 166, 189));
         jLabel11.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel11.setText("Counts");
         jLabel11.setOpaque(true);
-        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 372, 179, 32));
 
         massDisplayLabel.setBackground(new java.awt.Color(183, 183, 183));
         massDisplayLabel.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         massDisplayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         massDisplayLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         massDisplayLabel.setOpaque(true);
-        getContentPane().add(massDisplayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(373, 294, 75, 32));
 
         passengersLabel.setBackground(new java.awt.Color(153, 204, 255));
         passengersLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         passengersLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         passengersLabel.setText("Passengers");
         passengersLabel.setOpaque(true);
-        getContentPane().add(passengersLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 411, 97, 32));
 
         heightLabel.setBackground(new java.awt.Color(153, 204, 255));
         heightLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         heightLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         heightLabel.setText("Height");
         heightLabel.setOpaque(true);
-        getContentPane().add(heightLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 333, 136, 32));
 
         crewLabel.setBackground(new java.awt.Color(153, 204, 255));
         crewLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         crewLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         crewLabel.setText("Crew");
         crewLabel.setOpaque(true);
-        getContentPane().add(crewLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 450, 97, 32));
 
         widthLabel.setBackground(new java.awt.Color(153, 204, 255));
         widthLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         widthLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         widthLabel.setText("Width");
         widthLabel.setOpaque(true);
-        getContentPane().add(widthLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 372, 136, 32));
 
         trainIdPicker.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        getContentPane().add(trainIdPicker, new org.netbeans.lib.awtextra.AbsoluteConstraints(116, 65, 77, -1));
+        trainIdPicker.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                trainIdPickerActionPerformed(evt);
+            }
+        });
 
         lengthLabel.setBackground(new java.awt.Color(153, 204, 255));
         lengthLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         lengthLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lengthLabel.setText("Length");
         lengthLabel.setOpaque(true);
-        getContentPane().add(lengthLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 411, 136, 32));
 
         authorityDisplayLabel.setBackground(new java.awt.Color(183, 183, 183));
         authorityDisplayLabel.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         authorityDisplayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         authorityDisplayLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         authorityDisplayLabel.setOpaque(true);
-        getContentPane().add(authorityDisplayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(116, 99, 75, 32));
 
         numCarsLabel.setBackground(new java.awt.Color(153, 204, 255));
         numCarsLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         numCarsLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         numCarsLabel.setText("Number of Cars");
         numCarsLabel.setOpaque(true);
-        getContentPane().add(numCarsLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 450, 136, 32));
 
         powerDisplayLabel.setBackground(new java.awt.Color(183, 183, 183));
         powerDisplayLabel.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         powerDisplayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         powerDisplayLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         powerDisplayLabel.setOpaque(true);
-        getContentPane().add(powerDisplayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(116, 138, 75, 32));
 
         heightDisplayLabel.setBackground(new java.awt.Color(183, 183, 183));
         heightDisplayLabel.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         heightDisplayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         heightDisplayLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         heightDisplayLabel.setOpaque(true);
-        getContentPane().add(heightDisplayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(373, 333, 75, 32));
 
         lightsDisplayLabel.setBackground(new java.awt.Color(183, 183, 183));
         lightsDisplayLabel.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         lightsDisplayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lightsDisplayLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         lightsDisplayLabel.setOpaque(true);
-        getContentPane().add(lightsDisplayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(116, 216, 75, 32));
 
         leftDoorDisplayLabel.setBackground(new java.awt.Color(183, 183, 183));
         leftDoorDisplayLabel.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         leftDoorDisplayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         leftDoorDisplayLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         leftDoorDisplayLabel.setOpaque(true);
-        getContentPane().add(leftDoorDisplayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(116, 294, 75, 32));
 
         jLabel1.setBackground(new java.awt.Color(213, 166, 189));
         jLabel1.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Current");
         jLabel1.setOpaque(true);
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 13, 465, 40));
 
         trainIdLabel.setBackground(new java.awt.Color(153, 204, 255));
         trainIdLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
@@ -328,90 +289,77 @@ public class TrainModelGUI extends javax.swing.JFrame {
         trainIdLabel.setText("Train ID");
         trainIdLabel.setBorder(new javax.swing.border.MatteBorder(null));
         trainIdLabel.setOpaque(true);
-        getContentPane().add(trainIdLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 60, 97, 32));
 
         authorityLabel.setBackground(new java.awt.Color(153, 204, 255));
         authorityLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         authorityLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         authorityLabel.setText("Authority");
         authorityLabel.setOpaque(true);
-        getContentPane().add(authorityLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 99, 97, 32));
 
         powerLabel.setBackground(new java.awt.Color(153, 204, 255));
         powerLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         powerLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         powerLabel.setText("Power");
         powerLabel.setOpaque(true);
-        getContentPane().add(powerLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 138, 97, 32));
 
         currentTrainSpeedLabel.setBackground(new java.awt.Color(153, 204, 255));
         currentTrainSpeedLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         currentTrainSpeedLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         currentTrainSpeedLabel.setText("Current Train Speed");
         currentTrainSpeedLabel.setOpaque(true);
-        getContentPane().add(currentTrainSpeedLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 177, 165, 32));
 
         lightsLabel.setBackground(new java.awt.Color(153, 204, 255));
         lightsLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         lightsLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lightsLabel.setText("Lights");
         lightsLabel.setOpaque(true);
-        getContentPane().add(lightsLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 216, 97, 32));
 
         jLabel8.setBackground(new java.awt.Color(213, 166, 189));
         jLabel8.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel8.setText("Doors");
         jLabel8.setOpaque(true);
-        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 255, 179, 32));
 
         widthDisplayLabel.setBackground(new java.awt.Color(183, 183, 183));
         widthDisplayLabel.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         widthDisplayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         widthDisplayLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         widthDisplayLabel.setOpaque(true);
-        getContentPane().add(widthDisplayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(373, 372, 75, 32));
 
         lengthDisplayLabel.setBackground(new java.awt.Color(183, 183, 183));
         lengthDisplayLabel.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         lengthDisplayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lengthDisplayLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         lengthDisplayLabel.setOpaque(true);
-        getContentPane().add(lengthDisplayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(373, 411, 75, 32));
 
         rightDoorDisplayLabel.setBackground(new java.awt.Color(183, 183, 183));
         rightDoorDisplayLabel.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         rightDoorDisplayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         rightDoorDisplayLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         rightDoorDisplayLabel.setOpaque(true);
-        getContentPane().add(rightDoorDisplayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(116, 333, 75, 32));
 
         numCarsDisplayLabel.setBackground(new java.awt.Color(183, 183, 183));
         numCarsDisplayLabel.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         numCarsDisplayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         numCarsDisplayLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         numCarsDisplayLabel.setOpaque(true);
-        getContentPane().add(numCarsDisplayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(373, 450, 75, 32));
 
         crewDisplayLabel.setBackground(new java.awt.Color(183, 183, 183));
         crewDisplayLabel.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         crewDisplayLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         crewDisplayLabel.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         crewDisplayLabel.setOpaque(true);
-        getContentPane().add(crewDisplayLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(116, 450, 75, 32));
 
         jLabel2.setBackground(new java.awt.Color(213, 166, 189));
         jLabel2.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Adjust");
         jLabel2.setOpaque(true);
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(495, 13, 477, 40));
 
         debugModeGroup.add(debugModeOnButton);
         debugModeOnButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         debugModeOnButton.setText("ON");
         debugModeOnButton.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        getContentPane().add(debugModeOnButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(744, 61, 64, 53));
 
         debugModeGroup.add(debugModeOffButton);
         debugModeOffButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
@@ -422,30 +370,25 @@ public class TrainModelGUI extends javax.swing.JFrame {
                 debugModeOffButtonActionPerformed(evt);
             }
         });
-        getContentPane().add(debugModeOffButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(808, 60, 63, 54));
 
         jLabel41.setBackground(new java.awt.Color(153, 204, 255));
         jLabel41.setFont(new java.awt.Font("Arial", 1, 18)); // NOI18N
         jLabel41.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel41.setText("Debug Mode");
         jLabel41.setOpaque(true);
-        getContentPane().add(jLabel41, new org.netbeans.lib.awtextra.AbsoluteConstraints(568, 60, 175, 53));
 
         setAuthorityInput.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        getContentPane().add(setAuthorityInput, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 350, 70, 48));
 
         jLabel42.setBackground(new java.awt.Color(153, 204, 255));
         jLabel42.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
         jLabel42.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel42.setText("Emergency Brake");
         jLabel42.setOpaque(true);
-        getContentPane().add(jLabel42, new org.netbeans.lib.awtextra.AbsoluteConstraints(495, 120, 158, 63));
 
         emergencyBrakeGroup.add(emergencyBrakeOnButton);
         emergencyBrakeOnButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         emergencyBrakeOnButton.setText("ON");
         emergencyBrakeOnButton.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        getContentPane().add(emergencyBrakeOnButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(654, 120, 63, 33));
 
         emergencyBrakeGroup.add(emergencyBrakeOffButton);
         emergencyBrakeOffButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
@@ -456,20 +399,17 @@ public class TrainModelGUI extends javax.swing.JFrame {
                 emergencyBrakeOffButtonActionPerformed(evt);
             }
         });
-        getContentPane().add(emergencyBrakeOffButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(654, 153, 63, 30));
 
         jLabel43.setBackground(new java.awt.Color(153, 204, 255));
         jLabel43.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
         jLabel43.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel43.setText("Lights");
         jLabel43.setOpaque(true);
-        getContentPane().add(jLabel43, new org.netbeans.lib.awtextra.AbsoluteConstraints(735, 120, 158, 63));
 
         lightGroup.add(lightsOnButton);
         lightsOnButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         lightsOnButton.setText("ON");
         lightsOnButton.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        getContentPane().add(lightsOnButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(894, 120, 63, 33));
 
         lightGroup.add(lightsOffButton);
         lightsOffButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
@@ -480,38 +420,32 @@ public class TrainModelGUI extends javax.swing.JFrame {
                 lightsOffButtonActionPerformed(evt);
             }
         });
-        getContentPane().add(lightsOffButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(894, 153, 63, 30));
 
         jLabel44.setBackground(new java.awt.Color(234, 153, 153));
         jLabel44.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
         jLabel44.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel44.setText("Set Power(W)");
         jLabel44.setOpaque(true);
-        getContentPane().add(jLabel44, new org.netbeans.lib.awtextra.AbsoluteConstraints(495, 190, 176, 48));
 
         setPowerInput.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        getContentPane().add(setPowerInput, new org.netbeans.lib.awtextra.AbsoluteConstraints(676, 190, 70, 48));
 
         jLabel45.setBackground(new java.awt.Color(213, 166, 189));
         jLabel45.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel45.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel45.setText("Doors");
         jLabel45.setOpaque(true);
-        getContentPane().add(jLabel45, new org.netbeans.lib.awtextra.AbsoluteConstraints(751, 190, 221, 32));
 
         jLabel46.setBackground(new java.awt.Color(153, 204, 255));
         jLabel46.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel46.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel46.setText("Left");
         jLabel46.setOpaque(true);
-        getContentPane().add(jLabel46, new org.netbeans.lib.awtextra.AbsoluteConstraints(751, 229, 97, 63));
 
         jLabel47.setBackground(new java.awt.Color(153, 204, 255));
         jLabel47.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel47.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel47.setText("Right");
         jLabel47.setOpaque(true);
-        getContentPane().add(jLabel47, new org.netbeans.lib.awtextra.AbsoluteConstraints(751, 299, 97, 65));
 
         leftDoorGroup.add(leftDoorOpenButton);
         leftDoorOpenButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
@@ -522,7 +456,6 @@ public class TrainModelGUI extends javax.swing.JFrame {
                 leftDoorOpenButtonActionPerformed(evt);
             }
         });
-        getContentPane().add(leftDoorOpenButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(849, 229, 90, 33));
 
         leftDoorGroup.add(leftDoorCloseButton);
         leftDoorCloseButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
@@ -533,7 +466,6 @@ public class TrainModelGUI extends javax.swing.JFrame {
                 leftDoorCloseButtonActionPerformed(evt);
             }
         });
-        getContentPane().add(leftDoorCloseButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(849, 262, 90, 30));
 
         rightDoorGroup.add(rightDoorCloseButton);
         rightDoorCloseButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
@@ -544,7 +476,6 @@ public class TrainModelGUI extends javax.swing.JFrame {
                 rightDoorCloseButtonActionPerformed(evt);
             }
         });
-        getContentPane().add(rightDoorCloseButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(849, 329, 90, 35));
 
         rightDoorGroup.add(rightDoorOpenButton);
         rightDoorOpenButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
@@ -555,24 +486,20 @@ public class TrainModelGUI extends javax.swing.JFrame {
                 rightDoorOpenButtonActionPerformed(evt);
             }
         });
-        getContentPane().add(rightDoorOpenButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(849, 299, 90, 30));
 
         jLabel48.setBackground(new java.awt.Color(153, 204, 255));
         jLabel48.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
         jLabel48.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel48.setText("Set Temperture (F)");
         jLabel48.setOpaque(true);
-        getContentPane().add(jLabel48, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 300, 176, 46));
 
         setTemperatureInput.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        getContentPane().add(setTemperatureInput, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 300, 70, 46));
 
         jLabel49.setBackground(new java.awt.Color(153, 204, 255));
         jLabel49.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
         jLabel49.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel49.setText("Set Authority (miles)");
         jLabel49.setOpaque(true);
-        getContentPane().add(jLabel49, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 350, 176, 48));
 
         jLabel50.setBackground(new java.awt.Color(67, 67, 67));
         jLabel50.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
@@ -580,34 +507,29 @@ public class TrainModelGUI extends javax.swing.JFrame {
         jLabel50.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel50.setText("Failures");
         jLabel50.setOpaque(true);
-        getContentPane().add(jLabel50, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 430, 251, 32));
 
         jLabel51.setBackground(new java.awt.Color(255, 0, 0));
         jLabel51.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel51.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel51.setText("Brakes");
         jLabel51.setOpaque(true);
-        getContentPane().add(jLabel51, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 470, 136, 60));
 
         jLabel52.setBackground(new java.awt.Color(255, 0, 0));
         jLabel52.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel52.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel52.setText("Engine");
         jLabel52.setOpaque(true);
-        getContentPane().add(jLabel52, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 540, 136, 60));
 
         jLabel53.setBackground(new java.awt.Color(255, 0, 0));
         jLabel53.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         jLabel53.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel53.setText("Signal");
         jLabel53.setOpaque(true);
-        getContentPane().add(jLabel53, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 610, 136, 60));
 
         brakesGroup.add(brakeFailureOnButton);
         brakeFailureOnButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         brakeFailureOnButton.setText("ON");
         brakeFailureOnButton.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        getContentPane().add(brakeFailureOnButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 470, 63, 30));
 
         brakesGroup.add(brakeFailureOffButton);
         brakeFailureOffButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
@@ -618,13 +540,11 @@ public class TrainModelGUI extends javax.swing.JFrame {
                 brakeFailureOffButtonActionPerformed(evt);
             }
         });
-        getContentPane().add(brakeFailureOffButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 500, 63, 30));
 
         engineGroup.add(enginFailureOnButton);
         enginFailureOnButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         enginFailureOnButton.setText("ON");
         enginFailureOnButton.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        getContentPane().add(enginFailureOnButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 540, 63, 30));
 
         engineGroup.add(engineFailureOffButton);
         engineFailureOffButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
@@ -635,13 +555,11 @@ public class TrainModelGUI extends javax.swing.JFrame {
                 engineFailureOffButtonActionPerformed(evt);
             }
         });
-        getContentPane().add(engineFailureOffButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 570, 63, 30));
 
         signalGroup.add(signalFailureOnButton);
         signalFailureOnButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
         signalFailureOnButton.setText("ON");
         signalFailureOnButton.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        getContentPane().add(signalFailureOnButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 610, 63, 30));
 
         signalGroup.add(signalFailureOffButton);
         signalFailureOffButton.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
@@ -652,7 +570,6 @@ public class TrainModelGUI extends javax.swing.JFrame {
                 signalFailureOffButtonActionPerformed(evt);
             }
         });
-        getContentPane().add(signalFailureOffButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 640, 63, 30));
 
         applyChangesButton.setBackground(new java.awt.Color(255, 229, 153));
         applyChangesButton.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
@@ -662,17 +579,346 @@ public class TrainModelGUI extends javax.swing.JFrame {
                 applyChangesButtonActionPerformed(evt);
             }
         });
-        getContentPane().add(applyChangesButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 690, 477, 46));
 
         timeLabel.setBackground(new java.awt.Color(153, 204, 255));
         timeLabel.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
         timeLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         timeLabel.setText("Time(s)");
         timeLabel.setOpaque(true);
-        getContentPane().add(timeLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 250, 176, 46));
 
         setTimeInput.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
-        getContentPane().add(setTimeInput, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 250, 70, 46));
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 465, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 477, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(authorityLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7)
+                        .addComponent(authorityDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(39, 39, 39)
+                        .addComponent(accelerationLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(accelerationDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(currentTrainSpeedLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7)
+                        .addComponent(currentTrainSpeedDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lightsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7)
+                        .addComponent(lightsDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(39, 39, 39)
+                        .addComponent(emergencyBrakeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7)
+                        .addComponent(emergencyBrakeDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(39, 39, 39)
+                        .addComponent(jLabel30, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(leftDoorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7)
+                        .addComponent(leftDoorDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(39, 39, 39)
+                        .addComponent(massLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7)
+                        .addComponent(massDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(rightDoorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7)
+                        .addComponent(rightDoorDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(39, 39, 39)
+                        .addComponent(heightLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7)
+                        .addComponent(heightDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(39, 39, 39)
+                        .addComponent(widthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7)
+                        .addComponent(widthDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(trainIdLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7)
+                        .addComponent(trainIdPicker, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(37, 37, 37)
+                        .addComponent(temperatureLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(temperatureDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(powerLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7)
+                        .addComponent(powerDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(13, 13, 13)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(78, 78, 78)
+                        .addComponent(jLabel41, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(1, 1, 1)
+                        .addComponent(debugModeOnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)
+                        .addComponent(debugModeOffButton, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(5, 5, 5)
+                        .addComponent(jLabel42, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(1, 1, 1)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(emergencyBrakeOnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(emergencyBrakeOffButton, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel43, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(1, 1, 1)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lightsOnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lightsOffButton, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(5, 5, 5)
+                                .addComponent(jLabel44, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(5, 5, 5)
+                                .addComponent(setPowerInput, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(4, 4, 4)
+                                .addComponent(setTimeInput, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(5, 5, 5)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel45, javax.swing.GroupLayout.PREFERRED_SIZE, 221, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel46, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(1, 1, 1)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(leftDoorOpenButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(leftDoorCloseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel48, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel49, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(4, 4, 4)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(setTemperatureInput, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(setAuthorityInput, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(11, 11, 11)
+                        .addComponent(jLabel47, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(1, 1, 1)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(rightDoorOpenButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(rightDoorCloseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(passengersLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(crewLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(7, 7, 7)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(passengersDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(crewDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(39, 39, 39)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lengthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(numCarsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(7, 7, 7)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lengthDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(numCarsDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(42, 42, 42)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel50, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel51, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(4, 4, 4)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(brakeFailureOnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(brakeFailureOffButton, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(490, 490, 490)
+                .addComponent(jLabel52, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(4, 4, 4)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(enginFailureOnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(engineFailureOffButton, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(490, 490, 490)
+                .addComponent(jLabel53, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(4, 4, 4)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(signalFailureOnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(signalFailureOffButton, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(490, 490, 490)
+                .addComponent(applyChangesButton, javax.swing.GroupLayout.PREFERRED_SIZE, 477, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(13, 13, 13)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(7, 7, 7)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel41, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(1, 1, 1)
+                                .addComponent(debugModeOnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(debugModeOffButton, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(6, 6, 6)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel42, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(emergencyBrakeOnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, 0)
+                                .addComponent(emergencyBrakeOffButton, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel43, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(lightsOnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, 0)
+                                .addComponent(lightsOffButton, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(7, 7, 7)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel44, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(setPowerInput, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(12, 12, 12)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(timeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(setTimeInput, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel45, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(7, 7, 7)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel46, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(leftDoorOpenButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, 0)
+                                        .addComponent(leftDoorCloseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addGap(3, 3, 3)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel47, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(rightDoorOpenButton, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, 0)
+                                .addComponent(rightDoorCloseButton, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(1, 1, 1)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel48, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(4, 4, 4)
+                                        .addComponent(jLabel49, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(setTemperatureInput, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(4, 4, 4)
+                                        .addComponent(setAuthorityInput, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(trainIdLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(5, 5, 5)
+                                .addComponent(trainIdPicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(temperatureLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(temperatureDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(accelerationDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(accelerationLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(authorityLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(authorityDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(7, 7, 7)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(powerLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(powerDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(7, 7, 7)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(currentTrainSpeedLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(currentTrainSpeedDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(7, 7, 7)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lightsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(lightsDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(emergencyBrakeLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(emergencyBrakeDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(7, 7, 7)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel30, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(7, 7, 7)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(leftDoorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(leftDoorDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(massLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(massDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(7, 7, 7)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(rightDoorLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(rightDoorDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(heightLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(heightDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(7, 7, 7)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(widthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(widthDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                .addGap(7, 7, 7)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(passengersLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7)
+                        .addComponent(crewLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(passengersDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7)
+                        .addComponent(crewDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lengthLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7)
+                        .addComponent(numCarsLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lengthDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7)
+                        .addComponent(numCarsDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(19, 19, 19)
+                        .addComponent(jLabel50, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(8, 8, 8)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel51, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(brakeFailureOnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, 0)
+                                .addComponent(brakeFailureOffButton, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGap(10, 10, 10)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel52, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(enginFailureOnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)
+                        .addComponent(engineFailureOffButton, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(10, 10, 10)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel53, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(signalFailureOnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)
+                        .addComponent(signalFailureOffButton, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(20, 20, 20)
+                .addComponent(applyChangesButton, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -724,7 +970,7 @@ public class TrainModelGUI extends javax.swing.JFrame {
             //debug mode is on
             Train test = new Train();
             //Get velocity from new power
-            test.setTime(Double.parseDouble(setTimeInput.getText()));
+            //test.setTime(Double.parseDouble(setTimeInput.getText()));
             test.setPower(Double.parseDouble(setPowerInput.getText()));
             currentTrainSpeedDisplayLabel.setText(String.format("%.2f", test.getVelocity()) + " MPH");
 
@@ -779,6 +1025,10 @@ public class TrainModelGUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, infoMessage, "InfoBox: ", JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_applyChangesButtonActionPerformed
+
+    private void trainIdPickerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trainIdPickerActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_trainIdPickerActionPerformed
 
     /**
      * @param args the command line arguments
@@ -891,8 +1141,6 @@ public class TrainModelGUI extends javax.swing.JFrame {
     private javax.swing.JRadioButton signalFailureOffButton;
     private javax.swing.JRadioButton signalFailureOnButton;
     private javax.swing.ButtonGroup signalGroup;
-    private javax.swing.JLabel speedLimitDisplayLabel;
-    private javax.swing.JLabel speedLimitLabel;
     private javax.swing.JLabel temperatureDisplayLabel;
     private javax.swing.JLabel temperatureLabel;
     private javax.swing.JLabel timeLabel;
