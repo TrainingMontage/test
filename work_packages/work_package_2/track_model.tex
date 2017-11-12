@@ -1,0 +1,1284 @@
+\documentclass{scrreprt}
+\usepackage[shellescape]{gmp}
+\usepackage{listings}
+\usepackage{underscore}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usepackage{pgf-umlsd}
+
+%%%%%% header and footer info
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{TRACK MODEL}
+\lhead{Training Montage}
+\cfoot{\thepage}
+
+%%%%%% custom list definition
+\newlist{numonly}{enumerate}{10}
+\setlist[numonly]{label*=\arabic*.}
+
+\hypersetup{
+    pdftitle={TRACK MODEL USE CASE, CLASS DIAGRAMS, SEQUENCE DIAGRAMS, AND TEST PLAN},    % title
+    pdfauthor={Training Montage},                     % author
+    pdfsubject={TeX and LaTeX},                        % subject of the document
+    pdfkeywords={TeX, LaTeX, graphics, images}, % list of keywords
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=blue,       % color of internal links
+    citecolor=black,       % color of links to bibliography
+    filecolor=black,        % color of file links
+    urlcolor=purple,        % color of external links
+    linktoc=page            % only page is linked
+}
+
+\begin{document}
+
+\begin{flushright}
+    \rule{16cm}{5pt}\vskip1cm
+    \begin{bfseries}
+        \Huge{TRACK MODEL USE CASE, CLASS DIAGRAMS, SEQUENCE DIAGRAMS, AND TEST PLAN}\\
+        \vspace{.9cm}
+        for\\
+        \vspace{.9cm}
+        COE 1186 Project\\
+        \vspace{.9cm}
+        % \LARGE{Version \myversion approved}\\
+        \vspace{.9cm}
+        Prepared by:\\
+        Alec Rosenbaum\\
+        \vspace{3.9cm}
+        Training Montage\\
+        \vspace{.9cm}
+        \today\\
+    \end{bfseries}
+\end{flushright}
+
+\tableofcontents
+
+\chapter{Track Model}
+
+\section{Use Cases}
+
+\begin{center}
+\resizebox{!}{.8\textheight}{
+	\begin{mpost}
+		input metauml;
+		vardef drawComponentVisualStereotype(text ne)= relax enddef;
+		Actor.ctc("CTC");
+		Actor.wayside("Wayside");
+		Actor.trainmodel("Train Model");
+		Actor.traincontroller("Train Controller");
+		Actor.simrunner("SimulationRunner");
+		Actor.trackuser("TrackModel User");
+	    % 
+	    Usecase.uO("Get Passengers Departed");
+	    Usecase.uA("Get Static Block");
+	    Usecase.uB("Get Static Switch");
+	    %
+	    Usecase.uC("Get Occupancy");
+		Usecase.uD("Set Suggested", "Speed");
+		Usecase.uDD("Set Suggested", "Authority");
+		Usecase.uE("Set Maintenance");
+		Usecase.uF("Set Switch State");
+		Usecase.uG("Set Signals");
+		Usecase.uH("Set Railroad", "Crossing");
+		Usecase.uI("Get Block State");
+		Usecase.uJ("Get Signal");
+		Usecase.uK("Get Crossing");
+		%
+		Usecase.uKK("Initialize TrackModel");
+		%
+		Usecase.uL("Initialize Train");
+		Usecase.uM("Get Suggested", "Authority");
+		Usecase.uN("Get Suggested", "Speed");
+		Usecase.uP("Get Grade");
+		Usecase.uQ("Get If Track", "Is Icy");
+		Usecase.uR("Get Beacon Data");
+		Usecase.uS("Teardown Train");
+		%
+		Usecase.uT("Import Track");
+		Usecase.uU("Export Track");
+		Usecase.uV("Configure Track");
+	    %
+	    Component.TrackModel("Track Model")(uA,uB,uC,uD,uDD,uE,uF,uG,uH,uI,uJ,uK,uKK,uL,uM,uN,uO,uP,uQ,uR,uS,uT,uU,uV);
+	    % 
+		topToBottom.left(10)(uO,uA,uB,uC,uD,uDD,uE,uF,uG,uH,uI,uJ,uK);
+		leftToRight(50)(ctc, uA);
+		leftToRight(50)(traincontroller, uD);
+		leftToRight(50)(wayside, uG);
+		%
+		topToBottom.right(10)(uT,uU,uV);
+		topToBottom.right(10)(uL,uM,uN,uP,uQ,uR,uS,uKK);
+		leftToRight(75)(uO, uT);
+		leftToRight(100)(uDD, uL);
+		leftToRight(50)(uU, trackuser);
+		leftToRight(50)(uL, trainmodel);
+		leftToRight(50)(uKK, simrunner);
+	    % 
+	    drawObjects(ctc,wayside,trainmodel,traincontroller,simrunner,TrackModel,trackuser);
+		%
+	    link(association)(pathCut(ctc, uA)(ctc.e -- uA.w));
+	    link(association)(pathCut(ctc, uA)(ctc.e -- uB.w));
+	    link(association)(pathCut(ctc, uO)(ctc.e -- uO.w));
+	    %
+	    link(association)(pathCut(traincontroller, uA)(traincontroller.e -- uA.w));
+	    link(association)(pathCut(traincontroller, uA)(traincontroller.e -- uB.w));
+	    %
+	    link(association)(pathCut(wayside, uA)(wayside.e -- uA.w));
+	    link(association)(pathCut(wayside, uB)(wayside.e -- uB.w));
+	    link(association)(pathCut(wayside, uC)(wayside.e -- uC.w));
+	    link(association)(pathCut(wayside, uD)(wayside.e -- uD.w));
+	    link(association)(pathCut(wayside, uE)(wayside.e -- uE.w));
+	    link(association)(pathCut(wayside, uF)(wayside.e -- uF.w));
+	    link(association)(pathCut(wayside, uG)(wayside.e -- uG.w));
+	    link(association)(pathCut(wayside, uH)(wayside.e -- uH.w));
+	    link(association)(pathCut(wayside, uI)(wayside.e -- uI.w));
+	    link(association)(pathCut(wayside, uJ)(wayside.e -- uJ.w));
+	    link(association)(pathCut(wayside, uK)(wayside.e -- uK.w));
+	    %
+	    link(association)(pathCut(trackuser, uT)(trackuser.w -- uT.e));
+	    link(association)(pathCut(trackuser, uU)(trackuser.w -- uU.e));
+	    link(association)(pathCut(trackuser, uV)(trackuser.w -- uV.e));
+	    %
+	    link(association)(pathCut(simrunner, uKK)(simrunner.w -- uKK.e));
+	    %
+	    link(association)(pathCut(trainmodel, uA)(trainmodel.w -- uA.e));
+	    link(association)(pathCut(trainmodel, uB)(trainmodel.w -- uB.e));
+	    link(association)(pathCut(trainmodel, uL)(trainmodel.w -- uL.e));
+	    link(association)(pathCut(trainmodel, uM)(trainmodel.w -- uM.e));
+	    link(association)(pathCut(trainmodel, uN)(trainmodel.w -- uN.e));
+	    link(association)(pathCut(trainmodel, uP)(trainmodel.w -- uP.e));
+	    link(association)(pathCut(trainmodel, uQ)(trainmodel.w -- uQ.e));
+	    link(association)(pathCut(trainmodel, uR)(trainmodel.w -- uR.e));
+	    link(association)(pathCut(trainmodel, uS)(trainmodel.w -- uS.e));
+	\end{mpost}
+}
+\end{center}
+
+\subsection{Use Case: Get Passengers Departed}
+\begin{enumerate}
+	\item CTC calls getPassengers(trainId)
+	\item If train is at a station, number of passengers who left train is returned. Otherwise, 0 is returned.
+\end{enumerate}
+
+\subsection{Use Case: Get Static Block}
+\begin{enumerate}
+	\item User calls getStaticBlock(blockId)
+	\item Instance of StaticBlock populated with static data is returned.
+\end{enumerate}
+
+\subsection{Use Case: Get Static Switch}
+\begin{enumerate}
+	\item User calls getStaticSwitch(switchId)
+	\item Instance of StaticSwitch populated with static data is returned.
+\end{enumerate}
+
+\subsection{Use Case: Get Occupancy}
+\begin{enumerate}
+	\item Wayside calls isOccupied(blockId)
+	\item True is returned if block is occupied, False if block is unoccupied.
+\end{enumerate}
+
+\subsection{Use Case: Set Suggested Speed}
+\begin{enumerate}
+	\item Wayside calls setSpeed(blockId, speed)
+	\item Suggested speed is set for that block.
+\end{enumerate}
+
+\subsection{Use Case: Set Suggested Authority}
+\begin{enumerate}
+	\item Wayside calls setAuthority(blockId, authority)
+	\item Authority is set for that block.
+\end{enumerate}
+
+\subsection{Use Case: Set Maintenance}
+\begin{enumerate}
+	\item Wayside calls setStatus(blockId, BlockStatus.MAINTAIN)
+	\item The block status of blockId is set to be Maintenance.
+\end{enumerate}
+
+\subsection{Use Case: Set Switch State}
+\begin{enumerate}
+	\item Wayside calls setStatus(blockId, BlockStatus.MAINTAIN)
+	\item The block status of blockId is set to be Maintenance.
+\end{enumerate}
+
+\subsection{Use Case: Set Signal}
+\begin{enumerate}
+	\item Wayside calls setSignal(blockId, signal)
+	\item The signal on block blockId is set to <signal> (true for green, false for red).
+\end{enumerate}
+
+\subsection{Use Case: Get Signal}
+\begin{enumerate}
+	\item Wayside calls getSignal(blockId)
+	\item The signal state on blockId is returned (true for green, false for red).
+\end{enumerate}
+
+\subsection{Use Case: Set Railroad Crossing}
+\begin{enumerate}
+	\item Wayside calls setCrossing(blockId, state)
+	\item The state of the crossing is set to <state> (true for active, false for inactive).
+\end{enumerate}
+
+\subsection{Use Case: Get Crossing}
+\begin{enumerate}
+	\item Wayside calls getCrossing(blockId)
+	\item The crossing status of blockId is returned (true for active, false for inactive).
+\end{enumerate}
+
+\subsection{Use Case: Get Block State}
+\begin{enumerate}
+	\item Wayside calls getStatus(blockId)
+	\item The block status of blockId is returned (an option from enum BlockStatus).
+\end{enumerate}
+
+\subsection{Use Case: Initialize Train}
+\begin{enumerate}
+	\item Train Model calls initializeTrain(trainId, blockId)
+	\item The train is placed on to the track.
+\end{enumerate}
+
+\subsection{Use Case: Teardown Train}
+\begin{enumerate}
+	\item Train Model calls teardownTrain(trainId)
+	\item The train is removed from the track.
+\end{enumerate}
+
+\subsection{Use Case: Get Suggested Authority}
+\begin{enumerate}
+	\item Train Model calls getTrainAuthority(trainId)
+	\item The track model determines the location of the train, and returns the authority.
+\end{enumerate}
+
+\subsection{Use Case: Get Suggested Speed}
+\begin{enumerate}
+	\item Train Model calls getTrainSpeed(trainId)
+	\item The track model determines the location or the train, and returns the suggested speed.
+\end{enumerate}
+
+\subsection{Use Case: Get Grade}
+\begin{enumerate}
+	\item Train Model calls getGrade(trainId)
+	\item The track model determines the location or the train, and returns the grade of that block.
+\end{enumerate}
+
+\subsection{Use Case: Get If Track is Icy}
+\begin{enumerate}
+	\item Train Model calls isTrackIcy(trainId)
+	\item The track model determines the location or the train, and returns if the track is icy (true for icy, false otherwise).
+\end{enumerate}
+
+\subsection{Use Case: Get Beacon Data}
+\begin{enumerate}
+	\item Train Model calls getBeacon(trainId)
+	\item The track model determines the location or the train, and returns the beacon data at that block if a beacon is present (null if no beacon is present).
+\end{enumerate}
+
+\subsection{Use Case: Initialize TrackModel}
+\begin{enumerate}
+	\item SimulationRunner calls init()
+	\item The track model performs initialization tasks and returns the singleton TrackModel instance.
+\end{enumerate}
+
+\subsection{Use Case: Import Track}
+\begin{enumerate}
+	\item TrackModel User clicks "Import Track" button
+	\item A file selection popup appears.
+	\item TrackModel User selects a file from the filesystem.
+	\item The track model loads the data in that file into the track model.
+\end{enumerate}
+
+\subsection{Use Case: Export Track}
+\begin{enumerate}
+	\item TrackModel User clicks "Export Track" button
+	\item A file selection popup appears.
+	\item TrackModel User selects a file or write the name of a new file.
+	\item TrackModel User clicks "Save"
+	\item The track model dumps the database into the selected file. The file is created if it doesn't exist.
+\end{enumerate}
+
+
+\section{Class Diagram}
+
+\begin{center}
+\resizebox{!}{.9\textheight}{
+	\begin{mpost}
+		input metauml;
+	    % Track Model
+	    Class.TrackModel("TrackModel")()(
+	    	"TrackModel init()",
+	    	"int getTrainAuthority(int trainId)",
+			"double getTrainSpeed(int trainId)",
+			"boolean setSignal(int blockId, boolean value)",
+			"boolean getSignal(int blockId)",
+			"boolean setSwitch(int blockId, boolean value)",
+			"boolean getSwitch(int blockId)",
+			"boolean setAuthority(int blockId, boolean authority)",
+			"int setSpeed(int blockId, int speed)",
+			"boolean setCrossing(int blockId, boolean active)",
+			"boolean getCrossing(int blockId)",
+			"byte[] getTrainBeacon(int trainId)",
+			"int getPassengers(int trainId)",
+			"boolean isIcyTrack(int trainId)",
+			"StaticBlock getStaticBlock(int blockId)",
+			"double getGrade(int trainId)",
+			"boolean isOccupied(int blockId)",
+			"BlockStatus getStatus(int blockId)"
+			"BlockStatus getBeacon(int trainId)"
+			"BlockStatus getBlockChange(int trainId)"
+		);
+		% Database
+	    Class.Database("Database")()(
+	    	"ResultSet execute(Statement)",
+		);
+		% Static Block
+		Class.StaticBlock("StaticBlock")()(
+			"-int setId(int id)",
+			"int getId()",
+			"-String setRegion(String region)",
+			"String getRegion()",
+			"-double setGrade(double grade)",
+			"double getGrade()",
+			"-double setElevation(double elevation)",
+			"double getElevation()",
+			"-double setLength(double length)",
+			"double getLength()",
+			"-String setStation(String station)",
+			"String getStation()",
+			"-StaticSwitch setStaticSwitch(StaticSwitch staticSwitch)"
+		);
+	    % StaticSwitch
+	    Class.StaticSwitch("StaticSwitch")()(
+			"StaticBlock getRoot()",
+			"-StaticBlock setRoot(StaticBlock root)",
+			"StaticBlock getInactiveLeaf()",
+			"-StaticBlock setInactiveLeaf(StaticBlock inactiveLeaf)",
+			"StaticBlock getActiveLeaf()",
+			"-StaticBlock setActiveLeaf(StaticBlock activeLeaf)"
+	    );
+		% 	
+		topToBottom(30)(TrackModel, Database, StaticBlock, StaticSwitch);
+		% 
+	    drawObjects(TrackModel, Database, StaticBlock, StaticSwitch);
+		%
+		% StaticSwitch -> StaticBlock 1..3 
+	    link(compositionUni)(pathStepX(StaticBlock.e, StaticSwitch.e, 30));
+	    item(iAssoc)("1")(obj.nw = StaticSwitch.e + (15,0));
+	    item(iAssoc)("3")(obj.nw = StaticBlock.e + (5,-5));
+	    % TrackModel -> StaticSwitch 1..*
+	    link(compositionUni)(pathStepX(StaticSwitch.e + (0,-20), TrackModel.e, 55));
+	    item(iAssoc)("*")(obj.nw = StaticSwitch.e + (15,-20));
+	    item(iAssoc)("1")(obj.nw = TrackModel.e + (5,-5));
+	    % TrackModel -> StaticBlock 1..*
+	    link(compositionUni)(pathStepX(StaticBlock.w, TrackModel.w, -25));
+	    item(iAssoc)("*")(obj.nw = StaticBlock.w + (-20,0));
+	    item(iAssoc)("1")(obj.nw = TrackModel.w + (-20,0));
+	    % TrackModel -> Database 1..1
+	    link(associationUni)(pathStepX(Database.n, TrackModel.s, 0));
+	    item(iAssoc)("1")(obj.ne = TrackModel.s + (-5,-10));
+	    item(iAssoc)("1")(obj.ne = Database.n + (0,10));
+	    % StaticBlock -> StaticSwitch 1..0-1
+	    link(associationUni)(pathStepX(StaticBlock.w + (0, -20), StaticSwitch.w, -25));
+	    item(iAssoc)("1")(obj.nw = StaticBlock.w + (-20,-20));
+	    item(iAssoc)("0..1")(obj.nw = StaticSwitch.w + (-20,-5));
+	\end{mpost}
+}
+\end{center}
+
+\section{Sequence Diagrams}
+
+\subsection{Sequence Diagram: Get Passengers Departed}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{ctc}{CTC}
+	\newinst[4]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{ctc}{getPassengers(trainId)}{tm}{}
+		\begin{call}{tm}{execute(statement)}{db}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Get Static Block}
+\begin{center}
+\resizebox{\textwidth}{!}{
+	\begin{sequencediagram}
+	\newthread{sim}{Actor}
+	\newinst[3]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	\newinst{sb}{StaticBlock}
+	\newinst{ss}{StaticSwitch}
+	
+	\begin{call}{sim}{getStaticBlock(id)}{tm}{}
+		\begin{call}{tm}{execute(statement)}{db}{}
+		\end{call}
+		\begin{call}{tm}{StaticBlock()}{sb}{}
+		\end{call}
+		\begin{sdblock}{If A Switch is Attached}{}
+			\begin{call}{tm}{StaticSwitch()}{ss}{}
+			\end{call}
+		\end{sdblock}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Get Static Switch}
+\begin{center}
+\resizebox{\textwidth}{!}{
+	\begin{sequencediagram}
+	\newthread{sim}{Actor}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	\newinst[2]{ss}{StaticSwitch}
+	
+	\begin{call}{sim}{getStaticSwitch(id)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+		\begin{call}{tm}{StaticSwitch()}{ss}{}
+		\end{call}
+		\begin{sdblock}{For Root, Default, Active}{}
+			\begin{call}{tm}{getStaticBlock(id)}{tm}{}
+				\begin{call}{tm}{execute(stmt)}{db}{}
+				\end{call}
+			\end{call}
+		\end{sdblock}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Get Occupancy}
+\begin{center}
+\resizebox{\textwidth}{!}{
+	\begin{sequencediagram}
+	\newthread{sim}{Wayside}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{isOccupied(id)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Set Suggested Speed}
+\begin{center}
+\resizebox{\textwidth}{!}{
+	\begin{sequencediagram}
+	\newthread{sim}{Wayside}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{setSpeed(blockId, value)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Set Authority}
+\begin{center}
+\resizebox{\textwidth}{!}{
+	\begin{sequencediagram}
+	\newthread{sim}{Wayside}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{setAuthority(blockId, value)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Set Maintenance}
+\begin{center}
+\resizebox{\textwidth}{!}{
+\begin{sequencediagram}
+	\newthread{sim}{Wayside}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{setStatus(id, BlockStatus.MAINTAIN)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Set Switch State}
+\begin{center}
+\resizebox{\textwidth}{!}{
+\begin{sequencediagram}
+	\newthread{sim}{Wayside}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{setSpeed(id, value)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Set Signal}
+\begin{center}
+\resizebox{\textwidth}{!}{
+\begin{sequencediagram}
+	\newthread{sim}{Wayside}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{setSignal(blockId, value)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Get Signal}
+\begin{center}
+\resizebox{\textwidth}{!}{
+\begin{sequencediagram}
+	\newthread{sim}{Wayside}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{getSignal(blockId)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Set Railroad Crossing}
+\begin{center}
+\resizebox{\textwidth}{!}{
+\begin{sequencediagram}
+	\newthread{sim}{Wayside}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{setCrossingState(blockId, state)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Get Crossing}
+\begin{center}
+\resizebox{\textwidth}{!}{
+\begin{sequencediagram}
+	\newthread{sim}{Wayside}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{getCrossingState(blockId)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Get Block State}
+\begin{center}
+\resizebox{\textwidth}{!}{
+\begin{sequencediagram}
+	\newthread{sim}{Wayside}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{getStatus(blockId)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Initialize Train}
+\begin{center}
+\resizebox{\textwidth}{!}{
+\begin{sequencediagram}
+	\newthread{sim}{TrainModel}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{initializeTrain(trainId, startingBlockId)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Teardown Train}
+\begin{center}
+\resizebox{\textwidth}{!}{
+\begin{sequencediagram}
+	\newthread{sim}{TrainModel}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{teardownTrain(trainId)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Get Suggested Authority}
+\begin{center}
+\resizebox{\textwidth}{!}{
+\begin{sequencediagram}
+	\newthread{sim}{TrainModel}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{getTrainAuthority(trainId)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Get Suggested Speed}
+\begin{center}
+\resizebox{\textwidth}{!}{
+\begin{sequencediagram}
+	\newthread{sim}{TrainModel}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{getTrainSpeed(trainId)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Get Grade}
+\begin{center}
+\resizebox{\textwidth}{!}{
+\begin{sequencediagram}
+	\newthread{sim}{TrainModel}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{getGrade(trainId)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Get If Track is Icy}
+\begin{center}
+\resizebox{\textwidth}{!}{
+\begin{sequencediagram}
+	\newthread{sim}{TrainModel}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{isIcyTrack(trainId)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Get Beacon Data}
+\begin{center}
+\resizebox{\textwidth}{!}{
+\begin{sequencediagram}
+	\newthread{sim}{TrainModel}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{getBeacon(trainId)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Import Track}
+\begin{center}
+\resizebox{\textwidth}{!}{
+	\begin{sequencediagram}
+	\newthread{sim}{Actor}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{importTrack(File)}{tm}{}
+		\begin{sdblock}{For Each Line}{Insert Row}
+			\begin{call}{tm}{execute(stmt)}{db}{}
+			\end{call}
+		\end{sdblock}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Export Track}
+\begin{center}
+\resizebox{\textwidth}{!}{
+	\begin{sequencediagram}
+	\newthread{sim}{Actor}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{exportTrack(File)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+		\begin{sdblock}{For Each Row Returned}{}
+			\begin{call}{tm}{Write to File}{tm}{}
+			\end{call}
+		\end{sdblock}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+
+\section{Test Plan}
+
+\subsection{Approach}
+
+\subsubsection{Introduction}
+The overall project will simulate the operation of a public rail system. The role of the Track Model within the context of the overall system is to simulate the physical properties of the track, and keep track of where moving trains are. The Track Model provides an interface for other modules to retrieve static data about blocks on the track and provides an interface to the wayside controller and train model.
+
+\subsubsection{Features Test}
+The features within the scope of this test plan include the storing/modifying the state of the track directly, the UI for interacting with the Track Model, the interface between the Track Model and the Wayside module, and the interface between the Track Model and the Train model. Interface must be tested to ensure functionality consistent with agreed-upon interfaces. The Track Model UI must be tested to allow full control and modification of data within the track model.
+
+\subsubsection{Features Not Tested}
+This test plan will not include any features outside the scope of the Track Model. In this case, all functions not directly interacting with the track model are not included in the scope.
+
+\subsubsection{Approach}
+The primary form of tests performed will be functional tests. Interfaces will be tested using an array of automated tests that validate the expected function of each method included in the interface. Manual tests are also to be conducted for verification of UI functionality. Requirements state that the system must operate at 10x wall-clock speed. The track model is not expected bottleneck performance, thus performance testing will not be conducted unless the manual tests indicate that there may be performance issues.
+
+\subsubsection{Test Deliverables}
+All tests described by this plan will be executed in order to ensure quality. All automated tests must be passing; automated tests run automatically every time the software changes. Manual tests must be performed before every deliverable. An executed test plan and defect report will be delivered with Work Package 3.
+
+\subsection{Test Cases}
+
+\subsubsection{IDENTIFIER: 000-GET-PASSENGERS-DEPARTED}
+TEST CASE: Get the number of passengers who get off a train at a station.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A populated train (id of 1) exists on block 1. Block 1 has a station on it.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.getPassengers(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tm.getPassengers(1) should return a number between 0 and the trains maximum capacity.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-STATIC-BLOCK}
+TEST CASE: Get a StaticBlock populated with the information pertaining to a block.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.getStaticBlock(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tm.getStaticBlock() should return an instance of StaticBlock.
+	\item The instance should contain static data matching the test track data.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-STATIC-SWITCH}
+TEST CASE: Get a StaticSwitch populated with the information pertaining to that switch.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.getStaticSwitch(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tm.getStaicSwitch should return an instance of StaticSwitch.
+	\item The instance should have non-null StaticBlocks set as the Root, Default, and Active nodes.
+	\item The StaticBlock for the Root node should be block 1
+	\item The StaticBlock for the Default node should be block 2
+	\item The StaticBlock for the Active node should be block 3
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-OCCUPANCY}
+TEST CASE: Get the occupancy of a block.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train exists on block 1.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.isOccupied(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tm.isOccupied(1) should return True
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-GET-OCCUPANCY}
+TEST CASE: Get the occupancy of a block.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train exists on block 1.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.isOccupied(2)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item _tm.isOccupied(2) should return False
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-SET-SUGGESTED-SPEED}
+TEST CASE: Set the suggested speed for a block
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.setSpeed(1, 15)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The suggested speed for block 1 within the database should be set to 15
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-SET-AUTHORITY}
+TEST CASE: Set the commanded authority for a block
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.setAuthority(1, true)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The authority for block 1 within the database should be set to 1
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-SET-AUTHORITY}
+TEST CASE: Set the commanded authority for a block
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.setAuthority(1, false)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The authority for block 1 within the database should be set to 0
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-SET-MAINTAINANCE}
+TEST CASE: Set a block's status to Maintenance
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.setStatus(1, BlockStatus.BROKEN)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The status for block 1 within the database should be set to the ordinal value of BlockStatus.BROKEN (BlockStatus.BROKEN.ordinal())
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-SET-SWITCH-STATE}
+TEST CASE: Set the state of a switch
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.setSwitch(1, true)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The switch attached to block 1 should be marked active in the database.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-SET-SWITCH-STATE}
+TEST CASE: Set the state of a switch
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.setSwitch(1, false)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The switch attached to block 1 should not be marked active in the database. 
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-SET-SIGNAL}
+TEST CASE: Set the state of a signal
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.setSignal(1, true)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The signal attached to block 1 should be marked as green in the database.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-SIGNAL}
+TEST CASE: Get the state of a signal
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.getSignal(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned by _tm.getSignal(1) should be false. This indicates that the signal is not active.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-GET-SIGNAL}
+TEST CASE: Get the state of a signal
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. Set the signal on block 1 to active within the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.getSignal(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned by _tm.getSignal(1) should be true. This indicates that the signal is active.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-RAILROAD-CROSSING}
+TEST CASE: Get the state of a railroad crossing
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.getCrossingState(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned by _tm.getCrossingState(1) should be false. This indicates that the crossing is not active.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-GET-RAILROAD-CROSSING}
+TEST CASE: Get the state of a railroad crossing
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.getCrossingState(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned by _tm.getCrossingState(1) should be false. This indicates that the crossing is not active.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-SET-CROSSING}
+TEST CASE: Set the state of a crossing
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.setCrossingState(1, true)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The crossing state attached to block 1 should be marked as active in the database.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-SET-CROSSING}
+TEST CASE: Set the state of a crossing
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.setCrossingState(1, false)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The crossing state attached to block 1 should be marked as inactive in the database.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-BLOCK-STATE}
+TEST CASE: Get the state of a block
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.getStatus(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned by _tm.getStatus(1) should be BlockStatus.OPERATIONAL
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-GET-BLOCK-STATE}
+TEST CASE: Get the state of a block
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. The state of block 1 has been set to BlockStatus.BROKEN.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.getStatus(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned by _tm.getStatus(1) should be BlockStatus.BROKEN
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-INITIALIZE-TRAIN}
+TEST CASE: Initialize a train on the track
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.initializeTrain(2, 1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The database should reflect that a train with an id of 2 exists on block 1.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-TEARDOWN-TRAIN}
+TEST CASE: Teardown a train
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train with an id of 1 has been initialized.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.teardownTrain(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The database should reflect that no train with an id of 1 exists on the track.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-SUGGESTED-AUTHORITY}
+TEST CASE: Get the authority corresponding to a trains location on the track
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.getTrainAuthority(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned should be equal to 0.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-GET-SUGGESTED-AUTHORITY}
+TEST CASE: Get the authority corresponding to a trains location on the track
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1. The authority on block 1 has been set to 1.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.getTrainAuthority(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned should be equal to 1.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-SUGGESTED-SPEED}
+TEST CASE: Get the suggested speed corresponding to a trains location on the track
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.getTrainSpeed(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned should be equal to 0.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-GET-SUGGESTED-SPEED}
+TEST CASE: Get the suggested speed corresponding to a trains location on the track
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1. The suggested speed on block 1 has been set to 15.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.getTrainSpeed(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned should be equal to 15.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-GRADE}
+TEST CASE: Get the grade corresponding to a trains location
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item _tm.getGrade(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned should be equal to .5.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-IF-TRACK-IS-ICY}
+TEST CASE: Return whether or not a train is on icy track.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1. The global environment temperature is set to 76.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.isIcyTrack(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned should be false.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-GET-IF-TRACK-IS-ICY}
+TEST CASE: Return whether or not a train is on icy track.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1. The global environment temperature is set to 31.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.isIcyTrack(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned should be false.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 002-GET-IF-TRACK-IS-ICY}
+TEST CASE: Return whether or not a train is on icy track.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 3. The global environment temperature is set to 31.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item call _tm.isIcyTrack(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned should be true.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-GET-BEACON-DATA}
+TEST CASE: Return the information on a beacon if a train is on a block containing a beacon.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.getTrainBeacon(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned should be null, indicating that no beacon is present.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 001-GET-BEACON-DATA}
+TEST CASE: Return the information on a beacon if a train is on a block containing a beacon.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A train has been initialized on block 1. A beacon with value 0 has been placed on block 1.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.getTrainBeacon(1)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The value returned should be four bytes containing zeros.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-CONFIGURE-TRACK}
+TEST CASE: Test that the track is configurable from the Track Model UI
+PRECONDITIONS: The TrackModel UI has been launched, and the test track has been imported.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Select Block 2
+	\item Set the grade to 1
+	\item Set the elevation to 4
+	\item Set the length to 55
+	\item Uncheck the bidirectional flag
+	\item Set the speed limit to 7
+	\item Set the beacon to 4
+	\item Click the button "Submit Changes"
+	\item Select Block 3
+	\item Select Block 2
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The grade should be 1
+	\item The elevation should be 4
+	\item The length should be 55
+	\item The bidirectional flag should be unchecked
+	\item The speed limit should be 7
+	\item The beacon should be set to 4
+\end{enumerate}
+
+Note that this test is to be manually executed.
+
+\subsubsection{IDENTIFIER: 000-IMPORT-TRACK}
+TEST CASE: Import a track file.
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database. A test track file has been prepared.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.importTrack(new File("TrackModel/track.csv"))
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item Previous test track data should be gone from the database.
+	\item New data in the database should reflect the imported data.
+\end{enumerate}
+
+\subsubsection{IDENTIFIER: 000-EXPORT-TRACK}
+TEST CASE: Export a track
+PRECONDITIONS: The TrackModel has been created as _tm, and test track data has been inserted into the database.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call _tm.exportTrack(new File("TrackModel/track.csv"))
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item The file "TrackModel/track.csv" should exist.
+	\item The contents of track.csv should match the test track data.
+\end{enumerate}
+
+\subsection{Traceability Matrix}
+
+\begin{center}
+\resizebox{\textwidth}{!}{
+  \begin{tabular}{ l | l }
+    Requirement & Test Case \\
+    \hline
+    1. The Track Model shall consider grade and elevation. & 000-GET-STATIC-BLOCK \\
+     & 000-GET-GRADE \\ \hline
+	2. The Track Model shall be configurable. & 000-CONFIGURE-TRACK \\ \hline
+	3. The Track Model shall consider allowable & 000-GET-STATIC-BLOCK \\ 
+	directions of travel, branching, and speed limits. & 000-GET-STATIC-SWITCH  \\ \hline
+	4. The Track Model shall be able to export and & 000-IMPORT-TRACK \\
+	   import track layouts. & 000-EXPORT-TRACK \\ \hline
+	5. The Track Model shall consider block size. & 000-GET-STATIC-BLOCK  \\ \hline
+	5.1. Blocks shall be shown and configurable. & 000-CONFIGURE-TRACK \\ \hline
+	6. The Track Model shall implement signals and & 000-SET-SWITCH-STATE \\
+	   switch machines. & 001-SET-SWITCH-STATE \\ 
+	 & 000-SET-SIGNAL \\ 
+	 & 000-GET-SIGNAL \\ 
+	 & 001-GET-SIGNAL \\ \hline
+	7. The Track Model shall implement track circuits & 000-GET-OCCUPANCY \\
+	   for presence detection. & 001-GET-OCCUPANCY \\
+	 & 000-SET-SUGGESTED-SPEED \\
+	 & 000-SET-AUTHORITY \\
+	 & 001-SET-AUTHORITY \\
+	 & 000-GET-SUGGESTED-AUTHORITY \\
+	 & 001-GET-SUGGESTED-AUTHORITY \\
+	 & 000-GET-SUGGESTED-SPEED \\
+	 & 001-GET-SUGGESTED-SPEED \\ \hline
+	8. The Track Model shall consider railway crossings. & 000-GET-RAILROAD-CROSSING \\
+	 & 001-GET-RAILROAD-CROSSING \\
+	 & 000-SET-CROSSING \\
+	 & 001-SET-CROSSING \\ \hline
+	9. The Track Model shall include stations. & 000-GET-STATIC-BLOCK \\
+	9.1. Passengers shall be loaded and unloaded at & 000-GET-PASSENGERS-DEPARTED \\
+	     stations. & \\ \hline
+	10. The Track Model shall implement the following & 000-SET-MAINTAINANCE \\
+	    failure modes: & 000-GET-BLOCK-STATE \\
+	10.1. Broken rail & 001-GET-BLOCK-STATE \\
+	10.2. Track Circuit failure & \\
+	10.3. Extra or no trains detected & \\
+	10.4. Power failure & \\
+	10.5. No communication going to train & \\
+  \end{tabular}
+}
+\end{center}
+
+\end{document}

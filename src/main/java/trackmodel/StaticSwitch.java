@@ -3,18 +3,25 @@ package trackmodel;
 public class StaticSwitch {
 
 	private StaticBlock root;
-	private StaticBlock inactiveLeaf;
+	private StaticBlock defaultLeaf;
 	private StaticBlock activeLeaf;
+	private int id;
 
 	/**
 	 * Constructs the Static Switch. Sets all attributes to null by default.
+	 *
+	 * @param      id    The identifier
 	 */
-	protected StaticSwitch() {
+	protected StaticSwitch(int id) {
+		this.id = id;
 		this.root = null;
-		this.inactiveLeaf = null;
+		this.defaultLeaf = null;
 		this.activeLeaf = null;
 	}
 
+	public int getId() {
+		return this.id;
+	}
 
 	/**
 	 * Gets the root of the switch.
@@ -43,20 +50,20 @@ public class StaticSwitch {
 	 *
 	 * @return     The default leaf.
 	 */
-	public StaticBlock getInactiveLeaf() {
-		return inactiveLeaf;
+	public StaticBlock getDefaultLeaf() {
+		return defaultLeaf;
 	}
 
 	/**
 	 * Sets the default leaf.
 	 *
-	 * @param      inactiveLeaf  The default leaf
+	 * @param      defaultLeaf  The default leaf
 	 *
 	 * @return     returns the new default leaf value
 	 */
-	protected StaticBlock setInactiveLeaf(StaticBlock inactiveLeaf) {
-		this.inactiveLeaf = inactiveLeaf;
-		return this.inactiveLeaf;
+	protected StaticBlock setDefaultLeaf(StaticBlock defaultLeaf) {
+		this.defaultLeaf = defaultLeaf;
+		return this.defaultLeaf;
 	}
 
 	/**
@@ -79,6 +86,21 @@ public class StaticSwitch {
 	protected StaticBlock setActiveLeaf(StaticBlock activeLeaf) {
 		this.activeLeaf = activeLeaf;
 		return this.activeLeaf;
+	}
+
+	/**
+	 * Check if switch contains a block
+	 *
+	 * @param      block  The block
+	 *
+	 * @return     true if block is in switch, false otherwise
+	 */
+	public boolean contains(StaticBlock block) {
+		if (block.equals(this.root) || block.equals(this.defaultLeaf) || block.equals(this.activeLeaf)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }
