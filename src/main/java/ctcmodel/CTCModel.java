@@ -6,7 +6,7 @@ import shared.Suggestion;
 
 public class CTCModel{
     private static CTCModel model = null;
-    private static TrainModel trainModel;
+    private static TrainTracker trainTracker;
     //private static boolean dataValid;
     //private static ArrayList<Integer> dataTrainID;
     //private static ArrayList<Integer> dataBlockID;
@@ -18,13 +18,13 @@ public class CTCModel{
     private static ArrayList<CTCTrainData> trainData;
     //private static JLabel trainLabel;
     
-    private CTCModel(TrainModel atrainModel){
-        trainModel = atrainModel;
+    private CTCModel(TrainTracker atrainTracker){
+        trainTracker = atrainTracker;
     }
     
-    public static void init(TrainModel atrainModel){
+    public static void init(TrainTracker atrainTracker){
         if (model == null) {
-            model = new CTCModel(atrainModel);
+            model = new CTCModel(atrainTracker);
         }
     }
     
@@ -71,7 +71,7 @@ public class CTCModel{
     
     public static int createTrain(int startingBlockID, int suggestedSpeed,
                                   String suggestedAuth, int destBlockID){
-        int trainID = trainModel.createTrain(startingBlockID);
+        int trainID = trainTracker.createTrain(startingBlockID);
         trainData.add(new CTCTrainData(trainID, startingBlockID, suggestedSpeed,
                                        suggestedAuth, startingBlockID, destBlockID));
         return trainID;

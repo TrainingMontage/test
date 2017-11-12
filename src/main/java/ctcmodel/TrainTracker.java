@@ -1,10 +1,9 @@
 package CTCModel;
 
-public class TrainModel{
-    //private static TrackModel trackModel;
+public class TrainTracker{
     private static int trainID;
     
-    TrainModel(){
+    TrainTracker(){
         //trackModel = trackModelA;
         trainID = 0;
     }

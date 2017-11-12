@@ -67,7 +67,7 @@ public class GUI {
         c.gridy = 0;
         panelBlockInfo.add(label, c);
 
-        region = new JTextArea("1");
+        region = new JTextArea("A");
         c.gridx = 1;
         c.gridy = 0;
         panelBlockInfo.add(region, c);
@@ -147,7 +147,7 @@ public class GUI {
         c.gridy = 8;
         panelBlockInfo.add(label, c);
 
-        textArea = new JTextArea("SWITCH");
+        textArea = new JTextArea("SHADYSIDE STATION");
         c.gridwidth = 3;
         c.gridx = 1;
         c.gridy = 8;
@@ -235,7 +235,7 @@ public class GUI {
         c.gridy = 6;
         panelBlockInfo.add(label, c);
 
-        textArea = new JTextArea("Super Green");
+        textArea = new JTextArea("1");
         c.gridx = 3;
         c.gridy = 6;
         panelBlockInfo.add(textArea, c);
@@ -245,7 +245,7 @@ public class GUI {
         c.gridy = 7;
         panelBlockInfo.add(label, c);
 
-        textArea = new JTextArea("Super Green");
+        textArea = new JTextArea("Green");
         c.gridx = 3;
         c.gridy = 7;
         panelBlockInfo.add(textArea, c);
@@ -318,12 +318,12 @@ public class GUI {
         c.gridwidth = 1;
         panelForceMajeure.add(button, c);
 
-        button = new JButton("Broken Rail");
+        button = new JButton("Break Rail");
         c.gridx = 1;
         c.gridy = 0;
         panelForceMajeure.add(button, c);
 
-        button = new JButton("Extra Train");
+        button = new JButton("Force Occupied");
         c.gridx = 0;
         c.gridy = 1;
         panelForceMajeure.add(button, c);
@@ -333,12 +333,12 @@ public class GUI {
         c.gridy = 1;
         panelForceMajeure.add(button, c);
 
-        button = new JButton("No Train");
+        button = new JButton("Force Unoccupied");
         c.gridx = 0;
         c.gridy = 2;
         panelForceMajeure.add(button, c);
 
-        button = new JButton("No Communications");
+        button = new JButton("Communications Failure");
         c.gridx = 1;
         c.gridy = 2;
         panelForceMajeure.add(button, c);
@@ -400,9 +400,7 @@ public class GUI {
         c.gridy = 1;
         pane.add(panelRight, c);
 
-
         refreshGUI();
-
     }
 
     /**
