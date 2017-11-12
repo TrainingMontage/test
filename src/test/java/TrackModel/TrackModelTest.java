@@ -26,7 +26,7 @@ public class TrackModelTest {
         Statement stmt = _tm.conn.createStatement();
         stmt.execute("DELETE FROM blocks;");
 
-        PreparedStatement _s = _tm.conn.prepareStatement("INSERT INTO blocks (id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit,beacon,heater) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+        PreparedStatement _s = _tm.conn.prepareStatement("INSERT INTO blocks (id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,underground,line,next,bidirectional,speed_limit,beacon,heater) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
         // insert a few basic blocks
         int i = 1;
@@ -39,6 +39,7 @@ public class TrackModelTest {
         _s.setInt(i++, 1); // switch_root
         _s.setNull(i++, java.sql.Types.INTEGER); // switch_leaf
         _s.setInt(i++, 1); // rr_crossing
+        _s.setInt(i++, 0); // underground
         _s.setString(i++, "GREEN"); // line
         _s.setInt(i++, 2); // next
         _s.setInt(i++, 1); // bidirectional
@@ -57,6 +58,7 @@ public class TrackModelTest {
         _s.setNull(i++, java.sql.Types.INTEGER); // switch_root
         _s.setInt(i++, 1);  // switch_leaf
         _s.setInt(i++, 1); // rr_crossing
+        _s.setInt(i++, 0); // underground
         _s.setString(i++, "GREEN"); // line
         _s.setInt(i++, 3); // next
         _s.setInt(i++, 1);  // bidirectional
@@ -75,6 +77,7 @@ public class TrackModelTest {
         _s.setNull(i++, java.sql.Types.INTEGER); // switch_root
         _s.setInt(i++, 1);  // switch_leaf
         _s.setInt(i++, 1); // rr_crossing
+        _s.setInt(i++, 0); // underground
         _s.setString(i++, "GREEN"); // line
         _s.setInt(i++, 4); // next
         _s.setInt(i++, 1);  // bidirectional
@@ -92,7 +95,8 @@ public class TrackModelTest {
         _s.setString(i++, ""); // station
         _s.setNull(i++, java.sql.Types.INTEGER); // switch_root
         _s.setNull(i++, java.sql.Types.INTEGER); // switch_leaf
-        _s.setInt(i++, 1);  // rr_crossing
+        _s.setInt(i++, 1); // rr_crossing
+        _s.setInt(i++, 0); // underground
         _s.setString(i++, "GREEN");  // line
         _s.setInt(i++, 1);  // next
         _s.setInt(i++, 1);  // bidirectional
@@ -104,12 +108,13 @@ public class TrackModelTest {
         // add a train
         stmt.execute("DELETE FROM trains;");
 
-        _s = _tm.conn.prepareStatement("INSERT INTO trains (id,curr_block,position) VALUES (?, ?, ?);");
+        _s = _tm.conn.prepareStatement("INSERT INTO trains (id,curr_block,position,direction) VALUES (?, ?, ?, ?);");
 
         i = 1;
         _s.setInt(i++, 1); // id
         _s.setInt(i++, 1); // curr_block
         _s.setDouble(i++, 0.0); // position
+        _s.setInt(i++, 0); // direction
         _s.executeUpdate();
 
     }
@@ -142,7 +147,7 @@ public class TrackModelTest {
 
         // this is not the best way to test this, as it relies on other methods
         // within the class
-        ArrayList<String> ids = _tm.getBlockIds();
+        ArrayList<Integer> ids = _tm.getBlockIds();
         assertEquals(8, ids.size());
     }
 
@@ -174,6 +179,7 @@ public class TrackModelTest {
             _rs.getString("switch_root") + "," +
             _rs.getString("switch_leaf") + "," +
             _rs.getString("rr_crossing") + "," +
+            _rs.getString("underground") + "," +
             _rs.getString("line") + "," +
             _rs.getString("next") + "," +
             _rs.getString("bidirectional") + "," +
@@ -183,7 +189,7 @@ public class TrackModelTest {
 
         // note: this string was constructed from the database; the export
         // doesn't have null strings in it
-        assertEquals("1,A,0.5,17.2,50.0,STATION,null,null,0,GREEN,2,1,15,null,0", row);
+        assertEquals("1,A,0.5,17.2,50.0,STATION,null,null,0,0,GREEN,2,1,15,null,0", row);
     }
 
     /**
@@ -198,23 +204,19 @@ public class TrackModelTest {
         assertTrue(_tm.exportTrack(file));
 
         // track_export.csv should now have csv data in it
-        String header = "";
         String firstRow = "";
         String secondRow = "";
         String thirdRow = "";
 
         BufferedReader br = new BufferedReader(new FileReader(file));
-        header = br.readLine();
         firstRow = br.readLine();
         secondRow = br.readLine();
         thirdRow = br.readLine();
         br.close();
 
-
-        assertEquals("id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit,beacon,heater", header);
-        assertEquals("1,A,0.5,17.2,50.0,STATION,1,,1,GREEN,2,1,15,,1", firstRow);
-        assertEquals("2,A,0.5,17.0,50.0,,,1,1,GREEN,3,1,15,,1", secondRow);
-        assertEquals("3,A,0.5,17.0,50.0,,,1,1,GREEN,4,1,15,,0", thirdRow);
+        assertEquals("1,A,0.5,17.2,50.0,STATION,1,,1,0,GREEN,2,1,15,,1", firstRow);
+        assertEquals("2,A,0.5,17.0,50.0,,,1,1,0,GREEN,3,1,15,,1", secondRow);
+        assertEquals("3,A,0.5,17.0,50.0,,,1,1,0,GREEN,4,1,15,,0", thirdRow);
     }
 
     /**
@@ -228,22 +230,19 @@ public class TrackModelTest {
         assertTrue(_tm.exportTrack(file));
 
         // track_export.csv should now have csv data in it
-        String header = "";
         String firstRow = "";
         String secondRow = "";
         String thirdRow = "";
 
         BufferedReader br = new BufferedReader(new FileReader(file));
-        header = br.readLine();
         firstRow = br.readLine();
         secondRow = br.readLine();
         thirdRow = br.readLine();
         br.close();
 
-        assertEquals("id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit,beacon,heater", header);
-        assertEquals("1,A,0.5,17.2,50.0,STATION,1,,1,GREEN,2,1,15,,1", firstRow);
-        assertEquals("2,A,0.5,17.0,50.0,,,1,1,GREEN,3,1,15,,1", secondRow);
-        assertEquals("3,A,0.5,17.0,50.0,,,1,1,GREEN,4,1,15,,0", thirdRow);
+        assertEquals("1,A,0.5,17.2,50.0,STATION,1,,1,0,GREEN,2,1,15,,1", firstRow);
+        assertEquals("2,A,0.5,17.0,50.0,,,1,1,0,GREEN,3,1,15,,1", secondRow);
+        assertEquals("3,A,0.5,17.0,50.0,,,1,1,0,GREEN,4,1,15,,0", thirdRow);
     }
 
     /**
@@ -310,13 +309,24 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelGetBlockIds() throws SQLException {
-        ArrayList<String> ids = _tm.getBlockIds();
+        ArrayList<Integer> ids = _tm.getBlockIds();
 
         assertEquals(4, ids.size());
-        assertEquals("1", ids.get(0));
-        assertEquals("2", ids.get(1));
-        assertEquals("3", ids.get(2));
-        assertEquals("4", ids.get(3));
+        assertEquals(1, (int) ids.get(0));
+        assertEquals(2, (int) ids.get(1));
+        assertEquals(3, (int) ids.get(2));
+        assertEquals(4, (int) ids.get(3));
+    }
+
+    /**
+     * Validate basic getswitchids call.
+     */
+    @Test
+    public void testTrackModelGetSwitchIds() throws SQLException {
+        ArrayList<Integer> ids = _tm.getSwitchIds();
+
+        assertEquals(1, ids.size());
+        assertEquals(1, (int) ids.get(0));
     }
 
     /**
@@ -398,7 +408,7 @@ public class TrackModelTest {
 
         assertNotNull(sw);
         assertNotNull(sw.getRoot());
-        assertNotNull(sw.getInactiveLeaf());
+        assertNotNull(sw.getDefaultLeaf());
         assertNotNull(sw.getActiveLeaf());
     }
 
@@ -819,6 +829,18 @@ public class TrackModelTest {
         int status = rs.getInt("status");
 
         assertEquals(BlockStatus.BROKEN.ordinal(), status);
+    }
+
+    /**
+     * Test getStaticTrack
+     */
+    @Test
+    public void testGetStaticTrack() throws SQLException {
+        StaticTrack st = _tm.getStaticTrack();
+
+        assertNotNull(st.getStaticBlock(1));
+        assertNotNull(st.getStaticBlock(2));
+        assertNotNull(st.getStaticSwitch(1));
     }
 
 }

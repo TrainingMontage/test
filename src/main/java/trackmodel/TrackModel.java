@@ -21,12 +21,14 @@ public class TrackModel {
 
     // singleton object
     private static TrackModel model;
+    private static StaticTrack staticTrack = null;
 
     // static
     protected static int FREEZING = 32;
-    
+
     // class objects
     protected Connection conn;
+    protected int last_updated = 0;
 
     /**
      * Constructs the Track Model (privately).
@@ -50,6 +52,7 @@ public class TrackModel {
             "   switch_root integer,\n" +
             "   switch_leaf integer,\n" +
             "   rr_crossing integer,\n" +
+            "   underground integer,\n" +
             "   line text NOT NULL,\n" +
             "   next integer NOT NULL,\n" +
             "   bidirectional integer NOT NULL,\n" +
@@ -68,7 +71,8 @@ public class TrackModel {
             "CREATE TABLE trains (\n" +
             "   id integer PRIMARY KEY,\n" +
             "   curr_block integer NOT NULL,\n" +
-            "   position real NOT NULL\n" +
+            "   position real NOT NULL,\n" +
+            "   direction integer NOT NULL\n" +
             ");";
 
         // create a connection to the database
@@ -143,8 +147,8 @@ public class TrackModel {
      */
     public boolean importTrack(File file) throws SQLException, IOException {
         String sql_load = "INSERT INTO blocks " +
-                          "(id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit,beacon,heater) " +
-                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+                          "(id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,underground,line,next,bidirectional,speed_limit,beacon,heater) " +
+                          "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
         BufferedReader br;
 
         this.clearDB();
@@ -187,6 +191,9 @@ public class TrackModel {
             }
 
             i++; // rr_crossing
+            stmt.setInt(i + 1, Integer.parseInt(values[i]));
+
+            i++; // underground
             stmt.setInt(i + 1, Integer.parseInt(values[i]));
 
             i++; // line
@@ -237,9 +244,9 @@ public class TrackModel {
         // write output to file
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         Statement stmt = this.conn.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit,beacon,heater FROM blocks");
+        ResultSet rs = stmt.executeQuery("SELECT id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,underground,line,next,bidirectional,speed_limit,beacon,heater FROM blocks");
 
-        writer.write("id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,line,next,bidirectional,speed_limit,beacon,heater");
+        boolean first = true;
         while (rs.next()) {
             String arrStr[] = {
                 rs.getString("id"),
@@ -251,6 +258,7 @@ public class TrackModel {
                 rs.getString("switch_root"),
                 rs.getString("switch_leaf"),
                 rs.getString("rr_crossing"),
+                rs.getString("underground"),
                 rs.getString("line"),
                 rs.getString("next"),
                 rs.getString("bidirectional"),
@@ -267,7 +275,12 @@ public class TrackModel {
             }
 
             // join
-            writer.write("\n" + String.join(",", arrStr));
+            if (!first) {
+                writer.write("\n");
+            } else {
+                first = false;
+            }
+            writer.write(String.join(",", arrStr));
         }
         writer.close();
         return true;
@@ -328,23 +341,63 @@ public class TrackModel {
     }
 
     /**
-     * Gets the block ids. This is meant to be used from within the GUI
+     * Gets the block ids
      *
-     * @return     A lsit of block ids.
+     * @return     A list of block ids.
      *
      * @throws     SQLException could not get block ids
      */
-    protected ArrayList<String> getBlockIds() throws SQLException {
-        ArrayList<String> blocks = new ArrayList<String>();
+    public ArrayList<Integer> getBlockIds() throws SQLException {
+        ArrayList<Integer> blocks = new ArrayList<Integer>();
 
         Statement stmt = this.conn.createStatement();
         ResultSet rs = stmt.executeQuery("SELECT id FROM blocks;");
 
         while (rs.next()) {
-            blocks.add(rs.getString("id"));
+            blocks.add(rs.getInt("id"));
         }
 
         return blocks;
+    }
+
+    /**
+     * Gets the switch ids
+     *
+     * @return     A list of switch ids.
+     *
+     * @throws     SQLException could not get switch ids
+     */
+    public ArrayList<Integer> getSwitchIds() throws SQLException {
+        ArrayList<Integer> switches = new ArrayList<Integer>();
+
+        Statement stmt = this.conn.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT DISTINCT switch_root as id FROM blocks where switch_root is not NULL;");
+
+        while (rs.next()) {
+            switches.add(rs.getInt("id"));
+        }
+
+        return switches;
+    }
+
+    /**
+     * Gets the train ids
+     *
+     * @return     A list of train ids.
+     *
+     * @throws     SQLException could not get train ids
+     */
+    public ArrayList<Integer> getTrainIds() throws SQLException {
+        ArrayList<Integer> trains = new ArrayList<Integer>();
+
+        Statement stmt = this.conn.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT id FROM trains;");
+
+        while (rs.next()) {
+            trains.add(rs.getInt("id"));
+        }
+
+        return trains;
     }
 
     /**
@@ -388,8 +441,8 @@ public class TrackModel {
                 int switch_leaf = rs.getInt("switch_leaf");
                 if (!rs.wasNull()) {
                     sw = getStaticSwitch(switch_leaf);
-                    if (sw.getInactiveLeaf().getId() == rs.getInt("id")) {
-                        return sw.getInactiveLeaf();
+                    if (sw.getDefaultLeaf().getId() == rs.getInt("id")) {
+                        return sw.getDefaultLeaf();
                     } else {
                         return sw.getActiveLeaf();
                     }
@@ -422,7 +475,7 @@ public class TrackModel {
      */
     public StaticSwitch getStaticSwitch(int switchId) throws SQLException {
         PreparedStatement stmt = this.conn.prepareStatement(
-                                     "SELECT A.id as root_id, B.id as inactive_id, C.id as active_id " +
+                                     "SELECT A.switch_root as switch_id, A.id as root_id, B.id as inactive_id, C.id as active_id " +
                                      "FROM blocks A " +
                                      "LEFT JOIN blocks B " +
                                      "ON (A.switch_root = B.switch_leaf and A.next = B.id) " +
@@ -433,13 +486,13 @@ public class TrackModel {
         ResultSet rs = stmt.executeQuery();
         rs.next();
 
-        int root_id = 1; // rs.getInt("root_id");
-        int inactive_id = 2; // rs.getInt("inactive_id");
-        int active_id = 3; // rs.getInt("active_id");
+        int root_id = rs.getInt("root_id");
+        int inactive_id = rs.getInt("inactive_id");
+        int active_id = rs.getInt("active_id");
 
-        StaticSwitch sw = new StaticSwitch();
+        StaticSwitch sw = new StaticSwitch(rs.getInt("switch_id"));
         sw.setRoot(getStaticBlock(root_id, sw));
-        sw.setInactiveLeaf(getStaticBlock(inactive_id, sw));
+        sw.setDefaultLeaf(getStaticBlock(inactive_id, sw));
         sw.setActiveLeaf(getStaticBlock(active_id, sw));
 
         return sw;
@@ -676,8 +729,8 @@ public class TrackModel {
      */
     public boolean initializeTrain(int trainId, int starting_blockId) throws SQLException {
         String sql_load = "INSERT INTO trains " +
-                          "(id,curr_block,position) " +
-                          "VALUES (?, ?, ?);";
+                          "(id,curr_block,position,direction) " +
+                          "VALUES (?, ?, ?, 0);";
 
         PreparedStatement stmt = this.conn.prepareStatement(sql_load);
 
@@ -835,5 +888,223 @@ public class TrackModel {
         return status;
     }
 
-    // public int getPassengers(int trainId);
+    /**
+     * Gets the static track.
+     *
+     * @return     The static track.
+     *
+     * @throws     SQLException  Something went wrong, I don't know what would cause this
+     */
+    public StaticTrack getStaticTrack() throws SQLException {
+        if (this.staticTrack == null) {
+            this.staticTrack = new StaticTrack();
+            for (Integer blockId : this.getBlockIds()) {
+                this.staticTrack.putStaticBlock(this.getStaticBlock(blockId));
+            }
+            for (Integer switchId : this.getSwitchIds()) {
+                this.staticTrack.putStaticSwitch(this.getStaticSwitch(switchId));
+            }
+        }
+
+        return this.staticTrack;
+    }
+
+
+    private void update() throws SQLException {
+        if (this.last_updated == Environment.clock) {
+            return;
+        }
+
+        for (int trainId : this.getTrainIds()) {
+            updateTrain(trainId);
+        }
+        this.last_updated = Environment.clock;
+    }
+
+    private void updateTrain(int trainId) throws SQLException {
+        // TODO
+        // fake actually calling a train until there's something there to call
+        // ...getDisplacement()
+        double displacement = 2.50; // hardcode 2.5m displacement for now
+
+        StaticBlock curr_block = this.getStaticBlock(this.getTrainBlock(trainId));
+        double position = this.getTrainPosition(trainId);
+        boolean direction = this.getTrainDirection(trainId);
+
+        if (position + displacement > curr_block.getLength()) {
+            // move to the next block
+            StaticBlock next_block = this.nextBlock(curr_block, direction);
+            boolean newDirection = this.nextDirection(curr_block, next_block);
+
+            // actually update table
+            this.setTrainBlock(trainId, next_block.getId());
+            this.setTrainDirection(trainId, newDirection);
+            this.setTrainPosition(trainId, position + displacement - curr_block.getLength());
+        } else {
+            // update position on same block
+            this.setTrainPosition(trainId, position + displacement);
+        }
+    }
+
+    /**
+     * Gets the train's current position (internal use only)
+     *
+     * @param      trainId       The train identifier
+     *
+     * @return     The train's position within the block
+     *
+     * @throws     SQLException  Something went wrong, likely the block id
+     *                           wasn't valid
+     */
+    private double getTrainPosition(int trainId) throws SQLException {
+        PreparedStatement stmt = this.conn.prepareStatement("SELECT position FROM trains WHERE id = ?");
+        stmt.setInt(1, trainId);
+        ResultSet rs = stmt.executeQuery();
+        rs.next();
+
+        double position = rs.getDouble("position");
+        return position;
+    }
+
+    /**
+     * Gets the train's current position (internal use only)
+     *
+     * @param      trainId       The train identifier
+     *
+     * @return     The train's position within the block
+     *
+     * @throws     SQLException  Something went wrong, likely the block id
+     *                           wasn't valid
+     */
+    private double setTrainPosition(int trainId, double position) throws SQLException {
+        PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET position = ? WHERE id = ?;");
+        stmt.setDouble(1, position);
+        stmt.setInt(2, trainId);
+        stmt.execute();
+        return position;
+    }
+
+    /**
+     * Gets the train's current direction (internal use only)
+     *
+     * @param      trainId       The train identifier
+     *
+     * @return     The train's direction within the block
+     *
+     * @throws     SQLException  Something went wrong, likely the block id
+     *                           wasn't valid
+     */
+    private boolean getTrainDirection(int trainId) throws SQLException {
+        PreparedStatement stmt = this.conn.prepareStatement("SELECT direction FROM trains WHERE id = ?");
+        stmt.setInt(1, trainId);
+        ResultSet rs = stmt.executeQuery();
+        rs.next();
+
+        int direction = rs.getInt("direction");
+        return direction  > 0 ? true : false;
+    }
+
+    /**
+     * Gets the train's current direction (internal use only)
+     *
+     * @param      trainId       The train identifier
+     *
+     * @return     The train's direction within the block
+     *
+     * @throws     SQLException  Something went wrong, likely the block id
+     *                           wasn't valid
+     */
+    private boolean setTrainDirection(int trainId, boolean direction) throws SQLException {
+        PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET direction = ? WHERE id = ?;");
+        stmt.setInt(1, direction ? 1 : 0);
+        stmt.setInt(2, trainId);
+        stmt.execute();
+        return direction;
+    }
+
+    /**
+     * Gets the train's current block (internal use only)
+     *
+     * @param      trainId       The train identifier
+     *
+     * @return     The static block that train is on
+     *
+     * @throws     SQLException  Something went wrong, likely the block id
+     *                           wasn't valid
+     */
+    private int getTrainBlock(int trainId) throws SQLException {
+        PreparedStatement stmt = this.conn.prepareStatement("SELECT curr_block FROM trains WHERE id = ?");
+        stmt.setInt(1, trainId);
+        ResultSet rs = stmt.executeQuery();
+        rs.next();
+
+        int curr_block = rs.getInt("curr_block");
+        return curr_block;
+    }
+
+    /**
+     * Sets the train's current block (internal use only)
+     *
+     * @param      trainId       The train identifier
+     * @param      block         The new block
+     *
+     * @return     The static block that train is on
+     *
+     * @throws     SQLException  Something went wrong, likely the block id
+     *                           wasn't valid
+     */
+    private int setTrainBlock(int trainId, int block) throws SQLException {
+        PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET curr_block = ? WHERE id = ?;");
+        stmt.setDouble(1, block);
+        stmt.setInt(2, trainId);
+        stmt.execute();
+        return block;
+    }
+
+    private StaticBlock nextBlock(StaticBlock curr_block, boolean direction) throws SQLException {
+        StaticSwitch sw = curr_block.getStaticSwitch();
+        StaticBlock next = this.getStaticBlock(curr_block.getNextId());
+        if (sw != null && ((sw.contains(next) && direction) || (!sw.contains(next) && !direction))) {
+            // moving towards a switch
+
+            if (curr_block.equals(sw.getRoot())) { // current block is the root
+                return this.getSwitch(sw.getId()) ? sw.getActiveLeaf() : sw.getDefaultLeaf();
+            }
+            if (curr_block.equals(sw.getActiveLeaf())) { // current block is the active leaf
+                if (this.getSwitch(sw.getId())) {
+                    return sw.getRoot();
+                }
+                // throw CrashIntoSwitchException()
+            }
+            if (curr_block.equals(sw.getDefaultLeaf())) { // current block is the default leaf
+                if (!this.getSwitch(sw.getId())) {
+                    return sw.getRoot();
+                }
+                // throw CrashIntoSwitchException()
+            }
+        } else { // not moving towards a switch
+            if (direction) {
+                return this.getStaticBlock(curr_block.getNextId());
+            } else {
+                // lookup and return previous block
+                PreparedStatement stmt = this.conn.prepareStatement("SELECT id FROM blocks WHERE next = ?");
+                stmt.setInt(1, curr_block.getId());
+                ResultSet rs = stmt.executeQuery();
+                rs.next();
+                return this.getStaticBlock(rs.getInt("id"));
+            }
+        }
+        // error?
+        return null;
+    }
+
+    private boolean nextDirection(StaticBlock curr_block, StaticBlock next_block) {
+        if (next_block.getNextId() == curr_block.getId()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    // public int getPassengers(int trainId); TODO
 }

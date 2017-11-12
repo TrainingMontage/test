@@ -8,6 +8,7 @@ class StaticBlock {
     private double length;
     private String station;
     private StaticSwitch staticSwitch;
+    private int nextId;
 
     protected StaticBlock() {}
 
@@ -156,5 +157,40 @@ class StaticBlock {
      */
     public StaticSwitch getStaticSwitch() {
         return this.staticSwitch;
+    }
+
+    /**
+     * Custom equals function (based on id's)
+     *
+     * @param      o     comparison object
+     *
+     * @return     true for equals, false otherwise
+     */
+    public boolean equals(Object o) {
+        if (o.getClass() != this.getClass()) {
+            return false;
+        }
+        return this.getId() == ((StaticBlock) o).getId();
+    }
+
+    /**
+     * Sets the id of the next block.
+     *
+     * @param      id    The identifier
+     *
+     * @return     the new next id
+     */
+    protected int setNextId(int nextId) {
+        this.nextId = nextId;
+        return this.nextId;
+    }
+
+    /**
+     * Gets the id of the next block.
+     *
+     * @return     The id of the next block.
+     */
+    public int getNextId() {
+        return this.nextId;
     }
 }

@@ -1,6 +1,6 @@
 package shared;
 
-public class UnitUtils {
+public class Convert {
     
     /**
      * Converts meters to feet.

@@ -11,7 +11,7 @@ public class GUI {
 
     protected static JButton reloadBlockInfo, submitChanges;
     protected static JCheckBox occupied;
-    protected static JComboBox<String> blockIdComboBox;
+    protected static JComboBox<Integer> blockIdComboBox;
     protected static JTextArea speed_limit, length, grade, elevation, region, station;
 
 
@@ -412,7 +412,7 @@ public class GUI {
         blockIdComboBox.removeAllItems();
 
         try {
-            for (String s : TrackModel.getTrackModel().getBlockIds()) {
+            for (int s : TrackModel.getTrackModel().getBlockIds()) {
                 blockIdComboBox.addItem(s);
             }
         } catch (Exception e) {
@@ -436,8 +436,8 @@ public class GUI {
 
             region.setText(block.getRegion());
             grade.setText(String.format("%.2f %%", block.getGrade()));
-            elevation.setText(String.format("%.2f ft", UnitUtils.metersToFeet(block.getElevation())));
-            length.setText(String.format("%.2f ft", UnitUtils.metersToFeet(block.getLength())));
+            elevation.setText(String.format("%.2f ft", Convert.metersToFeet(block.getElevation())));
+            length.setText(String.format("%.2f ft", Convert.metersToFeet(block.getLength())));
 
             // dynamic info
             occupied.setSelected(tm.isOccupied(blockId));
@@ -466,10 +466,10 @@ public class GUI {
             tm.setGrade(blockId, Double.parseDouble(str.substring(0, str.length() - 2)));
 
             str = elevation.getText();
-            tm.setElevation(blockId, UnitUtils.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 3))));
+            tm.setElevation(blockId, Convert.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 3))));
 
             str = length.getText();
-            tm.setLength(blockId, UnitUtils.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 2))));
+            tm.setLength(blockId, Convert.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 2))));
 
             // dynamic data
             tm.setOccupied(blockId, occupied.isSelected());

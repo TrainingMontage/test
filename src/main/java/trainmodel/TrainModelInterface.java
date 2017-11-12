@@ -1,20 +1,19 @@
 package trainmodel;
 
-/*
-public abstract class TrainModelInterface {
-    public abstract static int createTrain(int startingBlockId);
-    public abstract double getVelocity();
-    public abstract double getDisplacement();
-    public abstract double getSuggestedSpeed();
-    public abstract double getAuthority();
-    public abstract double getMaxPower();
-    public abstract int boardPassengers();
-    public abstract int evictPassengers();
-    public abstract boolean getLights();
-    public abstract boolean setLights(boolean turnOn);
-    public abstract boolean getLeftDoors();
-    public abstract boolean setLeftDoors(boolean open);
-    public abstract boolean getRightDoors();
-    public abstract boolean setRightDoors(boolean open);
+
+public interface TrainModelInterface {
+    // public static int createTrain(int startingBlockId);
+    public double getVelocity();
+    public double getDisplacement();
+    public double getSuggestedSpeed();
+    public double getAuthority();
+    public double getMaxPower();
+    public int boardPassengers();
+    public int evictPassengers();
+    public boolean getLights();
+    public boolean setLights(boolean turnOn);
+    public boolean getLeftDoors();
+    public boolean setLeftDoors(boolean open);
+    public boolean getRightDoors();
+    public boolean setRightDoors(boolean open);
 }
-*/
