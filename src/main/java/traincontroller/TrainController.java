@@ -40,6 +40,11 @@ public class TrainController implements TrainControllerInterface {
     private int ID;
     private int index;
     
+    public static void initUI() {
+        TrainControllerUI TCUI = new TrainControllerUI();
+        TCUI.initialize();
+    }
+    
     /**
      * Main simply tests basic functionality.
      * 
