@@ -15,7 +15,7 @@
 %%%%%% header and footer info
 \pagestyle{fancy}
 \fancyhf{}
-\rhead{Software Requirements Specification}
+\rhead{TRACK MODEL}
 \lhead{Training Montage}
 \cfoot{\thepage}
 
@@ -24,7 +24,7 @@
 \setlist[numonly]{label*=\arabic*.}
 
 \hypersetup{
-    pdftitle={Software Requirement Specification},    % title
+    pdftitle={TRACK MODEL USE CASE, CLASS DIAGRAMS, SEQUENCE DIAGRAMS, AND TEST PLAN},    % title
     pdfauthor={Training Montage},                     % author
     pdfsubject={TeX and LaTeX},                        % subject of the document
     pdfkeywords={TeX, LaTeX, graphics, images}, % list of keywords
@@ -74,6 +74,7 @@
 		Actor.trainmodel("Train Model");
 		Actor.traincontroller("Train Controller");
 		Actor.simrunner("SimulationRunner");
+		Actor.trackuser("TrackModel User");
 	    % 
 	    Usecase.uO("Get Passengers Departed");
 	    Usecase.uA("Get Static Block");
@@ -99,20 +100,27 @@
 		Usecase.uQ("Get If Track", "Is Icy");
 		Usecase.uR("Get Beacon Data");
 		Usecase.uS("Teardown Train");
+		%
+		Usecase.uT("Import Track");
+		Usecase.uU("Export Track");
+		Usecase.uV("Configure Track");
 	    %
-	    Component.TrackModel("Track Model")(uA,uB,uC,uD,uDD,uE,uF,uG,uH,uI,uJ,uK,uKK,uL,uM,uN,uO,uP,uQ,uR,uS);
+	    Component.TrackModel("Track Model")(uA,uB,uC,uD,uDD,uE,uF,uG,uH,uI,uJ,uK,uKK,uL,uM,uN,uO,uP,uQ,uR,uS,uT,uU,uV);
 	    % 
 		topToBottom.left(10)(uO,uA,uB,uC,uD,uDD,uE,uF,uG,uH,uI,uJ,uK);
 		leftToRight(50)(ctc, uA);
 		leftToRight(50)(traincontroller, uD);
 		leftToRight(50)(wayside, uG);
 		%
+		topToBottom.right(10)(uT,uU,uV);
 		topToBottom.right(10)(uL,uM,uN,uP,uQ,uR,uS,uKK);
-		leftToRight(100)(uC, uL);
+		leftToRight(75)(uO, uT);
+		leftToRight(100)(uDD, uL);
+		leftToRight(50)(uU, trackuser);
 		leftToRight(50)(uL, trainmodel);
 		leftToRight(50)(uKK, simrunner);
 	    % 
-	    drawObjects(ctc,wayside,trainmodel,traincontroller,simrunner,TrackModel,uA,uB,uC,uD,uDD,uE,uF,uG,uH,uI,uJ,uK,uL,uM,uN,uO,uP,uQ,uR,uS);
+	    drawObjects(ctc,wayside,trainmodel,traincontroller,simrunner,TrackModel,trackuser);
 		%
 	    link(association)(pathCut(ctc, uA)(ctc.e -- uA.w));
 	    link(association)(pathCut(ctc, uA)(ctc.e -- uB.w));
@@ -132,6 +140,10 @@
 	    link(association)(pathCut(wayside, uI)(wayside.e -- uI.w));
 	    link(association)(pathCut(wayside, uJ)(wayside.e -- uJ.w));
 	    link(association)(pathCut(wayside, uK)(wayside.e -- uK.w));
+	    %
+	    link(association)(pathCut(trackuser, uT)(trackuser.w -- uT.e));
+	    link(association)(pathCut(trackuser, uU)(trackuser.w -- uU.e));
+	    link(association)(pathCut(trackuser, uV)(trackuser.w -- uV.e));
 	    %
 	    link(association)(pathCut(simrunner, uKK)(simrunner.w -- uKK.e));
 	    %
@@ -168,7 +180,7 @@
 
 \subsection{Use Case: Get Occupancy}
 \begin{enumerate}
-	\item Wayside Actor calls isOccupied(blockId)
+	\item Wayside calls isOccupied(blockId)
 	\item True is returned if block is occupied, False if block is unoccupied.
 \end{enumerate}
 
@@ -178,7 +190,7 @@
 	\item Suggested speed is set for that block.
 \end{enumerate}
 
-\subsection{Use Case: Set Suggested Speed}
+\subsection{Use Case: Set Suggested Authority}
 \begin{enumerate}
 	\item Wayside calls setAuthority(blockId, authority)
 	\item Authority is set for that block.
@@ -274,6 +286,23 @@
 	\item The track model performs initialization tasks and returns the singleton TrackModel instance.
 \end{enumerate}
 
+\subsection{Use Case: Import Track}
+\begin{enumerate}
+	\item TrackModel User clicks "Import Track" button
+	\item A file selection popup appears.
+	\item TrackModel User selects a file from the filesystem.
+	\item The track model loads the data in that file into the track model.
+\end{enumerate}
+
+\subsection{Use Case: Export Track}
+\begin{enumerate}
+	\item TrackModel User clicks "Export Track" button
+	\item A file selection popup appears.
+	\item TrackModel User selects a file or write the name of a new file.
+	\item TrackModel User clicks "Save"
+	\item The track model dumps the database into the selected file. The file is created if it doesn't exist.
+\end{enumerate}
+
 
 \section{Class Diagram}
 
@@ -301,6 +330,8 @@
 			"double getGrade(int trainId)",
 			"boolean isOccupied(int blockId)",
 			"BlockStatus getStatus(int blockId)"
+			"BlockStatus getBeacon(int trainId)"
+			"BlockStatus getBlockChange(int trainId)"
 		);
 		% Database
 	    Class.Database("Database")()(
@@ -408,13 +439,18 @@
 	\begin{sequencediagram}
 	\newthread{sim}{Actor}
 	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
 	\newinst[2]{ss}{StaticSwitch}
 	
 	\begin{call}{sim}{getStaticSwitch(id)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
 		\begin{call}{tm}{StaticSwitch()}{ss}{}
 		\end{call}
 		\begin{sdblock}{For Root, Default, Active}{}
-			\begin{call}{ss}{getStaticBlock(id)}{tm}{}
+			\begin{call}{tm}{getStaticBlock(id)}{tm}{}
+				\begin{call}{tm}{execute(stmt)}{db}{}
+				\end{call}
 			\end{call}
 		\end{sdblock}
 	\end{call}
@@ -693,6 +729,45 @@
 	\end{sequencediagram}
 }
 \end{center}
+
+\subsection{Sequence Diagram: Import Track}
+\begin{center}
+\resizebox{\textwidth}{!}{
+	\begin{sequencediagram}
+	\newthread{sim}{Actor}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{importTrack(File)}{tm}{}
+		\begin{sdblock}{For Each Line}{Insert Row}
+			\begin{call}{tm}{execute(stmt)}{db}{}
+			\end{call}
+		\end{sdblock}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Export Track}
+\begin{center}
+\resizebox{\textwidth}{!}{
+	\begin{sequencediagram}
+	\newthread{sim}{Actor}
+	\newinst[5]{tm}{TrackModel}
+	\newinst[2]{db}{Database}
+	
+	\begin{call}{sim}{exportTrack(File)}{tm}{}
+		\begin{call}{tm}{execute(stmt)}{db}{}
+		\end{call}
+		\begin{sdblock}{For Each Row Returned}{}
+			\begin{call}{tm}{Write to File}{tm}{}
+			\end{call}
+		\end{sdblock}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
 
 \section{Test Plan}
 
