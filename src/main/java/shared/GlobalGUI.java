@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.io.*;
 
 import trackmodel.RunTrackModel;
+import CTCModel.CTCGUI;
 
 public class GlobalGUI {
 
@@ -19,7 +20,7 @@ public class GlobalGUI {
         button = new JButton("CTC");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // TODO
+                CTCGUI.createAndShowGUI();
             }
         } );
         c.gridx = 0;
