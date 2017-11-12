@@ -9,6 +9,8 @@ public class StaticSwitch {
 
 	/**
 	 * Constructs the Static Switch. Sets all attributes to null by default.
+	 *
+	 * @param      id    The identifier
 	 */
 	protected StaticSwitch(int id) {
 		this.id = id;
