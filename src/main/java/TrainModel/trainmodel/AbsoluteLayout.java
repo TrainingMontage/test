@@ -194,7 +194,6 @@ public class AbsoluteLayout implements LayoutManager2, java.io.Serializable {
     }
 
 
-    /** A mapping <Component, AbsoluteConstraints> */
     @SuppressWarnings("rawtypes")
     protected java.util.Hashtable constraints = new java.util.Hashtable();
 }
