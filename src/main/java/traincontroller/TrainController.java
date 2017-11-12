@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package traincontroller;
+import java.util.Arrays;
 
 /**
  *
@@ -11,11 +12,16 @@ package traincontroller;
  */
 public class TrainController implements TrainControllerInterface {
 
-    static TrainControllerUI UI;
+//    static TrainControllerUI UI;
+    static int numTrains = 0;
+    static TrainController[] allTrainControllers = new TrainController[100];
     protected Train theTrain;
     private double t;// seconds
     // ultimate gain
     private double ku;
+    private boolean kikpset = false;
+    private double setKI;
+    private double setKP;
     
     // Set initial last values to 0
     private double lastE;
@@ -31,6 +37,8 @@ public class TrainController implements TrainControllerInterface {
     protected boolean stop = false;
     protected boolean coast = false;
     protected String station = "";
+    private int ID;
+    private int index;
     
     /**
      * Main simply tests basic functionality.
@@ -42,12 +50,13 @@ public class TrainController implements TrainControllerInterface {
         System.err.println("Running Unit Test");
         
         System.err.println("Testing ultimate gains.");
-        double power;
-        Train testTrain = new Train();
-        TrainController TC = new TrainController(testTrain);
-        UI.initialize(TC);
-        UI.updateLights(TC);
-        UI.setVisible(true);
+//        double power;
+//        Train testTrain = new Train();
+//        TrainController TC = new TrainController(testTrain, 1);
+//        TrainControllerUI UI = new TrainControllerUI();
+//        UI.initialize(TC);
+//        UI.updateLights();
+//        UI.setVisible(true);
         
         runTest(4);
         System.err.println();
@@ -105,15 +114,19 @@ public class TrainController implements TrainControllerInterface {
         boolean testing = true;
         double power;
         Train testTrain = new Train(0);
-        TrainController TC = new TrainController(testTrain);
+        TrainController TC = new TrainController(testTrain, 1);
+        TrainControllerUI UI = new TrainControllerUI();
+        UI.initialize(TC);
+//        UI.setVisible(true);
 //        testTrain.setSuggested(20);
         TC.setKu(500);
         while(testing) {
-            UI.updateAll(TC);
-            UI.updateDoors(TC);
+            UI.updateAll();
+//            UI.updateDoors();
             // Get up to speed
             System.err.println("SPEED:\t"+testTrain.getVelocity());
             power = TC.getPower();
+            System.err.println("Power:\t" + power);
             testTrain.setPower(power);
             
             // For when the station is being shown
@@ -126,6 +139,7 @@ public class TrainController implements TrainControllerInterface {
                 testTrain.setSuggested(1);
                 TC.displayStation("APPROACHING STATION " + stations[station]);
                 System.err.println("APPROACHING STATION " + stations[station]);
+                UI.updateStation("APPROACHING STATION " + stations[station]);
             }
             
             // Just stop
@@ -163,6 +177,22 @@ public class TrainController implements TrainControllerInterface {
     }
     
     public TrainController() {
+//        theTrain = new Train();
+        theTrain = null;
+        t = 5;// seconds
+        // ultimate gain
+        ku = 0;
+    
+        // Set initial last values to 0
+        lastE = 0;
+        lastU = 0;
+        // Set initial power to 0
+        Pcmd = 0;
+        ID = 0;
+        addTrainController(this);
+    }
+    
+    public TrainController(int trainID) {
         theTrain = new Train();
         t = 5;// seconds
         // ultimate gain
@@ -173,9 +203,11 @@ public class TrainController implements TrainControllerInterface {
         lastU = 0;
         // Set initial power to 0
         Pcmd = 0;
+        ID = trainID;
+        addTrainController(this);
     }
     
-    public TrainController(Train newTrain) {
+    public TrainController(Train newTrain, int trainID) {
         theTrain = newTrain;
         t = 5;// seconds
         // ultimate gain
@@ -186,9 +218,11 @@ public class TrainController implements TrainControllerInterface {
         lastU = 0;
         // Set initial power to 0
         Pcmd = 0;
+        ID = trainID;
+        addTrainController(this);
     }
     
-    public TrainController(boolean test) {
+    public TrainController(boolean test, int trainID) {
         if(test)
         {
             theTrain = new Train(true);
@@ -196,7 +230,6 @@ public class TrainController implements TrainControllerInterface {
         else
         {
             theTrain = new Train();
-            UI = new TrainControllerUI();
         }
         t = 5;// seconds
         // ultimate gain
@@ -210,26 +243,45 @@ public class TrainController implements TrainControllerInterface {
         lastU = 0;
         // Set initial power to 0
         Pcmd = 0;
+        ID = trainID;
+        addTrainController(this);
     }
+    
+    /**
+     * Computes the remaining distance the train can go before reaching the
+     * end of its authority.
+     * 
+     */
+    
+    /**
+     * Detects that a new block is 
+     * 
+     */
+    
     
     /**
      * Computes the minimum safe braking distance for a train, given its
      * authority.
      * 
-     * @return is the minimum safe braking distance for the train in question
+     * @return is the minimum safe braking distance for the train in question,
+     * or -1 if the train is null;
      * 
      * NOTE: Could also simply return void and update the train.
      */
-    public double computeSafeBrake(){
+    protected double computeSafeBrake(){
+        if(!checkForTrain())
+            return -1;
         double auth = theTrain.getAuthority();
         double distance = 2*theTrain.getVelocity()*theTrain.getVelocity();
+        System.err.println("SAFEBRAKE: Auth: " + auth);
         distance /= theTrain.getBrake();
+        System.err.println("SAFEBRAKE: dist " + distance);
         // d = vt+at^2
         // if a is neg, and we come to a stop,
         // 0 = v-at
         // t = v/a
         // d = v^2/a + v^2/a = 2v^2/a
-        if(distance < auth)
+        if(distance > auth)
             return distance;
         return auth;
     }
@@ -237,13 +289,20 @@ public class TrainController implements TrainControllerInterface {
      /**
      * Computes the maximum safe speed for a train, given an authority.
      * 
-     * @return is the maximum safe speed for the train in question.
+     * @return is the maximum safe speed for the train in question,
+     * or -1 if the train is null;
      * 
      * NOTE: Could also simply return void and update the train.
      */
-    public double computeSafeSpeed(){
+    protected double computeSafeSpeed(){
+        if(!checkForTrain())
+            return -1;
         double brakeDist = computeSafeBrake();
         double velocity = Math.sqrt(2*brakeDist*theTrain.getBrake());
+        System.err.println("SAFESPEED; Brakedist: " + computeSafeBrake());
+        System.err.println("SAFESPEED; Velocity: " + velocity);
+        if(velocity > theTrain.getSuggestedSpeed())
+            velocity = theTrain.getSuggestedSpeed();
         return velocity;
     }
     
@@ -264,6 +323,7 @@ public class TrainController implements TrainControllerInterface {
         }
         applyBrakes = false;
         double u = 0;
+        double Ki, Kp;
         
         // newVel is the Setpoint
         double SP = theTrain.getSuggestedSpeed();
@@ -271,17 +331,24 @@ public class TrainController implements TrainControllerInterface {
         // theTrain's velocity is the Process Variable
         double PV = theTrain.getVelocity();
         
-//        System.err.println("Safe speed: " + safe);
+        System.err.println("Safe speed: " + safe);
         
-        if(SP > safe) {
-//            System.err.println("Setting to safer speed:\t" + safe);
+        if(SP >= safe) {
+            System.err.println("Setting to safer speed:\t" + safe);
             SP = safe;
         }
-//        else
-//            System.err.println("Setting to suggested speed:\t" + SP);
-        
-        double Kp = ku*0.45;
-        double Ki = ku*1.2/t;
+        else
+            System.err.println("Setting to suggested speed:\t" + SP);
+        if(kikpset)
+        {
+            Ki = setKI;
+            Kp = setKP;
+        }
+        else
+        {
+            Kp = ku*0.45;
+            Ki = ku*1.2/t;
+        }
         
         // Compute velocity error
         double e = SP - PV;
@@ -319,16 +386,23 @@ public class TrainController implements TrainControllerInterface {
             Pcmd = Pmax;
         else
             coast = false;
-//        System.err.println("Final Power:\t" + Pcmd);
-//        System.err.println("Final u:\t" + u);
-//        System.err.println("Final e:\t" + e);
+        System.err.println("Final Power:\t" + Pcmd);
+        System.err.println("Final u:\t" + u);
+        System.err.println("Final e:\t" + e);
         lastU = u;
         lastE = e;
         return Pcmd;
     }
     
-    public void setKu(double newVal) {
+    protected void setKu(double newVal) {
         ku = newVal;
+        kikpset = false;
+    }
+    
+    protected void setKiKp(double newKi, double newKp) {
+        setKI = newKi;
+        setKP = newKp;
+        kikpset = true;
     }
     
     /**
@@ -338,7 +412,7 @@ public class TrainController implements TrainControllerInterface {
      * should be off.
      * @return true if the lights are on, false if not.
      */
-    public boolean setLights(boolean on){
+    protected boolean setLights(boolean on){
         lightsShouldBeOn = on;
 //        UI.updateLights(this);
         return lightsShouldBeOn;
@@ -354,7 +428,7 @@ public class TrainController implements TrainControllerInterface {
      * @return status; 0 if both are closed; 1 if only right is open; 2 if only
      * left is open; 3 if both are open.
      */
-    public byte setDoors(boolean leftOpen, boolean rightOpen){
+    protected byte setDoors(boolean leftOpen, boolean rightOpen){
         leftShouldBeOpen = leftOpen;
         rightShouldBeOpen = rightOpen;
 //        UI.updateDoors(this);
@@ -374,7 +448,7 @@ public class TrainController implements TrainControllerInterface {
      * 
      * @return status of variable stop
      */
-    public boolean justStop(){
+    protected boolean justStop(){
         stop = true;
         return stop;
     }
@@ -384,7 +458,7 @@ public class TrainController implements TrainControllerInterface {
      * 
      * @return value of stop
      */
-    public boolean youCanGoNow(){
+    protected boolean youCanGoNow(){
         stop = false;
         return stop;
     }
@@ -394,7 +468,7 @@ public class TrainController implements TrainControllerInterface {
      * 
      * @return true if the train is successfully sent for service; false if not.
      */
-    public boolean sendForService(){
+    protected boolean sendForService(){
         
         return true;
     }
@@ -404,9 +478,68 @@ public class TrainController implements TrainControllerInterface {
      * 
      * @param name is the name of the station
      */
-    public void displayStation(String name){
+    protected void displayStation(String name){
         station = name;
 //        UI.updateStation(station);
     }
     
+    protected void addTrainController(TrainController newTrainController) {
+        allTrainControllers[numTrains++] = newTrainController;
+        // Double array size if necessary
+        if(numTrains >= allTrainControllers.length)
+            allTrainControllers = Arrays.copyOf(allTrainControllers, allTrainControllers.length * 2);
+    }
+    
+    protected int getNumTrains() {
+        return numTrains;
+    }
+    
+    protected TrainController getTrainControllerByID(int traincontrollerID) {
+        for(int i = 0; i < numTrains; i++) {
+            if(allTrainControllers[i].getID() == traincontrollerID)
+            {
+                return allTrainControllers[i];
+            }
+        }
+        return null;
+    }
+    
+    protected int getID() {
+        return ID;
+    }
+    
+    protected void updateIndex(int index) {
+        this.index = index;
+    }
+    
+    protected double setTemp(double temperature) {
+        return 0;
+    }
+    
+    protected boolean addTrain(Train newTrain) {
+        if(theTrain != null)
+        {
+            System.err.println("Train already populated");
+            return false;
+        }
+        else
+        {
+            theTrain = newTrain;
+            return true;
+        }
+    }
+    
+    protected boolean checkForTrain() {
+        if(theTrain == null)
+        {
+            System.err.println("No train!");
+            return false;
+        }
+        else
+        {
+//            System.err.println("There's a train");
+            return true;
+        }
+        
+    }
 }
