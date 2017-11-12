@@ -35,7 +35,27 @@ public class WaysideController {
      * For now, just working on one region.
      */
     public static void init() {
+        // TODO
+    }
+
+
+    /**
+     * Opens the WC UI.
+     */
+    public static void openWindow() {
         UILayer.init();
+    }
+
+
+    /**
+     * Constructs and returns the Strings representing each WC by the ranges of blocks which they control.
+     * Described in Issue #59.
+     * @return the list of these strings.
+     * @throws UnsupportedOperationException description
+     */
+    public static String[] getRanges() {
+        // TODO
+        throw new UnsupportedOperationException();
     }
 
     /**

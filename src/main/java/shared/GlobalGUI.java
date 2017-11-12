@@ -7,6 +7,7 @@ import java.io.*;
 
 import trackmodel.RunTrackModel;
 import CTCModel.CTCGUI;
+import wayside.WaysideController;
 
 public class GlobalGUI {
 
@@ -30,7 +31,7 @@ public class GlobalGUI {
         button = new JButton("Wayside");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // TODO
+                WaysideController.openWindow();
             }
         } );
         c.gridx = 0;
