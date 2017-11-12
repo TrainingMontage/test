@@ -66,7 +66,7 @@ public class WaysideControllerGUI extends javax.swing.JFrame {
 
         plcFileChooser.setDialogTitle("Upload PLC");
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jLabel1.setText("Region:");
 
