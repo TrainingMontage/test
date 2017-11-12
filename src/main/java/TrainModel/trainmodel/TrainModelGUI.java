@@ -968,11 +968,11 @@ public class TrainModelGUI extends javax.swing.JFrame {
 
         if(debugModeOnButton.isSelected()){
             //debug mode is on
-            Train test = new Train();
+            //Train test = new Train();
             //Get velocity from new power
             //test.setTime(Double.parseDouble(setTimeInput.getText()));
-            test.setPower(Double.parseDouble(setPowerInput.getText()));
-            currentTrainSpeedDisplayLabel.setText(String.format("%.2f", test.getVelocity()) + " MPH");
+            //test.setPower(Double.parseDouble(setPowerInput.getText()));
+            //currentTrainSpeedDisplayLabel.setText(String.format("%.2f", test.getVelocity()) + " MPH");
 
 
             //take temperature and display it
