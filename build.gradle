@@ -14,11 +14,6 @@ buildscript {
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
     }
 }
-
-plugins {
-  id 'com.github.sherter.google-java-format' version '0.6'
-}
-
 apply plugin: 'com.github.johnrengelman.shadow'
 
 // Apply the java plugin to add support for Java
@@ -47,13 +42,6 @@ dependencies {
     // sqlite jdbc
     compile 'org.xerial:sqlite-jdbc:3.7.2'
 }
-
-// // autoformat sourcecode
-googleJavaFormat {
-  options style: 'AOSP'
-}
-// build.dependsOn goJF
-// build.dependsOn verGJF
 
 // show unchecked operations
 tasks.withType(JavaCompile) {
