@@ -86,11 +86,14 @@ jacocoTestReport {
 check.dependsOn jacocoTestReport
 
 // setup jar generation
+// see https://stackoverflow.com/questions/20045744/java-lang-securityexception-no-manifest-section-for-signature-file-entry
+// for more info on the exclude statements below
 task trackModelJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
     archiveName = 'TrackModel.jar'
     from sourceSets.main.output //tells the task to include the project code
     configurations = [ project.configurations.runtime ] //tells the task to shadow in the jars files in the 'runtime' scope
-
+    exclude 'META-INF/.RSA', 'META-INF/.SF','META-INF/*.DSA' //exclude security files from jars
+    
     manifest {
         attributes 'Main-Class': 'trackmodel.RunTrackModel'
     }
@@ -101,7 +104,8 @@ task CTCModelJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJa
     archiveName = 'CTCModel.jar'
     from sourceSets.main.output //tells the task to include the project code
     configurations = [ project.configurations.runtime ] //tells the task to shadow in the jars files in the 'runtime' scope
-
+    exclude 'META-INF/.RSA', 'META-INF/.SF','META-INF/*.DSA' //exclude security files from jars
+    
     manifest {
         attributes 'Main-Class': 'CTCModel.UseGUI'
     }
@@ -112,7 +116,8 @@ task waysideJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
     archiveName = 'Wayside.jar'
     from sourceSets.main.output //tells the task to include the project code
     configurations = [ project.configurations.runtime ] //tells the task to shadow in the jars files in the 'runtime' scope
-
+    exclude 'META-INF/.RSA', 'META-INF/.SF','META-INF/*.DSA' //exclude security files from jars
+    
     manifest {
         attributes 'Main-Class': 'wayside.Runner'
     }
@@ -123,7 +128,8 @@ task combinedJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJa
     archiveName = 'Combined.jar'
     from sourceSets.main.output //tells the task to include the project code
     configurations = [ project.configurations.runtime ] //tells the task to shadow in the jars files in the 'runtime' scope
-
+    exclude 'META-INF/.RSA', 'META-INF/.SF','META-INF/*.DSA' //exclude security files from jars
+    
     manifest {
         attributes 'Main-Class': 'App'
     }
