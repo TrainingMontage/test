@@ -78,6 +78,7 @@ public class AbsoluteLayout implements LayoutManager2, java.io.Serializable {
     *
     * @see #minimumLayoutSize
     */
+    @SuppressWarnings("rawtypes")
     public Dimension preferredLayoutSize(Container parent) {
         int maxWidth = 0;
         int maxHeight = 0;
@@ -104,6 +105,7 @@ public class AbsoluteLayout implements LayoutManager2, java.io.Serializable {
     * @param parent the component to be laid out
     * @see #preferredLayoutSize
     */
+    @SuppressWarnings("rawtypes")
     public Dimension minimumLayoutSize(Container parent) {
         int maxWidth = 0;
         int maxHeight = 0;
@@ -129,6 +131,7 @@ public class AbsoluteLayout implements LayoutManager2, java.io.Serializable {
     /** Lays out the container in the specified panel.
     * @param parent the component which needs to be laid out
     */
+    @SuppressWarnings("rawtypes")
     public void layoutContainer(Container parent) {
         for (java.util.Enumeration e = constraints.keys(); e.hasMoreElements();) {
             Component comp = (Component)e.nextElement();
@@ -148,6 +151,7 @@ public class AbsoluteLayout implements LayoutManager2, java.io.Serializable {
     * @param comp the component to be added
     * @param constr  where/how the component is added to the layout.
     */
+    @SuppressWarnings("unchecked")
     public void addLayoutComponent(Component comp, Object constr) {
         if (!(constr instanceof AbsoluteConstraints))
             throw new IllegalArgumentException();
@@ -191,5 +195,6 @@ public class AbsoluteLayout implements LayoutManager2, java.io.Serializable {
 
 
     /** A mapping <Component, AbsoluteConstraints> */
+    @SuppressWarnings("rawtypes")
     protected java.util.Hashtable constraints = new java.util.Hashtable();
 }
