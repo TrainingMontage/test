@@ -18,3 +18,6 @@ doc:
 
 test:
 	./gradlew test --info
+
+splice:
+	python scripts/splice.py work_packages/work_package_2 complete

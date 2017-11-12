@@ -1,0 +1,770 @@
+\documentclass{scrreprt}
+\usepackage[shellescape]{gmp}
+\usepackage{listings}
+\usepackage{underscore}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usepackage{pgf-umlsd}
+
+%%%%%% header and footer info
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{System Software Design Description}
+\lhead{Training Montage}
+\cfoot{\thepage}
+
+%%%%%% custom list definition
+\newlist{numonly}{enumerate}{10}
+\setlist[numonly]{label*=\arabic*.}
+
+\hypersetup{
+    pdftitle={System Software Design Description},    % title
+    pdfauthor={Training Montage},                     % author
+    pdfsubject={TeX and LaTeX},                        % subject of the document
+    pdfkeywords={TeX, LaTeX, graphics, images}, % list of keywords
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=blue,       % color of internal links
+    citecolor=black,       % color of links to bibliography
+    filecolor=black,        % color of file links
+    urlcolor=purple,        % color of external links
+    linktoc=page            % only page is linked
+}
+
+\begin{document}
+
+\begin{flushright}
+    \rule{16cm}{5pt}\vskip1cm
+    \begin{bfseries}
+        \Huge{SYSTEM SOFTWARE DESIGN DESCRIPTION}\\
+        \vspace{.9cm}
+        for\\
+        \vspace{.9cm}
+        COE 1186 Project\\
+        \vspace{.9cm}
+        % \LARGE{Version \myversion approved}\\
+        \vspace{.9cm}
+        Prepared by:\\
+        Alec Rosenbaum\\
+        Aric Hudson\\
+        Isaac Goss\\
+        Mitch Moran\\
+	    Parth Dadhania\\
+        \vspace{1.9cm}
+        Training Montage\\
+        \vspace{.9cm}
+        \today\\
+    \end{bfseries}
+\end{flushright}
+
+\tableofcontents
+
+\chapter{System Architecture}
+
+\section{Use Cases}
+
+\begin{center}
+\resizebox{!}{.7\textheight}{
+	\begin{mpost}
+	    input metauml;
+	    vardef drawComponentVisualStereotype(text ne)= relax enddef;
+	    Actor.dispatch("Dispatcher");
+	    Actor.weng("Wayside Engineer");
+	    Actor.teng("Train Engineer");
+	    Actor.driver("Train Driver");
+	    Actor.pass("Passengers");
+	    % 
+	    Usecase.uA("Dispatch Train");
+	    Usecase.uB("Upload Schedule");
+	    Usecase.uC("Close Track for", "Maintenance");
+	    Usecase.uD("Toggle Switch", "for Testing");
+	    Usecase.uE("Upload PLC");
+	    Usecase.uF("Set Kp and Ki");
+	    Usecase.uG("Set Target Velocity");
+	    Usecase.uH("Apply Service", "Brake");
+	    Usecase.uI("Turn Lights", "On and Off");
+	    Usecase.uJ("Open and", "Close Doors");
+	    Usecase.uK("Set Internal", "Temperature");
+	    Usecase.uL("Apply Emergency", "Brake");
+	    %
+	    Component.System("System")(uA,uB,uC,uD,uE,uF,uG,uH,uI,uJ,uK,uL);
+	    % 
+	    topToBottom.left(10)(uE,uA,uB,uC,uD,uF);
+	    topToBottom.right(10)(uG,uH,uI,uJ,uK,uL);
+	    leftToRight(30)(dispatch, uB);
+	    leftToRight(30)(weng, uE);
+	    leftToRight(30)(teng, uF);
+	    leftToRight(30)(uI, driver);
+	    leftToRight(30)(uL, pass);
+	    leftToRight(10)(uE, uG);
+	    leftToRight(10)(uA, uH);
+	    leftToRight(10)(uB, uI);
+	    leftToRight(10)(uC, uJ);
+	    leftToRight(10)(uD, uK);
+	    leftToRight(10)(uF, uL);
+	    %
+	    % 
+	    drawObjects(dispatch,weng,teng,driver,pass,System,uA,uB,uC,uD,uE,uF,uG,uH,uI,uJ,uK,uL);
+		%
+	    link(association)(pathCut(dispatch, uA)(dispatch.e -- uA.w));
+	    link(association)(pathCut(dispatch, uB)(dispatch.e -- uB.w));
+	    link(association)(pathCut(dispatch, uC)(dispatch.e -- uC.w));
+	    link(association)(pathCut(dispatch, uD)(dispatch.e -- uD.w));
+	    %
+	    link(association)(pathCut(weng, uE)(weng.e -- uE.w));
+	    %
+	    link(association)(pathCut(teng, uF)(teng.e -- uF.w));
+	    %
+	    link(association)(pathCut(driver, uG)(driver.w -- uG.e));
+	    link(association)(pathCut(driver, uH)(driver.w -- uH.e));
+	    link(association)(pathCut(driver, uI)(driver.w -- uI.e));
+	    link(association)(pathCut(driver, uJ)(driver.w -- uJ.e));
+	    link(association)(pathCut(driver, uK)(driver.w -- uK.e));
+	    link(association)(pathCut(driver, uL)(driver.w -- uL.e));
+	    %
+	    link(association)(pathCut(pass, uL)(pass.w -- uL.e));
+	    %
+	\end{mpost}
+}
+\end{center}
+
+\subsection{Use Case: Dispatch Train}
+\begin{enumerate}
+	\item Dispatcher clicks the "New Train" GUI button.
+	\item Dispatcher fill the fields (block number, suggested speed, suggested authority, and destination block) and presses "Dispatch Train" GUI button.
+	\item CTC will call the train model to create a new train and train controller.
+	\item The train register itself with the track model.
+	\item The dispatcher will now see a train on the specified block on the map.
+\end{enumerate}
+
+\subsection{Variant: Invalid Inputs}
+\begin{enumerate}[label=\arabic*a., start=3]
+	\item If the starting block is not next to the yard or an input is invalid, no train will be created and the invalid input will be outlined in red.
+\end{enumerate}
+
+\subsection{Use Case: Upload Schedule}
+\begin{enumerate}
+	\item Dispatcher selects "Upload Schedule" from the File menu.
+	\item Dispatcher selects a schedule file on the computer.
+	\item Schedule is parsed and is displayed by train to the dispatcher.
+\end{enumerate}
+
+\subsection{Variant: Unable to Read File}
+\begin{enumerate}[label=\arabic*a., start=3]
+	\item If the file could not be read, a popup will report the error to the dispatcher.
+\end{enumerate}
+
+\subsection{Use Case: Close Track for Maintenance}
+\begin{enumerate}
+	\item Dispatcher selects a block from the map.
+	\item Dispatcher clicks "Close for Maintenance" GUI button.
+	\item Block state displays "Maintenance" to the dispatcher
+\end{enumerate}
+
+\subsection{Use Case: Toggle Switch for Testing}
+\begin{enumerate}
+	\item Dispatcher selects a block with a switch from the map.
+	\item Dispatcher clicks "Toggle Switch" GUI button.
+	\item If wayside deems it safe, switch state will change and be displayed to the dispatcher.
+\end{enumerate}
+
+\subsection{Use Case: Upload PLC}
+\begin{enumerate}
+    \item Wayside Engineer (WE) pushes ``Upload PLC'' button.
+    \item A File Chooser popup appears.
+    \item WE chooses desired file.
+    \item Popup appears stating PLC has successfully been uploaded.
+\end{enumerate}
+\subsubsection{Variant: Unable to Read File}
+\begin{enumerate}[label = \arabic*a., start = 4]
+    \item If the selected file cannot be read for any reason, then a popup will appear reporting the error.
+\end{enumerate}
+\subsubsection{Variant: Invalid PLC}
+\begin{enumerate}[label = \arabic*b., start = 4]
+    \item If the selected file does not contain valid PLC code, then a popup will appear reporting the error.
+\end{enumerate}
+
+\subsection{Use Case: Get Power}
+\begin{enumerate}
+	\item If the Train needs to stop, or slow down, the Train Controller applies the brake.
+	\item Train Controller calls getSuggestedSpeed from the Train Model to obtain the suggested velocity for the Train.
+	\item Train Controller calls getMaxPower from the Train Model to obtain the maximum power output for the Train.
+	\item Train Controller calls getVelocity from the Train Model to obtain the Train's current velocity.
+	\item Train Controller calls getAuthority from the Train Model to obtain the Train's current authority.
+	\item Train Controller calculates the safe speed for the train, given its authority.
+	\item Train Controller returns a power command for the  train, taking into account its power limits, suggested speed, and current velocity.
+\end{enumerate}
+
+\subsection{Use Case: Set Target Velocity}
+\begin{enumerate}
+	\item The Driver toggles “manual mode” on the UI.
+	\item The Driver manually sets the train to a desired speed.
+	\item The Driver hits “Apply Changes”
+	\item Future calls to Get Power create power commands to approach this manually entered speed while “manual mode” is active.
+\end{enumerate}
+
+\subsection{Use Case: Apply Service Brakes}
+\begin{enumerate}
+	\item The Driver toggles “manual mode” on the UI.
+	\item The Driver presses the "Service Brake" button.
+	\item Future calls to Get Power apply the service brake while the button is toggled.
+\end{enumerate}
+
+\subsection{Use Case: Apply Emergency Brakes}
+\begin{enumerate}
+	\item The Driver toggles “manual mode” on the UI.
+	\item The Driver presses the "Emergency Brake" button.
+	\item Future calls to Get Power apply the emergency brake while the button is toggled.
+\end{enumerate}
+
+\subsection{Use Case: Operate Lights}
+\begin{enumerate}
+	\item The Driver toggles “manual mode” on the UI.
+	\item The Driver toggles the lights "ON" or "OFF" buttons
+	\item The Train Controller switches the lights to be "on" or "off" accordingly.
+\end{enumerate}
+
+\subsection{Use Case: Operate Doors}
+\begin{enumerate}
+	\item The Driver toggles “manual mode” on the UI.
+	\item The Driver toggles the door "OPEN" or "CLOSED" buttons
+	\begin{enumerate}
+		\item There are options for both the right and left doors.
+	\end{enumerate}
+	\item The Train Controller switches the appropriate doors to be "open" or "closed" accordingly.
+\end{enumerate}
+
+\subsection{Use Case: Set Temperature}
+\begin{enumerate}
+	\item The Driver toggles “manual mode” on the UI.
+	\item The Driver manually sets the train's internal temperature
+	\item The Driver hits “Apply Changes”
+	\item The Train Controller applies the desired temperature to the train interior while manual mode is active.
+\end{enumerate}
+
+\subsection{Use Case: Initialize TrainController}
+\begin{enumerate}
+	\item Either the SimulationRunner or the Train Model calls the basic constructor or init() function.
+	\item A train controller is initialized with an ID of 0 and using the default constructor for a Train.
+	\begin{enumerate}
+		\item Alternative constructors exist to set a specific train.
+	\end{enumerate}
+	\item The actor will then be able to set Ki and Kp, if desired.
+\end{enumerate}
+
+
+\section{Class Diagram}
+
+\begin{center}
+\resizebox{\textwidth}{!}{
+	\begin{mpost}
+		input metauml;
+        % CTC
+        Class.CTC("CTC")()(
+            "init()",
+            "..."
+        );
+        % Wayside
+        Class.Wayside("Wayside")()(
+            "init()",
+            "..."
+        );
+	 	% Track Model
+        Class.TrackModel("TrackModel")()(
+            "init()",
+            "..."
+        );
+        % Train Model
+        Class.TrainModel("TrainModel")()(
+            "init()",
+            "..."
+        );
+        % Train Controller
+        Class.TrainController("TrainController")()(
+            "init()",
+            "..."
+        );
+        % Environment
+        Class.Environment("Environment")(
+            "time",
+            "temperature"
+        )();
+        % SimRunner
+        Class.SimRunner("SimRunner")()(
+            "main(args[])"
+        );
+        % Convert
+        Class.Convert("Convert")()(
+            "metersToFeet()",
+            "..."
+        );
+        % BlockStatus
+        Class.BlockStatus("BlockStatus")(
+            "OPERATIONAL",
+            "BROKEN",
+            "..."
+        )();
+        % Suggestion
+        Class.Suggestion("Suggestion")(
+            "authority",
+            "speed",
+            "..."
+        )();
+        %
+        leftToRight.top(30)(CTC, Wayside, TrackModel, TrainModel, TrainController);
+        leftToRight(30)(Convert, BlockStatus, Suggestion);
+        topToBottom(60)(Environment, Wayside);
+        topToBottom(60)(SimRunner, TrainModel);
+        topToBottom(60)(TrackModel, BlockStatus);
+        % 
+        drawObjects(CTC, Wayside, TrackModel, TrainModel, TrainController, Environment, SimRunner, Convert, BlockStatus, Suggestion);
+        %
+        % CTC, Wayside, TrackModel, TrainModel, TrainController, SimRunner ->  Environment
+        link(associationUni)(CTC.n -- Environment.s);
+        link(associationUni)(Wayside.n -- Environment.s);
+        link(associationUni)(TrackModel.n -- Environment.s);
+        link(associationUni)(TrainModel.n -- Environment.s);
+        link(associationUni)(TrainController.n -- Environment.s);
+        link(associationUni)(SimRunner.w -- Environment.e);
+        % SimRunner -> CTC, Wayside, TrackModel, TrainModel, TrainController
+        link(associationUni)(SimRunner.s -- CTC.n);
+        link(associationUni)(SimRunner.s -- Wayside.n);
+        link(associationUni)(SimRunner.s -- TrackModel.n);
+        link(associationUni)(SimRunner.s -- TrainModel.n);
+        link(associationUni)(SimRunner.s -- TrainController.n);
+        % CTC <-> Wayside
+        link(association)(CTC.e -- Wayside.w);
+        % Wayside <-> TrackModel
+        link(association)(Wayside.e -- TrackModel.w);
+        % TrackModel <-> TrainModel
+        link(association)(TrackModel.e -- TrainModel.w);
+        % TrainModel <-> TrainController
+        link(association)(TrainModel.e -- TrainController.w);
+        % CTC, Wayside, TrackModel, TrainModel, TrainController ->  Convert
+        link(associationUni)(CTC.s -- Convert.n);
+        link(associationUni)(Wayside.s -- Convert.n);
+        link(associationUni)(TrackModel.s -- Convert.n);
+        link(associationUni)(TrainModel.s -- Convert.n);
+        link(associationUni)(TrainController.s -- Convert.n);
+        % CTC, Wayside ->  Suggestion
+        link(associationUni)(CTC.s -- Suggestion.n);
+        link(associationUni)(Wayside.s -- Suggestion.n);
+        % CTC, Wayside, TrackModel ->  BlockStatus
+        link(associationUni)(CTC.s -- BlockStatus.n);
+        link(associationUni)(Wayside.s -- BlockStatus.n);
+        link(associationUni)(TrackModel.s -- BlockStatus.n);
+        % % StaticSwitch -> StaticBlock 1..3 
+        % link(compositionUni)(pathStepX(StaticBlock.e, StaticSwitch.e, 30));
+        % item(iAssoc)("1")(obj.nw = StaticSwitch.e + (15,0));
+        % item(iAssoc)("3")(obj.nw = StaticBlock.e + (5,-5));
+        % % TrackModel -> StaticSwitch 1..*
+        % link(compositionUni)(pathStepX(StaticSwitch.e + (0,-20), TrackModel.e, 55));
+        % item(iAssoc)("*")(obj.nw = StaticSwitch.e + (15,-20));
+        % item(iAssoc)("1")(obj.nw = TrackModel.e + (5,-5));
+        % % TrackModel -> StaticBlock 1..*
+        % link(compositionUni)(pathStepX(StaticBlock.w, TrackModel.w, -25));
+        % item(iAssoc)("*")(obj.nw = StaticBlock.w + (-20,0));
+        % item(iAssoc)("1")(obj.nw = TrackModel.w + (-20,0));
+        % % TrackModel -> Database 1..1
+        % link(associationUni)(pathStepX(Database.n, TrackModel.s, 0));
+        % item(iAssoc)("1")(obj.ne = TrackModel.s + (-5,-10));
+        % item(iAssoc)("1")(obj.ne = Database.n + (0,10));
+        % % StaticBlock -> StaticSwitch 1..0-1
+        % link(associationUni)(pathStepX(StaticBlock.w + (0, -20), StaticSwitch.w, -25));
+        % item(iAssoc)("1")(obj.nw = StaticBlock.w + (-20,-20));
+        % item(iAssoc)("0..1")(obj.nw = StaticSwitch.w + (-20,-5));
+	\end{mpost}
+}
+\end{center}
+
+\section{Sequence Diagrams}
+
+\subsection{Sequence Diagram: Initialize Simulation}
+\begin{center}
+\resizebox{\textwidth}{!}{
+    \begin{sequencediagram}
+    \newthread{sim}{SimRunner}
+    \newinst{ctc}{CTC}
+    \newinst{ws}{Wayside}
+    \newinst{trackm}{TrackModel}
+    \newinst{trainm}{TrainModel}
+    \newinst{trainc}{TrainController}
+    
+    \begin{call}{sim}{init()}{trackm}{}
+    \end{call}
+
+    \begin{call}{sim}{init()}{ws}{}
+    \end{call}
+
+    \begin{call}{sim}{init()}{ctc}{}
+    \end{call}
+
+    \begin{call}{sim}{init()}{trainm}{}
+    \end{call}
+
+    \begin{call}{sim}{init()}{trainc}{}
+    \end{call}
+
+    \begin{sdblock}{Begin Simulation Loop}{}
+        \begin{call}{sim}{...}{ctc}{}
+        \end{call}
+    \end{sdblock}
+    \end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Run Simulation}
+\begin{center}
+\resizebox{!}{.9\textheight}{
+    \begin{sequencediagram}
+    \newthread{sim}{SimRunner}
+    \newinst{ctc}{CTC}
+    \newinst[3]{ws}{Wayside}
+    \newinst[3]{trackm}{TrackModel}
+    \newinst[3]{trainm}{TrainModel}
+    \newinst[3]{trainc}{TrainController}
+    
+    \begin{call}{sim}{Increment Time}{sim}{}
+    \end{call}
+
+    \begin{call}{sim}{suggest()}{ctc}{}
+        \begin{call}{ctc}{isOccupied(id)}{ws}{True/False}
+            \begin{call}{ws}{isOccupied(id)}{trackm}{True/False}
+                \begin{sdblock}{Update}{For Each Train}
+                    \begin{call}{trackm}{getDisplacement(id)}{trainm}{displacement}
+                        \begin{call}{trainm}{getPower()}{trainc}{power}
+                            \begin{call}{trainc}{getSuggestedSpeed()}{trainm}{}
+                                \begin{call}{trainm}{getSuggestedSpeed(id)}{trackm}{}
+                                \end{call}
+                            \end{call}
+                            \begin{call}{trainc}{getSuggestedAuthority()}{trainm}{}
+                                \begin{call}{trainm}{getSuggestedAuthority(id)}{trackm}{}
+                                \end{call}
+                            \end{call}
+                            \begin{call}{trainc}{getBeacon()}{trainm}{}
+                                \begin{call}{trainm}{getBeacon(id)}{trackm}{}
+                                \end{call}
+                            \end{call}
+                            \begin{call}{trainc}{getBlockChange()}{trainm}{}
+                                \begin{call}{trainm}{getBlockChange(id)}{trackm}{}
+                                \end{call}
+                            \end{call}
+                        \end{call}
+                    \end{call}
+                \end{sdblock}
+            \end{call}
+        \end{call}
+        \begin{sdblock}{Shallow Calls as Needed}{}
+            \begin{call}{ctc}{getOccupancy(id), ...}{ws}{}
+                \begin{call}{ws}{getOccupancy(id), ...()}{trackm}{}
+                \end{call}
+            \end{call}
+        \end{sdblock}
+        \begin{call}{ctc}{suggest(suggestions)}{ws}{}
+            \begin{sdblock}{For Each Block}{}
+                \begin{call}{ws}{setSpeed(...)}{trackm}{}
+                \end{call}
+                \begin{call}{ws}{setAuthority(...)}{trackm}{}
+                \end{call}
+                \begin{sdblock}{If a RR Crossing}{}
+                    \begin{call}{ws}{setCrossingState(...)}{trackm}{}
+                    \end{call}
+                \end{sdblock}
+            \end{sdblock}
+            \begin{sdblock}{For Each Switch}{}
+                \begin{call}{ws}{setSwitch(...)}{trackm}{}
+                \end{call}
+            \end{sdblock}
+        \end{call}
+    \end{call}
+    \end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Dispatch Train}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{disp}{Dispatcher}
+	\newinst[1.8]{ctc}{CTCModel}
+	%\newinst{ws}{Wayside}
+	\newinst{tm}{TrackModel}
+	\newinst[1.5]{train}{TrainModel}
+	\newinst[2]{trainc}{TrainController}
+	\newinst[1.5]{ui}{UI}
+	
+	\begin{call}{disp}{Dispatch Train}{ctc}{}
+		\begin{call}{ctc}{createTrain(...)}{train}{}
+			\begin{call}{train}{new TrainController()}{trainc}{}
+				\begin{call}{trainc}{kp and ki popup}{ui}{}
+				\end{call}
+			\end{call}
+			\begin{call}{train}{initializeTrain()}{tm}{}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Dispatch Train (Variant: Invalid Inputs)}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{disp}{Dispatcher}
+	\newinst[1]{ctcgui}{CTCGUI}
+	\newinst[8]{ctc}{CTCModel}
+	%\newinst{ctcdat}{CTCTrainData}
+	%\newinst{ws}{Wayside}
+	%\newinst{tm}{TrackModel}
+	%\newinst{train}{TrainModel}
+	%\newinst{trainc}{TrainController}
+	%\newinst{ui}{UI}
+	
+	\begin{call}{disp}{Dispatch Train}{ctcgui}{}
+		\begin{call}{ctcgui}{checkTrainInputs(block, speed, authority, destination)}{ctc}{}
+		\end{call}
+	\end{call}
+	
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Upload PLC}
+\begin{center}
+\resizebox{\textwidth}{!}{
+    \begin{sequencediagram}
+        \newthread{weng}{Wayside Engineer}
+        \newinst[3]{wc}{Wayside}
+        \newinst[3]{comp}{Compiler}
+        \newinst[3]{rf}{RegFile}
+        \newinst[3]{pop}{Popup}
+        
+        \begin{call}
+            {weng}{chooseFile()}{wc}{}
+            \begin{call}
+                {wc}{compile(file)}{comp}{Instruction[]}
+            \end{call}
+            \begin{call}
+                {wc}{load(Instruction[])}{rf}{}
+            \end{call}
+            \begin{call}
+                {wc}{success()}{pop}{}
+            \end{call}
+        \end{call}
+    \end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Upload PLC (Variant: Unable to Read File)}
+\begin{center}
+\resizebox{\textwidth}{!}{
+    \begin{sequencediagram}
+        \newthread{weng}{Wayside Engineer}
+        \newinst[3]{wc}{Wayside}
+        \newinst[3]{comp}{Compiler}
+        \newinst[3]{rf}{RegFile}
+        \newinst[3]{pop}{Popup}
+        
+        \begin{call}
+            {weng}{chooseFile()}{wc}{}
+            \begin{call}
+                {wc}{fileReadFailure()}{pop}{}
+            \end{call}
+        \end{call}
+    \end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Upload PLC (Variant: Invalid PLC Code)}
+\begin{center}
+\resizebox{\textwidth}{!}{
+    \begin{sequencediagram}
+        \newthread{weng}{Wayside Engineer}
+        \newinst[3]{wc}{Wayside}
+        \newinst[3]{comp}{Compiler}
+        \newinst[3]{rf}{RegFile}
+        \newinst[3]{pop}{Popup}
+        
+        \begin{call}
+            {weng}{chooseFile()}{wc}{}
+            \begin{call}
+                {wc}{compile(file)}{comp}{Instruction[]}
+            \end{call}
+            \begin{call}
+                {wc}{compileError()}{pop}{}
+            \end{call}
+        \end{call}
+    \end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Set Target Velocity}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{dr}{Driver}
+	\newinst[4]{ui}{UI}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{dr}{setVelocity()}{ui}{}
+		\begin{call}{ui}{setVelocity()}{tc}{}
+			\begin{call}{tc}{validate}{tc}{}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Get Power}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tm}{TrainModel}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{tm}{getPower()}{tc}{double power}
+		\begin{call}{tc}{getSuggestedSpeed()}{tm}{double speed}
+		\end{call}
+		\begin{call}{tc}{getMaxPower()}{tm}{double power}
+		\end{call}
+		\begin{call}{tc}{getVelocity()}{tm}{double speed}
+		\end{call}
+		\begin{call}{tc}{getAuthority()}{tm}{double authority}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Apply Service Brakes}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{dr}{Driver}
+	\newinst[4]{ui}{UI}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{dr}{applySBrakes()}{ui}{}
+		\begin{call}{ui}{applySBrakes()}{tc}{}
+			\begin{call}{tc}{validate}{tc}{}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Apply Emergency Brakes}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{dr}{Driver}
+	\newinst[4]{ui}{UI}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{dr}{applyEBrakes()}{ui}{}
+		\begin{call}{ui}{applyEBrakes()}{tc}{}
+			\begin{call}{tc}{validate}{tc}{}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Operate Lights}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{dr}{Driver}
+	\newinst[4]{ui}{UI}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{dr}{setLights(T/F)}{ui}{T/F}
+		\begin{call}{ui}{setLights(T/F)}{tc}{T/F}
+			\begin{call}{tc}{validate}{tc}{}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Operate Doors}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{dr}{Driver}
+	\newinst[4]{ui}{UI}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{dr}{setDoors(T/F, T/F)}{ui}{byte status}
+		\begin{call}{ui}{setDoors(T/F, T/F)}{tc}{byte status}
+			\begin{call}{tc}{validate}{tc}{}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Set Temperature}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{dr}{Driver}
+	\newinst[4]{ui}{UI}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{dr}{setTemp(temperature)}{ui}{double temperature}
+		\begin{call}{ui}{setTemp(temperature)}{tc}{double temperature}
+			\begin{call}{tc}{validate}{tc}{}
+			\end{call}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Initialize Train Controller}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tm}{TrainModel or Simulation Runner}
+	\newinst[4]{tc}{TrainController}
+	
+	\begin{call}{tm}{initialize}{tc}{Train Controller Instance}
+		\begin{call}{tc}{setKi()}{tc}{}
+		\end{call}
+		\begin{call}{tc}{setKp()}{tc}{}
+		\end{call}
+	\end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+
+
+% THIS IS WHAT YOU WANT TO EDIT!
+% ...if you want to include your own file in the full document.
+% Include the name of your file - Without the ".tex"! - in a comment,
+% and the contents of your file, after "\begin{document}", and 
+% before "\end{document}" will be included.
+% You want this comment to be on a line all alone,
+% with no other text at all except the name of your file.
+% YOU ALSO WANT TO MODIFY THE SCRIPT!
+% Open up "scripts/splice.py" and follow the instructions there.
+% ctc_model
+% wayside
+% track_model
+% TrainModel
+% train_controller
+
+\end{document}
