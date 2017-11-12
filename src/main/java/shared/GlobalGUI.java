@@ -21,7 +21,7 @@ public class GlobalGUI {
         button = new JButton("CTC");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                CTCGUI.createAndShowGUI();
+                CTCGUI.run();
             }
         } );
         c.gridx = 0;

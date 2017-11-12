@@ -12,6 +12,6 @@ public class UseGUI {
         WaysideController.init();
         TrainTracker trainTracker = new TrainTracker();
         CTCModel.init(trainTracker);
-        CTCGUI.createAndShowGUI();
+        CTCGUI.run();
     }
 }
