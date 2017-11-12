@@ -1,0 +1,985 @@
+\documentclass{scrreprt}
+\usepackage[shellescape]{gmp}
+\usepackage{listings}
+\usepackage{underscore}
+\usepackage[bookmarks=true]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usepackage{pgf-umlsd}
+
+%%%%%% header and footer info
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Software Design Description}
+\lhead{Training Montage}
+\cfoot{\thepage}
+
+%%%%%% custom list definition
+\newlist{numonly}{enumerate}{10}
+\setlist[numonly]{label*=\arabic*.}
+
+\hypersetup{
+    pdftitle={Software Requirement Specification},    % title
+    pdfauthor={Training Montage},                     % author
+    pdfsubject={TeX and LaTeX},                        % subject of the document
+    pdfkeywords={TeX, LaTeX, graphics, images}, % list of keywords
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=blue,       % color of internal links
+    citecolor=black,       % color of links to bibliography
+    filecolor=black,        % color of file links
+    urlcolor=purple,        % color of external links
+    linktoc=page            % only page is linked
+}
+
+\begin{document}
+
+\begin{flushright}
+    \rule{16cm}{5pt}\vskip1cm
+    \begin{bfseries}
+        \Huge{TRAIN MODEL USE CASE, CLASS, AND SEQUENCE DIAGRAMS}\\
+        \vspace{.9cm}
+        for\\
+        \vspace{.9cm}
+        COE 1186 Project\\
+        \vspace{.9cm}
+        % \LARGE{Version \myversion approved}\\
+        \vspace{.9cm}
+        Prepared by:\\
+        Parth Dadhania\\
+        \vspace{4.9cm}
+        Training Montage\\
+        \vspace{.9cm}
+        \today\\
+    \end{bfseries}
+\end{flushright}
+
+\tableofcontents
+
+\chapter{Train Model}
+
+\section{Use Cases}
+
+\begin{center}
+\resizebox{!}{.8\textheight}{
+	\begin{mpost}
+		input metauml;
+		vardef drawComponentVisualStereotype(text ne)= relax enddef;
+    Actor.ctc("CTC");
+    Actor.traincontroller("Train Controller");
+    Actor.trackmodel("Track Model");
+    Actor.passenger("Passenger");
+    Actor.forcemajeure("Force Majeure");
+    Actor.simrunner("Sim Runner");
+
+    %CTC
+    Usecase.uA("Create Train");
+    Usecase.uB("Remove Train");
+    %Passenger
+    Usecase.uC("Apply Emergency Brakes");
+    %Force Majeure
+    Usecase.uD("Brake Failure");
+    Usecase.uE("Engine Failure");
+    Usecase.uF("Signal Failure");
+    %SimRunner
+    Usecase.uG("Init");
+    %TrackModel
+    Usecase.uH("getDisplacement");
+    Usecase.uI("setPassengers");
+    %Train Controller
+    Usecase.uJ("getVelocity");
+    Usecase.uK("getSuggestedSpeed");
+    Usecase.uL("getAuthority");
+    Usecase.uM("get/set lights");
+    Usecase.uN("get/set doors");
+    Usecase.uO("setPower");
+    Usecase.uP("set Service/Emergency Brakes");
+    Usecase.uQ("getBeacon");
+    %
+    Component.TrainModel("Train Model")(uA,uB,uC,uD,uE,uF,uG,uH,uI,uJ,uK,uL,uM,uN,uO,uP,uQ);
+    %
+    topToBottom.left(10)(uA,uB,uC,uJ,uK,uL,uM,uN,uO,uP,uQ,uD,uE,uF,uG,uH,uI);
+    leftToRight(50)(ctc, uA);
+    leftToRight(50)(passenger, uC);
+    leftToRight(50)(traincontroller, uL);
+    %
+    leftToRight(50)(trackmodel, uI);
+    leftToRight(50)(forcemajeure, uE);
+    leftToRight(50)(simrunner, uG);
+
+    %
+    drawObjects(ctc,traincontroller,trackmodel,passenger,forcemajeure,simrunner,TrainModel,uA,uB,uC,uD,uE,uF,uG,uH,uI,uJ,uK,uL,uM,uN,uO,uP,uQ);
+    %CTC
+    link(association)(pathCut(ctc, uA)(ctc.e -- uA.w));
+    link(association)(pathCut(ctc, uB)(ctc.e -- uB.w));
+    %Passenger
+    link(association)(pathCut(passenger, uC)(passenger.e -- uC.w));
+    %traincontroller
+    link(association)(pathCut(traincontroller, uC)(traincontroller.e -- uC.w));
+    link(association)(pathCut(traincontroller, uJ)(traincontroller.e -- uJ.w));
+    link(association)(pathCut(traincontroller, uK)(traincontroller.e -- uK.w));
+    link(association)(pathCut(traincontroller, uL)(traincontroller.e -- uM.w));
+    link(association)(pathCut(traincontroller, uM)(traincontroller.e -- uM.w));
+    link(association)(pathCut(traincontroller, uN)(traincontroller.e -- uN.w));
+    link(association)(pathCut(traincontroller, uO)(traincontroller.e -- uO.w));
+    link(association)(pathCut(traincontroller, uP)(traincontroller.e -- uP.w));
+    link(association)(pathCut(traincontroller, uQ)(traincontroller.e -- uQ.w));
+    %track
+    link(association)(pathCut(trackmodel, uH)(trackmodel.e -- uH.w));
+    link(association)(pathCut(trackmodel, uI)(trackmodel.e -- uI.w));
+    %Force Majeure
+    link(association)(pathCut(forcemajeure, uD)(forcemajeure.e -- uD.w));
+    link(association)(pathCut(forcemajeure, uE)(forcemajeure.e -- uE.w));
+    link(association)(pathCut(forcemajeure, uF)(forcemajeure.e -- uF.w));
+    %simrunner
+    link(association)(pathCut(simrunner, uG)(simrunner.e -- uG.w));
+
+    \end{mpost}
+  }
+  \end{center}
+
+
+\subsection{Use Case: Set New Power Command}
+\begin{enumerate}
+	\item Train Controller calls setPower()
+  \item Train Model calculates new velocity
+  \item Train Model returns new velocity to Train Controller
+
+\end{enumerate}
+
+\subsection{Use Case: Engage Service Brakes}
+\begin{enumerate}
+	\item Train Controller calls setServiceBrake()
+  \item Train Model kills the power(setPower(0))
+  \item Train Model updates the velocity
+
+\end{enumerate}
+
+\subsection{Use Case: Engage Emergency Brakes}
+\begin{enumerate}
+	\item Train Controller or Passenger calls setEmergencyBrake()
+  \item Train Model kills the power(setPower(0))
+  \item Train Model updates the velocity
+\end{enumerate}
+
+\subsection{Use Case: Get Current Temperature}
+\begin{enumerate}
+	\item Train Controller calls getTemperature()
+	\item returns current temperature of the train
+\end{enumerate}
+
+\subsection{Use Case: Set Temperature}
+\begin{enumerate}
+	\item Train Controller calls setTemperature(newTemp)
+\end{enumerate}
+
+\subsection{Use Case: Set Lights}
+\begin{enumerate}
+	\item Train Controller calls setLights(newLightStatus)
+	\item returns boolean (true if on, false otherwise)
+\end{enumerate}
+
+\subsection{Use Case: Get Lights}
+\begin{enumerate}
+	\item Train Controller calls getLights()
+	\item returns boolean (true if on, false otherwise)
+\end{enumerate}
+
+\subsection{Use Case: Get Left Door Status}
+\begin{enumerate}
+	\item Train Controller calls getLeftDoor()
+	\item returns int (zero if closed, else one when open)
+\end{enumerate}
+
+\subsection{Use Case: Set Left Door Status}
+\begin{enumerate}
+	\item Train Controller calls setLeftDoor(status)
+	\item returns int (zero if closed, else one when open)
+\end{enumerate}
+
+\subsection{Use Case: Get Right Door Status}
+\begin{enumerate}
+	\item Train Controller calls getRightDoor()
+	\item returns int (zero if closed, else one when open)
+\end{enumerate}
+
+\subsection{Use Case: Set Right Door Status}
+\begin{enumerate}
+	\item Train Controller calls setRightDoor(status)
+	\item returns int (zero if closed, else one when open)
+\end{enumerate}
+
+\subsection{Use Case: Get Current Velocity}
+\begin{enumerate}
+	\item Train Controller calls getVelocity()
+	\item Current velocity is returned.
+\end{enumerate}
+
+\subsection{Use Case: Engage Brake Failure}
+\begin{enumerate}
+	\item Force Majeure calls engageBrakeFailure()
+  \item Emergency brakes are activated
+  \item Power is set to zero
+  \item Velocity is updated
+
+\end{enumerate}
+
+\subsection{Use Case: Engage Signal Failure}
+\begin{enumerate}
+	\item Force Majeure calls engageSignalFailure()
+  \item Emergency brakes are activated
+  \item Power is set to zero
+  \item Velocity is updated
+\end{enumerate}
+
+\subsection{Use Case: Engage Engine Failure}
+\begin{enumerate}
+	\item Force Majeure calls engageEngineFailure()
+  \item Emergency brakes are activated
+  \item Power is set to zero
+  \item Velocity is updated
+\end{enumerate}
+
+\subsection{Use Case: Get Suggested Speed}
+\begin{enumerate}
+	\item Train Controller calls getSuggestedSpeed()
+	\item returns speed set by Track Model
+\end{enumerate}
+
+\subsection{Use Case: Get Authority}
+\begin{enumerate}
+	\item Train Controller calls getAuthority()
+	\item returns authority set by Track Model
+\end{enumerate}
+
+\subsection{Use Case: Create Train}
+\begin{enumerate}
+	\item CTC calls createTrain(blockId)
+\end{enumerate}
+
+\subsection{Use Case: Remove Train}
+\begin{enumerate}
+	\item CTC calls removeTrain(trainId)
+	\item returns boolean (true if removed, otherwise false)
+\end{enumerate}
+
+\subsection{Use Case: Set Passengers}
+\begin{enumerate}
+	\item Track Model calls setPassengers(numPassengers)
+\end{enumerate}
+
+\subsection{Use Case: Get Displacement}
+\begin{enumerate}
+	\item Track Model calles getDisplacement
+	\item returns distance traveled
+\end{enumerate}
+
+\subsection{Use Case: Get Beacon}
+\begin{enumerate}
+	\item Train Controller calles getBeacon
+	\item returns beacon
+\end{enumerate}
+
+\section{Class Diagram}
+
+\begin{center}
+%\resizebox{!}{.9\textheight}{
+	\begin{mpost}
+		input metauml;
+	    % Train Model
+	    Class.TrainModel("TrainModel")()(
+		"TrainModel init(int trainId, Block blockId)",
+		"setPower(double newPower)",
+		"double getPower()",
+		"getAuthority()",
+		"double getSuggestedSpeed()",
+		"engageEngineFailure()",
+		"engageSignalFailure()",
+		"engageBrakeFailure()",
+		"setServiceBrake(boolean status)",
+		"setEmergencyBrake(boolean status)",
+		"double setTemperature(double newTemp)",
+		"double getTemperature()",
+		"boolean setLights(boolean status)",
+		"boolean getLights()",
+		"setLeftDoor(int status)",
+		"int getLeftDoor()",
+		"setRightDoor(int status)",
+		"int getRightDoor()",
+		"double getVelocity()",
+		"setVelocity(double velocity)",
+    "setPassengers(double numPassengers)",
+    "double getDisplacement()",
+    "beacon getBeacon()",
+    "-double calculateGrade(double percentGrade)",
+    "-double updateVelocity(double force)",
+    "-double updateDisplacement()"
+
+	   );
+	%Train Tracker
+	Class.TrainTracker("TrainTracker")()(
+		"boolean createTrain(Block id)",
+		"removeTrain(Train id)",
+		"findTrain(Train id)",
+		"getAllTrains()"
+  );
+  %
+  leftToRight(50)(TrainTracker, TrainModel);
+  %
+  drawObjects(TrainTracker, TrainModel);
+  %
+  link(compositionUni)(pathStepX(TrainModel.w, TrainTracker.e, -20));
+  item(iAssoc)("1")(obj.nw = TrainTracker.e + (5,14));
+  item(iAssoc)("*")(obj.nw = TrainModel.w + (-10,12));
+  \end{mpost}
+%}
+\end{center}
+
+\section{Sequence Diagrams}
+
+\subsection{Sequence Diagram: Set New Power Command}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tc}{TrainController}
+  \newinst[4]{tm}{TrainModel}
+  \begin{call}{tc}{setPower(newPower)}{tm}{}
+    \begin{call}{tm}{updateVelocity()}{tm}{}
+    \end{call}
+    \begin{call}{tm}{updateDisplacement()}{tm}{}
+    \end{call}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Engage Service Brake}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tc}{TrainController}
+  \newinst[4]{tm}{TrainModel}
+  \begin{call}{tc}{setServiceBrake(boolean)}{tm}{}
+    \begin{call}{tm}{setPower(zero)}{tm}{}
+    \end{call}
+    \begin{call}{tm}{updateVelocity()}{tm}{}
+    \end{call}
+    \begin{call}{tm}{updateDisplacement()}{tm}{}
+    \end{call}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+Power is set to zero if boolean is true
+
+\subsection{Sequence Diagram: Engage Emergency Brake}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tc}{TrainController/Passengers}
+  \newinst[4]{tm}{TrainModel}
+  \begin{call}{tc}{setEmergencyBrake(boolean)}{tm}{}
+    \begin{call}{tm}{setPower(zero)}{tm}{}
+    \end{call}
+    \begin{call}{tm}{updateVelocity()}{tm}{}
+    \end{call}
+    \begin{call}{tm}{updateDisplacement()}{tm}{}
+    \end{call}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+Power is set to zero if boolean is true
+
+\subsection{Sequence Diagram: Engage Brake Failure}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{fm}{ForceMajeure}
+  \newinst[4]{tm}{TrainModel}
+  \begin{call}{fm}{engageBrakeFailure()}{tm}{}
+    \begin{call}{tm}{setEmergencyBrake(True)}{tm}{}
+    \end{call}
+    \begin{call}{tm}{setPower(zero)}{tm}{}
+    \end{call}
+    \begin{call}{tm}{updateVelocity()}{tm}{}
+    \end{call}
+    \begin{call}{tm}{updateDisplacement()}{tm}{}
+    \end{call}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+When in failure mode, apply emergency brakes and set power to zero.
+
+\subsection{Sequence Diagram: Engage Signal Failure}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{fm}{ForceMajeure}
+  \newinst[4]{tm}{TrainModel}
+  \begin{call}{fm}{engageSignalFailure()}{tm}{}
+    \begin{call}{tm}{setEmergencyBrake(True)}{tm}{}
+    \end{call}
+    \begin{call}{tm}{setPower(zero)}{tm}{}
+    \end{call}
+    \begin{call}{tm}{updateVelocity()}{tm}{}
+    \end{call}
+    \begin{call}{tm}{updateDisplacement()}{tm}{}
+    \end{call}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+When in failure mode, apply emergency brakes and set power to zero.
+\subsection{Sequence Diagram: Engage Engine Failure}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{fm}{ForceMajeure}
+  \newinst[4]{tm}{TrainModel}
+  \begin{call}{fm}{engageEngineFailure()}{tm}{}
+    \begin{call}{tm}{setEmergencyBrake(True)}{tm}{}
+    \end{call}
+    \begin{call}{tm}{setPower(zero)}{tm}{}
+    \end{call}
+    \begin{call}{tm}{updateVelocity()}{tm}{}
+    \end{call}
+    \begin{call}{tm}{updateDisplacement()}{tm}{}
+    \end{call}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+When in failure mode, apply emergency brakes and set power to zero.
+\subsection{Sequence Diagram: Get Current Temperature}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tc}{TrainController}
+  \newinst[4]{tm}{TrainModel}
+  \begin{call}{tc}{getTemperature()}{tm}{double temperature}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Set Temperature}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tc}{TrainController}
+  \newinst[4]{tm}{TrainModel}
+  \begin{call}{tc}{setTemperature(double newTemp)}{tm}{}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Get Lights}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tc}{TrainController}
+  \newinst[4]{tm}{TrainModel}
+  \begin{call}{tc}{getLights()}{tm}{boolean lightStatus}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Set Lights}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tc}{TrainController}
+  \newinst[4]{tm}{TrainModel}
+  \begin{call}{tc}{setLights(boolean status)}{tm}{boolean}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+Returns a boolean of the current state of the lights
+
+\subsection{Sequence Diagram: Get Left Door Status}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tc}{TrainController}
+  \newinst[4]{tm}{TrainModel}
+  \begin{call}{tc}{getLeftDoor()}{tm}{int status}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Set Left Door Status}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tc}{TrainController}
+  \newinst[4]{tm}{TrainModel}
+  \begin{call}{tc}{setLeftDoor(int status)}{tm}{int}
+  \end{call}
+	\end{sequencediagram}
+}
+Returns int (zero if closed, else one when open)
+
+\end{center}
+
+\subsection{Sequence Diagram: Get Right Door Status}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tc}{TrainController}
+  \newinst[4]{tm}{TrainModel}
+  \begin{call}{tc}{getRightDoor()}{tm}{int status}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Set Right Door Status}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tc}{TrainController}
+  \newinst[4]{tm}{TrainModel}
+  \begin{call}{tc}{setRightDoor(int status)}{tm}{int}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+Returns int (zero if closed, else one when open)
+
+\subsection{Sequence Diagram: Get Current Velocity}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tc}{TrainController}
+  \newinst[4]{tm}{TrainModel}
+  \begin{call}{tc}{getVelocity()}{tm}{double velocity}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Get Suggested Speed}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tc}{TrainController}
+  \newinst[4]{tm}{TrainModel}
+  \begin{call}{tc}{getSuggestedSpeed()}{tm}{double suggestedSpeed}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Get Authority}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tc}{TrainController}
+  \newinst[4]{tm}{TrainModel}
+  \begin{call}{tc}{getAuthority()}{tm}{double authority}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Get Beacon}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tc}{TrainController}
+  \newinst[4]{tm}{TrainModel}
+  \newinst[2]{ttm}{TrackModel}
+  \begin{call}{tc}{getBeacon()}{tm}{}
+    \begin{call}{tm}{getBeacon(){}}{ttm}{}
+    \end{call}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Create Train}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{ctc}{CTC}
+  \newinst[4]{tt}{TrainTracker}
+  \newinst[2]{tm}{TrainModel}
+  \begin{call}{ctc}{createTrain(blockId)}{tt}{}
+    \begin{call}{tt}{init(trainId,blockId)}{tm}{}
+    \end{call}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Remove Train}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{ctc}{CTC}
+  \newinst[4]{tt}{TrainTracker}
+  \begin{call}{ctc}{removeTrain(trainId)}{tt}{boolean}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+Boolean is true if train was removed successfully.
+
+\subsection{Sequence Diagram: Set Passengers}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tmm}{TrackModel}
+  \newinst[4]{tm}{TrainModel}
+  \begin{call}{tmm}{setPassengers()}{tm}{int numPassengers}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+\subsection{Sequence Diagram: Get Displacement}
+\begin{center}
+\resizebox{\textwidth}{!}{
+ 	\begin{sequencediagram}
+	\newthread{tmm}{TrackModel}
+  \newinst[4]{tm}{TrainModel}
+  \begin{call}{tmm}{getDisplacement()}{tm}{double displacement}
+  \end{call}
+	\end{sequencediagram}
+}
+\end{center}
+
+
+
+\section{Test Plan}
+\subsection{Approach}
+
+\subsubsection{Introduction}
+The overall project will simulate the operation of a public rail system. The Train Model is responsible for simulating the real life properties of a train car. The Train Model provides an interface, which is mostly used my the Train Controller, to adjust the power of the train to control the speed of the train.
+
+\subsubsection{Features Test}
+The features in the test plan include all interaction between various actors and the Train Model. The interface must be tested to insure that all outputs from the interface are correct and accurate.
+\subsubsection{Features Not Test}
+The test plan does not include any features that do not involve the Train Model. Any feature not interacting with the train is not included.
+\subsubsection{Approach}
+The UI will be manually tested in debug mode. Functional tests will be used to test most of the interface. They will test each method and validate that the methods are preforming as expected. The system must also be able to operate at ten times the wall-clock-speed.
+\subsubsection{Test Deliverables}
+All automated tests are executed when the software changes. This will insure that even with software change all functions are working as expected. Manual tests for debug mode will be done before all deliverables.
+\subsection{Test Cases}
+
+\subsubsection{Get-Current-Temperature-0}
+TEST CASE: Get the current inside temperature of the train.
+PRECONDITIONS: The TrainModel has been created as trainModel.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.getTemperautre()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.getTemperautre() shall return the train's inside temperature.
+\end{enumerate}
+
+\subsubsection{Get-Lights-0}
+TEST CASE: Get the current status of the lights of the train.
+PRECONDITIONS: The TrainModel has been created as trainModel.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.getLights()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.getTemperautre() shall return the train's current light status
+\end{enumerate}
+
+\subsubsection{Get-Left-Door-Status-0}
+TEST CASE: Get the current status of the left doors of the train.
+PRECONDITIONS: The TrainModel has been created as trainModel.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.getLeftDoorStatus()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.getLeftDoorStatus() shall return the train's current left door status.
+\end{enumerate}
+
+\subsubsection{Get-Right-Door-Status-0}
+TEST CASE: Get the current status of the right doors of the train.
+PRECONDITIONS: The TrainModel has been created as trainModel.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.getRightDoorStatus()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.getRightDoorStatus() shall return the train's current right door status.
+\end{enumerate}
+
+\subsubsection{Get-Current-Velocity-0}
+TEST CASE: Get the authority for the train.
+PRECONDITIONS: The TrainModel has been created as trainModel.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.getVelocity()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.getVelocity shall return the current velocity of the train
+\end{enumerate}
+
+\subsubsection{Get-Suggested-Speed-0}
+TEST CASE: Get the suggested speed for the train.
+PRECONDITIONS: The TrainModel has been created as trainModel. Track model is initialized with data and created as trackModel.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.getSuggestedSpeed()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.getSuggestedSpeed() shall return the train's suggested speed after calling trainModel.getSuggestedSpeed().
+\end{enumerate}
+
+
+\subsubsection{Get-Authority-0}
+TEST CASE: Get the authority for the train.
+PRECONDITIONS: The TrainModel has been created as trainModel. Track model is initialized with data and created as trackModel.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.getAuthority()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.getAuthority() shall return the train's authority after calling trainModel.getAuthority().
+\end{enumerate}
+
+\subsubsection{Get-Displacement-0}
+TEST CASE: Get the displacement of the train.
+PRECONDITIONS: The TrainModel has been created as trainModel and power has been set.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.getDisplacement()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.getDisplacement() shall return the train's displacement from the last time it was called
+\end{enumerate}
+
+\subsubsection{Set-Power-0}
+TEST CASE: Set the power input to the train.
+PRECONDITIONS: The TrainModel has been created as trainModel. Input is in the bounds
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.setPower(newPower)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.setPower() shall return the train's new velocity.
+\end{enumerate}
+
+\subsubsection{Set-Power-1}
+TEST CASE: Set the power input to the train.
+PRECONDITIONS: The TrainModel has been created as trainModel. Input is negative
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.setPower(newPower)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.setPower() shall do nothing since it is an invalid input
+\end{enumerate}
+
+\subsubsection{Set-Power-1}
+TEST CASE: Set the power input to the train.
+PRECONDITIONS: The TrainModel has been created as trainModel. Input is greater than max power
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.setPower(newPower)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.setPower() shall set the input to max power and return a velocity besided on that.
+\end{enumerate}
+
+\subsubsection{Engage-Service-Brakes-0}
+TEST CASE: Toggles the service brakes of train.
+PRECONDITIONS: The TrainModel has been created as trainModel. Validate power is set.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.setServiceBrake(boolean)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.setPower() shall turn on the service brakes if boolean is true. Otherwise it shall turn off the service brakes
+\end{enumerate}
+
+\subsubsection{Engage-Emergency-Brakes-0}
+TEST CASE: Toggles the emergency brakes of train.
+PRECONDITIONS: The TrainModel has been created as trainModel. Validate power is set.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.setEmergencyBrake(boolean)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.setPower() shall turn on the emergency brakes if boolean is true. Otherwise it shall turn off the emergency brakes.
+\end{enumerate}
+
+\subsubsection{Set-Temperature-0}
+TEST CASE: Set the inside temperature of the train
+PRECONDITIONS: The TrainModel has been created as trainModel.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.setTemperature(double newTemp)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.setTemperature() shall adjust the temperature of train to the new desired temperature.
+\end{enumerate}
+
+\subsubsection{Set-Lights-0}
+TEST CASE: Toggles the lights of train.
+PRECONDITIONS: The TrainModel has been created as trainModel.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.setLights(boolean)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.setLights() shall turn on the lights if boolean is true. Otherwise it shall turn off the lights.
+\end{enumerate}
+
+\subsubsection{Set-Left-Door-Status-0}
+TEST CASE: Toggles the left side doors of train.
+PRECONDITIONS: The TrainModel has been created as trainModel.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.setLeftDoor(int status)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.setLeftDoor() shall close the left doors if the input is zero, close if input is one, and do nothing otherwise.
+\end{enumerate}
+
+\subsubsection{Set-Right-Door-Status-0}
+TEST CASE: Toggles the right side doors of train.
+PRECONDITIONS: The TrainModel has been created as trainModel.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.setRightDoor(int status)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.setRightDoor() shall close the right doors if the input is zero, close if input is one, and do nothing otherwise.
+\end{enumerate}
+
+\subsubsection{Engage-Brake-Failure-0}
+TEST CASE: Turns on brake failure mode
+PRECONDITIONS: The TrainModel has been created as trainModel. Validate power is set to see if failure mode works.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.engageEngineFailure()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.engageEngineFailure() shall turn on the failure mode and stop the train.
+\end{enumerate}
+
+\subsubsection{Engage-Signal-Failure-0}
+TEST CASE: Turns on signal failure mode
+PRECONDITIONS: The TrainModel has been created as trainModel. Validate power is set to see if failure mode works.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.engageSignalFailure()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.engageSignalFailure() shall turn on the failure mode and stop the train.
+\end{enumerate}
+
+\subsubsection{Engage-Engine-Failure-0}
+TEST CASE: Turns on engine failure mode
+PRECONDITIONS: The TrainModel has been created as trainModel. Validate power is set to see if failure mode works.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.engageEngineFailure()
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.engageEngineFailure() shall turn on the failure mode and stop the train.
+\end{enumerate}
+
+\subsubsection{Set-Passengers-0}
+TEST CASE: Set the number of passengers on the train.
+PRECONDITIONS: The TrainModel has been created as trainModel. Input is not greater than max number of people allowed on the train.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.setPassengers(int num)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.setPassengers() shall set the number of passengers on the train to the input
+\end{enumerate}
+\subsubsection{Set-Passengers-1}
+TEST CASE: Set the number of passengers on the train.
+PRECONDITIONS: The TrainModel has been created as trainModel. Input is greater than max number of people allowed on the train.
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainModel.setPassengers(int num)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainModel.setPassengers() shall set the number of passengers to the max.
+\end{enumerate}
+
+\subsubsection{Create-Train-0}
+TEST CASE: Create a new train with block id. TrainTracker has been created as trainTracker.
+PRECONDITIONS:Valid block id
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainTracker.createTrain(blockId)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainTracker.createTrain() shall create a train model and add it to the list.
+\end{enumerate}
+
+\subsubsection{Remove-Train-0}
+TEST CASE: Remove an existing train with train id. TrainTracker has been created as trainTracker.
+PRECONDITIONS:Valid train id
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainTracker.removeTrain(trainId)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainTracker.removeTrain() shall the remove the train from the list
+\end{enumerate}
+
+\subsubsection{Remove-Train-1}
+TEST CASE: Remove an existing train with train id. TrainTracker has been created as trainTracker.
+PRECONDITIONS:invalid train id
+EXECUTION STEPS:
+\begin{enumerate}
+	\item Call trainTracker.removeTrain(trainId)
+\end{enumerate}
+POSTCONDITIONS:
+\begin{enumerate}
+	\item trainTracker.removeTrain() shall do nothing.
+\end{enumerate}
+
+
+
+
+
+\end{document}
