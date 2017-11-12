@@ -17,6 +17,11 @@ import shared.GlobalGUI;
  * </ol>
  */
 public class App {
+    /**
+     * Runs our app, mane!
+     * @throws SQLException in case DB stuff.
+     * @throws ClassNotFoundException in case JDBC in not found.
+     */
     public static void run() throws SQLException, ClassNotFoundException {
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -29,6 +34,8 @@ public class App {
      * Here we have the all-important entry point into our application.
      *
      * @param args Command-line arguments.
+     * @throws SQLException in case DB stuff.
+     * @throws ClassNotFoundException in case JDBC in not found.
      */
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         run();
