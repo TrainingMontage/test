@@ -1008,7 +1008,7 @@ public class CTCGUI {
         
         //Create and set up the window.
         JFrame frame = new JFrame("CTC GUI");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         //Set up the content pane.
         addComponentsToPane(frame.getContentPane());
