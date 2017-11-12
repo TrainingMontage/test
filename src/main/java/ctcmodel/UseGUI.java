@@ -1,9 +1,7 @@
 package CTCModel;
-//import CTCModel.CTCGUI;
 
 public class UseGUI {
     public static void main(String args[]){
-        //CTCGUI.createAndShowGUI();
         //TrackModel trackModel = new TrackModel();
         //TrackModel.init();
         try{
@@ -12,12 +10,8 @@ public class UseGUI {
         
         }
         WaysideController.init();
-        //TrainModel trainModel = new TrainModel(trackModel);
-        TrainModel trainModel = new TrainModel();
-        //CTCGUI guiInstance = new CTCGUI(trackModel, trainModel);
-        //CTCGUI guiInstance = new CTCGUI(trainModel);
-        //guiInstance.createAndShowGUI();
-        CTCModel.init(trainModel);
+        TrainTracker trainTracker = new TrainTracker();
+        CTCModel.init(trainTracker);
         CTCGUI.createAndShowGUI();
     }
 }
