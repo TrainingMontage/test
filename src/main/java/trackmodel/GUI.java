@@ -11,7 +11,7 @@ public class GUI {
 
     protected static JButton reloadBlockInfo, submitChanges;
     protected static JCheckBox occupied;
-    protected static JComboBox blockId;
+    protected static JComboBox<Integer> blockIdComboBox;
     protected static JTextArea speed_limit, length, grade, elevation, region, station;
 
 
@@ -168,17 +168,17 @@ public class GUI {
         c.gridy = 0;
         panelBlockInfo.add(label, c);
 
-        blockId = new JComboBox();
-        blockId.addItemListener(new ItemListener() {
+        blockIdComboBox = new JComboBox<>();
+        blockIdComboBox.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent event) {
                 if (event.getStateChange() == ItemEvent.SELECTED) {
-                    loadBlock(String.valueOf(blockId.getSelectedItem()));
+                    loadBlock(String.valueOf(blockIdComboBox.getSelectedItem()));
                 }
             }
         });
         c.gridx = 3;
         c.gridy = 0;
-        panelBlockInfo.add(blockId, c);
+        panelBlockInfo.add(blockIdComboBox, c);
 
         label = new JLabel("Next Blocks:");
         c.gridx = 2;
@@ -253,7 +253,7 @@ public class GUI {
         button = new JButton("Submit Changes");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                setBlock(String.valueOf(blockId.getSelectedItem()));
+                setBlock(String.valueOf(blockIdComboBox.getSelectedItem()));
             }
         } );
         c.gridx = 2;
@@ -361,7 +361,7 @@ public class GUI {
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fc.getSelectedFile();
                     try {
-                        TrackModel.importTrack(file);
+                        TrackModel.getTrackModel().importTrack(file);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -383,7 +383,7 @@ public class GUI {
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     File file = fc.getSelectedFile();
                     try {
-                        TrackModel.exportTrack(file);
+                        TrackModel.getTrackModel().exportTrack(file);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -411,11 +411,11 @@ public class GUI {
     private static void refreshGUI() {
 
         // reset the block id combo box
-        blockId.removeAllItems();
+        blockIdComboBox.removeAllItems();
 
         try {
-            for (String s : TrackModel.getBlockIds()) {
-                blockId.addItem(s);
+            for (int s : TrackModel.getTrackModel().getBlockIds()) {
+                blockIdComboBox.addItem(s);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -431,9 +431,10 @@ public class GUI {
         int blockId = Integer.parseInt(blockStr);
 
         try {
+            TrackModel tm = TrackModel.getTrackModel();
 
             // static info
-            StaticBlock block = TrackModel.getStaticBlock(blockId);
+            StaticBlock block = tm.getStaticBlock(blockId);
 
             region.setText(block.getRegion());
             grade.setText(String.format("%.2f %%", block.getGrade()));
@@ -441,7 +442,7 @@ public class GUI {
             length.setText(String.format("%.2f ft", Convert.metersToFeet(block.getLength())));
 
             // dynamic info
-            occupied.setSelected(TrackModel.isOccupied(blockId));
+            occupied.setSelected(tm.isOccupied(blockId));
         } catch (Exception e) {
             refreshGUI();
         }
@@ -458,20 +459,22 @@ public class GUI {
 
         try {
 
+            TrackModel tm = TrackModel.getTrackModel();
+
             // static data
-            TrackModel.setRegion(blockId, region.getText());
+            tm.setRegion(blockId, region.getText());
 
             str = grade.getText();
-            TrackModel.setGrade(blockId, Double.parseDouble(str.substring(0, str.length() - 2)));
+            tm.setGrade(blockId, Double.parseDouble(str.substring(0, str.length() - 2)));
 
             str = elevation.getText();
-            TrackModel.setElevation(blockId, Convert.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 3))));
+            tm.setElevation(blockId, Convert.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 3))));
 
             str = length.getText();
-            TrackModel.setLength(blockId, Convert.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 2))));
+            tm.setLength(blockId, Convert.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 2))));
 
             // dynamic data
-            TrackModel.setOccupied(blockId, occupied.isSelected());
+            tm.setOccupied(blockId, occupied.isSelected());
         } catch (Exception e) {
             refreshGUI();
         }
