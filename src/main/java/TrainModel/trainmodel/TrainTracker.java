@@ -18,6 +18,9 @@ public class TrainTracker{
         Train newTrain = new Train(trainId, blockId);
         trainList.add(newTrain);
         trainId++;
-
+    }
+    public static void main(String args[]){
+        TrainModelGUI gui = new TrainModelGUI();
+        gui.setVisible(true);
     }
 }

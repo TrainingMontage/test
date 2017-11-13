@@ -1018,4 +1018,11 @@ public class CTCGUI {
         frame.pack();
         frame.setVisible(true);
     }
+    public static void run(){
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                CTCGUI.createAndShowGUI();
+            }
+        });
+    }
 }

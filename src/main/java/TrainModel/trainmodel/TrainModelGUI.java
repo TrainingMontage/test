@@ -117,7 +117,7 @@ public class TrainModelGUI extends javax.swing.JFrame {
         timeLabel = new javax.swing.JLabel();
         setTimeInput = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
 
         passengersDisplayLabel.setBackground(new java.awt.Color(183, 183, 183));
