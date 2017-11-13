@@ -276,9 +276,7 @@ public class TrainController implements TrainControllerInterface {
     protected double computeSafeBrake(){
         if(!checkForTrain())
             return -1;
-        double auth = theTrain.getAuthority();
         double distance = 2*theTrain.getVelocity()*theTrain.getVelocity();
-        System.err.println("SAFEBRAKE: Auth: " + auth);
         distance /= theTrain.getBrake();
         System.err.println("SAFEBRAKE: dist " + distance);
         // d = vt+at^2
@@ -286,9 +284,7 @@ public class TrainController implements TrainControllerInterface {
         // 0 = v-at
         // t = v/a
         // d = v^2/a + v^2/a = 2v^2/a
-        if(distance > auth)
-            return distance;
-        return auth;
+        return distance;
     }
     
      /**
@@ -303,7 +299,11 @@ public class TrainController implements TrainControllerInterface {
         if(!checkForTrain())
             return -1;
         double brakeDist = computeSafeBrake();
-        double velocity = Math.sqrt(2*brakeDist*theTrain.getBrake());
+        double velocity;
+        if(brakeDist > theTrain.getAuthority())
+            velocity = 0; // stop immediately
+        else
+            velocity = Math.sqrt(2*theTrain.getAuthority()*theTrain.getBrake());
         System.err.println("SAFESPEED; Brakedist: " + computeSafeBrake());
         System.err.println("SAFESPEED; Velocity: " + velocity);
         if(velocity > theTrain.getSuggestedSpeed())

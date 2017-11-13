@@ -65,7 +65,11 @@ public class GlobalGUI {
         button = new JButton("TrainController");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                TrainController.initUI();
+				try {
+					TrainController.initUI();
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
             }
         } );
         c.gridx = 0;
