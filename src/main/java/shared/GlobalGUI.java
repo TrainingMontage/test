@@ -8,6 +8,7 @@ import java.io.*;
 import trackmodel.RunTrackModel;
 import CTCModel.CTCGUI;
 import wayside.WaysideController;
+import traincontroller.TrainController;
 
 public class GlobalGUI {
 
