@@ -372,7 +372,7 @@ public class TrainController implements TrainControllerInterface {
         }
         else
             System.err.println("Error");
-        
+
 //        Pcmd = Kp*e + Ki*u;
         if(Pcmd < 0) // System is slowing down
 //            if(Pcmd <= theTrain.getBrakePower()*(-1))
