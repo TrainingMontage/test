@@ -186,11 +186,11 @@ public class WaysideController {
      * @param suggestion an array of Suggestion objects, one for each train.
      */
     public static void suggest(Suggestion[] suggestion) {
-        TrackModel tm = TrackModel.getTrackModel();
-        boolean safe = true;
-        int[] speed = new int[TRACK_LEN];
-        boolean[] setActive = new boolean[NUM_SWITCHES];
         boolean[] authority = squash(suggestion);
+        int[] speed = squashSpeed(suggestion);
+        boolean safe = true;
+        TrackModel tm = TrackModel.getTrackModel();
+        boolean[] setActive = new boolean[NUM_SWITCHES];
 
         // squash the given array to one suggestion list
 
