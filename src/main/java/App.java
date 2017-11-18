@@ -29,6 +29,8 @@ public class App {
      * Here we have the all-important entry point into our application.
      *
      * @param args Command-line arguments.
+     * @throws SQLException in case the database didn't work
+     * @throws ClassNotFoundException in case JDBC couldn't be found
      */
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         run();

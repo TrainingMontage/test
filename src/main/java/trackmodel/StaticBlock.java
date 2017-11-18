@@ -176,7 +176,7 @@ public class StaticBlock {
     /**
      * Sets the id of the next block.
      *
-     * @param      id    The identifier
+     * @param      nextId    The identifier
      *
      * @return     the new next id
      */

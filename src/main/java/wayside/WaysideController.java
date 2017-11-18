@@ -91,7 +91,11 @@ public class WaysideController {
      * @return the occupancy of the block, true if it is occupied, false otherwise.
      */
     public static boolean isOccupied(int blockId) {
-        return TrackModel.getTrackModel().isOccupied(blockId);
+        try {
+            return TrackModel.getTrackModel().isOccupied(blockId);
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
     }
 
     /**
@@ -100,7 +104,11 @@ public class WaysideController {
      * @return the state of the signal, true if it is active, false otherwise.
      */
     public static boolean getSignal(int blockId) {
+        try{
         return TrackModel.getTrackModel().getSignal(blockId);
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
     }
     
     /**
@@ -109,7 +117,11 @@ public class WaysideController {
      * @return the state of the swtich, true if it is active, false otherwise.
      */
     public static boolean getSwitch(int blockId) {
+        try {
         return TrackModel.getTrackModel().getSwitch(blockId);
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
     }
     
     /**
@@ -118,7 +130,11 @@ public class WaysideController {
      * @return the occupancy of the block, true if it is occupied, false otherwise.
      */
     public static boolean getCrossing(int blockId) {
+        try {
         return TrackModel.getTrackModel().getCrossingState(blockId);
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
     }
 
     /**
@@ -127,11 +143,19 @@ public class WaysideController {
      * @return the authority of the block, true if it has authority, false otherwise.
      */
     public static boolean getAuthority(int blockId) {
+        try {
         return TrackModel.getTrackModel().getTrainAuthority(blockId) != 0;
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
     }
 
     public static int getSpeed(int blockId) {
+        try {
         return (int) TrackModel.getTrackModel().getTrainSpeed(blockId);
+        } catch (Exception e) {
+            throw new RuntimeException();
+        }
     }
     
     /**
@@ -142,6 +166,7 @@ public class WaysideController {
      * @param suggestion an array of Suggestion objects, one for each train.
      */
     public static void suggest(Suggestion[] suggestion) {
+        try {
         TrackModel tm = TrackModel.getTrackModel();
         boolean safe = true;
         boolean[] authority = new boolean[TRACK_LEN];
@@ -181,6 +206,7 @@ public class WaysideController {
 
         // If valid, write suggested values.
         // Otherwise, write default values.
+        } catch (Exception e) {}
     }
     
     /**
