@@ -72,7 +72,7 @@ public class WaysideController {
     public static void initTest() {
         TRACK_LEN = 9;
         NUM_SWITCHES = 2;
-        CROSSINGS = {};
+        CROSSINGS = null;
     }
 
     /**
