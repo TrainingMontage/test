@@ -459,6 +459,7 @@ public class TrackModel {
         block.setElevation(rs.getDouble("elevation"));
         block.setLength(rs.getDouble("length"));
         block.setStation(rs.getString("station"));
+        block.setNextId(rs.getInt("next"));
         block.setStaticSwitch(staticSwitch);
         return block;
     }
@@ -910,7 +911,7 @@ public class TrackModel {
     }
 
 
-    private void update() throws SQLException {
+    protected void update() throws SQLException {
         if (this.last_updated == Environment.clock) {
             return;
         }
@@ -921,7 +922,7 @@ public class TrackModel {
         this.last_updated = Environment.clock;
     }
 
-    private void updateTrain(int trainId) throws SQLException {
+    protected void updateTrain(int trainId) throws SQLException {
         // TODO
         // fake actually calling a train until there's something there to call
         // ...getDisplacement()
@@ -956,7 +957,7 @@ public class TrackModel {
      * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    private double getTrainPosition(int trainId) throws SQLException {
+    protected double getTrainPosition(int trainId) throws SQLException {
         PreparedStatement stmt = this.conn.prepareStatement("SELECT position FROM trains WHERE id = ?");
         stmt.setInt(1, trainId);
         ResultSet rs = stmt.executeQuery();
@@ -976,7 +977,7 @@ public class TrackModel {
      * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    private double setTrainPosition(int trainId, double position) throws SQLException {
+    protected double setTrainPosition(int trainId, double position) throws SQLException {
         PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET position = ? WHERE id = ?;");
         stmt.setDouble(1, position);
         stmt.setInt(2, trainId);
@@ -994,7 +995,7 @@ public class TrackModel {
      * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    private boolean getTrainDirection(int trainId) throws SQLException {
+    protected boolean getTrainDirection(int trainId) throws SQLException {
         PreparedStatement stmt = this.conn.prepareStatement("SELECT direction FROM trains WHERE id = ?");
         stmt.setInt(1, trainId);
         ResultSet rs = stmt.executeQuery();
@@ -1014,7 +1015,7 @@ public class TrackModel {
      * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    private boolean setTrainDirection(int trainId, boolean direction) throws SQLException {
+    protected boolean setTrainDirection(int trainId, boolean direction) throws SQLException {
         PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET direction = ? WHERE id = ?;");
         stmt.setInt(1, direction ? 1 : 0);
         stmt.setInt(2, trainId);
@@ -1032,7 +1033,7 @@ public class TrackModel {
      * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    private int getTrainBlock(int trainId) throws SQLException {
+    protected int getTrainBlock(int trainId) throws SQLException {
         PreparedStatement stmt = this.conn.prepareStatement("SELECT curr_block FROM trains WHERE id = ?");
         stmt.setInt(1, trainId);
         ResultSet rs = stmt.executeQuery();
@@ -1053,7 +1054,7 @@ public class TrackModel {
      * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    private int setTrainBlock(int trainId, int block) throws SQLException {
+    protected int setTrainBlock(int trainId, int block) throws SQLException {
         PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET curr_block = ? WHERE id = ?;");
         stmt.setDouble(1, block);
         stmt.setInt(2, trainId);
@@ -1061,8 +1062,9 @@ public class TrackModel {
         return block;
     }
 
-    private StaticBlock nextBlock(StaticBlock curr_block, boolean direction) throws SQLException {
+    protected StaticBlock nextBlock(StaticBlock curr_block, boolean direction) throws SQLException {
         StaticSwitch sw = curr_block.getStaticSwitch();
+        // System.err.println("Looking up block: " + curr_block.getNextId());
         StaticBlock next = this.getStaticBlock(curr_block.getNextId());
         if (sw != null && ((sw.contains(next) && direction) || (!sw.contains(next) && !direction))) {
             // moving towards a switch
@@ -1098,7 +1100,7 @@ public class TrackModel {
         return null;
     }
 
-    private boolean nextDirection(StaticBlock curr_block, StaticBlock next_block) {
+    protected boolean nextDirection(StaticBlock curr_block, StaticBlock next_block) {
         if (next_block.getNextId() == curr_block.getId()) {
             return false;
         } else {

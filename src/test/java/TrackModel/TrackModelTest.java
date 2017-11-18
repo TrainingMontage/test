@@ -29,6 +29,10 @@ public class TrackModelTest {
         PreparedStatement _s = _tm.conn.prepareStatement("INSERT INTO blocks (id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,underground,line,next,bidirectional,speed_limit,beacon,heater) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
         // insert a few basic blocks
+        //        _< 3-> < 4-> < 5 ->
+        //       /
+        // < 1-> - < 2->
+        // 
         int i = 1;
         _s.setInt(i++, 1); // id
         _s.setString(i++, "A"); // region
@@ -60,7 +64,7 @@ public class TrackModelTest {
         _s.setInt(i++, 1); // rr_crossing
         _s.setInt(i++, 0); // underground
         _s.setString(i++, "GREEN"); // line
-        _s.setInt(i++, 3); // next
+        _s.setInt(i++, 1); // next
         _s.setInt(i++, 1);  // bidirectional
         _s.setInt(i++, 15);  // speed_limit
         _s.setNull(i++, java.sql.Types.INTEGER); // beacon
@@ -88,6 +92,25 @@ public class TrackModelTest {
 
         i = 1;
         _s.setInt(i++, 4); // id
+        _s.setString(i++, "A"); // region
+        _s.setDouble(i++, 0.5); // grade
+        _s.setDouble(i++, 17); // elevation
+        _s.setInt(i++, 50); // length
+        _s.setString(i++, ""); // station
+        _s.setNull(i++, java.sql.Types.INTEGER); // switch_root
+        _s.setNull(i++, java.sql.Types.INTEGER); // switch_leaf
+        _s.setInt(i++, 1); // rr_crossing
+        _s.setInt(i++, 0); // underground
+        _s.setString(i++, "GREEN");  // line
+        _s.setInt(i++, 5);  // next
+        _s.setInt(i++, 1);  // bidirectional
+        _s.setInt(i++, 15);  // speed_limit
+        _s.setNull(i++, java.sql.Types.INTEGER); // beacon
+        _s.setInt(i++, 0); // heater
+        _s.executeUpdate();
+
+        i = 1;
+        _s.setInt(i++, 5); // id
         _s.setString(i++, "A"); // region
         _s.setDouble(i++, 0.5); // grade
         _s.setDouble(i++, 17); // elevation
@@ -215,7 +238,7 @@ public class TrackModelTest {
         br.close();
 
         assertEquals("1,A,0.5,17.2,50.0,STATION,1,,1,0,GREEN,2,1,15,,1", firstRow);
-        assertEquals("2,A,0.5,17.0,50.0,,,1,1,0,GREEN,3,1,15,,1", secondRow);
+        assertEquals("2,A,0.5,17.0,50.0,,,1,1,0,GREEN,1,1,15,,1", secondRow);
         assertEquals("3,A,0.5,17.0,50.0,,,1,1,0,GREEN,4,1,15,,0", thirdRow);
     }
 
@@ -241,7 +264,7 @@ public class TrackModelTest {
         br.close();
 
         assertEquals("1,A,0.5,17.2,50.0,STATION,1,,1,0,GREEN,2,1,15,,1", firstRow);
-        assertEquals("2,A,0.5,17.0,50.0,,,1,1,0,GREEN,3,1,15,,1", secondRow);
+        assertEquals("2,A,0.5,17.0,50.0,,,1,1,0,GREEN,1,1,15,,1", secondRow);
         assertEquals("3,A,0.5,17.0,50.0,,,1,1,0,GREEN,4,1,15,,0", thirdRow);
     }
 
@@ -311,11 +334,12 @@ public class TrackModelTest {
     public void testTrackModelGetBlockIds() throws SQLException {
         ArrayList<Integer> ids = _tm.getBlockIds();
 
-        assertEquals(4, ids.size());
+        assertEquals(5, ids.size());
         assertEquals(1, (int) ids.get(0));
         assertEquals(2, (int) ids.get(1));
         assertEquals(3, (int) ids.get(2));
         assertEquals(4, (int) ids.get(3));
+        assertEquals(5, (int) ids.get(4));
     }
 
     /**
@@ -842,5 +866,101 @@ public class TrackModelTest {
         assertNotNull(st.getStaticBlock(2));
         assertNotNull(st.getStaticSwitch(1));
     }
+
+    /**
+     * Test getting the next block basic linear 3 -> 4
+     */
+    @Test
+    public void testNextBlockLinear() throws SQLException {
+        StaticBlock currBlock = _tm.getStaticBlock(3);
+        StaticBlock expectedNext = _tm.getStaticBlock(4);
+
+        StaticBlock actualNext = _tm.nextBlock(currBlock, true);
+
+        assertEquals(expectedNext, actualNext);
+    }
+
+    /**
+     * Test getting the next block (reverse direction) 4 -> 3
+     */
+    @Test
+    public void testNextBlockLinearReverse() throws SQLException {
+        StaticBlock currBlock = _tm.getStaticBlock(4);
+        StaticBlock expectedNext = _tm.getStaticBlock(3);
+
+        StaticBlock actualNext = _tm.nextBlock(currBlock, false);
+
+        assertEquals(expectedNext, actualNext);
+    }
+
+    /**
+     * Test getting the next block with default position switch 1 -> 2
+     */
+    @Test
+    public void testNextBlockSwitchDefault() throws SQLException {
+        StaticBlock currBlock = _tm.getStaticBlock(1);
+        StaticBlock expectedNext = _tm.getStaticBlock(2);
+
+        StaticBlock actualNext = _tm.nextBlock(currBlock, true);
+
+        assertEquals(expectedNext, actualNext);
+    }
+
+    /**
+     * Test getting the next block with default position switch 2 -> 1
+     */
+    @Test
+    public void testNextBlockSwitchDefaultReverse() throws SQLException {
+        StaticBlock currBlock = _tm.getStaticBlock(2);
+        StaticBlock expectedNext = _tm.getStaticBlock(1);
+
+        StaticBlock actualNext = _tm.nextBlock(currBlock, false);
+
+        assertEquals(expectedNext, actualNext);
+    }
+
+    /**
+     * Test getting the next block with default position switch 1 -> 3
+     */
+    @Test
+    public void testNextBlockSwitchActive() throws SQLException {
+        StaticBlock currBlock = _tm.getStaticBlock(1);
+        StaticBlock expectedNext = _tm.getStaticBlock(3);
+
+        assertTrue(_tm.setSwitch(1, true));
+
+        StaticBlock actualNext = _tm.nextBlock(currBlock, true);
+        assertEquals(expectedNext, actualNext);
+    }
+
+    /**
+     * Test getting the next block with default position switch 3 -> 1
+     */
+    @Test
+    public void testNextBlockSwitchActiveReverse() throws SQLException {
+        StaticBlock currBlock = _tm.getStaticBlock(3);
+        StaticBlock expectedNext = _tm.getStaticBlock(1);
+
+        assertTrue(_tm.setSwitch(1, true));
+
+        StaticBlock actualNext = _tm.nextBlock(currBlock, false);
+        assertEquals(expectedNext, actualNext);
+    }
+
+    // /**
+    //  * Test moving a train around a simple track
+    //  */
+    // @Test
+    // public void testUpdateTrain() throws SQLException {
+    //     // setup environment clock time
+    //     Environment.clock = 1;
+
+    //     // add train to line on a block (train id, starting block)
+    //     assertTrue(_tm.initializeTrain(2, 1));
+
+    //     // update trackmodel
+    //     // check train position
+    //     // check block occupancies
+    // }
 
 }

@@ -193,4 +193,8 @@ class StaticBlock {
     public int getNextId() {
         return this.nextId;
     }
+
+    public String toString() {
+        return Integer.toString(this.id);
+    }
 }
