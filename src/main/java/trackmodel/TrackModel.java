@@ -1092,13 +1092,13 @@ public class TrackModel {
                 if (this.getSwitch(sw.getId())) {
                     return sw.getRoot();
                 }
-                // throw CrashIntoSwitchException()
+                throw new CrashIntoSwitchException();
             }
             if (curr_block.equals(sw.getDefaultLeaf())) { // current block is the default leaf
                 if (!this.getSwitch(sw.getId())) {
                     return sw.getRoot();
                 }
-                // throw CrashIntoSwitchException()
+                throw new CrashIntoSwitchException();
             }
         } else { // not moving towards a switch
             if (direction) {
