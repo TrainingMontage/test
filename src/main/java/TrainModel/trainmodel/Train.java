@@ -8,6 +8,8 @@ package trainmodel;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.lang.Math;
+import trackmodel.*;
+import shared.convert;
 
 /**
  *
@@ -75,11 +77,22 @@ public class Train {
         return power;
     }
     public double getVelocity(){
-        double mphVelocity = velocity * 2.23693629;
         return velocity;
     }
     public void setTime(double timeInput){
         time = timeInput;
+    }
+
+    public boolean blockChange(){
+        return trackmodel.getTrainBlockChange(trainId);
+    }
+
+    public boolean getAuthority(){
+        return trackmodel.getTrainAuthority(trainId);
+    }
+
+    public boolean getSuggestedSpeed(){
+        return trackmodel.getTrainSpeed(trainId);
     }
 
     public void setPower(double powerInput){

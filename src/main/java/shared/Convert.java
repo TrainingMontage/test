@@ -23,4 +23,15 @@ public class Convert {
     public static double feetToMeters(double feet) {
         return feet / 3.28084;
     }
+
+    /**
+     * Converts m/s to miles per hour.
+     *
+     * @param      metersPerSec  The meters quantity to convert
+     *
+     * @return     miles per hour
+     */
+    public static double toMilesPerHour(double metersPerSec) {
+        return metersPerSec * 2.23693629;
+    }
 }
