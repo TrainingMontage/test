@@ -87,7 +87,9 @@ public class TrackModel {
                 "   curr_block integer NOT NULL,\n" +
                 "   position real NOT NULL,\n" +
                 "   direction integer NOT NULL,\n" +
-                "   reported_change integer NOT NULL\n" +
+                "   reported_change integer NOT NULL,\n" +
+                "   reported_passengers integer NOT NULL,\n" +
+                "   loaded_passengers integer NOT NULL\n" +
                 ");";
 
             // create a connection to the database
@@ -813,8 +815,8 @@ public class TrackModel {
      */
     public boolean initializeTrain(int trainId, int starting_blockId) {
         String sql_load = "INSERT INTO trains " +
-                          "(id,curr_block,position,direction,reported_change) " +
-                          "VALUES (?, ?, ?, 0, 0);";
+                          "(id,curr_block,position,direction,reported_change,reported_passengers,loaded_passengers) " +
+                          "VALUES (?, ?, ?, 0, 0, 0, 0);";
 
         try {
             PreparedStatement stmt = this.conn.prepareStatement(sql_load);
@@ -1054,6 +1056,7 @@ public class TrackModel {
             // actually update table
             this.setTrainBlock(trainId, next_block.getId());
             this.setTrainReportedBlockChange(trainId, false);
+            this.setTrainReportedPassenger(trainId, false);
             this.setTrainDirection(trainId, newDirection);
             this.setTrainPosition(trainId, position + displacement - curr_block.getLength());
         } else {
@@ -1290,8 +1293,8 @@ public class TrackModel {
         }
     }
 
-       /**
-     * Gets the train's current block (internal use only)
+    /**
+     * Gets the train's reported block change flag
      *
      * @param      trainId       The train identifier
      *
@@ -1312,7 +1315,7 @@ public class TrackModel {
     }
 
     /**
-     * Sets the train's current block (internal use only)
+     * Sets the train's reported block change flag (internal use only)
      *
      * @param      reported_change  whether the change has been reported
      * @param      block            The new block
@@ -1339,10 +1342,102 @@ public class TrackModel {
         return false;
     }
 
-    // public int getPassengers(int trainId); TODO
-    public int getPassengers(int trainId) {
-        // TODO
-        return 50;
+    /**
+     * Gets the train's reported passenger flag
+     *
+     * @param      trainId       The train identifier
+     *
+     * @return     true if change has been reported, false otherwise
+     *
+     */
+    protected boolean getTrainReportedPassenger(int trainId) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT reported_passengers FROM trains WHERE id = ?");
+            stmt.setInt(1, trainId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+
+            return rs.getInt("reported_passengers") > 0 ? true : false;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Sets the train's reported passenger flag (internal use only)
+     *
+     * @param      reported_passengers  whether the change has been reported
+     * @param      block            The new block
+     *
+     * @return     new reported_passengers value
+     */
+    protected boolean setTrainReportedPassenger(int trainId, boolean reported_passengers) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET reported_passengers = ? WHERE id = ?;");
+            stmt.setDouble(1, reported_passengers ? 1 : 0);
+            stmt.setInt(2, trainId);
+            stmt.execute();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return reported_passengers;
+    }
+
+    /**
+     * Gets the train's loaded passenger flag
+     *
+     * @param      trainId       The train identifier
+     *
+     * @return     true if change has been loaded, false otherwise
+     *
+     */
+    protected boolean getTrainLoadedPassenger(int trainId) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT loaded_passengers FROM trains WHERE id = ?");
+            stmt.setInt(1, trainId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+
+            return rs.getInt("loaded_passengers") > 0 ? true : false;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Sets the train's loaded passenger flag (internal use only)
+     *
+     * @param      loaded_passengers  whether the change has been loaded
+     * @param      block            The new block
+     *
+     * @return     new loaded_passengers value
+     */
+    protected boolean setTrainLoadedPassenger(int trainId, boolean loaded_passengers) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET loaded_passengers = ? WHERE id = ?;");
+            stmt.setDouble(1, loaded_passengers ? 1 : 0);
+            stmt.setInt(2, trainId);
+            stmt.execute();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return loaded_passengers;
+    }
+
+    public int getTrainPassengers(int trainId) {
+        if (!this.getTrainReportedPassenger(trainId) && this.getStaticBlock(this.getTrainBlock(trainId)).getStation() != null) {
+            this.setTrainReportedPassenger(trainId, true);
+
+            if (this.getTrainLoadedPassenger(trainId)) {
+                return 50; // TODO max passnegers
+            } else {
+                // TODO set train model passenger count
+                this.setTrainLoadedPassenger(trainId, true);
+                return 0;
+            }
+        }
+
+        return 0;
     }
 
 }

@@ -149,7 +149,7 @@ public class TrackModelTest {
         // add a train
         stmt.execute("DELETE FROM trains;");
 
-        _s = _tm.conn.prepareStatement("INSERT INTO trains (id,curr_block,position,direction,reported_change) VALUES (?, ?, ?, ?, ?);");
+        _s = _tm.conn.prepareStatement("INSERT INTO trains (id,curr_block,position,direction,reported_change,reported_passengers,loaded_passengers) VALUES (?, ?, ?, ?, ?, ?, ?);");
 
         i = 1;
         _s.setInt(i++, 1); // id
@@ -157,6 +157,8 @@ public class TrackModelTest {
         _s.setDouble(i++, 0.0); // position
         _s.setInt(i++, 0); // direction
         _s.setInt(i++, 0); // reported_change
+        _s.setInt(i++, 0); // reported_passengers
+        _s.setInt(i++, 0); // loaded_passengers
         _s.executeUpdate();
 
     }
@@ -1092,6 +1094,36 @@ public class TrackModelTest {
     }
 
     /**
+     * Validate basic train reported passenger get.
+     */
+    @Test
+    public void testGetTrainReportedPassengers() throws SQLException {
+        assertEquals(false, _tm.getTrainReportedPassenger(1));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE trains SET reported_passengers = ? WHERE id = ?;");
+        stmt.setInt(1, 1);
+        stmt.setInt(2, 1);
+        stmt.execute();
+
+        assertEquals(true, _tm.getTrainReportedPassenger(1));
+    }
+
+        /**
+     * Validate basic train reported passenger get.
+     */
+    @Test
+    public void testGetTrainLoadedPassengers() throws SQLException {
+        assertEquals(false, _tm.getTrainLoadedPassenger(1));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE trains SET loaded_passengers = ? WHERE id = ?;");
+        stmt.setInt(1, 1);
+        stmt.setInt(2, 1);
+        stmt.execute();
+
+        assertEquals(true, _tm.getTrainLoadedPassenger(1));
+    }
+
+    /**
      * Test repeatedly calling getTrainBlockChange
      */
     @Test
@@ -1099,5 +1131,19 @@ public class TrackModelTest {
         assertTrue(_tm.getTrainBlockChange(1));
         assertFalse(_tm.getTrainBlockChange(1));
         assertFalse(_tm.getTrainBlockChange(1));
+    }
+
+    /**
+     * Test repeatedly calling getTrainBlockChange
+     */
+    @Test
+    public void testGetTrainPassengers() throws SQLException {
+        assertEquals(0, _tm.getTrainPassengers(1));
+
+        // set reported passengers flag to false (simulate movement)
+        _tm.setTrainReportedPassenger(1, false);
+
+        assertEquals(50, _tm.getTrainPassengers(1));
+        assertEquals(0, _tm.getTrainPassengers(1));
     }
 }
