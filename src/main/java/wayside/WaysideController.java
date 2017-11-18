@@ -158,7 +158,6 @@ public class WaysideController {
                 }
                 authority[block] = true;
             }
-            int _______ = 5;
         }
 
         // check the switches
