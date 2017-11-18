@@ -42,13 +42,27 @@ public class NoTrack {
     }
 
     @Test
+    public void badSquash() {
+        Suggestion[] s = new Suggestion[] {
+            new Suggestion(2, 3, new int[] {2, 3, 4}),
+            new Suggestion(3, 4, new int[] {3, 4, 5})
+        };
+        try {
+            WaysideController.squash(s);
+            Assert.fail("Did not find unsafe suggestion unsafe");
+        } catch (Exception e) {
+            Assert.assertTrue(true);
+        }
+    }
+
+    @Test
     public void squshSpeed() {
         Suggestion[] s = new Suggestion[] {
             new Suggestion(2, 3, new int[] {2, 3})
         };
         int[] speed = WaysideController.squashSpeed(s);
-        Assert.assertEquals(speed[1], 0);
-        Assert.assertEquals(speed[2], 3);
-        Assert.assertEquals(speed[3], 0);
+        Assert.assertEquals(0, speed[1]);
+        Assert.assertEquals(3, speed[2]);
+        Assert.assertEquals(0, speed[3]);
     }
 }
