@@ -35,7 +35,7 @@ public class TrackModel {
      *
      * constructs the database.
      *
-     * @throws SQLException could not contruct TrackModel object
+     * @could not contruct TrackModel object
      * @throws ClassNotFoundException could not find JDBC
      */
     private TrackModel() throws SQLException, ClassNotFoundException {
@@ -90,7 +90,6 @@ public class TrackModel {
      *
      * @return     this TrackModel
      *
-     * @throws     SQLException            could not initialize track
      * @throws     ClassNotFoundException  could not find JDBC
      */
     public static TrackModel getTrackModel() throws SQLException, ClassNotFoundException {
@@ -105,7 +104,6 @@ public class TrackModel {
      *
      * @return     An instance of the track model
      *
-     * @throws     SQLException            could not initialize track
      * @throws     ClassNotFoundException  could not find JDBC
      */
     public static TrackModel init() throws SQLException, ClassNotFoundException {
@@ -117,7 +115,6 @@ public class TrackModel {
      *
      * @return     the singleton instance of the track model
      *
-     * @throws     SQLException            Couldn't initialize the model
      * @throws     ClassNotFoundException  Couldn't initialize the model
      * @throws     IOException             Couldn't import the track
      */
@@ -142,10 +139,9 @@ public class TrackModel {
      *
      * @return     True if successful, False otherwise
      *
-     * @throws      SQLException could not import track
      * @throws      IOException could not read track import
      */
-    public boolean importTrack(File file) throws SQLException, IOException {
+    public boolean importTrack(File file) {
         String sql_load = "INSERT INTO blocks " +
                           "(id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,underground,line,next,bidirectional,speed_limit,beacon,heater) " +
                           "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
@@ -153,74 +149,78 @@ public class TrackModel {
 
         this.clearDB();
 
-        PreparedStatement stmt = this.conn.prepareStatement(sql_load);
-        br = new BufferedReader(new FileReader(file));
-        String line;
-        while ( (line = br.readLine()) != null) {
-            String[] values = line.split(",", -1);
-            int i = 0; // id
-            stmt.setInt(i + 1, Integer.parseInt(values[i]));
-
-            i++; // region
-            stmt.setString(i + 1, values[i]);
-
-            i++; // grade
-            stmt.setDouble(i + 1, Double.parseDouble(values[i]));
-
-            i++; // elevation
-            stmt.setDouble(i + 1, Double.parseDouble(values[i]));
-
-            i++; // length
-            stmt.setDouble(i + 1, Double.parseDouble(values[i]));
-
-            i++; // station
-            stmt.setString(i + 1, values[i]);
-
-            i++; // switch_root (optional)
-            if (!values[i].equals("")) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement(sql_load);
+            br = new BufferedReader(new FileReader(file));
+            String line;
+            while ( (line = br.readLine()) != null) {
+                String[] values = line.split(",", -1);
+                int i = 0; // id
                 stmt.setInt(i + 1, Integer.parseInt(values[i]));
-            } else {
-                stmt.setNull(i + 1, java.sql.Types.INTEGER);
-            }
 
-            i++; // switch_leaf
-            if (!values[i].equals("")) {
+                i++; // region
+                stmt.setString(i + 1, values[i]);
+
+                i++; // grade
+                stmt.setDouble(i + 1, Double.parseDouble(values[i]));
+
+                i++; // elevation
+                stmt.setDouble(i + 1, Double.parseDouble(values[i]));
+
+                i++; // length
+                stmt.setDouble(i + 1, Double.parseDouble(values[i]));
+
+                i++; // station
+                stmt.setString(i + 1, values[i]);
+
+                i++; // switch_root (optional)
+                if (!values[i].equals("")) {
+                    stmt.setInt(i + 1, Integer.parseInt(values[i]));
+                } else {
+                    stmt.setNull(i + 1, java.sql.Types.INTEGER);
+                }
+
+                i++; // switch_leaf
+                if (!values[i].equals("")) {
+                    stmt.setInt(i + 1, Integer.parseInt(values[i]));
+                } else {
+                    stmt.setNull(i + 1, java.sql.Types.INTEGER);
+                }
+
+                i++; // rr_crossing
                 stmt.setInt(i + 1, Integer.parseInt(values[i]));
-            } else {
-                stmt.setNull(i + 1, java.sql.Types.INTEGER);
-            }
 
-            i++; // rr_crossing
-            stmt.setInt(i + 1, Integer.parseInt(values[i]));
-
-            i++; // underground
-            stmt.setInt(i + 1, Integer.parseInt(values[i]));
-
-            i++; // line
-            stmt.setString(i + 1, values[i]);
-
-            i++; // next
-            stmt.setInt(i + 1, Integer.parseInt(values[i]));
-
-            i++; // bidirectional
-            stmt.setInt(i + 1, Integer.parseInt(values[i]));
-
-            i++; // speed limit
-            stmt.setInt(i + 1, Integer.parseInt(values[i]));
-
-            i++; // beacon
-            if (!values[i].equals("")) {
+                i++; // underground
                 stmt.setInt(i + 1, Integer.parseInt(values[i]));
-            } else {
-                stmt.setNull(i + 1, java.sql.Types.INTEGER);
+
+                i++; // line
+                stmt.setString(i + 1, values[i]);
+
+                i++; // next
+                stmt.setInt(i + 1, Integer.parseInt(values[i]));
+
+                i++; // bidirectional
+                stmt.setInt(i + 1, Integer.parseInt(values[i]));
+
+                i++; // speed limit
+                stmt.setInt(i + 1, Integer.parseInt(values[i]));
+
+                i++; // beacon
+                if (!values[i].equals("")) {
+                    stmt.setInt(i + 1, Integer.parseInt(values[i]));
+                } else {
+                    stmt.setNull(i + 1, java.sql.Types.INTEGER);
+                }
+
+                i++; // heater
+                stmt.setInt(i + 1, Integer.parseInt(values[i]));
+
+                stmt.executeUpdate();
             }
-
-            i++; // heater
-            stmt.setInt(i + 1, Integer.parseInt(values[i]));
-
-            stmt.executeUpdate();
+            br.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        br.close();
 
         return true;
     }
@@ -232,69 +232,75 @@ public class TrackModel {
      *
      * @return     True if successful, False otherwise
      *
-     * @throws     SQLException could not export track
      * @throws     IOException could not write to export file
      */
-    public boolean exportTrack(File file) throws SQLException, IOException {
-        // create file if it doesn't exist
-        if (!file.exists()) {
-            file.createNewFile();
-        }
+    public boolean exportTrack(File file) {
+        try {
+            // create file if it doesn't exist
+            if (!file.exists()) {
+                file.createNewFile();
+            }
 
-        // write output to file
-        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-        Statement stmt = this.conn.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,underground,line,next,bidirectional,speed_limit,beacon,heater FROM blocks");
+            // write output to file
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            Statement stmt = this.conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,underground,line,next,bidirectional,speed_limit,beacon,heater FROM blocks");
 
-        boolean first = true;
-        while (rs.next()) {
-            String arrStr[] = {
-                rs.getString("id"),
-                rs.getString("region"),
-                rs.getString("grade"),
-                rs.getString("elevation"),
-                rs.getString("length"),
-                rs.getString("station"),
-                rs.getString("switch_root"),
-                rs.getString("switch_leaf"),
-                rs.getString("rr_crossing"),
-                rs.getString("underground"),
-                rs.getString("line"),
-                rs.getString("next"),
-                rs.getString("bidirectional"),
-                rs.getString("speed_limit"),
-                rs.getString("beacon"),
-                rs.getString("heater")
-            };
+            boolean first = true;
+            while (rs.next()) {
+                String arrStr[] = {
+                    rs.getString("id"),
+                    rs.getString("region"),
+                    rs.getString("grade"),
+                    rs.getString("elevation"),
+                    rs.getString("length"),
+                    rs.getString("station"),
+                    rs.getString("switch_root"),
+                    rs.getString("switch_leaf"),
+                    rs.getString("rr_crossing"),
+                    rs.getString("underground"),
+                    rs.getString("line"),
+                    rs.getString("next"),
+                    rs.getString("bidirectional"),
+                    rs.getString("speed_limit"),
+                    rs.getString("beacon"),
+                    rs.getString("heater")
+                };
 
-            // get rid of nulls
-            for (int i = 0; i < arrStr.length; i++) {
-                if (arrStr[i] == null) {
-                    arrStr[i] = "";
+                // get rid of nulls
+                for (int i = 0; i < arrStr.length; i++) {
+                    if (arrStr[i] == null) {
+                        arrStr[i] = "";
+                    }
                 }
-            }
 
-            // join
-            if (!first) {
-                writer.write("\n");
-            } else {
-                first = false;
+                // join
+                if (!first) {
+                    writer.write("\n");
+                } else {
+                    first = false;
+                }
+                writer.write(String.join(",", arrStr));
             }
-            writer.write(String.join(",", arrStr));
+            writer.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        writer.close();
         return true;
     }
 
     /**
      * Truncates all tables in database
      *
-     * @throws     SQLException  Something went wrong when clearing
      */
-    protected void clearDB() throws SQLException {
-        Statement stmt = this.conn.createStatement();
-        stmt.execute("DELETE FROM blocks;");
-        stmt.execute("DELETE FROM trains;");
+    protected void clearDB() {
+        try {
+            Statement stmt = this.conn.createStatement();
+            stmt.execute("DELETE FROM blocks;");
+            stmt.execute("DELETE FROM trains;");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -304,16 +310,19 @@ public class TrackModel {
      *
      * @return     True if occupied, False otherwise.
      *
-     * @throws     SQLException could not get occupancy
      */
-    public boolean isOccupied(int blockId) throws SQLException {
+    public boolean isOccupied(int blockId) {
         Integer occupied = null;
-        PreparedStatement stmt = this.conn.prepareStatement("SELECT occupied FROM blocks WHERE id = ?;");
-        stmt.setInt(1, blockId);
-        ResultSet rs = stmt.executeQuery();
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT occupied FROM blocks WHERE id = ?;");
+            stmt.setInt(1, blockId);
+            ResultSet rs = stmt.executeQuery();
 
-        rs.next();
-        occupied = (Integer) rs.getObject("occupied");
+            rs.next();
+            occupied = (Integer) rs.getObject("occupied");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         return occupied != null;
     }
@@ -326,18 +335,21 @@ public class TrackModel {
      *
      * @return     the new value for occupied
      *
-     * @throws     SQLException could not set occupancy
      */
-    protected boolean setOccupied(int blockId, boolean occupied) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET occupied = ? WHERE id = ?;");
-        if (occupied) {
-            stmt.setInt(1, 1);
-        } else {
-            stmt.setNull(1, java.sql.Types.INTEGER);
+    protected boolean setOccupied(int blockId, boolean occupied) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET occupied = ? WHERE id = ?;");
+            if (occupied) {
+                stmt.setInt(1, 1);
+            } else {
+                stmt.setNull(1, java.sql.Types.INTEGER);
+            }
+            stmt.setInt(2, blockId);
+            stmt.execute();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        stmt.setInt(2, blockId);
-        stmt.execute();
-        return true;
+        return occupied;
     }
 
     /**
@@ -345,16 +357,19 @@ public class TrackModel {
      *
      * @return     A list of block ids.
      *
-     * @throws     SQLException could not get block ids
      */
-    public ArrayList<Integer> getBlockIds() throws SQLException {
+    public ArrayList<Integer> getBlockIds() {
         ArrayList<Integer> blocks = new ArrayList<Integer>();
 
-        Statement stmt = this.conn.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT id FROM blocks;");
+        try {
+            Statement stmt = this.conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT id FROM blocks;");
 
-        while (rs.next()) {
-            blocks.add(rs.getInt("id"));
+            while (rs.next()) {
+                blocks.add(rs.getInt("id"));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         return blocks;
@@ -365,16 +380,19 @@ public class TrackModel {
      *
      * @return     A list of switch ids.
      *
-     * @throws     SQLException could not get switch ids
      */
-    public ArrayList<Integer> getSwitchIds() throws SQLException {
+    public ArrayList<Integer> getSwitchIds() {
         ArrayList<Integer> switches = new ArrayList<Integer>();
 
-        Statement stmt = this.conn.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT DISTINCT switch_root as id FROM blocks where switch_root is not NULL;");
+        try {
+            Statement stmt = this.conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT DISTINCT switch_root as id FROM blocks where switch_root is not NULL;");
 
-        while (rs.next()) {
-            switches.add(rs.getInt("id"));
+            while (rs.next()) {
+                switches.add(rs.getInt("id"));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         return switches;
@@ -385,16 +403,19 @@ public class TrackModel {
      *
      * @return     A list of train ids.
      *
-     * @throws     SQLException could not get train ids
      */
-    public ArrayList<Integer> getTrainIds() throws SQLException {
+    public ArrayList<Integer> getTrainIds() {
         ArrayList<Integer> trains = new ArrayList<Integer>();
 
-        Statement stmt = this.conn.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT id FROM trains;");
+        try {
+            Statement stmt = this.conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT id FROM trains;");
 
-        while (rs.next()) {
-            trains.add(rs.getInt("id"));
+            while (rs.next()) {
+                trains.add(rs.getInt("id"));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         return trains;
@@ -407,9 +428,8 @@ public class TrackModel {
      *
      * @return     The static block.
      *
-     * @throws     SQLException could not get static block
      */
-    public StaticBlock getStaticBlock(int blockId) throws SQLException {
+    public StaticBlock getStaticBlock(int blockId) {
         return getStaticBlock(blockId, null);
     }
 
@@ -421,46 +441,49 @@ public class TrackModel {
      *
      * @return     The static block.
      *
-     * @throws     SQLException could not get static block
      */
-    protected StaticBlock getStaticBlock(int blockId, StaticSwitch staticSwitch) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("SELECT id,region,grade,elevation,length,station,switch_root,switch_leaf,next FROM blocks WHERE id = ?");
-        stmt.setInt(1, blockId);
-        ResultSet rs = stmt.executeQuery();
-        rs.next();
+    protected StaticBlock getStaticBlock(int blockId, StaticSwitch staticSwitch) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT id,region,grade,elevation,length,station,switch_root,switch_leaf,next FROM blocks WHERE id = ?");
+            stmt.setInt(1, blockId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
 
-        // if there is a switch connected, this has to be handled differently to make the objects
-        // point to eachother properly and we don't start an infinite loop
-        StaticSwitch sw;
-        if (staticSwitch == null) {
-            int switch_root = rs.getInt("switch_root");
-            if (!rs.wasNull()) {
-                sw = getStaticSwitch(rs.getInt("switch_root"));
-                return sw.getRoot();
-            } else {
-                int switch_leaf = rs.getInt("switch_leaf");
+            // if there is a switch connected, this has to be handled differently to make the objects
+            // point to eachother properly and we don't start an infinite loop
+            StaticSwitch sw;
+            if (staticSwitch == null) {
+                int switch_root = rs.getInt("switch_root");
                 if (!rs.wasNull()) {
-                    sw = getStaticSwitch(switch_leaf);
-                    if (sw.getDefaultLeaf().getId() == rs.getInt("id")) {
-                        return sw.getDefaultLeaf();
-                    } else {
-                        return sw.getActiveLeaf();
+                    sw = getStaticSwitch(rs.getInt("switch_root"));
+                    return sw.getRoot();
+                } else {
+                    int switch_leaf = rs.getInt("switch_leaf");
+                    if (!rs.wasNull()) {
+                        sw = getStaticSwitch(switch_leaf);
+                        if (sw.getDefaultLeaf().getId() == rs.getInt("id")) {
+                            return sw.getDefaultLeaf();
+                        } else {
+                            return sw.getActiveLeaf();
+                        }
                     }
                 }
             }
+
+            // correct switch is already given or there is no switch
+            StaticBlock block = new StaticBlock();
+
+            block.setId(rs.getInt("id"));
+            block.setRegion(rs.getString("region"));
+            block.setGrade(rs.getDouble("grade"));
+            block.setElevation(rs.getDouble("elevation"));
+            block.setLength(rs.getDouble("length"));
+            block.setStation(rs.getString("station"));
+            block.setStaticSwitch(staticSwitch);
+            return block;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-
-        // correct switch is already given or there is no switch
-        StaticBlock block = new StaticBlock();
-
-        block.setId(rs.getInt("id"));
-        block.setRegion(rs.getString("region"));
-        block.setGrade(rs.getDouble("grade"));
-        block.setElevation(rs.getDouble("elevation"));
-        block.setLength(rs.getDouble("length"));
-        block.setStation(rs.getString("station"));
-        block.setStaticSwitch(staticSwitch);
-        return block;
     }
 
 
@@ -471,31 +494,34 @@ public class TrackModel {
      *
      * @return     The static switch.
      *
-     * @throws     SQLException could not get static switch
      */
-    public StaticSwitch getStaticSwitch(int switchId) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement(
-                                     "SELECT A.switch_root as switch_id, A.id as root_id, B.id as inactive_id, C.id as active_id " +
-                                     "FROM blocks A " +
-                                     "LEFT JOIN blocks B " +
-                                     "ON (A.switch_root = B.switch_leaf and A.next = B.id) " +
-                                     "LEFT JOIN blocks C " +
-                                     "ON (A.switch_root = C.switch_leaf and A.next <> C.id)" +
-                                     "WHERE A.switch_root = ?");
-        stmt.setInt(1, switchId);
-        ResultSet rs = stmt.executeQuery();
-        rs.next();
+    public StaticSwitch getStaticSwitch(int switchId) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement(
+                                         "SELECT A.switch_root as switch_id, A.id as root_id, B.id as inactive_id, C.id as active_id " +
+                                         "FROM blocks A " +
+                                         "LEFT JOIN blocks B " +
+                                         "ON (A.switch_root = B.switch_leaf and A.next = B.id) " +
+                                         "LEFT JOIN blocks C " +
+                                         "ON (A.switch_root = C.switch_leaf and A.next <> C.id)" +
+                                         "WHERE A.switch_root = ?");
+            stmt.setInt(1, switchId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
 
-        int root_id = rs.getInt("root_id");
-        int inactive_id = rs.getInt("inactive_id");
-        int active_id = rs.getInt("active_id");
+            int root_id = rs.getInt("root_id");
+            int inactive_id = rs.getInt("inactive_id");
+            int active_id = rs.getInt("active_id");
 
-        StaticSwitch sw = new StaticSwitch(rs.getInt("switch_id"));
-        sw.setRoot(getStaticBlock(root_id, sw));
-        sw.setDefaultLeaf(getStaticBlock(inactive_id, sw));
-        sw.setActiveLeaf(getStaticBlock(active_id, sw));
+            StaticSwitch sw = new StaticSwitch(rs.getInt("switch_id"));
+            sw.setRoot(getStaticBlock(root_id, sw));
+            sw.setDefaultLeaf(getStaticBlock(inactive_id, sw));
+            sw.setActiveLeaf(getStaticBlock(active_id, sw));
+            return sw;
 
-        return sw;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -506,14 +532,17 @@ public class TrackModel {
      *
      * @return     true if successful, false otherwise
      *
-     * @throws      SQLException could not set region
      */
-    protected boolean setRegion(int blockId, String region) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET region = ? WHERE id = ?;");
-        stmt.setString(1, region);
-        stmt.setInt(2, blockId);
-        stmt.execute();
-        return true;
+    protected boolean setRegion(int blockId, String region) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET region = ? WHERE id = ?;");
+            stmt.setString(1, region);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -524,14 +553,17 @@ public class TrackModel {
      *
      * @return     true if successful, false otherwise
      *
-     * @throws     SQLException could not set length
      */
-    protected boolean setLength(int blockId, double length) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET length = ? WHERE id = ?;");
-        stmt.setDouble(1, length);
-        stmt.setInt(2, blockId);
-        stmt.execute();
-        return true;
+    protected boolean setLength(int blockId, double length) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET length = ? WHERE id = ?;");
+            stmt.setDouble(1, length);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -542,14 +574,17 @@ public class TrackModel {
      *
      * @return     true if successful, false otherwise
      *
-     * @throws     SQLException could not set elevation
      */
-    protected boolean setElevation(int blockId, double elevation) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET elevation = ? WHERE id = ?;");
-        stmt.setDouble(1, elevation);
-        stmt.setInt(2, blockId);
-        stmt.execute();
-        return true;
+    protected boolean setElevation(int blockId, double elevation) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET elevation = ? WHERE id = ?;");
+            stmt.setDouble(1, elevation);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -560,14 +595,17 @@ public class TrackModel {
      *
      * @return     true if successful, false otherwise
      *
-     * @throws     SQLException could not set grade
      */
-    protected boolean setGrade(int blockId, double grade) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET grade = ? WHERE id = ?;");
-        stmt.setDouble(1, grade);
-        stmt.setInt(2, blockId);
-        stmt.execute();
-        return true;
+    protected boolean setGrade(int blockId, double grade) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET grade = ? WHERE id = ?;");
+            stmt.setDouble(1, grade);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -578,13 +616,17 @@ public class TrackModel {
      *
      * @return     new value of the switch (active/inactive)
      *
-     * @throws     SQLException  Something went wrong, likely the block id wasn't right.
      */
-    public boolean setSwitch(int blockId, boolean active) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET switch_active = ? WHERE id = ?;");
-        stmt.setInt(1, active ? 1 : 0);
-        stmt.setInt(2, blockId);
-        stmt.execute();
+    public boolean setSwitch(int blockId, boolean active) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET switch_active = ? WHERE id = ?;");
+            stmt.setInt(1, active ? 1 : 0);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         return active;
     }
 
@@ -595,15 +637,19 @@ public class TrackModel {
      *
      * @return     The switch state. (True for engaged)
      *
-     * @throws     SQLException  Something went wrong, likely the block id wasn't right.
      */
-    public boolean getSwitch(int blockId) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("SELECT switch_active FROM blocks WHERE id = ?");
-        stmt.setInt(1, blockId);
-        ResultSet rs = stmt.executeQuery();
-        rs.next();
+    public boolean getSwitch(int blockId) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT switch_active FROM blocks WHERE id = ?");
+            stmt.setInt(1, blockId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
 
-        return rs.getInt("switch_active") > 0 ? true : false;
+            return rs.getInt("switch_active") > 0 ? true : false;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -614,13 +660,17 @@ public class TrackModel {
      *
      * @return     the new authority value
      *
-     * @throws     SQLException  Something went wrong, likely the block id wasn't right.
      */
-    public boolean setAuthority(int blockId, boolean authority) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET authority = ? WHERE id = ?;");
-        stmt.setInt(1, authority ? 1 : 0);
-        stmt.setInt(2, blockId);
-        stmt.execute();
+    public boolean setAuthority(int blockId, boolean authority) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET authority = ? WHERE id = ?;");
+            stmt.setInt(1, authority ? 1 : 0);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         return authority;
     }
 
@@ -632,13 +682,17 @@ public class TrackModel {
      *
      * @return     the new suggested speed
      *
-     * @throws     SQLException  Something went wrong, likely the block id wasn't right.
      */
-    public int setSpeed(int blockId, int speed) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET speed = ? WHERE id = ?;");
-        stmt.setInt(1, speed);
-        stmt.setInt(2, blockId);
-        stmt.execute();
+    public int setSpeed(int blockId, int speed) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET speed = ? WHERE id = ?;");
+            stmt.setInt(1, speed);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         return speed;
     }
 
@@ -649,15 +703,18 @@ public class TrackModel {
      *
      * @return     The crossing state.
      *
-     * @throws     SQLException  Something went wrong, likely the block id wasn't right.
      */
-    public boolean getCrossingState(int blockId) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("SELECT crossing_active FROM blocks WHERE id = ?");
-        stmt.setInt(1, blockId);
-        ResultSet rs = stmt.executeQuery();
-        rs.next();
+    public boolean getCrossingState(int blockId) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT crossing_active FROM blocks WHERE id = ?");
+            stmt.setInt(1, blockId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
 
-        return rs.getInt("crossing_active") > 0 ? true : false;
+            return rs.getInt("crossing_active") > 0 ? true : false;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -668,13 +725,17 @@ public class TrackModel {
      *
      * @return     The new crossing state
      *
-     * @throws     SQLException  Something went wrong, likely the block id wasn't right.
      */
-    public boolean setCrossingState(int blockId, boolean active) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET crossing_active = ? WHERE id = ?;");
-        stmt.setInt(1, active ? 1 : 0);
-        stmt.setInt(2, blockId);
-        stmt.execute();
+    public boolean setCrossingState(int blockId, boolean active) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET crossing_active = ? WHERE id = ?;");
+            stmt.setInt(1, active ? 1 : 0);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return active;
     }
 
@@ -686,14 +747,18 @@ public class TrackModel {
      *
      * @return     the new signal state
      *
-     * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't right.
      */
-    public boolean setSignal(int blockId, boolean active) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET signal = ? WHERE id = ?;");
-        stmt.setInt(1, active ? 1 : 0);
-        stmt.setInt(2, blockId);
-        stmt.execute();
+    public boolean setSignal(int blockId, boolean active) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET signal = ? WHERE id = ?;");
+            stmt.setInt(1, active ? 1 : 0);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         return active;
     }
 
@@ -704,16 +769,20 @@ public class TrackModel {
      *
      * @return     The signal.
      *
-     * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't right.
      */
-    public boolean getSignal(int blockId) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("SELECT signal FROM blocks WHERE id = ?");
-        stmt.setInt(1, blockId);
-        ResultSet rs = stmt.executeQuery();
-        rs.next();
+    public boolean getSignal(int blockId) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT signal FROM blocks WHERE id = ?");
+            stmt.setInt(1, blockId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
 
-        return ((Integer) rs.getObject("signal")) != null;
+            return ((Integer) rs.getObject("signal")) != null;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -724,22 +793,24 @@ public class TrackModel {
      *
      * @return     true if successful, false otherwise
      *
-     * @throws     SQLException      Something went wrong, likely the block id
      *                               wasn't valid
      */
-    public boolean initializeTrain(int trainId, int starting_blockId) throws SQLException {
+    public boolean initializeTrain(int trainId, int starting_blockId) {
         String sql_load = "INSERT INTO trains " +
                           "(id,curr_block,position,direction) " +
                           "VALUES (?, ?, ?, 0);";
 
-        PreparedStatement stmt = this.conn.prepareStatement(sql_load);
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement(sql_load);
 
-        int i = 1;
-        stmt.setInt(i++, trainId);  // train id
-        stmt.setInt(i++, starting_blockId); // curr_block
-        stmt.setDouble(i++, 0);
-        stmt.executeUpdate();
-
+            int i = 1;
+            stmt.setInt(i++, trainId);  // train id
+            stmt.setInt(i++, starting_blockId); // curr_block
+            stmt.setDouble(i++, 0);
+            stmt.executeUpdate();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return true;
     }
 
@@ -750,17 +821,21 @@ public class TrackModel {
      *
      * @return     The train authority.
      *
-     * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    public int getTrainAuthority(int trainId) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("SELECT authority FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
-        stmt.setInt(1, trainId);
-        ResultSet rs = stmt.executeQuery();
-        rs.next();
+    public int getTrainAuthority(int trainId) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT authority FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
+            stmt.setInt(1, trainId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
 
-        Integer authority = (Integer) rs.getObject("authority");
-        return authority == null ? 0 : authority;
+            Integer authority = (Integer) rs.getObject("authority");
+            return authority == null ? 0 : authority;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -770,17 +845,21 @@ public class TrackModel {
      *
      * @return     The train speed.
      *
-     * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    public double getTrainSpeed(int trainId) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("SELECT speed FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
-        stmt.setInt(1, trainId);
-        ResultSet rs = stmt.executeQuery();
-        rs.next();
+    public double getTrainSpeed(int trainId) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT speed FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
+            stmt.setInt(1, trainId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
 
-        Integer speed = (Integer) rs.getObject("speed");
-        return speed == null ? 0 : speed;
+            Integer speed = (Integer) rs.getObject("speed");
+            return speed == null ? 0 : speed;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -790,20 +869,24 @@ public class TrackModel {
      *
      * @return     The train beacon.
      *
-     * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    public byte[] getTrainBeacon(int trainId) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("SELECT beacon FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
-        stmt.setInt(1, trainId);
-        ResultSet rs = stmt.executeQuery();
-        rs.next();
+    public byte[] getTrainBeacon(int trainId) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT beacon FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
+            stmt.setInt(1, trainId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
 
-        Integer beacon =  (Integer) rs.getObject("beacon");
-        if (beacon != null) {
-            return ByteBuffer.allocate(4).putInt(beacon).array();
-        } else {
-            return null;
+            Integer beacon =  (Integer) rs.getObject("beacon");
+            if (beacon != null) {
+                return ByteBuffer.allocate(4).putInt(beacon).array();
+            } else {
+                return null;
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -814,20 +897,24 @@ public class TrackModel {
      *
      * @return     True if icy track, False otherwise.
      *
-     * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    public boolean isIcyTrack(int trainId) throws SQLException {
+    public boolean isIcyTrack(int trainId) {
         if (Environment.temperature > FREEZING) {
             return false;
         }
 
-        PreparedStatement stmt = this.conn.prepareStatement("SELECT heater FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
-        stmt.setInt(1, trainId);
-        ResultSet rs = stmt.executeQuery();
-        rs.next();
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT heater FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
+            stmt.setInt(1, trainId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
 
-        return rs.getInt("heater") == 0;
+            return rs.getInt("heater") == 0;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -837,16 +924,20 @@ public class TrackModel {
      *
      * @return     The grade.
      *
-     * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    public double getGrade(int trainId) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("SELECT grade FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
-        stmt.setInt(1, trainId);
-        ResultSet rs = stmt.executeQuery();
-        rs.next();
+    public double getGrade(int trainId) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT grade FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
+            stmt.setInt(1, trainId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
 
-        return rs.getDouble("grade");
+            return rs.getDouble("grade");
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -856,17 +947,21 @@ public class TrackModel {
      *
      * @return     The status.
      *
-     * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    public BlockStatus getStatus(int blockId) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("SELECT status FROM blocks WHERE id = ?");
-        stmt.setInt(1, blockId);
-        ResultSet rs = stmt.executeQuery();
-        rs.next();
+    public BlockStatus getStatus(int blockId) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT status FROM blocks WHERE id = ?");
+            stmt.setInt(1, blockId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
 
-        Integer status = (Integer) rs.getObject("status");
-        return BlockStatus.values()[status == null ? 0 : status];
+            Integer status = (Integer) rs.getObject("status");
+            return BlockStatus.values()[status == null ? 0 : status];
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -877,14 +972,18 @@ public class TrackModel {
      *
      * @return     { description_of_the_return_value }
      *
-     * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    public BlockStatus setStatus(int blockId, BlockStatus status) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET status = ? WHERE id = ?;");
-        stmt.setInt(1, status.ordinal());
-        stmt.setInt(2, blockId);
-        stmt.execute();
+    public BlockStatus setStatus(int blockId, BlockStatus status) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET status = ? WHERE id = ?;");
+            stmt.setInt(1, status.ordinal());
+            stmt.setInt(2, blockId);
+            stmt.execute();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         return status;
     }
 
@@ -893,9 +992,8 @@ public class TrackModel {
      *
      * @return     The static track.
      *
-     * @throws     SQLException  Something went wrong, I don't know what would cause this
      */
-    public StaticTrack getStaticTrack() throws SQLException {
+    public StaticTrack getStaticTrack() {
         if (this.staticTrack == null) {
             this.staticTrack = new StaticTrack();
             for (Integer blockId : this.getBlockIds()) {
@@ -910,7 +1008,7 @@ public class TrackModel {
     }
 
 
-    private void update() throws SQLException {
+    private void update() {
         if (this.last_updated == Environment.clock) {
             return;
         }
@@ -921,7 +1019,7 @@ public class TrackModel {
         this.last_updated = Environment.clock;
     }
 
-    private void updateTrain(int trainId) throws SQLException {
+    private void updateTrain(int trainId) {
         // TODO
         // fake actually calling a train until there's something there to call
         // ...getDisplacement()
@@ -953,17 +1051,20 @@ public class TrackModel {
      *
      * @return     The train's position within the block
      *
-     * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    private double getTrainPosition(int trainId) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("SELECT position FROM trains WHERE id = ?");
-        stmt.setInt(1, trainId);
-        ResultSet rs = stmt.executeQuery();
-        rs.next();
+    private double getTrainPosition(int trainId) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT position FROM trains WHERE id = ?");
+            stmt.setInt(1, trainId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
 
-        double position = rs.getDouble("position");
-        return position;
+            double position = rs.getDouble("position");
+            return position;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -973,14 +1074,18 @@ public class TrackModel {
      *
      * @return     The train's position within the block
      *
-     * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    private double setTrainPosition(int trainId, double position) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET position = ? WHERE id = ?;");
-        stmt.setDouble(1, position);
-        stmt.setInt(2, trainId);
-        stmt.execute();
+    private double setTrainPosition(int trainId, double position) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET position = ? WHERE id = ?;");
+            stmt.setDouble(1, position);
+            stmt.setInt(2, trainId);
+            stmt.execute();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         return position;
     }
 
@@ -991,17 +1096,20 @@ public class TrackModel {
      *
      * @return     The train's direction within the block
      *
-     * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    private boolean getTrainDirection(int trainId) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("SELECT direction FROM trains WHERE id = ?");
-        stmt.setInt(1, trainId);
-        ResultSet rs = stmt.executeQuery();
-        rs.next();
+    private boolean getTrainDirection(int trainId) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT direction FROM trains WHERE id = ?");
+            stmt.setInt(1, trainId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
 
-        int direction = rs.getInt("direction");
-        return direction  > 0 ? true : false;
+            int direction = rs.getInt("direction");
+            return direction  > 0 ? true : false;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -1011,15 +1119,18 @@ public class TrackModel {
      *
      * @return     The train's direction within the block
      *
-     * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    private boolean setTrainDirection(int trainId, boolean direction) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET direction = ? WHERE id = ?;");
-        stmt.setInt(1, direction ? 1 : 0);
-        stmt.setInt(2, trainId);
-        stmt.execute();
-        return direction;
+    private boolean setTrainDirection(int trainId, boolean direction) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET direction = ? WHERE id = ?;");
+            stmt.setInt(1, direction ? 1 : 0);
+            stmt.setInt(2, trainId);
+            stmt.execute();
+            return direction;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -1029,17 +1140,20 @@ public class TrackModel {
      *
      * @return     The static block that train is on
      *
-     * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    private int getTrainBlock(int trainId) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("SELECT curr_block FROM trains WHERE id = ?");
-        stmt.setInt(1, trainId);
-        ResultSet rs = stmt.executeQuery();
-        rs.next();
+    private int getTrainBlock(int trainId) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT curr_block FROM trains WHERE id = ?");
+            stmt.setInt(1, trainId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
 
-        int curr_block = rs.getInt("curr_block");
-        return curr_block;
+            int curr_block = rs.getInt("curr_block");
+            return curr_block;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -1050,18 +1164,21 @@ public class TrackModel {
      *
      * @return     The static block that train is on
      *
-     * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    private int setTrainBlock(int trainId, int block) throws SQLException {
-        PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET curr_block = ? WHERE id = ?;");
-        stmt.setDouble(1, block);
-        stmt.setInt(2, trainId);
-        stmt.execute();
+    private int setTrainBlock(int trainId, int block) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET curr_block = ? WHERE id = ?;");
+            stmt.setDouble(1, block);
+            stmt.setInt(2, trainId);
+            stmt.execute();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return block;
     }
 
-    private StaticBlock nextBlock(StaticBlock curr_block, boolean direction) throws SQLException {
+    private StaticBlock nextBlock(StaticBlock curr_block, boolean direction) {
         StaticSwitch sw = curr_block.getStaticSwitch();
         StaticBlock next = this.getStaticBlock(curr_block.getNextId());
         if (sw != null && ((sw.contains(next) && direction) || (!sw.contains(next) && !direction))) {
@@ -1087,11 +1204,15 @@ public class TrackModel {
                 return this.getStaticBlock(curr_block.getNextId());
             } else {
                 // lookup and return previous block
-                PreparedStatement stmt = this.conn.prepareStatement("SELECT id FROM blocks WHERE next = ?");
-                stmt.setInt(1, curr_block.getId());
-                ResultSet rs = stmt.executeQuery();
-                rs.next();
-                return this.getStaticBlock(rs.getInt("id"));
+                try {
+                    PreparedStatement stmt = this.conn.prepareStatement("SELECT id FROM blocks WHERE next = ?");
+                    stmt.setInt(1, curr_block.getId());
+                    ResultSet rs = stmt.executeQuery();
+                    rs.next();
+                    return this.getStaticBlock(rs.getInt("id"));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         // error?
