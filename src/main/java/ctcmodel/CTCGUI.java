@@ -6,6 +6,8 @@ import javax.swing.*;
 import javax.swing.border.*;
 import shared.Convert;
 import shared.BlockStatus;
+import org.graphstream.graph.*;
+import org.graphstream.graph.implementations.*;
 
 public class CTCGUI {
     // dummy modules that the GUI needs to interact with
@@ -58,6 +60,8 @@ public class CTCGUI {
     private static JTextArea trackPassengersText;
     private static JTextArea trackCrossingText;
     
+    private static Graph graph;
+    
     //has the user pushed the new train button but not yet launched it
     private static boolean isNewTrain;
     
@@ -65,6 +69,18 @@ public class CTCGUI {
     CTCGUI(){
         //trackModel = atrackModel;
         //trainModel = atrainModel;
+    }
+    
+    public static void init(){
+        System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
+        graph = new MultiGraph("Tutorial 1");//allow directed graphs
+        
+        graph.addNode("Yard");
+        //read in from track
+        StaticTrack t = TrackModel.getTrackModel().getStaticTrack();
+        for(;;){
+        
+        }
     }
     
     public static void addComponentsToPane(Container pane){
@@ -879,7 +895,7 @@ public class CTCGUI {
     
     static void fillTrackInfo(int blockID){
         //fill static info
-        StaticBlock staticBlock = TrackModel.getStaticBlock(blockID);
+        StaticBlock staticBlock = TrackModel.getTrackModel().getStaticBlock(blockID);
         StaticSwitch staticSwitch = staticBlock.getStaticSwitch();
         trackIDText.setText("" + staticBlock.getId());
         trackSpeedText.setText("" + Convert.metersToFeet(staticBlock.getSpeedLimit())*3600.0/5280.0 + " mph");//convert units
@@ -994,8 +1010,10 @@ public class CTCGUI {
         }
         
     }
-    
-    public static void createAndShowGUI() {
+    public static Graph getGraph(){
+        return graph;
+    }
+    public static void createAndShowGUI(){
         try{
             UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
         }catch(Exception e){

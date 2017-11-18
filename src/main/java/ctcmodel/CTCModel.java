@@ -1,8 +1,12 @@
 package CTCModel;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import shared.BlockStatus;
 import shared.Suggestion;
+import shared.Environment;
+import org.graphstream.graph.*;
+import org.graphstream.graph.implementations.*;
 
 public class CTCModel{
     private static CTCModel model = null;
@@ -17,6 +21,8 @@ public class CTCModel{
     private static ArrayList<Suggestion> suggestions;
     private static ArrayList<CTCTrainData> trainData;
     //private static JLabel trainLabel;
+    private static int last_clock;
+    private static StaticTrack track;
     
     private CTCModel(TrainTracker atrainTracker){
         trainTracker = atrainTracker;
@@ -26,6 +32,8 @@ public class CTCModel{
         if (model == null) {
             model = new CTCModel(atrainTracker);
         }
+        track = TrackModel.getTrackModel().getStaticTrack();
+        CTCGUI.init();
     }
     
     static int checkTrainInputs(String block, String speed, String authority, String destination){
@@ -113,6 +121,36 @@ public class CTCModel{
             }
         }
         return null;
+    }
+    public static void update(){
+        int current_time = Environment.clock;
+        
+        updateTrack();
+        
+        sendSuggestions();
+        
+        last_clock = current_time;
+        return;
+    }
+    public static void updateTrack(){
+        Iterator itr = CTCGUI.getGraph().getEdgeIterator();
+        while(itr.hasNext()) {
+            Edge element = (Edge) itr.next();
+            Integer blockId = element.getAttribute("track.id");
+            boolean occupied = WaysideController.isOccupied(blockId.intValue());
+            element.setAttribute("track.occupied", new Boolean(occupied));
+            //Boolean isSwitch = (Boolean) element.getAttribute("track.isSwitch");
+            if(((Boolean) element.getAttribute("track.isSwitch")).booleanValue()){
+                boolean switchState = WaysideController.getSwitch(blockId.intValue());
+                element.setAttribute("track.switch", new Boolean(switchState));
+                boolean signalState = WaysideController.getSignal(blockId.intValue());
+                element.setAttribute("track.signal", new Boolean(signalState));
+            }
+            if(((Boolean) element.getAttribute("track.isCrossing")).booleanValue()){
+                boolean xingState = WaysideController.getCrossing(blockId.intValue());
+                element.setAttribute("track.crossing", new Boolean(xingState));
+            }
+        }
     }
     //TODO: i was writing a new function here but i forgot what it was. i'm leaving this as a reminder for now
     //public static int

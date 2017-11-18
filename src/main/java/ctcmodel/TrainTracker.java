@@ -9,7 +9,7 @@ public class TrainTracker{
     }
     
     public static int createTrain(int startingBlockID){
-        TrackModel.addTrain(startingBlockID);
+        TrackModel.getTrackModel().addTrain(startingBlockID);
         return ++trainID;
     }
 }
