@@ -1,7 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/*   ______                 _           _                 
+ *  /_  __/ _____  ____ _  (_) ____    (_) ____    ____ _ 
+ *   / /   / ___/ / __ `/ / / / __ \  / / / __ \  / __ `/ 
+ *  / /   / /    / /_/ / / / / / / / / / / / / / / /_/ /  
+ * /_/   /_/     \__,_/ /_/ /_/ /_/ /_/ /_/ /_/  \__, /   
+ *                                              /____/    
+ *     __  ___                 __                        
+ *    /  |/  / ____    ____   / /_  ____ _  ____ _  ___ 
+ *   / /|_/ / / __ \  / __ \ / __/ / __ `/ / __ `/ / _ \
+ *  / /  / / / /_/ / / / / // /_  / /_/ / / /_/ / /  __/
+ * /_/  /_/  \____/ /_/ /_/ \__/  \__,_/  \__, /  \___/ 
+ *                                       /____/         
+ *
+ * @author Parth Dadhania
  */
 package trainmodel;
 
@@ -11,10 +21,6 @@ import java.lang.Math;
 import trackmodel.*;
 import shared.convert;
 
-/**
- *
- * @author Parth
- */
 public class Train {
     int trainId;
     int authority;
