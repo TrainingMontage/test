@@ -32,7 +32,6 @@ public class TrackModelTest {
         //        _< 3-> < 4-> <-
         //       /              5
         // < 1-> - <-2 > < 6-> <
-        // 
         int i = 1;
         _s.setInt(i++, 1); // id
         _s.setString(i++, "A"); // region
@@ -150,13 +149,14 @@ public class TrackModelTest {
         // add a train
         stmt.execute("DELETE FROM trains;");
 
-        _s = _tm.conn.prepareStatement("INSERT INTO trains (id,curr_block,position,direction) VALUES (?, ?, ?, ?);");
+        _s = _tm.conn.prepareStatement("INSERT INTO trains (id,curr_block,position,direction,reported_change) VALUES (?, ?, ?, ?, ?);");
 
         i = 1;
         _s.setInt(i++, 1); // id
         _s.setInt(i++, 1); // curr_block
         _s.setDouble(i++, 0.0); // position
         _s.setInt(i++, 0); // direction
+        _s.setInt(i++, 0); // reported_change
         _s.executeUpdate();
 
     }
@@ -1076,4 +1076,28 @@ public class TrackModelTest {
         assertEquals(_tm.getStaticBlock(1), occupancy.get(0));
     }
 
+    /**
+     * Validate basic train reported change get.
+     */
+    @Test
+    public void testGetTrainReportedBlockChange() throws SQLException {
+        assertEquals(false, _tm.getTrainReportedBlockChange(1));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE trains SET reported_change = ? WHERE id = ?;");
+        stmt.setInt(1, 1);
+        stmt.setInt(2, 1);
+        stmt.execute();
+
+        assertEquals(true, _tm.getTrainReportedBlockChange(1));
+    }
+
+    /**
+     * Test repeatedly calling getTrainBlockChange
+     */
+    @Test
+    public void testGetTrainBlockChange() throws SQLException {
+        assertTrue(_tm.getTrainBlockChange(1));
+        assertFalse(_tm.getTrainBlockChange(1));
+        assertFalse(_tm.getTrainBlockChange(1));
+    }
 }

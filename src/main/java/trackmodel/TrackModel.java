@@ -86,7 +86,8 @@ public class TrackModel {
                 "   id integer PRIMARY KEY,\n" +
                 "   curr_block integer NOT NULL,\n" +
                 "   position real NOT NULL,\n" +
-                "   direction integer NOT NULL\n" +
+                "   direction integer NOT NULL,\n" +
+                "   reported_change integer NOT NULL\n" +
                 ");";
 
             // create a connection to the database
@@ -812,8 +813,8 @@ public class TrackModel {
      */
     public boolean initializeTrain(int trainId, int starting_blockId) {
         String sql_load = "INSERT INTO trains " +
-                          "(id,curr_block,position,direction) " +
-                          "VALUES (?, ?, ?, 0);";
+                          "(id,curr_block,position,direction,reported_change) " +
+                          "VALUES (?, ?, ?, 0, 0);";
 
         try {
             PreparedStatement stmt = this.conn.prepareStatement(sql_load);
@@ -1039,6 +1040,7 @@ public class TrackModel {
         // fake actually calling a train until there's something there to call
         // ...getDisplacement()
         double displacement = 2.50; // hardcode 2.5m displacement for now
+        double train_length = 50; // TODO: train length
 
         StaticBlock curr_block = this.getStaticBlock(this.getTrainBlock(trainId));
         double position = this.getTrainPosition(trainId);
@@ -1051,6 +1053,7 @@ public class TrackModel {
 
             // actually update table
             this.setTrainBlock(trainId, next_block.getId());
+            this.setTrainReportedBlockChange(trainId, false);
             this.setTrainDirection(trainId, newDirection);
             this.setTrainPosition(trainId, position + displacement - curr_block.getLength());
         } else {
@@ -1073,7 +1076,7 @@ public class TrackModel {
         for (StaticBlock block : occupancyList) {
             sum += block.getLength();
         }
-        while (sum > 50)  {  // train length
+        while (sum > train_length)  {
             occupancyList.remove(0);
 
             sum = 0;
@@ -1287,14 +1290,59 @@ public class TrackModel {
         }
     }
 
+       /**
+     * Gets the train's current block (internal use only)
+     *
+     * @param      trainId       The train identifier
+     *
+     * @return     true if change has been reported, false otherwise
+     *
+     */
+    protected boolean getTrainReportedBlockChange(int trainId) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT reported_change FROM trains WHERE id = ?");
+            stmt.setInt(1, trainId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+
+            return rs.getInt("reported_change") > 0 ? true : false;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Sets the train's current block (internal use only)
+     *
+     * @param      reported_change  whether the change has been reported
+     * @param      block            The new block
+     *
+     * @return     new reported_change value
+     */
+    protected boolean setTrainReportedBlockChange(int trainId, boolean reported_change) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET reported_change = ? WHERE id = ?;");
+            stmt.setDouble(1, reported_change ? 1 : 0);
+            stmt.setInt(2, trainId);
+            stmt.execute();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return reported_change;
+    }
+
+    public boolean getTrainBlockChange(int trainId) {
+        if (!this.getTrainReportedBlockChange(trainId)) {
+            this.setTrainReportedBlockChange(trainId, true);
+            return true;
+        }
+        return false;
+    }
+
     // public int getPassengers(int trainId); TODO
     public int getPassengers(int trainId) {
         // TODO
         return 50;
     }
 
-    public boolean getTrainBlockChange(int trainId) {
-        // TODO
-        return false;
-    }
 }
