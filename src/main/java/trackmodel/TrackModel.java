@@ -1117,7 +1117,7 @@ public class TrackModel {
     }
 
     protected boolean nextDirection(StaticBlock curr_block, StaticBlock next_block) {
-        if (next_block.getNextId() == curr_block.getId()) {
+        if (next_block.getNextId() == curr_block.getId() || (next_block.getStaticSwitch() != null && next_block.getStaticSwitch().getActiveLeaf().equals(curr_block))) {
             return false;
         } else {
             return true;
