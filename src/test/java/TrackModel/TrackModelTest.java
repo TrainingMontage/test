@@ -389,6 +389,8 @@ public class TrackModelTest {
         assertEquals(17, block.getElevation(), epsilon);
         assertEquals(50, block.getLength(), epsilon);
         assertEquals("", block.getStation());
+        assertEquals(5, block.getNextId());
+        assertEquals(3, block.getPreviousId());
         assertNull(block.getStaticSwitch());
     }
 

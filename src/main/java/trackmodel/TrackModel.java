@@ -461,7 +461,7 @@ public class TrackModel {
      */
     protected StaticBlock getStaticBlock(int blockId, StaticSwitch staticSwitch) {
         try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT id,region,grade,elevation,length,station,switch_root,switch_leaf,next FROM blocks WHERE id = ?");
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT id,region,grade,elevation,length,station,switch_root,switch_leaf,next,bidirectional FROM blocks WHERE id = ?");
             stmt.setInt(1, blockId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -497,7 +497,17 @@ public class TrackModel {
             block.setLength(rs.getDouble("length"));
             block.setStation(rs.getString("station"));
             block.setNextId(rs.getInt("next"));
+            block.setBidirectional(rs.getInt("bidirectional") > 0 ? true : false);
             block.setStaticSwitch(staticSwitch);
+
+            // determine and set previous id
+            stmt = this.conn.prepareStatement("SELECT id FROM blocks WHERE next = ?");
+            stmt.setInt(1, blockId);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                block.setPreviousId(rs.getInt("id"));                
+            }
+
             return block;
         } catch (Exception e) {
             throw new RuntimeException(e);
