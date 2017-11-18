@@ -18,6 +18,7 @@ package trainmodel;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 
 public class TrainTracker{
     ArrayList<Train> trainList = new ArrayList<Train>();
@@ -26,6 +27,10 @@ public class TrainTracker{
         Train newTrain = new Train(trainId, blockId);
         trainList.add(newTrain);
         trainId++;
+    }
+    public Train getTrain(int trainId){
+        Train trainModel = trainList.get(trainId);
+        return trainModel;
     }
     public static void main(String args[]){
         TrainModelGUI gui = new TrainModelGUI();

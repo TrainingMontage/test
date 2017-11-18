@@ -18,12 +18,16 @@ package trainmodel;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.lang.Math;
-import trackmodel.*;
-import shared.convert;
-import environment;
+import trackmodel.TrackModel;
+import traincontroller.TrainController;
+import shared.Convert;
+import shared.Environment;
 
 public class Train {
     int trainId;
+    int blockId;
+    TrainController trainController;
+
     int authority;
     double power; //W
     double maxPower = 120000.0; //Watts
@@ -37,7 +41,7 @@ public class Train {
     double totalMass;
     double friction = 0.47;
     double grade;
-    double time;
+    int time;
     boolean serviceBrake;
     double serviceBrakeRate = -1.2; //m/s^2
     boolean emergencyBrake;
@@ -62,8 +66,9 @@ public class Train {
     NumberFormat formatter = new DecimalFormat("#0.00");
 
 
-    public Train(int newTrainId, int blockId){
+    public Train(int newTrainId, int newblockId){
         trainId = newTrainId;
+        blockId = newblockId;
         numPassengers = 0;
         power = 0.0;
         totalMass = mass + (numPassengers*passengerWeight);
@@ -75,6 +80,9 @@ public class Train {
         leftDoor = 0;
         rightDoor = 0;
         time = 0;
+
+        //Create controller 
+        trainController = new TrainController(this, this.trainId, this.blockId);
 
         boolean brakeFailure = false;
         boolean engineFailure = false;
@@ -112,19 +120,19 @@ public class Train {
     }
 
     public boolean blockChange(){
-        return trackmodel.getTrainBlockChange(trainId);
+        return TrackModel.getTrackModel().getTrainBlockChange(trainId);
     }
 
     public boolean getAuthority(){
-        return trackmodel.getTrainAuthority(trainId);
+        return TrackModel.getTrackModel().getTrainAuthority(trainId);
     }
 
-    public boolean getSuggestedSpeed(){
-        return trackmodel.getTrainSpeed(trainId);
+    public double getSuggestedSpeed(){
+        return TrackModel.getTrackModel().getTrainSpeed(trainId);
     }
 
     public int getBeacon(){
-        return trackmodel.getTrainBeacon();
+        return TrackModel.getTrackModel().getTrainBeacon(trainId);
     }
 
     public void setPower(double powerInput){
@@ -226,11 +234,11 @@ public class Train {
 
     public double getDisplacement(){
         int lastTime = getTime();
-        int currentTime = environment.clock;
+        int currentTime = Environment.clock;
         double dVelocity = getVelocity();
         double displacement;
-        displacement = (dVelocity * (currentTime - lastTime) + (.5*(acceleration)*(currentTime-lastTime)^2));
-        time = environment.clock;
+        displacement = (dVelocity * (currentTime - lastTime) + (.5*(acceleration)*Math.pow((currentTime-lastTime),2)));
+        time = Environment.clock;
         return displacement;
 
     }
