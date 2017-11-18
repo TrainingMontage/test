@@ -1,8 +1,26 @@
+/*   ______                 _           _                 
+ *  /_  __/ _____  ____ _  (_) ____    (_) ____    ____ _ 
+ *   / /   / ___/ / __ `/ / / / __ \  / / / __ \  / __ `/ 
+ *  / /   / /    / /_/ / / / / / / / / / / / / / / /_/ /  
+ * /_/   /_/     \__,_/ /_/ /_/ /_/ /_/ /_/ /_/  \__, /   
+ *                                              /____/    
+ *     __  ___                 __                        
+ *    /  |/  / ____    ____   / /_  ____ _  ____ _  ___ 
+ *   / /|_/ / / __ \  / __ \ / __/ / __ `/ / __ `/ / _ \
+ *  / /  / / / /_/ / / / / // /_  / /_/ / / /_/ / /  __/
+ * /_/  /_/  \____/ /_/ /_/ \__/  \__,_/  \__, /  \___/ 
+ *                                       /____/         
+ *
+ * @author Isaac Goss
+ */
+
 package wayside;
 
 import shared.BlockStatus;
 import shared.Suggestion;
-import wayside.TrackModel;
+import trackmodel.TrackModel;
+import trackmodel.StaticBlock;
+import trackmodel.StaticSwitch;
 import wayside.UILayer;
 
 import java.util.List;
@@ -29,6 +47,15 @@ public class WaysideController {
     private static WC[] controllers;
     /** Maps the block ID to region number. */
     private static int[] regions;
+
+    /** 
+     * A horrible hacky solution,
+     * embedding information about the track in this module.
+     * Also, this is only the Green line.
+     */
+    private static final int TRACK_LEN = 151;
+    private static final int NUM_SWITCHES = 7;
+    private static final int[] CROSSINGS = {19};
 
     /**
      * Initiallizes the WaysideController.
@@ -64,7 +91,7 @@ public class WaysideController {
      * @return the occupancy of the block, true if it is occupied, false otherwise.
      */
     public static boolean isOccupied(int blockId) {
-        return TrackModel.isOccupied(blockId);
+        return TrackModel.getTrackModel().isOccupied(blockId);
     }
 
     /**
@@ -73,7 +100,7 @@ public class WaysideController {
      * @return the state of the signal, true if it is active, false otherwise.
      */
     public static boolean getSignal(int blockId) {
-        return TrackModel.getSignal(blockId);
+        return TrackModel.getTrackModel().getSignal(blockId);
     }
     
     /**
@@ -82,7 +109,7 @@ public class WaysideController {
      * @return the state of the swtich, true if it is active, false otherwise.
      */
     public static boolean getSwitch(int blockId) {
-        return TrackModel.getSwitch(blockId);
+        return TrackModel.getTrackModel().getSwitch(blockId);
     }
     
     /**
@@ -91,7 +118,7 @@ public class WaysideController {
      * @return the occupancy of the block, true if it is occupied, false otherwise.
      */
     public static boolean getCrossing(int blockId) {
-        return TrackModel.getCrossing(blockId);
+        return TrackModel.getTrackModel().getCrossingState(blockId);
     }
 
     /**
@@ -100,11 +127,11 @@ public class WaysideController {
      * @return the authority of the block, true if it has authority, false otherwise.
      */
     public static boolean getAuthority(int blockId) {
-        return TrackModel.getTrainAuthority(blockId);
+        return TrackModel.getTrackModel().getTrainAuthority(blockId) != 0;
     }
 
     public static int getSpeed(int blockId) {
-        return TrackModel.getTrainSpeed(blockId);
+        return (int) TrackModel.getTrackModel().getTrainSpeed(blockId);
     }
     
     /**
@@ -115,52 +142,46 @@ public class WaysideController {
      * @param suggestion an array of Suggestion objects, one for each train.
      */
     public static void suggest(Suggestion[] suggestion) {
-        boolean needToMoveSwitch = false;
-        
-        // Validate that this is a safe suggestion.
+        TrackModel tm = TrackModel.getTrackModel();
         boolean safe = true;
-        boolean[] safeAuthority = new boolean[TrackModel.TRACK_LEN];
-        for (Suggestion s: suggestion) {
-            for (int i = 0; i < s.authority.length; i++) {
-                int block = s.authority[i];
-                if (TrackModel.isOccupied(block) && block != s.blockId) {
-                    safe = false; // Authority would run over some other train.
-                    break;
+        boolean[] authority = new boolean[TRACK_LEN];
+        int[] speed = new int[TRACK_LEN];
+        boolean[] setActive = new boolean[NUM_SWITCHES];
+
+        // squash the given array to one suggestion list
+        squash: for (Suggestion s: suggestion) {
+            speed[s.blockId] = s.speed;
+            for (int block: s.authority) {
+                if (authority[block]) {
+                    safe = false;
+                    break squash;
                 }
-                if (safeAuthority[block]) {
-                    safe = false; // overlapping authority
-                    break;
-                }
-                if (block == TrackModel.ACTIVE_LEAF && i > 0 && s.authority[i-1] == TrackModel.SWITCH)
-                    needToMoveSwitch = true;
-                safeAuthority[block] = true;
+                authority[block] = true;
+            }
+            int _______ = 5;
+        }
+
+        // check the switches
+        for (int sw = 1; sw < NUM_SWITCHES; sw++) {
+            StaticSwitch ss = tm.getStaticSwitch(sw);
+            int root = ss.getRoot().getId();
+            int def = ss.getDefaultLeaf().getId();
+            int active = ss.getActiveLeaf().getId();
+            if (authority[def] && authority[active]) {
+                // both default and active branch cannot have authority
+                safe = false;
+            }
+            // which way should the switch go?
+            if (authority[active]) {
+                setActive[root] = true;
             }
         }
 
-        // Now act!
-        if (safe) {
-            for (int block = 0; block < TrackModel.TRACK_LEN; block++) {
-                TrackModel.setAuthority(block, safeAuthority[block]);
-                if (block == TrackModel.CROSSING && safeAuthority[block]) {
-                    TrackModel.setCrossing(TrackModel.CROSSING, true);
-                }
-            }
-            // The switch handling code needs to be paramaterized based on 
-            // which direction the train needs to go.
-            if (needToMoveSwitch) {
-                TrackModel.setSwitch(TrackModel.SWITCH, true);
-                TrackModel.setSignal(TrackModel.SWITCH, true);
-                TrackModel.setSignal(TrackModel.ACTIVE_LEAF, true);
-                TrackModel.setSignal(TrackModel.DEFAULT_LEAF, false);
-            }
-            for (Suggestion s: suggestion)
-                TrackModel.setSpeed(s.blockId, s.speed);
-        } else {
-            for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
-                TrackModel.setAuthority(i, false);
-                TrackModel.setSpeed(i, 0);
-            }
-        }
+        // check straight line
+        boolean[] occupied = new boolean[TRACK_LEN];
+
+        // If valid, write suggested values.
+        // Otherwise, write default values.
     }
     
     /**

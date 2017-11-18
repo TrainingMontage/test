@@ -1,6 +1,6 @@
 package trackmodel;
 
-class StaticBlock {
+public class StaticBlock {
     private int id;
     private String region;
     private double grade;
