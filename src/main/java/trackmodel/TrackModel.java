@@ -1,14 +1,14 @@
-/*   ______                 _           _                 
- *  /_  __/ _____  ____ _  (_) ____    (_) ____    ____ _ 
- *   / /   / ___/ / __ `/ / / / __ \  / / / __ \  / __ `/ 
- *  / /   / /    / /_/ / / / / / / / / / / / / / / /_/ /  
- * /_/   /_/     \__,_/ /_/ /_/ /_/ /_/ /_/ /_/  \__, /   
- *     __  ___                 __               /____/      
- *    /  |/  / ____    ____   / /_  ____ _  ____ _  ___ 
+/*   ______                 _           _
+ *  /_  __/ _____  ____ _  (_) ____    (_) ____    ____ _
+ *   / /   / ___/ / __ `/ / / / __ \  / / / __ \  / __ `/
+ *  / /   / /    / /_/ / / / / / / / / / / / / / / /_/ /
+ * /_/   /_/     \__,_/ /_/ /_/ /_/ /_/ /_/ /_/  \__, /
+ *     __  ___                 __               /____/
+ *    /  |/  / ____    ____   / /_  ____ _  ____ _  ___
  *   / /|_/ / / __ \  / __ \ / __/ / __ `/ / __ `/ / _ \
  *  / /  / / / /_/ / / / / // /_  / /_/ / / /_/ / /  __/
- * /_/  /_/  \____/ /_/ /_/ \__/  \__,_/  \__, /  \___/ 
- *                                       /____/         
+ * /_/  /_/  \____/ /_/ /_/ \__/  \__,_/  \__, /  \___/
+ *                                       /____/
  *
  * @author Alec Rosenbaum
  */
@@ -938,6 +938,8 @@ public class TrackModel {
         for (int trainId : this.getTrainIds()) {
             updateTrain(trainId);
         }
+
+        this.updateOccupancies();
         this.last_updated = Environment.clock;
     }
 
@@ -1149,6 +1151,24 @@ public class TrackModel {
             return false;
         } else {
             return true;
+        }
+    }
+
+    protected void updateOccupancies() throws SQLException {
+        // destroy previous occupancy
+        PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET occupied = 0;");
+        stmt.execute();
+
+        for (Map.Entry<Integer, ArrayList<StaticBlock>> entry : this.trainOccupancy.entrySet()) {
+            Integer key = entry.getKey();
+            ArrayList<StaticBlock> occupancies = entry.getValue();
+            
+            for (StaticBlock block : occupancies) {
+                if (this.isOccupied(block.getId())) {
+                    throw new TrainCrashException();
+                }
+                this.setOccupied(block.getId(), true);
+            }
         }
     }
 
