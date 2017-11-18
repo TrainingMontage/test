@@ -29,9 +29,9 @@ public class TrackModelTest {
         PreparedStatement _s = _tm.conn.prepareStatement("INSERT INTO blocks (id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,underground,line,next,bidirectional,speed_limit,beacon,heater) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
 
         // insert a few basic blocks
-        //        _< 3-> < 4-> < 5 ->
-        //       /
-        // < 1-> - < 2->
+        //        _< 3-> < 4-> <-
+        //       /              5
+        // < 1-> - < 2-> < 6-> <
         // 
         int i = 1;
         _s.setInt(i++, 1); // id
@@ -121,7 +121,26 @@ public class TrackModelTest {
         _s.setInt(i++, 1); // rr_crossing
         _s.setInt(i++, 0); // underground
         _s.setString(i++, "GREEN");  // line
-        _s.setInt(i++, 1);  // next
+        _s.setInt(i++, 4);  // next
+        _s.setInt(i++, 1);  // bidirectional
+        _s.setInt(i++, 15);  // speed_limit
+        _s.setNull(i++, java.sql.Types.INTEGER); // beacon
+        _s.setInt(i++, 0); // heater
+        _s.executeUpdate();
+
+        i = 1;
+        _s.setInt(i++, 6); // id
+        _s.setString(i++, "A"); // region
+        _s.setDouble(i++, 0.5); // grade
+        _s.setDouble(i++, 17); // elevation
+        _s.setInt(i++, 50); // length
+        _s.setString(i++, ""); // station
+        _s.setNull(i++, java.sql.Types.INTEGER); // switch_root
+        _s.setNull(i++, java.sql.Types.INTEGER); // switch_leaf
+        _s.setInt(i++, 1); // rr_crossing
+        _s.setInt(i++, 0); // underground
+        _s.setString(i++, "GREEN");  // line
+        _s.setInt(i++, 5);  // next
         _s.setInt(i++, 1);  // bidirectional
         _s.setInt(i++, 15);  // speed_limit
         _s.setNull(i++, java.sql.Types.INTEGER); // beacon
@@ -334,12 +353,13 @@ public class TrackModelTest {
     public void testTrackModelGetBlockIds() throws SQLException {
         ArrayList<Integer> ids = _tm.getBlockIds();
 
-        assertEquals(5, ids.size());
+        assertEquals(6, ids.size());
         assertEquals(1, (int) ids.get(0));
         assertEquals(2, (int) ids.get(1));
         assertEquals(3, (int) ids.get(2));
         assertEquals(4, (int) ids.get(3));
         assertEquals(5, (int) ids.get(4));
+        assertEquals(6, (int) ids.get(5));
     }
 
     /**
@@ -907,7 +927,7 @@ public class TrackModelTest {
     }
 
     /**
-     * Test getting the next block with default position switch 2 -> 1
+     * Test getting the next block with default position switch (reverse direction) 2 -> 1
      */
     @Test
     public void testNextBlockSwitchDefaultReverse() throws SQLException {
@@ -920,7 +940,7 @@ public class TrackModelTest {
     }
 
     /**
-     * Test getting the next block with default position switch 1 -> 3
+     * Test getting the next block with active position switch 1 -> 3
      */
     @Test
     public void testNextBlockSwitchActive() throws SQLException {
@@ -934,7 +954,7 @@ public class TrackModelTest {
     }
 
     /**
-     * Test getting the next block with default position switch 3 -> 1
+     * Test getting the next block 3 -> 1
      */
     @Test
     public void testNextBlockSwitchActiveReverse() throws SQLException {
@@ -946,6 +966,43 @@ public class TrackModelTest {
         StaticBlock actualNext = _tm.nextBlock(currBlock, false);
         assertEquals(expectedNext, actualNext);
     }
+
+    /**
+     * Test getting the next direction 3 -> 4
+     */
+    @Test
+    public void testNextDirectionLinear() throws SQLException {
+        StaticBlock curr = _tm.getStaticBlock(3);
+        StaticBlock next = _tm.getStaticBlock(4);
+
+        boolean nextDir = _tm.nextDirection(curr, next);
+        assertEquals(true, nextDir);
+    }
+
+    /**
+     * Test getting the next direction 4 -> 3
+     */
+    @Test
+    public void testNextDirectionLinearReverse() throws SQLException {
+        StaticBlock curr = _tm.getStaticBlock(4);
+        StaticBlock next = _tm.getStaticBlock(3);
+
+        boolean nextDir = _tm.nextDirection(curr, next);
+        assertEquals(false, nextDir);
+    }
+
+    /**
+     * Test getting the next direction 4 -> 5
+     */
+    @Test
+    public void testNextDirectionLinearDirectionChange() throws SQLException {
+        StaticBlock curr = _tm.getStaticBlock(4);
+        StaticBlock next = _tm.getStaticBlock(5);
+
+        boolean nextDir = _tm.nextDirection(curr, next);
+        assertEquals(false, nextDir);
+    }
+
 
     // /**
     //  * Test moving a train around a simple track
