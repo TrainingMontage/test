@@ -20,6 +20,7 @@ import java.text.NumberFormat;
 import java.lang.Math;
 import trackmodel.*;
 import shared.convert;
+import environment;
 
 public class Train {
     int trainId;
@@ -73,6 +74,7 @@ public class Train {
         lights = false;
         leftDoor = 0;
         rightDoor = 0;
+        time = 0;
 
         boolean brakeFailure = false;
         boolean engineFailure = false;
@@ -82,11 +84,31 @@ public class Train {
     public double getPower(){
         return power;
     }
-    public double getVelocity(){
+
+    public double getCurrentVelocity(){
         return velocity;
     }
+
+    public double getVelocity(){
+        double newPower = trainController.getPower();
+        setPower(newPower);
+        return velocity;
+    }
+
+    public void setPassengers(int passengers){
+        if(passengers > maxPassengers){
+            numPassengers = maxPassengers;
+        }
+        numPassengers = passengers;
+    }
+    /*
+    GUI Testing
     public void setTime(double timeInput){
         time = timeInput;
+    }
+    */
+    public double getMaxPower(){
+        return maxPower;
     }
 
     public boolean blockChange(){
@@ -99,6 +121,10 @@ public class Train {
 
     public boolean getSuggestedSpeed(){
         return trackmodel.getTrainSpeed(trainId);
+    }
+
+    public int getBeacon(){
+        return trackmodel.getTrainBeacon();
     }
 
     public void setPower(double powerInput){
@@ -192,6 +218,21 @@ public class Train {
     public double sine(double gradePercentage){
         double angle = Math.atan(gradePercentage/100);
         return Math.sin(angle);
+    }
+
+    public int getTime(){
+        return time;
+    }
+
+    public double getDisplacement(){
+        int lastTime = getTime();
+        int currentTime = environment.clock;
+        double dVelocity = getVelocity();
+        double displacement;
+        displacement = (dVelocity * (currentTime - lastTime) + (.5*(acceleration)*(currentTime-lastTime)^2));
+        time = environment.clock;
+        return displacement;
+
     }
 
 
