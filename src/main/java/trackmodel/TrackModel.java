@@ -35,54 +35,55 @@ public class TrackModel {
      *
      * constructs the database.
      *
-     * @could not contruct TrackModel object
-     * @throws ClassNotFoundException could not find JDBC
      */
-    private TrackModel() throws SQLException, ClassNotFoundException {
+    private TrackModel() {
+        try {
+            // construct the database
+            String sql_create_blocks =
+                "CREATE TABLE blocks (\n" +
+                "   id integer PRIMARY KEY,\n" + // static properties
+                "   region text NOT NULL,\n" +
+                "   grade real NOT NULL,\n" +
+                "   elevation real NOT NULL,\n" +
+                "   length real NOT NULL,\n" +
+                "   station text,\n" +
+                "   switch_root integer,\n" +
+                "   switch_leaf integer,\n" +
+                "   rr_crossing integer,\n" +
+                "   underground integer,\n" +
+                "   line text NOT NULL,\n" +
+                "   next integer NOT NULL,\n" +
+                "   bidirectional integer NOT NULL,\n" +
+                "   speed_limit integer NOT NULL,\n" +
+                "   beacon integer,\n" +
+                "   heater integer NOT NULL,\n" +
+                "   switch_active integer,\n" +  // dynamic properties
+                "   crossing_active integer,\n" +
+                "   occupied integer,\n" +
+                "   speed integer,\n" +
+                "   authority integer,\n" +
+                "   signal integer,\n" +
+                "   status integer\n" +
+                ");";
+            String sql_create_trains =
+                "CREATE TABLE trains (\n" +
+                "   id integer PRIMARY KEY,\n" +
+                "   curr_block integer NOT NULL,\n" +
+                "   position real NOT NULL,\n" +
+                "   direction integer NOT NULL\n" +
+                ");";
 
-        // construct the database
-        String sql_create_blocks =
-            "CREATE TABLE blocks (\n" +
-            "   id integer PRIMARY KEY,\n" + // static properties
-            "   region text NOT NULL,\n" +
-            "   grade real NOT NULL,\n" +
-            "   elevation real NOT NULL,\n" +
-            "   length real NOT NULL,\n" +
-            "   station text,\n" +
-            "   switch_root integer,\n" +
-            "   switch_leaf integer,\n" +
-            "   rr_crossing integer,\n" +
-            "   underground integer,\n" +
-            "   line text NOT NULL,\n" +
-            "   next integer NOT NULL,\n" +
-            "   bidirectional integer NOT NULL,\n" +
-            "   speed_limit integer NOT NULL,\n" +
-            "   beacon integer,\n" +
-            "   heater integer NOT NULL,\n" +
-            "   switch_active integer,\n" +  // dynamic properties
-            "   crossing_active integer,\n" +
-            "   occupied integer,\n" +
-            "   speed integer,\n" +
-            "   authority integer,\n" +
-            "   signal integer,\n" +
-            "   status integer\n" +
-            ");";
-        String sql_create_trains =
-            "CREATE TABLE trains (\n" +
-            "   id integer PRIMARY KEY,\n" +
-            "   curr_block integer NOT NULL,\n" +
-            "   position real NOT NULL,\n" +
-            "   direction integer NOT NULL\n" +
-            ");";
+            // create a connection to the database
+            Class.forName("org.sqlite.JDBC");
+            this.conn = DriverManager.getConnection("jdbc:sqlite::memory:");
 
-        // create a connection to the database
-        Class.forName("org.sqlite.JDBC");
-        this.conn = DriverManager.getConnection("jdbc:sqlite::memory:");
-
-        // create tables
-        Statement stmt = conn.createStatement();
-        stmt.execute(sql_create_blocks);
-        stmt.execute(sql_create_trains);
+            // create tables
+            Statement stmt = conn.createStatement();
+            stmt.execute(sql_create_blocks);
+            stmt.execute(sql_create_trains);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -92,7 +93,7 @@ public class TrackModel {
      *
      * @throws     ClassNotFoundException  could not find JDBC
      */
-    public static TrackModel getTrackModel() throws SQLException, ClassNotFoundException {
+    public static TrackModel getTrackModel() {
         if (model == null) {
             model = new TrackModel();
         }
@@ -106,7 +107,7 @@ public class TrackModel {
      *
      * @throws     ClassNotFoundException  could not find JDBC
      */
-    public static TrackModel init() throws SQLException, ClassNotFoundException {
+    public static TrackModel init() {
         return TrackModel.getTrackModel();
     }
 
@@ -118,7 +119,7 @@ public class TrackModel {
      * @throws     ClassNotFoundException  Couldn't initialize the model
      * @throws     IOException             Couldn't import the track
      */
-    public static TrackModel initWithTestData() throws SQLException, ClassNotFoundException, IOException {
+    public static TrackModel initWithTestData() {
         // initialize model
         TrackModel tm = getTrackModel();
 
