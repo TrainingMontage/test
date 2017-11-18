@@ -32,8 +32,13 @@ public class EmptyTrack {
     }
 
     @Test
-    public void doesThings() {
+    public void notOccupied() {
         Assert.assertFalse(WaysideController.isOccupied(2));
+    }
+
+    @Test
+    public void switchOff() {
+        Assert.assertFalse(WaysideController.getSwitch(2));
     }
 
 }
