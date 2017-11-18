@@ -329,7 +329,7 @@ public class TrackModelTest {
     @Test
     public void testTrackModelSetOccupiedFalse() throws SQLException {
 
-        assertTrue(_tm.setOccupied(1, false));
+        assertFalse(_tm.setOccupied(1, false));
 
         Integer occupied = 1;
         try {
