@@ -770,14 +770,14 @@ public class TrackModel {
      * @throws     SQLException  Something went wrong, likely the block id
      *                           wasn't valid
      */
-    public int getTrainAuthority(int trainId) throws SQLException {
+    public boolean getTrainAuthority(int trainId) throws SQLException {
         PreparedStatement stmt = this.conn.prepareStatement("SELECT authority FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
         stmt.setInt(1, trainId);
         ResultSet rs = stmt.executeQuery();
         rs.next();
 
         Integer authority = (Integer) rs.getObject("authority");
-        return authority == null ? 0 : authority;
+        return authority == null ? false : true;
     }
 
     /**

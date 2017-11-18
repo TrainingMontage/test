@@ -753,14 +753,14 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelGetTrainAuthority() throws SQLException {
-        assertEquals(0, _tm.getTrainAuthority(1));
+        assertEquals(false, _tm.getTrainAuthority(1));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET authority = ? WHERE id = ?;");
         stmt.setInt(1, 1);
         stmt.setInt(2, 1);
         stmt.execute();
 
-        assertEquals(1, _tm.getTrainAuthority(1));
+        assertEquals(true, _tm.getTrainAuthority(1));
     }
 
     /**
