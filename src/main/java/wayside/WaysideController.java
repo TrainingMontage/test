@@ -142,6 +142,28 @@ public class WaysideController {
     public static int getSpeed(int blockId) {
         return (int) TrackModel.getTrackModel().getTrainSpeed(blockId);
     }
+
+    /** 
+     * Transformation from what {@link CTCModel} gives to a linear list of authority.
+     * @param suggestion list of suggestions, one per train.
+     * @return linear representation of authority per block.
+     * @throws RuntimeException in case I can determine the given suggestion is unsafe.
+     */
+    static boolean[] squash(Suggestion[] suggestion) {
+        boolean[] authority = new boolean[TRACK_LEN];
+        for (Suggestion s: suggestion) {
+            for (int block: s.authority) {
+                if (authority[block]) {
+                    // TODO: make custom exception UnsafeSuggestion
+                    throw new RuntimeException(String.format(
+                        "Block %d was suggested twice", block
+                    ));
+                }
+                authority[block] = true;
+            }
+        }
+        return authority;
+    }
     
     /**
      * How CTC presents a suggestion of speed and authority for each train.
@@ -153,21 +175,11 @@ public class WaysideController {
     public static void suggest(Suggestion[] suggestion) {
         TrackModel tm = TrackModel.getTrackModel();
         boolean safe = true;
-        boolean[] authority = new boolean[TRACK_LEN];
         int[] speed = new int[TRACK_LEN];
         boolean[] setActive = new boolean[NUM_SWITCHES];
+        boolean[] authority = squash(suggestion);
 
         // squash the given array to one suggestion list
-        squash: for (Suggestion s: suggestion) {
-            speed[s.blockId] = s.speed;
-            for (int block: s.authority) {
-                if (authority[block]) {
-                    safe = false;
-                    break squash;
-                }
-                authority[block] = true;
-            }
-        }
 
         // check the switches
         for (int sw = 1; sw < NUM_SWITCHES; sw++) {
