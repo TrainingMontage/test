@@ -8,6 +8,7 @@ import java.io.*;
 import trackmodel.RunTrackModel;
 import CTCModel.CTCGUI;
 import wayside.WaysideController;
+import trainmodel.TrainModelGUI;
 
 public class GlobalGUI {
 
@@ -21,7 +22,7 @@ public class GlobalGUI {
         button = new JButton("CTC");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                CTCGUI.createAndShowGUI();
+                CTCGUI.run();
             }
         } );
         c.gridx = 0;
@@ -55,7 +56,8 @@ public class GlobalGUI {
         button = new JButton("TrainModel");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // TODO
+                TrainModelGUI gui = new TrainModelGUI();
+                gui.setVisible(true);
             }
         } );
         c.gridx = 0;

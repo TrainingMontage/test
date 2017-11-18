@@ -53,9 +53,9 @@ public class WaysideController {
      * embedding information about the track in this module.
      * Also, this is only the Green line.
      */
-    private static final int TRACK_LEN = 151;
-    private static final int NUM_SWITCHES = 7;
-    private static final int[] CROSSINGS = {19};
+    private static int TRACK_LEN = 151;
+    private static int NUM_SWITCHES = 7;
+    private static int[] CROSSINGS = {19};
 
     /**
      * Initiallizes the WaysideController.
@@ -65,6 +65,15 @@ public class WaysideController {
         // TODO
     }
 
+    /**
+     * Initiallizes for JUnit testing, 
+     * against "test_track.csv" instead of the real line.
+     */
+    public static void initTest() {
+        TRACK_LEN = 9;
+        NUM_SWITCHES = 2;
+        CROSSINGS = {};
+    }
 
     /**
      * Opens the WC UI.

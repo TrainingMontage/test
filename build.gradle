@@ -41,6 +41,11 @@ dependencies {
 
     // sqlite jdbc
     compile 'org.xerial:sqlite-jdbc:3.7.2'
+    
+    // CTC graph libs
+    compile 'org.graphstream:gs-core:1.3'
+    compile 'org.graphstream:gs-ui:1.3'
+    compile 'org.graphstream:gs-algo:1.3'
 }
 
 // show unchecked operations
@@ -81,11 +86,14 @@ jacocoTestReport {
 check.dependsOn jacocoTestReport
 
 // setup jar generation
+// see https://stackoverflow.com/questions/20045744/java-lang-securityexception-no-manifest-section-for-signature-file-entry
+// for more info on the exclude statements below
 task trackModelJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
     archiveName = 'TrackModel.jar'
     from sourceSets.main.output //tells the task to include the project code
     configurations = [ project.configurations.runtime ] //tells the task to shadow in the jars files in the 'runtime' scope
-
+    exclude 'META-INF/.RSA', 'META-INF/.SF','META-INF/*.DSA' //exclude security files from jars
+    
     manifest {
         attributes 'Main-Class': 'trackmodel.RunTrackModel'
     }
@@ -96,7 +104,8 @@ task CTCModelJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJa
     archiveName = 'CTCModel.jar'
     from sourceSets.main.output //tells the task to include the project code
     configurations = [ project.configurations.runtime ] //tells the task to shadow in the jars files in the 'runtime' scope
-
+    exclude 'META-INF/.RSA', 'META-INF/.SF','META-INF/*.DSA' //exclude security files from jars
+    
     manifest {
         attributes 'Main-Class': 'CTCModel.UseGUI'
     }
@@ -107,18 +116,31 @@ task waysideJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
     archiveName = 'Wayside.jar'
     from sourceSets.main.output //tells the task to include the project code
     configurations = [ project.configurations.runtime ] //tells the task to shadow in the jars files in the 'runtime' scope
-
+    exclude 'META-INF/.RSA', 'META-INF/.SF','META-INF/*.DSA' //exclude security files from jars
+    
     manifest {
         attributes 'Main-Class': 'wayside.Runner'
     }
 }
 jar.dependsOn waysideJar
 
+task trainModelJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
+    archiveName = 'TrainModel.jar'
+    from sourceSets.main.output //tells the task to include the project code
+    configurations = [ project.configurations.runtime ] //tells the task to shadow in the jars files in the 'runtime' scope
+
+    manifest {
+        attributes 'Main-Class': 'trainmodel.TrainTracker'
+    }
+}
+jar.dependsOn trainModelJar
+
 task combinedJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
     archiveName = 'Combined.jar'
     from sourceSets.main.output //tells the task to include the project code
     configurations = [ project.configurations.runtime ] //tells the task to shadow in the jars files in the 'runtime' scope
-
+    exclude 'META-INF/.RSA', 'META-INF/.SF','META-INF/*.DSA' //exclude security files from jars
+    
     manifest {
         attributes 'Main-Class': 'App'
     }
