@@ -20,12 +20,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 import shared.Suggestion;
+import trackmodel.TrackModel;
 import wayside.WaysideController;
 
 public class NoTrack {
 
     @Before
     public void init() {
+        TrackModel.initWithTestData();
         WaysideController.initTest();
     }
 
@@ -64,5 +66,16 @@ public class NoTrack {
         Assert.assertEquals(0, speed[1]);
         Assert.assertEquals(3, speed[2]);
         Assert.assertEquals(0, speed[3]);
+    }
+
+    @Test
+    public void safeSwitchesDefault() {
+        boolean[] authority = new boolean[] {
+            false, true, true, true,
+            false, false, false, false, false
+        };
+        boolean[] switchPos = WaysideController.checkAndSetSwitches(authority);
+        boolean[] expected = new boolean[WaysideController.TRACK_LEN];
+        Assert.assertArrayEquals(expected, switchPos);
     }
 }

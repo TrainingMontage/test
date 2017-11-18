@@ -53,9 +53,9 @@ public class WaysideController {
      * embedding information about the track in this module.
      * Also, this is only the Green line.
      */
-    private static int TRACK_LEN = 151;
-    private static int NUM_SWITCHES = 7;
-    private static int[] CROSSINGS = {19};
+    static int TRACK_LEN = 151;
+    static int NUM_SWITCHES = 7;
+    static int[] CROSSINGS = {19};
 
     /**
      * Initiallizes the WaysideController.
@@ -177,6 +177,34 @@ public class WaysideController {
         }
         return speed;
     }
+
+    /**
+     * Given the linear authorty is safe around all switches.
+     * @param authority the linear representation of authority.
+     * @return the switch positions based on authority.
+     * @throws RuntimeException if authority is found to be unsafe around switches.
+     */
+    static boolean[] checkAndSetSwitches(boolean[] authority) {
+        boolean[] pos = new boolean[TRACK_LEN];
+        for (int sw = 1; sw < NUM_SWITCHES; sw++) {
+            StaticSwitch ss = TrackModel.getTrackModel().getStaticSwitch(sw);
+            int root = ss.getRoot().getId();
+            int def = ss.getDefaultLeaf().getId();
+            int active = ss.getActiveLeaf().getId();
+            if (authority[def] && authority[active]) {
+                // both default and active branch cannot have authority
+                throw new RuntimeException(String.format(
+                    "Both leaves of a switch cannot be given authority.  " +
+                    "Blocks %d and %d were given suggested authority", def, active
+                ));
+            }
+            // which way should the switch go?
+            if (authority[active]) {
+                pos[root] = true;
+            }
+        }
+        return pos;
+    }
     
     /**
      * How CTC presents a suggestion of speed and authority for each train.
@@ -188,31 +216,9 @@ public class WaysideController {
     public static void suggest(Suggestion[] suggestion) {
         boolean[] authority = squash(suggestion);
         int[] speed = squashSpeed(suggestion);
-        boolean safe = true;
-        TrackModel tm = TrackModel.getTrackModel();
-        boolean[] setActive = new boolean[NUM_SWITCHES];
-
-        // squash the given array to one suggestion list
-
-        // check the switches
-        for (int sw = 1; sw < NUM_SWITCHES; sw++) {
-            StaticSwitch ss = tm.getStaticSwitch(sw);
-            int root = ss.getRoot().getId();
-            int def = ss.getDefaultLeaf().getId();
-            int active = ss.getActiveLeaf().getId();
-            if (authority[def] && authority[active]) {
-                // both default and active branch cannot have authority
-                safe = false;
-            }
-            // which way should the switch go?
-            if (authority[active]) {
-                setActive[root] = true;
-            }
-        }
+        boolean[] switchState = checkAndSetSwitches(authority);
 
         // check straight line
-        boolean[] occupied = new boolean[TRACK_LEN];
-
         // If valid, write suggested values.
         // Otherwise, write default values.
     }
