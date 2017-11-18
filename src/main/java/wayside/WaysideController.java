@@ -164,6 +164,19 @@ public class WaysideController {
         }
         return authority;
     }
+
+    /**
+     * Converts suggestion from {@link CTCModel} to linear layout of speed.
+     * @param suggestion Suggestions per train.
+     * @return linear representation of speeds.
+     */
+    static int[] squashSpeed(Suggestion[] suggestion) {
+        int[] speed = new int[TRACK_LEN];
+        for (Suggestion s: suggestion) {
+            speed[s.blockId] = s.speed;
+        }
+        return speed;
+    }
     
     /**
      * How CTC presents a suggestion of speed and authority for each train.
