@@ -1053,20 +1053,27 @@ public class TrackModelTest {
         assertEquals(false, nextDir);
     }
 
-    // /**
-    //  * Test moving a train around a simple track
-    //  */
-    // @Test
-    // public void testUpdateTrain() throws SQLException {
-    //     // setup environment clock time
-    //     Environment.clock = 1;
+    /**
+     * Test moving a train around a simple track
+     */
+    @Test
+    public void testUpdateTrain() throws SQLException {
+        // setup environment clock time
+        Environment.clock = 1;
 
-    //     // add train to line on a block (train id, starting block)
-    //     assertTrue(_tm.initializeTrain(2, 1));
+        // add train to line on a block (train id, starting block)
+        assertTrue(_tm.initializeTrain(2, 1));
 
-    //     // update trackmodel
-    //     // check train position
-    //     // check block occupancies
-    // }
+        // update trackmodel
+        _tm.updateTrain(1);
+
+        // check train position
+        assertEquals(2.5, _tm.getTrainPosition(1), epsilon);
+        
+        // check block occupancies
+        System.err.println(_tm.trainOccupancy);
+        ArrayList<StaticBlock> occupancy = _tm.trainOccupancy.get(1);
+        assertEquals(_tm.getStaticBlock(1), occupancy.get(0));
+    }
 
 }

@@ -3,8 +3,7 @@
  *   / /   / ___/ / __ `/ / / / __ \  / / / __ \  / __ `/ 
  *  / /   / /    / /_/ / / / / / / / / / / / / / / /_/ /  
  * /_/   /_/     \__,_/ /_/ /_/ /_/ /_/ /_/ /_/  \__, /   
- *                                              /____/    
- *     __  ___                 __                        
+ *     __  ___                 __               /____/      
  *    /  |/  / ____    ____   / /_  ____ _  ____ _  ___ 
  *   / /|_/ / / __ \  / __ \ / __/ / __ `/ / __ `/ / _ \
  *  / /  / / / /_/ / / / / // /_  / /_/ / / /_/ / /  __/
@@ -45,6 +44,7 @@ public class TrackModel {
     // class objects
     protected Connection conn;
     protected int last_updated = 0;
+    protected HashMap<Integer, ArrayList<StaticBlock>> trainOccupancy;
 
     /**
      * Constructs the Track Model (privately).
@@ -99,6 +99,9 @@ public class TrackModel {
         Statement stmt = conn.createStatement();
         stmt.execute(sql_create_blocks);
         stmt.execute(sql_create_trains);
+
+        // initialize occupancy hashmap
+        trainOccupancy = new HashMap<Integer, ArrayList<StaticBlock>>();
     }
 
     /**
@@ -961,6 +964,31 @@ public class TrackModel {
             // update position on same block
             this.setTrainPosition(trainId, position + displacement);
         }
+
+        // update occupancy list
+        curr_block = this.getStaticBlock(this.getTrainBlock(trainId));
+        ArrayList<StaticBlock> occupancyList = this.trainOccupancy.get(trainId);
+        if (occupancyList == null) {
+            occupancyList = new ArrayList<StaticBlock>();
+        }
+        if (!occupancyList.contains(curr_block)) {
+            occupancyList.add(curr_block);
+        }
+
+        // occupancy list can only be as long as the train is
+        int sum = 0;
+        for (StaticBlock block : occupancyList) {
+            sum += block.getLength();
+        }
+        while (sum > 50)  {  // train length
+            occupancyList.remove(0);
+
+            sum = 0;
+            for (StaticBlock block : occupancyList) {
+                sum += block.getLength();
+            }
+        }
+        this.trainOccupancy.put(trainId, occupancyList);
     }
 
     /**
@@ -1125,4 +1153,13 @@ public class TrackModel {
     }
 
     // public int getPassengers(int trainId); TODO
+    public int getPassengers(int trainId) {
+        // TODO
+        return 50;
+    }
+
+    public boolean getTrainBlockChange(int trainId) {
+        // TODO
+        return false;
+    }
 }
