@@ -91,7 +91,6 @@ public class TrackModel {
      *
      * @return     this TrackModel
      *
-     * @throws     ClassNotFoundException  could not find JDBC
      */
     public static TrackModel getTrackModel() {
         if (model == null) {
@@ -105,7 +104,6 @@ public class TrackModel {
      *
      * @return     An instance of the track model
      *
-     * @throws     ClassNotFoundException  could not find JDBC
      */
     public static TrackModel init() {
         return TrackModel.getTrackModel();
@@ -116,8 +114,6 @@ public class TrackModel {
      *
      * @return     the singleton instance of the track model
      *
-     * @throws     ClassNotFoundException  Couldn't initialize the model
-     * @throws     IOException             Couldn't import the track
      */
     public static TrackModel initWithTestData() {
         // initialize model
@@ -140,7 +136,6 @@ public class TrackModel {
      *
      * @return     True if successful, False otherwise
      *
-     * @throws      IOException could not read track import
      */
     public boolean importTrack(File file) {
         String sql_load = "INSERT INTO blocks " +
@@ -233,7 +228,6 @@ public class TrackModel {
      *
      * @return     True if successful, False otherwise
      *
-     * @throws     IOException could not write to export file
      */
     public boolean exportTrack(File file) {
         try {
