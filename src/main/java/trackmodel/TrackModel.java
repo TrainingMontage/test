@@ -30,7 +30,6 @@ import shared.*;
  * To initalize with some test data loaded:
  *
  * <pre> {@code TrackModel.initWithTestData(); } </pre>
- *
  */
 public class TrackModel {
 
@@ -50,7 +49,6 @@ public class TrackModel {
      * Constructs the Track Model (privately).
      *
      * constructs the database.
-     *
      */
     private TrackModel() {
         try {
@@ -112,7 +110,6 @@ public class TrackModel {
      * Initialize/get the track model.
      *
      * @return     this TrackModel
-     *
      */
     public static TrackModel getTrackModel() {
         if (model == null) {
@@ -125,7 +122,6 @@ public class TrackModel {
      * Initializes the Track Mdel
      *
      * @return     An instance of the track model
-     *
      */
     public static TrackModel init() {
         return TrackModel.getTrackModel();
@@ -135,7 +131,6 @@ public class TrackModel {
      * Initialize the track model.
      *
      * @return     the singleton instance of the track model
-     *
      */
     public static TrackModel initWithTestData() {
         // initialize model
@@ -157,7 +152,6 @@ public class TrackModel {
      * @param      file  The file to import
      *
      * @return     True if successful, False otherwise
-     *
      */
     public boolean importTrack(File file) {
         String sql_load = "INSERT INTO blocks " +
@@ -249,7 +243,6 @@ public class TrackModel {
      * @param      file  The file to export to
      *
      * @return     True if successful, False otherwise
-     *
      */
     public boolean exportTrack(File file) {
         try {
@@ -308,7 +301,6 @@ public class TrackModel {
 
     /**
      * Truncates all tables in database
-     *
      */
     protected void clearDB() {
         try {
@@ -326,7 +318,6 @@ public class TrackModel {
      * @param      blockId  The block identifier
      *
      * @return     True if occupied, False otherwise.
-     *
      */
     public boolean isOccupied(int blockId) {
         Integer occupied = null;
@@ -351,7 +342,6 @@ public class TrackModel {
      * @param      occupied  The occupied
      *
      * @return     the new value for occupied
-     *
      */
     protected boolean setOccupied(int blockId, boolean occupied) {
         try {
@@ -373,7 +363,6 @@ public class TrackModel {
      * Gets the block ids
      *
      * @return     A list of block ids.
-     *
      */
     public ArrayList<Integer> getBlockIds() {
         ArrayList<Integer> blocks = new ArrayList<Integer>();
@@ -396,7 +385,6 @@ public class TrackModel {
      * Gets the switch ids
      *
      * @return     A list of switch ids.
-     *
      */
     public ArrayList<Integer> getSwitchIds() {
         ArrayList<Integer> switches = new ArrayList<Integer>();
@@ -419,7 +407,6 @@ public class TrackModel {
      * Gets the train ids
      *
      * @return     A list of train ids.
-     *
      */
     public ArrayList<Integer> getTrainIds() {
         ArrayList<Integer> trains = new ArrayList<Integer>();
@@ -444,7 +431,6 @@ public class TrackModel {
      * @param      blockId  The block identifier
      *
      * @return     The static block.
-     *
      */
     public StaticBlock getStaticBlock(int blockId) {
         return getStaticBlock(blockId, null);
@@ -457,7 +443,6 @@ public class TrackModel {
      * @param      staticSwitch  The static switch
      *
      * @return     The static block.
-     *
      */
     protected StaticBlock getStaticBlock(int blockId, StaticSwitch staticSwitch) {
         try {
@@ -521,7 +506,6 @@ public class TrackModel {
      * @param      switchId  The switch identifier
      *
      * @return     The static switch.
-     *
      */
     public StaticSwitch getStaticSwitch(int switchId) {
         try {
@@ -559,7 +543,6 @@ public class TrackModel {
      * @param      region   The region
      *
      * @return     true if successful, false otherwise
-     *
      */
     protected boolean setRegion(int blockId, String region) {
         try {
@@ -580,7 +563,6 @@ public class TrackModel {
      * @param      length   The length
      *
      * @return     true if successful, false otherwise
-     *
      */
     protected boolean setLength(int blockId, double length) {
         try {
@@ -597,11 +579,10 @@ public class TrackModel {
     /**
      * Sets the elevation of a block.
      *
-     * @param      blockId  The block identifier
-     * @param      elevation   The elevation
+     * @param      blockId    The block identifier
+     * @param      elevation  The elevation
      *
      * @return     true if successful, false otherwise
-     *
      */
     protected boolean setElevation(int blockId, double elevation) {
         try {
@@ -619,10 +600,9 @@ public class TrackModel {
      * Sets the grade of a block.
      *
      * @param      blockId  The block identifier
-     * @param      grade   The grade
+     * @param      grade    The grade
      *
      * @return     true if successful, false otherwise
-     *
      */
     protected boolean setGrade(int blockId, double grade) {
         try {
@@ -639,11 +619,10 @@ public class TrackModel {
     /**
      * Sets the switch.
      *
-     * @param      blockId       The block identifier
-     * @param      active         The active
+     * @param      blockId  The block identifier
+     * @param      active   The active
      *
      * @return     new value of the switch (active/inactive)
-     *
      */
     public boolean setSwitch(int blockId, boolean active) {
         try {
@@ -661,10 +640,9 @@ public class TrackModel {
     /**
      * Gets the switch sate.
      *
-     * @param      blockId       The block identifier
+     * @param      blockId  The block identifier
      *
      * @return     The switch state. (True for engaged)
-     *
      */
     public boolean getSwitch(int blockId) {
         try {
@@ -683,11 +661,10 @@ public class TrackModel {
     /**
      * Sets the authority.
      *
-     * @param      blockId       The block identifier
-     * @param      authority     The authority
+     * @param      blockId    The block identifier
+     * @param      authority  The authority
      *
      * @return     the new authority value
-     *
      */
     public boolean setAuthority(int blockId, boolean authority) {
         try {
@@ -705,11 +682,10 @@ public class TrackModel {
     /**
      * Sets the suggested speed.
      *
-     * @param      blockId       The block identifier
-     * @param      speed         The speed
+     * @param      blockId  The block identifier
+     * @param      speed    The speed
      *
      * @return     the new suggested speed
-     *
      */
     public int setSpeed(int blockId, int speed) {
         try {
@@ -727,10 +703,9 @@ public class TrackModel {
     /**
      * Gets the crossing state.
      *
-     * @param      blockId       The block identifier
+     * @param      blockId  The block identifier
      *
      * @return     The crossing state.
-     *
      */
     public boolean getCrossingState(int blockId) {
         try {
@@ -748,11 +723,10 @@ public class TrackModel {
     /**
      * Sets the crossing state.
      *
-     * @param      blockId       The block identifier
-     * @param      active        The active
+     * @param      blockId  The block identifier
+     * @param      active   The active
      *
      * @return     The new crossing state
-     *
      */
     public boolean setCrossingState(int blockId, boolean active) {
         try {
@@ -770,12 +744,12 @@ public class TrackModel {
     /**
      * Sets the signal on a block.
      *
-     * @param      blockId       The block identifier
-     * @param      active        The value
+     * @param      blockId  The block identifier
+     * @param      active   The value
      *
      * @return     the new signal state
      *
-     *                           wasn't right.
+     * wasn't right.
      */
     public boolean setSignal(int blockId, boolean active) {
         try {
@@ -793,11 +767,11 @@ public class TrackModel {
     /**
      * Gets the signal of a block.
      *
-     * @param      blockId       The block identifier
+     * @param      blockId  The block identifier
      *
      * @return     The signal.
      *
-     *                           wasn't right.
+     * wasn't right.
      */
     public boolean getSignal(int blockId) {
         try {
@@ -821,7 +795,7 @@ public class TrackModel {
      *
      * @return     true if successful, false otherwise
      *
-     *                               wasn't valid
+     * wasn't valid
      */
     public boolean initializeTrain(int trainId, int starting_blockId) {
         String sql_load = "INSERT INTO trains " +
@@ -845,11 +819,11 @@ public class TrackModel {
     /**
      * Gets the train's commanded authority.
      *
-     * @param      trainId       The train identifier
+     * @param      trainId  The train identifier
      *
      * @return     The train authority.
      *
-     *                           wasn't valid
+     * wasn't valid
      */
     public boolean getTrainAuthority(int trainId){
         try {
@@ -868,11 +842,11 @@ public class TrackModel {
     /**
      * Gets the train's suggested speed.
      *
-     * @param      trainId       The train identifier
+     * @param      trainId  The train identifier
      *
      * @return     The train speed.
      *
-     *                           wasn't valid
+     * wasn't valid
      */
     public double getTrainSpeed(int trainId) {
         try {
@@ -892,11 +866,11 @@ public class TrackModel {
     /**
      * Returns beacon information if train in within range of a beacon.
      *
-     * @param      trainId       The train identifier
+     * @param      trainId  The train identifier
      *
      * @return     The train beacon.
      *
-     *                           wasn't valid
+     * wasn't valid
      */
     public byte[] getTrainBeacon(int trainId) {
         try {
@@ -920,11 +894,11 @@ public class TrackModel {
     /**
      * Determines if track is icy.
      *
-     * @param      trainId       The train identifier
+     * @param      trainId  The train identifier
      *
      * @return     True if icy track, False otherwise.
      *
-     *                           wasn't valid
+     * wasn't valid
      */
     public boolean isIcyTrack(int trainId) {
         if (Environment.temperature > FREEZING) {
@@ -947,11 +921,11 @@ public class TrackModel {
     /**
      * Gets the grade of the block a train is on.
      *
-     * @param      trainId       The train identifier
+     * @param      trainId  The train identifier
      *
      * @return     The grade.
      *
-     *                           wasn't valid
+     * wasn't valid
      */
     public double getGrade(int trainId) {
         try {
@@ -970,11 +944,11 @@ public class TrackModel {
     /**
      * Gets the status of a block.
      *
-     * @param      blockId       The block identifier
+     * @param      blockId  The block identifier
      *
      * @return     The status.
      *
-     *                           wasn't valid
+     * wasn't valid
      */
     public BlockStatus getStatus(int blockId) {
         try {
@@ -994,12 +968,12 @@ public class TrackModel {
     /**
      * Sets the status of a block.
      *
-     * @param      blockId       The block identifier
-     * @param      status        The status
+     * @param      blockId  The block identifier
+     * @param      status   The status
      *
      * @return     { description_of_the_return_value }
      *
-     *                           wasn't valid
+     * wasn't valid
      */
     public BlockStatus setStatus(int blockId, BlockStatus status) {
         try {
@@ -1018,7 +992,6 @@ public class TrackModel {
      * Gets the static track.
      *
      * @return     The static track.
-     *
      */
     public StaticTrack getStaticTrack() {
         if (this.staticTrack == null) {
@@ -1034,6 +1007,9 @@ public class TrackModel {
         return this.staticTrack;
     }
 
+    /**
+     * { function_description }
+     */
     protected void update() {
         if (this.last_updated == Environment.clock) {
             return;
@@ -1047,6 +1023,11 @@ public class TrackModel {
         this.last_updated = Environment.clock;
     }
 
+    /**
+     * { function_description }
+     *
+     * @param      trainId  The train identifier
+     */
     protected void updateTrain(int trainId) {
         // TODO
         // fake actually calling a train until there's something there to call
@@ -1103,10 +1084,9 @@ public class TrackModel {
     /**
      * Gets the train's current position (internal use only)
      *
-     * @param      trainId       The train identifier
+     * @param      trainId  The train identifier
      *
      * @return     The train's position within the block
-     *
      */
     protected double getTrainPosition(int trainId) {
         try {
@@ -1125,11 +1105,12 @@ public class TrackModel {
     /**
      * Gets the train's current position (internal use only)
      *
-     * @param      trainId       The train identifier
+     * @param      trainId   The train identifier
+     * @param      position  The position
      *
      * @return     The train's position within the block
      *
-     *                           wasn't valid
+     * wasn't valid
      */
     private double setTrainPosition(int trainId, double position) {
         try {
@@ -1147,11 +1128,11 @@ public class TrackModel {
     /**
      * Gets the train's current direction (internal use only)
      *
-     * @param      trainId       The train identifier
+     * @param      trainId  The train identifier
      *
      * @return     The train's direction within the block
      *
-     *                           wasn't valid
+     * wasn't valid
      */
     private boolean getTrainDirection(int trainId) {
         try {
@@ -1170,10 +1151,10 @@ public class TrackModel {
     /**
      * Gets the train's current direction (internal use only)
      *
-     * @param      trainId       The train identifier
+     * @param      trainId    The train identifier
+     * @param      direction  The direction
      *
      * @return     The train's direction within the block
-     *
      */
     private boolean setTrainDirection(int trainId, boolean direction) {
         try {
@@ -1190,10 +1171,9 @@ public class TrackModel {
     /**
      * Gets the train's current block (internal use only)
      *
-     * @param      trainId       The train identifier
+     * @param      trainId  The train identifier
      *
      * @return     The static block that train is on
-     *
      */
     protected int getTrainBlock(int trainId) {
         try {
@@ -1212,12 +1192,12 @@ public class TrackModel {
     /**
      * Sets the train's current block (internal use only)
      *
-     * @param      trainId       The train identifier
-     * @param      block         The new block
+     * @param      trainId  The train identifier
+     * @param      block    The new block
      *
      * @return     The static block that train is on
      *
-     *                           wasn't valid
+     * wasn't valid
      */
     protected int setTrainBlock(int trainId, int block) {
         try {
@@ -1231,6 +1211,14 @@ public class TrackModel {
         return block;
     }
 
+    /**
+     * { function_description }
+     *
+     * @param      curr_block  The curr block
+     * @param      direction   The direction
+     *
+     * @return     { description_of_the_return_value }
+     */
     protected StaticBlock nextBlock(StaticBlock curr_block, boolean direction) {
         StaticSwitch sw = curr_block.getStaticSwitch();
         // System.err.println("Looking up block: " + curr_block.getNextId());
@@ -1273,6 +1261,14 @@ public class TrackModel {
         return null;
     }
 
+    /**
+     * { function_description }
+     *
+     * @param      curr_block  The curr block
+     * @param      next_block  The next block
+     *
+     * @return     { description_of_the_return_value }
+     */
     protected boolean nextDirection(StaticBlock curr_block, StaticBlock next_block) {
         if (next_block.getNextId() == curr_block.getId() || (next_block.getStaticSwitch() != null && next_block.getStaticSwitch().getActiveLeaf().equals(curr_block))) {
             return false;
@@ -1281,6 +1277,9 @@ public class TrackModel {
         }
     }
 
+    /**
+     * { function_description }
+     */
     protected void updateOccupancies() {
         try {
             // destroy previous occupancy
@@ -1306,10 +1305,9 @@ public class TrackModel {
     /**
      * Gets the train's reported block change flag
      *
-     * @param      trainId       The train identifier
+     * @param      trainId  The train identifier
      *
      * @return     true if change has been reported, false otherwise
-     *
      */
     protected boolean getTrainReportedBlockChange(int trainId) {
         try {
@@ -1327,8 +1325,8 @@ public class TrackModel {
     /**
      * Sets the train's reported block change flag (internal use only)
      *
+     * @param      trainId          The train identifier
      * @param      reported_change  whether the change has been reported
-     * @param      block            The new block
      *
      * @return     new reported_change value
      */
@@ -1344,6 +1342,13 @@ public class TrackModel {
         return reported_change;
     }
 
+    /**
+     * Gets the train block change.
+     *
+     * @param      trainId  The train identifier
+     *
+     * @return     The train block change.
+     */
     public boolean getTrainBlockChange(int trainId) {
         if (!this.getTrainReportedBlockChange(trainId)) {
             this.setTrainReportedBlockChange(trainId, true);
@@ -1355,10 +1360,9 @@ public class TrackModel {
     /**
      * Gets the train's reported passenger flag
      *
-     * @param      trainId       The train identifier
+     * @param      trainId  The train identifier
      *
      * @return     true if change has been reported, false otherwise
-     *
      */
     protected boolean getTrainReportedPassenger(int trainId) {
         try {
@@ -1376,8 +1380,8 @@ public class TrackModel {
     /**
      * Sets the train's reported passenger flag (internal use only)
      *
+     * @param      trainId              The train identifier
      * @param      reported_passengers  whether the change has been reported
-     * @param      block            The new block
      *
      * @return     new reported_passengers value
      */
@@ -1396,10 +1400,9 @@ public class TrackModel {
     /**
      * Gets the train's loaded passenger flag
      *
-     * @param      trainId       The train identifier
+     * @param      trainId  The train identifier
      *
      * @return     true if change has been loaded, false otherwise
-     *
      */
     protected boolean getTrainLoadedPassenger(int trainId) {
         try {
@@ -1417,8 +1420,8 @@ public class TrackModel {
     /**
      * Sets the train's loaded passenger flag (internal use only)
      *
+     * @param      trainId            The train identifier
      * @param      loaded_passengers  whether the change has been loaded
-     * @param      block            The new block
      *
      * @return     new loaded_passengers value
      */
@@ -1434,6 +1437,13 @@ public class TrackModel {
         return loaded_passengers;
     }
 
+    /**
+     * Gets the train passengers.
+     *
+     * @param      trainId  The train identifier
+     *
+     * @return     The train passengers.
+     */
     public int getTrainPassengers(int trainId) {
         if (!this.getTrainReportedPassenger(trainId) && this.getStaticBlock(this.getTrainBlock(trainId)).getStation() != null) {
             this.setTrainReportedPassenger(trainId, true);
