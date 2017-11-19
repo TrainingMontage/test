@@ -127,4 +127,12 @@ public class Train {
         suggested = new Random(System.nanoTime()).nextDouble()*20+30;
         authority = new Random(System.nanoTime()).nextDouble()*2000+300;
     }
+    
+    public void setSpeed(double newSpeed) {
+        velocity = newSpeed;
+    }
+    
+    public void setAuthority(double newAuthority) {
+        authority = newAuthority;
+    }
 }
