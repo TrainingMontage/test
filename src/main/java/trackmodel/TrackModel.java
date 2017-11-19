@@ -15,11 +15,24 @@
 
 package trackmodel;
 
-import java.sql.*;
-import java.io.*;
-import java.util.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.io.FileWriter;
+import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.nio.ByteBuffer;
-import shared.*;
+import shared.Environment;
+import shared.TrainCrashException;
+import shared.CrashIntoSwitchException;
+import shared.BlockStatus;
 
 /**
  * Class for track model. This is a singleton class, meaning that all methods
