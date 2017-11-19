@@ -9,6 +9,8 @@ class StaticBlock {
     private String station;
     private StaticSwitch staticSwitch;
     private int nextId;
+    private int previousId;
+    private boolean bidirectional;
 
     protected StaticBlock() {}
 
@@ -192,5 +194,51 @@ class StaticBlock {
      */
     public int getNextId() {
         return this.nextId;
+    }
+
+    public String toString() {
+        return Integer.toString(this.id);
+    }
+
+    /**
+     * Sets whether the block is bidirectional.
+     *
+     * @param      bidirectional  if block is bidirectional
+     *
+     * @return     the new bidirectional value
+     */
+    protected boolean setBidirectional(boolean bidirectional) {
+        this.bidirectional = bidirectional;
+        return this.bidirectional;
+    }
+
+    /**
+     * Gets the bidirectional.
+     *
+     * @return     The bidirectional.
+     */
+    public boolean isBidirectional() {
+        return this.bidirectional;
+    }
+
+    /**
+     * Sets the id of the previous block.
+     *
+     * @param      id    The identifier
+     *
+     * @return     the new previous id
+     */
+    protected int setPreviousId(int previousId) {
+        this.previousId = previousId;
+        return this.previousId;
+    }
+
+    /**
+     * Gets the id of the previous block.
+     *
+     * @return     The id of the previous block.
+     */
+    public int getPreviousId() {
+        return this.previousId;
     }
 }
