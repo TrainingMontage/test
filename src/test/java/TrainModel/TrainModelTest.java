@@ -30,7 +30,7 @@ public class TrainModelTest{
         assertEquals(testTrainObject.getCurrentVelocity(), 0.0, delta);
     }
 
-    //@Test
+    @Test
     public void testGetVelocity(){
         testTrainObject.trainController = mock(TrainController.class);
         when(testTrainObject.trainController.getPower()).thenReturn(10000.0);
