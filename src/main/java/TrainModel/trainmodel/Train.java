@@ -1,15 +1,15 @@
-/*   ______                 _           _                 
- *  /_  __/ _____  ____ _  (_) ____    (_) ____    ____ _ 
- *   / /   / ___/ / __ `/ / / / __ \  / / / __ \  / __ `/ 
- *  / /   / /    / /_/ / / / / / / / / / / / / / / /_/ /  
- * /_/   /_/     \__,_/ /_/ /_/ /_/ /_/ /_/ /_/  \__, /   
- *                                              /____/    
- *     __  ___                 __                        
- *    /  |/  / ____    ____   / /_  ____ _  ____ _  ___ 
+/*   ______                 _           _
+ *  /_  __/ _____  ____ _  (_) ____    (_) ____    ____ _
+ *   / /   / ___/ / __ `/ / / / __ \  / / / __ \  / __ `/
+ *  / /   / /    / /_/ / / / / / / / / / / / / / / /_/ /
+ * /_/   /_/     \__,_/ /_/ /_/ /_/ /_/ /_/ /_/  \__, /
+ *                                              /____/
+ *     __  ___                 __
+ *    /  |/  / ____    ____   / /_  ____ _  ____ _  ___
  *   / /|_/ / / __ \  / __ \ / __/ / __ `/ / __ `/ / _ \
  *  / /  / / / /_/ / / / / // /_  / /_/ / / /_/ / /  __/
- * /_/  /_/  \____/ /_/ /_/ \__/  \__,_/  \__, /  \___/ 
- *                                       /____/         
+ * /_/  /_/  \____/ /_/ /_/ \__/  \__,_/  \__, /  \___/
+ *                                       /____/
  *
  * @author Parth Dadhania
  */
@@ -28,42 +28,42 @@ public class Train {
     int blockId;
     TrainController trainController;
 
-    int authority;
-    double power; //W
-    double maxPower = 120000.0; //Watts
-    double temperature; //
-    double velocity;
-    double maxVelocity = 70.0; //km/h
-    double mass = 37103.86; //kg empty train 40.9 tons;
-    int numPassengers;
-    int maxPassengers = 222;
-    double passengerWeight = 88.9; //kg average weight of male in America
-    double totalMass;
-    double friction = 0.47;
-    double grade;
-    int time;
-    boolean serviceBrake;
-    double serviceBrakeRate = -1.2; //m/s^2
-    boolean emergencyBrake;
-    double emergencyBrakeRate = -2.73; //m/s^2
-    double gravity = 9.8; //m/s^2
-    double totalForce;
-    double acceleration;
-    double maxAcceleration = 0.5; //m/s^2
-    boolean lights;
-    int leftDoor;
-    int rightDoor;
+    protected int authority;
+    protected double power; //W
+    protected double maxPower = 120000.0; //Watts
+    protected double temperature; //
+    protected double velocity;
+    protected double maxVelocity = 70.0; //km/h
+    protected double mass = 37103.86; //kg empty train 40.9 tons;
+    protected int numPassengers;
+    protected int maxPassengers = 222;
+    protected double passengerWeight = 88.9; //kg average weight of male in America
+    protected double totalMass;
+    protected double friction = 0.47;
+    protected double grade;
+    protected int time;
+    protected boolean serviceBrake;
+    protected double serviceBrakeRate = -1.2; //m/s^2
+    protected boolean emergencyBrake;
+    protected double emergencyBrakeRate = -2.73; //m/s^2
+    protected double gravity = 9.81; //m/s^2
+    protected double totalForce;
+    protected double acceleration;
+    protected double maxAcceleration = 0.5; //m/s^2
+    protected boolean lights;
+    protected int leftDoor;
+    protected int rightDoor;
 
     //Failures
-    boolean brakeFailure;
-    boolean engineFailure;
-    boolean signalFailure;
+    protected boolean brakeFailure;
+    protected boolean engineFailure;
+    protected boolean signalFailure;
     //Standard Train Data
-    double length = 32.2; //meters
-    double height = 3.42; //meters
-    double width = 2.56;  //meters
+    protected double length = 32.2; //meters
+    protected double height = 3.42; //meters
+    protected double width = 2.56;  //meters
 
-    NumberFormat formatter = new DecimalFormat("#0.00");
+    protected NumberFormat formatter = new DecimalFormat("#0.00");
 
 
     public Train(int newTrainId, int newblockId){
@@ -81,13 +81,17 @@ public class Train {
         rightDoor = 0;
         time = 0;
 
-        //Create controller 
-        trainController = new TrainController(this, this.trainId, this.blockId);
+        //Create controller
+        //trainController = new TrainController(this, this.trainId, this.blockId);
 
         boolean brakeFailure = false;
         boolean engineFailure = false;
         boolean signalFailure = false;
 
+    }
+
+    public int getTrainId(){
+        return trainId;
     }
     public double getPower(){
         return power;
@@ -103,11 +107,17 @@ public class Train {
         return velocity;
     }
 
-    public void setPassengers(int passengers){
+    public int setPassengers(int passengers){
         if(passengers > maxPassengers){
             numPassengers = maxPassengers;
         }
-        numPassengers = passengers;
+        else if(passengers < 0){
+            numPassengers = 0;
+        }
+        else{
+            numPassengers = passengers;
+        }
+        return numPassengers;
     }
     /*
     GUI Testing
@@ -119,7 +129,7 @@ public class Train {
         return maxPower;
     }
 
-    public boolean blockChange(){
+    /*public boolean blockChange(){
         return TrackModel.getTrackModel().getTrainBlockChange(trainId);
     }
 
@@ -133,7 +143,7 @@ public class Train {
 
     public int getBeacon(){
         return TrackModel.getTrackModel().getTrainBeacon(trainId);
-    }
+    }*/
 
     public void setPower(double powerInput){
         double forceApplied;
@@ -168,6 +178,38 @@ public class Train {
         }
 
     }
+
+    public double sine(double gradePercentage){
+        double angle = Math.atan(gradePercentage/100);
+        return Math.sin(angle);
+    }
+
+    public boolean getServiceBrakes(){
+        return serviceBrake;
+    }
+
+    public void setServiceBrakes(boolean status){
+        if(status == true){
+            serviceBrake = true;
+        }
+        else{
+            serviceBrake = false;
+        }
+    }
+
+    public boolean getEmergancyBrakes(){
+        return emergencyBrake;
+    }
+
+    public void setEmergancyBrakes(boolean status){
+        if(status == true){
+            emergencyBrake = true;
+        }
+        else{
+            emergencyBrake = false;
+        }
+    }
+
 
     public void updateSpeed(double forceApplied){
         double nforce = totalMass*gravity*friction*sine(grade);
@@ -210,8 +252,15 @@ public class Train {
     }
 
     public int setLeftDoor(int newStatus){
-        leftDoor = newStatus;
-        return getLeftDoor();
+        //0 is closed
+        //1 is open
+        if(newStatus == 0 || newStatus == 1){
+            leftDoor = newStatus;
+        }
+        else{
+            leftDoor = 0;
+        }
+        return leftDoor;
     }
 
     public int getRightDoor(){
@@ -219,14 +268,17 @@ public class Train {
     }
 
     public int setRightDoor(int newStatus){
-        rightDoor = newStatus;
-        return getRightDoor();
+        //0 is closed
+        //1 is open
+        if(newStatus == 0 || newStatus == 1){
+            rightDoor = newStatus;
+        }
+        else{
+            rightDoor = 0;
+        }
+        return rightDoor;
     }
 
-    public double sine(double gradePercentage){
-        double angle = Math.atan(gradePercentage/100);
-        return Math.sin(angle);
-    }
 
     public int getTime(){
         return time;
