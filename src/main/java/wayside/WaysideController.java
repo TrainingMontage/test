@@ -76,7 +76,10 @@ public class WaysideController {
         TRACK_LEN = 9;
         NUM_SWITCHES = 2;
         CROSSINGS = null;
-        PATHS = new int[][] {{1,2,3,4,5,6,7,2,1}};
+        PATHS = new int[][] {
+            new int[] {1,2,3,4,5,6,7},
+            new int[] {3,4,5,6,7,2,1}
+        };
     }
 
     /**
@@ -220,7 +223,7 @@ public class WaysideController {
     static boolean[] checkStraightLine(boolean[] authority, boolean[] occupied) {
         // I need to see if I can find a path from one occupied block to another
         boolean unbrokenPath = false;
-        
+
         for (int[] path: PATHS) {
             for (int block: path) {
                 if (unbrokenPath) {
