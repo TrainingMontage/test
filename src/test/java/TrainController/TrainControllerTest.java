@@ -65,9 +65,24 @@ public class TrainControllerTest {
      * Test of computeSafeBrake method, of class TrainController.
      */
     @Test
-    public void testComputeSafeBrake() {
+    public void testComputeSafeBrake000() {
         System.out.println("computeSafeBrake");
-        TrainController instance = new TrainController(true);
+        TrainController instance = new TrainController(true, 1);
+        instance.theTrain.setSpeed(0.0);
+        double expResult = 0.0;
+        double result = instance.computeSafeBrake();
+        assertEquals(expResult, result, 0.0);
+        // TODO review the generated test code and remove the default call to fail.
+//        fail("computeSafeBrake failure.");
+    }
+    
+     /**
+     * Test of computeSafeBrake method, of class TrainController.
+     */
+    @Test
+    public void testComputeSafeBrake001() {
+        System.out.println("computeSafeBrake");
+        TrainController instance = new TrainController(true, 1);
         double expResult = 240.0;
         double result = instance.computeSafeBrake();
         assertEquals(expResult, result, 0.0);
@@ -79,9 +94,24 @@ public class TrainControllerTest {
      * Test of computeSafeSpeed method, of class TrainController.
      */
     @Test
-    public void testComputeSafeSpeed() {
+    public void testComputeSafeSpeed000() {
         System.out.println("computeSafeSpeed");
-        TrainController instance = new TrainController(true);
+        TrainController instance = new TrainController(true, 1);
+        instance.theTrain.setSuggested(0.0);
+        double expResult = 0.0;
+        double result = instance.computeSafeSpeed();
+        assertEquals(expResult, result, 0.0);
+        // TODO review the generated test code and remove the default call to fail.
+//        fail("computeSafeBrake failure.");
+    }
+    
+    /**
+     * Test of computeSafeSpeed method, of class TrainController.
+     */
+    @Test
+    public void testComputeSafeSpeed001() {
+        System.out.println("computeSafeSpeed");
+        TrainController instance = new TrainController(true, 1);
         double expResult = 24.0;
         double result = instance.computeSafeSpeed();
         assertEquals(expResult, result, 0.0);
@@ -93,9 +123,25 @@ public class TrainControllerTest {
      * Test of getPower method, of class TrainController.
      */
     @Test
-    public void testGetPower() {
+    public void testGetPower000() {
         System.out.println("getPower");
-        TrainController instance = new TrainController(true);
+        TrainController instance = new TrainController(true, 1);
+        instance.theTrain.setSpeed(0.0);
+        instance.theTrain.setSuggested(0.0);
+        double expResult = 0.0;
+        double result = instance.getPower();
+        assertEquals(expResult, result, 0.0);
+        // TODO review the generated test code and remove the default call to fail.
+//        fail("getPower failure.");
+    }
+    
+    /**
+     * Test of getPower method, of class TrainController.
+     */
+    @Test
+    public void testGetPower001() {
+        System.out.println("getPower");
+        TrainController instance = new TrainController(true, 1);
         double expResult = 2700.0;
         double result = instance.getPower();
         assertEquals(expResult, result, 0.0);
@@ -107,14 +153,14 @@ public class TrainControllerTest {
      * Test of getPower method, of class TrainController.
      */
     @Test
-    public void testGetPowerLoop() {
+    public void testGetPower002() {
         System.out.println("getPower loop");
-        TrainController instance = new TrainController(true);
+        TrainController instance = new TrainController(true, 1);
         for(int i = 0; i < 200; i++) {
             instance.theTrain.setPower(instance.getPower());
         }
         double result = instance.theTrain.getVelocity();
-        assertEquals(24.0, result, 2.0);
+        assertEquals(24.0, result, 1.0);
         // TODO review the generated test code and remove the default call to fail.
 //        fail("getPower failure.");
     }
@@ -126,7 +172,7 @@ public class TrainControllerTest {
 //    public void testSetKu() {
 //        System.out.println("setKu");
 //        double newVal = 0.0;
-//        TrainController instance = new TrainController(true);
+//        TrainController instance = new TrainController(true, 1);
 //        instance.setKu(newVal);
 //        // TODO review the generated test code and remove the default call to fail.
 //        fail("The test case is a prototype.");
@@ -136,10 +182,10 @@ public class TrainControllerTest {
      * Test of setLights method, of class TrainController.
      */
     @Test
-    public void testSetLightsOn() {
+    public void testSetLights000() {
         System.out.println("setLightsOn");
         boolean on = true;
-        TrainController instance = new TrainController(true);
+        TrainController instance = new TrainController(true, 1);
         boolean expResult = true;
         boolean result = instance.setLights(on);
         assertEquals(expResult, result);
@@ -151,10 +197,10 @@ public class TrainControllerTest {
      * Test of setLights method, of class TrainController.
      */
     @Test
-    public void testSetLightsOff() {
+    public void testSetLights001() {
         System.out.println("setLightsOff");
         boolean on = false;
-        TrainController instance = new TrainController(true);
+        TrainController instance = new TrainController(true, 1);
         boolean expResult = false;
         boolean result = instance.setLights(on);
         assertEquals(expResult, result);
@@ -166,11 +212,11 @@ public class TrainControllerTest {
      * Test of setDoors method, of class TrainController.
      */
     @Test
-    public void testSetDoors0() {
+    public void testSetDoors000() {
         System.out.println("setDoors");
         boolean leftOpen = false;
         boolean rightOpen = false;
-        TrainController instance = new TrainController(true);
+        TrainController instance = new TrainController(true, 1);
         byte expResult = 0;
         byte result = instance.setDoors(leftOpen, rightOpen);
         assertEquals(expResult, result);
@@ -182,11 +228,11 @@ public class TrainControllerTest {
      * Test of setDoors method, of class TrainController.
      */
     @Test
-    public void testSetDoors1() {
+    public void testSetDoors001() {
         System.out.println("setDoors");
         boolean leftOpen = false;
         boolean rightOpen = true;
-        TrainController instance = new TrainController(true);
+        TrainController instance = new TrainController(true, 1);
         byte expResult = 1;
         byte result = instance.setDoors(leftOpen, rightOpen);
         assertEquals(expResult, result);
@@ -198,11 +244,11 @@ public class TrainControllerTest {
      * Test of setDoors method, of class TrainController.
      */
     @Test
-    public void testSetDoors2() {
+    public void testSetDoors002() {
         System.out.println("setDoors");
         boolean leftOpen = true;
         boolean rightOpen = false;
-        TrainController instance = new TrainController(true);
+        TrainController instance = new TrainController(true, 1);
         byte expResult = 2;
         byte result = instance.setDoors(leftOpen, rightOpen);
         assertEquals(expResult, result);
@@ -214,11 +260,11 @@ public class TrainControllerTest {
      * Test of setDoors method, of class TrainController.
      */
     @Test
-    public void testSetDoors3() {
+    public void testSetDoors003() {
         System.out.println("setDoors");
         boolean leftOpen = true;
         boolean rightOpen = true;
-        TrainController instance = new TrainController(true);
+        TrainController instance = new TrainController(true, 1);
         byte expResult = 3;
         byte result = instance.setDoors(leftOpen, rightOpen);
         assertEquals(expResult, result);
@@ -230,9 +276,9 @@ public class TrainControllerTest {
      * Test of justStop method, of class TrainController.
      */
     @Test
-    public void testJustStop() {
+    public void testJustStop000() {
         System.out.println("justStop");
-        TrainController instance = new TrainController(true);
+        TrainController instance = new TrainController(true, 1);
         boolean expResult = true;
         boolean result = instance.justStop();
         assertEquals(expResult, result);
@@ -244,9 +290,9 @@ public class TrainControllerTest {
      * Test of youCanGoNow method, of class TrainController.
      */
     @Test
-    public void testYouCanGoNow() {
+    public void testYouCanGoNow000() {
         System.out.println("youCanGoNow");
-        TrainController instance = new TrainController(true);
+        TrainController instance = new TrainController(true, 1);
         boolean expResult = false;
         boolean result = instance.youCanGoNow();
         assertEquals(expResult, result);
@@ -260,7 +306,7 @@ public class TrainControllerTest {
     @Test
     public void testSendForService() {
         System.out.println("sendForService");
-        TrainController instance = new TrainController(true);
+        TrainController instance = new TrainController(true, 1);
         boolean expResult = true;
         boolean result = instance.sendForService();
         assertEquals(expResult, result);
@@ -275,11 +321,112 @@ public class TrainControllerTest {
     public void testDisplayStation() {
         System.out.println("displayStation");
         String name = "Test Passes";
-        TrainController instance = new TrainController(true);
+        TrainController instance = new TrainController(true, 1);
         instance.displayStation(name);
         assertEquals(name, instance.station);
         // TODO review the generated test code and remove the default call to fail.
 //        fail("displayStation failure.");
     }
     
+    /**
+     * Test of getID method, of class TrainController.
+     */
+    @Test
+    public void testGetID000() {
+        System.out.println("GetID");
+        TrainController instance = new TrainController(true, 1);
+        int expResult = 1;
+        int result = instance.getID();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+//        fail("displayStation failure.");
+    }
+    
+    /**
+     * Test of getID method, of class TrainController.
+     */
+    @Test
+    public void testGetID001() {
+        System.out.println("GetID");
+        TrainController instance = new TrainController(true, 2);
+        int expResult = 2;
+        int result = instance.getID();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+//        fail("displayStation failure.");
+    }
+    
+    /**
+     * Test of getID method, of class TrainController.
+     */
+    @Test
+    public void testGetID002() {
+        System.out.println("GetID");
+        TrainController instance = new TrainController(true, -1);
+        int expResult = -1;
+        int result = instance.getID();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+//        fail("displayStation failure.");
+    }
+    
+    /**
+     * Test of getID method, of class TrainController.
+     */
+    @Test
+    public void testGetID003() {
+        System.out.println("GetID");
+        TrainController instance = new TrainController(true, 0);
+        int expResult = 0;
+        int result = instance.getID();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+//        fail("displayStation failure.");
+    }
+    
+    /**
+     * Test of getTrainControllerByID method, of class TrainController.
+     */
+    @Test
+    public void testGetTrainControllerByID000() {
+        System.out.println("GetTrainControllerByID");
+        TrainController instance = new TrainController(true, 1);
+        for(int i = 2; i < 5; i++) {
+            instance.addTrainController(new TrainController(true, i));
+        }
+        int expResult = 3;
+        TrainController result = instance.getTrainControllerByID(expResult);
+        assertEquals(expResult, result.getID());
+        // TODO review the generated test code and remove the default call to fail.
+//        fail("displayStation failure.");
+    }
+    
+    /**
+     * Test of getTrainControllerByID method, of class TrainController.
+     */
+    @Test
+    public void testGetTrainControllerByID001() {
+        System.out.println("GetTrainControllerByID");
+        TrainController instance = new TrainController(true, 1);
+        for(int i = 2; i < 5; i++) {
+            instance.addTrainController(new TrainController(true, i));
+        }
+        TrainController result = instance.getTrainControllerByID(10);
+        assertEquals(null, result);
+        // TODO review the generated test code and remove the default call to fail.
+//        fail("displayStation failure.");
+    }
+    
+    /**
+     * Test of getTrainControllerByID method, of class TrainController.
+     */
+    @Test
+    public void testGetTrainControllerByID002() {
+        System.out.println("GetTrainControllerByID");
+        TrainController instance = new TrainController(true, 1);
+        TrainController result = instance.getTrainControllerByID(1);
+        assertEquals(instance.getID(), result.getID());
+        // TODO review the generated test code and remove the default call to fail.
+//        fail("displayStation failure.");
+    }
 }
