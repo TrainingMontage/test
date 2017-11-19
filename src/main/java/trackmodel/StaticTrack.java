@@ -17,6 +17,9 @@ package trackmodel;
 
 import java.util.HashMap;
 
+/**
+ * Class for static track.
+ */
 public class StaticTrack {
     private int id;
     private String region;
@@ -27,21 +30,36 @@ public class StaticTrack {
     private HashMap<Integer, StaticSwitch> staticSwitches;
     private HashMap<Integer, StaticBlock> staticBlocks;
 
+    /**
+     * Constructs the object.
+     */
     protected StaticTrack() {
         staticSwitches = new HashMap<Integer, StaticSwitch>();
         staticBlocks = new HashMap<Integer, StaticBlock>();
     }
 
+    /**
+     * Puts a static switch.
+     *
+     * @param      staticSwitch  The static switch
+     */
     protected void putStaticSwitch(StaticSwitch staticSwitch) {
         staticSwitches.put(staticSwitch.getId(), staticSwitch);
     }
 
+    /**
+     * Puts a static block.
+     *
+     * @param      staticBlock  The static block
+     */
     protected void putStaticBlock(StaticBlock staticBlock) {
         staticBlocks.put(staticBlock.getId(), staticBlock);
     }
 
     /**
      * Gets the static switch with a specified id.
+     *
+     * @param      id    The identifier
      *
      * @return     The static switch.
      */
@@ -51,6 +69,8 @@ public class StaticTrack {
 
     /**
      * Gets the static block with a specified id.
+     *
+     * @param      id    The identifier
      *
      * @return     The static block.
      */
