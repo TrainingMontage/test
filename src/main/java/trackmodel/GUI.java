@@ -1,26 +1,40 @@
+/*   ______                 _           _
+ *  /_  __/ _____  ____ _  (_) ____    (_) ____    ____ _
+ *   / /   / ___/ / __ `/ / / / __ \  / / / __ \  / __ `/
+ *  / /   / /    / /_/ / / / / / / / / / / / / / / /_/ /
+ * /_/   /_/     \__,_/ /_/ /_/ /_/ /_/ /_/ /_/  \__, /
+ *     __  ___                 __               /____/
+ *    /  |/  / ____    ____   / /_  ____ _  ____ _  ___
+ *   / /|_/ / / __ \  / __ \ / __/ / __ `/ / __ `/ / _ \
+ *  / /  / / / /_/ / / / / // /_  / /_/ / / /_/ / /  __/
+ * /_/  /_/  \____/ /_/ /_/ \__/  \__,_/  \__, /  \___/
+ *                                       /____/
+ *
+ * @author Alec Rosenbaum
+ */
+
 package trackmodel;
 
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.io.*;
+import java.util.ArrayList;
 
 import shared.*;
 
 public class GUI {
 
     protected static JButton reloadBlockInfo, submitChanges;
-    protected static JCheckBox occupied;
+    protected static JLabel time, temp, switchId, switchBlocks, switchState, next;
+    protected static JCheckBox occupied, underground, heater, crossing, bidirectional, authority;
     protected static JComboBox<Integer> blockIdComboBox;
-    protected static JTextArea speed_limit, length, grade, elevation, region, station;
-
+    protected static JTextArea speed_limit, length, grade, elevation, region, station, status, line, signal;
+    private static boolean triggerEvents = true;
 
     public static void addComponentsToPane(Container pane) {
         JButton button;
         JLabel label;
-        JTextArea textArea;
-        JCheckBox checkbox;
-        JComboBox comboBox;
         pane.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
         c.fill = GridBagConstraints.HORIZONTAL;
@@ -35,17 +49,17 @@ public class GUI {
         // ******************** globals panel *******************
         panelGlobals.setLayout(new GridBagLayout());
 
-        label = new JLabel("11:24 AM");
+        time = new JLabel("11:24 AM");
         c.insets = new Insets(10, 10, 10, 10); //top padding
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 0;
-        panelGlobals.add(label, c);
+        panelGlobals.add(time, c);
 
-        label = new JLabel("76 F");
+        temp = new JLabel("76 F");
         c.gridx = 1;
         c.gridy = 0;
-        panelGlobals.add(label, c);
+        panelGlobals.add(temp, c);
 
         panelGlobals.setBorder(BorderFactory.createTitledBorder("Global Status"));
         c.gridwidth = 2;
@@ -67,7 +81,7 @@ public class GUI {
         c.gridy = 0;
         panelBlockInfo.add(label, c);
 
-        region = new JTextArea("A");
+        region = new JTextArea("");
         c.gridx = 1;
         c.gridy = 0;
         panelBlockInfo.add(region, c);
@@ -77,17 +91,17 @@ public class GUI {
         c.gridy = 1;
         panelBlockInfo.add(label, c);
 
-        textArea = new JTextArea("15 mph");
+        speed_limit = new JTextArea("- mph");
         c.gridx = 1;
         c.gridy = 1;
-        panelBlockInfo.add(textArea, c);
+        panelBlockInfo.add(speed_limit, c);
 
         label = new JLabel("Length:");
         c.gridx = 0;
         c.gridy = 2;
         panelBlockInfo.add(label, c);
 
-        length = new JTextArea(".2 mi");
+        length = new JTextArea("- mi");
         c.gridx = 1;
         c.gridy = 2;
         panelBlockInfo.add(length, c);
@@ -97,7 +111,7 @@ public class GUI {
         c.gridy = 3;
         panelBlockInfo.add(label, c);
 
-        grade = new JTextArea(".5 %");
+        grade = new JTextArea("- %");
         c.gridx = 1;
         c.gridy = 3;
         panelBlockInfo.add(grade, c);
@@ -107,20 +121,20 @@ public class GUI {
         c.gridy = 4;
         panelBlockInfo.add(label, c);
 
-        checkbox = new JCheckBox();
+        underground = new JCheckBox();
         c.gridx = 1;
         c.gridy = 4;
-        panelBlockInfo.add(checkbox, c);
+        panelBlockInfo.add(underground, c);
 
         label = new JLabel("Bidirectional:");
         c.gridx = 0;
         c.gridy = 5;
         panelBlockInfo.add(label, c);
 
-        checkbox = new JCheckBox();
+        bidirectional = new JCheckBox();
         c.gridx = 1;
         c.gridy = 5;
-        panelBlockInfo.add(checkbox, c);
+        panelBlockInfo.add(bidirectional, c);
 
         label = new JLabel("Occupied:");
         c.gridx = 0;
@@ -137,21 +151,21 @@ public class GUI {
         c.gridy = 7;
         panelBlockInfo.add(label, c);
 
-        checkbox = new JCheckBox();
+        heater = new JCheckBox();
         c.gridx = 1;
         c.gridy = 7;
-        panelBlockInfo.add(checkbox, c);
+        panelBlockInfo.add(heater, c);
 
         label = new JLabel("Infrastructure:");
         c.gridx = 0;
         c.gridy = 8;
         panelBlockInfo.add(label, c);
 
-        textArea = new JTextArea("SHADYSIDE STATION");
+        station = new JTextArea("");
         c.gridwidth = 3;
         c.gridx = 1;
         c.gridy = 8;
-        panelBlockInfo.add(textArea, c);
+        panelBlockInfo.add(station, c);
         c.gridwidth = 1;
 
         button = new JButton("Reload Block Info");
@@ -171,7 +185,7 @@ public class GUI {
         blockIdComboBox = new JComboBox<>();
         blockIdComboBox.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent event) {
-                if (event.getStateChange() == ItemEvent.SELECTED) {
+                if (triggerEvents && event.getStateChange() == ItemEvent.SELECTED) {
                     loadBlock(String.valueOf(blockIdComboBox.getSelectedItem()));
                 }
             }
@@ -185,17 +199,17 @@ public class GUI {
         c.gridy = 1;
         panelBlockInfo.add(label, c);
 
-        textArea = new JTextArea("A2, A3");
+        next = new JLabel("");
         c.gridx = 3;
         c.gridy = 1;
-        panelBlockInfo.add(textArea, c);
+        panelBlockInfo.add(next, c);
 
         label = new JLabel("Elevation:");
         c.gridx = 2;
         c.gridy = 2;
         panelBlockInfo.add(label, c);
 
-        elevation = new JTextArea("232 ft");
+        elevation = new JTextArea("- ft");
         c.gridx = 3;
         c.gridy = 2;
         panelBlockInfo.add(elevation, c);
@@ -205,50 +219,50 @@ public class GUI {
         c.gridy = 3;
         panelBlockInfo.add(label, c);
 
-        textArea = new JTextArea("Operational");
+        status = new JTextArea("Operational");
         c.gridx = 3;
         c.gridy = 3;
-        panelBlockInfo.add(textArea, c);
+        panelBlockInfo.add(status, c);
 
         label = new JLabel("Line:");
         c.gridx = 2;
         c.gridy = 4;
         panelBlockInfo.add(label, c);
 
-        textArea = new JTextArea("Green");
+        line = new JTextArea("");
         c.gridx = 3;
         c.gridy = 4;
-        panelBlockInfo.add(textArea, c);
+        panelBlockInfo.add(line, c);
 
         label = new JLabel("RR Crossing:");
         c.gridx = 2;
         c.gridy = 5;
         panelBlockInfo.add(label, c);
 
-        checkbox = new JCheckBox();
+        crossing = new JCheckBox();
         c.gridx = 3;
         c.gridy = 5;
-        panelBlockInfo.add(checkbox, c);
+        panelBlockInfo.add(crossing, c);
 
         label = new JLabel("Authority:");
         c.gridx = 2;
         c.gridy = 6;
         panelBlockInfo.add(label, c);
 
-        textArea = new JTextArea("1");
+        authority = new JCheckBox();
         c.gridx = 3;
         c.gridy = 6;
-        panelBlockInfo.add(textArea, c);
+        panelBlockInfo.add(authority, c);
 
         label = new JLabel("Signal:");
         c.gridx = 2;
         c.gridy = 7;
         panelBlockInfo.add(label, c);
 
-        textArea = new JTextArea("Green");
+        signal = new JTextArea("Green");
         c.gridx = 3;
         c.gridy = 7;
-        panelBlockInfo.add(textArea, c);
+        panelBlockInfo.add(signal, c);
 
         button = new JButton("Submit Changes");
         button.addActionListener(new ActionListener() {
@@ -277,30 +291,30 @@ public class GUI {
         c.gridy = 0;
         panelSwitchInfo.add(label, c);
 
-        label = new JLabel("2");
+        switchId = new JLabel("");
         c.gridx = 1;
         c.gridy = 0;
-        panelSwitchInfo.add(label, c);
+        panelSwitchInfo.add(switchId, c);
 
         label = new JLabel("Connected Blocks:");
         c.gridx = 0;
         c.gridy = 1;
         panelSwitchInfo.add(label, c);
 
-        label = new JLabel("A1, A2, A3");
+        switchBlocks = new JLabel("");
         c.gridx = 1;
         c.gridy = 1;
-        panelSwitchInfo.add(label, c);
+        panelSwitchInfo.add(switchBlocks, c);
 
         label = new JLabel("Switch State:");
         c.gridx = 0;
         c.gridy = 2;
         panelSwitchInfo.add(label, c);
 
-        label = new JLabel("A1 -> A3");
+        switchState = new JLabel("");
         c.gridx = 1;
         c.gridy = 2;
-        panelSwitchInfo.add(label, c);
+        panelSwitchInfo.add(switchState, c);
 
         panelSwitchInfo.setBorder(BorderFactory.createTitledBorder("Switch Info"));
         c.gridx = 0;
@@ -407,17 +421,23 @@ public class GUI {
      * redraws the gui based on the current state of the track model.
      */
     private static void refreshGUI() {
+        triggerEvents = false;
 
         // reset the block id combo box
         blockIdComboBox.removeAllItems();
 
+        ArrayList<Integer> blockIds = TrackModel.getTrackModel().getBlockIds();
+
         try {
-            for (int s : TrackModel.getTrackModel().getBlockIds()) {
+            for (int s : blockIds) {
                 blockIdComboBox.addItem(s);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        blockIdComboBox.setSelectedIndex(-1);
+        triggerEvents = true;
     }
 
     /**
@@ -438,10 +458,43 @@ public class GUI {
             grade.setText(String.format("%.2f %%", block.getGrade()));
             elevation.setText(String.format("%.2f ft", Convert.metersToFeet(block.getElevation())));
             length.setText(String.format("%.2f ft", Convert.metersToFeet(block.getLength())));
+            speed_limit.setText(String.format("%.2f mph", Convert.metersPerSecondToMPH(block.getSpeedLimit())));
+            underground.setSelected(block.isUnderground());
+            bidirectional.setSelected(block.isBidirectional());
+            heater.setSelected(block.hasHeater());
+            crossing.setSelected(block.isCrossing());
+            station.setText(block.getStation());
+            line.setText(block.getLine());
+            next.setText(tm.getStaticBlock(block.getNextId()).toString());
+
+            StaticSwitch sw = block.getStaticSwitch();
+            if (sw != null) {
+                switchId.setText(String.valueOf(sw.getId()));
+                switchBlocks.setText(sw.getRoot() + ", " + sw.getDefaultLeaf() + ", " + sw.getActiveLeaf());
+                if (tm.getSwitch(blockId)) {
+                    switchState.setText(sw.getRoot() + " -> " + sw.getActiveLeaf());
+                } else {
+                    switchState.setText(sw.getRoot() + " -> " + sw.getDefaultLeaf());
+                }
+                
+            } else {
+                switchId.setText("");
+                switchBlocks.setText("");
+                switchState.setText("");
+            }
 
             // dynamic info
             occupied.setSelected(tm.isOccupied(blockId));
+            if (tm.getSignal(blockId)) { // signal
+                signal.setText("Green");
+            } else {
+                signal.setText("Red");
+            }
+            authority.setSelected(tm.getAuthority(blockId));
+            status.setText(tm.getStatus(blockId).name());
+
         } catch (Exception e) {
+            e.printStackTrace();
             refreshGUI();
         }
     }
@@ -471,9 +524,21 @@ public class GUI {
             str = length.getText();
             tm.setLength(blockId, Convert.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 2))));
 
+
+            str = speed_limit.getText();
+            tm.setSpeedLimit(blockId, Convert.MPHToMetersPerSecond(Double.parseDouble(str.substring(0, str.length() - 3))));
+
+            tm.setUnderground(blockId, underground.isSelected());
+            tm.setBidirectional(blockId, bidirectional.isSelected());
+            tm.setHeater(blockId, heater.isSelected());
+            tm.setCrossing(blockId, crossing.isSelected());
+            tm.setStation(blockId, station.getText());
+            tm.setLine(blockId, line.getText());
+
             // dynamic data
             tm.setOccupied(blockId, occupied.isSelected());
         } catch (Exception e) {
+            e.printStackTrace();
             refreshGUI();
         }
     }
