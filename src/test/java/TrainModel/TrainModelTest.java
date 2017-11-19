@@ -1,23 +1,20 @@
 package trainmodel;
 
-
 import org.junit.*;
 import org.junit.rules.*;
 import static org.junit.Assert.*;
+import org.mockito.InjectMocks;
+import static org.mockito.Mockito.*;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.Mock;
 import shared.Environment;
+import traincontroller.TrainController;
+
 
 public class TrainModelTest{
     double delta = 0.001;
     Train testTrainObject = new Train(1, 0);
 
-    /*private static final Controller trainController = mock(Controller.class);
-
-    @Begin
-    public void setupTrainController(){
-        //mocking train controller class
-        when(trainController.getPower().thenReturn(100000));
-    }
-    */
     @Test
     public void testGetTrainId(){
         assertEquals(testTrainObject.getTrainId(), 1);
@@ -32,12 +29,17 @@ public class TrainModelTest{
     public void testGetCurrentVelocity(){
         assertEquals(testTrainObject.getCurrentVelocity(), 0.0, delta);
     }
-    /*
+
     @Test
     public void testGetVelocity(){
-
+        TrainController controller = mock(TrainController.class);
+        when(controller.getPower()).thenReturn(10000.0);
+        testTrainObject.grade = 0.5;
+        testTrainObject.numPassengers = 222;
+        testTrainObject.velocity = 10;
+        assertEquals(testTrainObject.getVelocity(), testTrainObject.getCurrentVelocity(), delta);
     }
-    */
+
     @Test
     public void testSetPassengers(){
         //Too Many Passengers set
@@ -189,10 +191,16 @@ public class TrainModelTest{
 
     @Test
     public void testGetDisplacement(){
-        Evironment.clock = 10;
+        /*Environment.clock = 10;
         testTrainObject.time = 5;
         testTrainObject.acceleration = .5;
-
+        testTrainObject.velocity = 10;
+        TrainController controller = mock(TrainController.class);
+        when(controller.getPower()).thenReturn(10000.0);
+        testTrainObject.grade = 0.5;
+        testTrainObject.numPassengers = 222;
+        assertEquals(testTrainObject.getDisplacement(), 57.477, delta);
+        */
     }
 
 

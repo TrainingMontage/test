@@ -26,7 +26,7 @@ import shared.Environment;
 public class Train {
     int trainId;
     int blockId;
-    TrainController trainController;
+    protected TrainController trainController = new TrainController();
 
     protected int authority;
     protected double power; //W

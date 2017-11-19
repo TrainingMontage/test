@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 public class TrainTrackerTest{
     @Test
     public void testCreateAndGet(){
-        TrainTracker tracker = new TrainTracker();
+        TrainTracker tracker = TrainTracker.getTrainTracker();
         //create 3 new trains with starting block of 0
         tracker.createTrain(0);
         tracker.createTrain(0);
