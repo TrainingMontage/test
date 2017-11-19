@@ -1514,7 +1514,7 @@ public class TrackModel {
      *
      * @return     new value of the underground flag
      */
-    public boolean setUnderground(int blockId, boolean underground) {
+    protected boolean setUnderground(int blockId, boolean underground) {
         try {
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET underground = ? WHERE id = ?;");
             stmt.setInt(1, underground ? 1 : 0);
@@ -1535,7 +1535,7 @@ public class TrackModel {
      *
      * @return     new value of the heater flag
      */
-    public boolean setHeater(int blockId, boolean heater) {
+    protected boolean setHeater(int blockId, boolean heater) {
         try {
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET heater = ? WHERE id = ?;");
             stmt.setInt(1, heater ? 1 : 0);
@@ -1556,7 +1556,7 @@ public class TrackModel {
      *
      * @return     new value of the rr_crossing flag
      */
-    public boolean setCrossing(int blockId, boolean rr_crossing) {
+    protected boolean setCrossing(int blockId, boolean rr_crossing) {
         try {
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET rr_crossing = ? WHERE id = ?;");
             stmt.setInt(1, rr_crossing ? 1 : 0);
@@ -1577,7 +1577,7 @@ public class TrackModel {
      *
      * @return     new value of the bidirectional flag
      */
-    public boolean setBidirectional(int blockId, boolean bidirectional) {
+    protected boolean setBidirectional(int blockId, boolean bidirectional) {
         try {
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET bidirectional = ? WHERE id = ?;");
             stmt.setInt(1, bidirectional ? 1 : 0);
@@ -1598,7 +1598,7 @@ public class TrackModel {
      *
      * @return     new station name
      */
-    public String setStation(int blockId, String station) {
+    protected String setStation(int blockId, String station) {
         try {
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET station = ? WHERE id = ?;");
             stmt.setString(1, station);
@@ -1619,7 +1619,7 @@ public class TrackModel {
      *
      * @return     new line name
      */
-    public String setLine(int blockId, String line) {
+    protected String setLine(int blockId, String line) {
         try {
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET line = ? WHERE id = ?;");
             stmt.setString(1, line);
