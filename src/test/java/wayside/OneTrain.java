@@ -21,6 +21,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import org.mockito.Mockito;
+
 import trackmodel.TrackModel;
 
 public class OneTrain {
@@ -32,7 +34,17 @@ public class OneTrain {
     @BeforeClass
     public static void init() {
         TrackModel.initWithTestData();
-        WaysideController.initTest();
+        TrackModel tm = TrackModel.getTrackModel();
+        TrackModel spy = Mockito.spy(tm);
+        Mockito.doReturn(true).when(spy).isOccupied(1);
+        Mockito.doReturn(true).when(spy).isOccupied(5);
+
+        WaysideController.initTest(spy);
+    }
+
+    @Test
+    public void mockingIsWorking() {
+        Assert.assertArrayEquals(OCC, WaysideController.buildOccupancy());
     }
 
     @Test
@@ -42,7 +54,7 @@ public class OneTrain {
             false, true, false, false, false
         };
         try {
-            WaysideController.checkStraightLine(authority, OCC);
+            WaysideController.checkStraightLine(authority, WaysideController.buildOccupancy());
             Assert.assertTrue(true);
         } catch (Exception e) {
             Assert.fail(e.getMessage());
@@ -56,7 +68,7 @@ public class OneTrain {
             true, true, false, false, false
         };
         try {
-            WaysideController.checkStraightLine(authority, OCC);
+            WaysideController.checkStraightLine(authority, WaysideController.buildOccupancy());
             Assert.fail("Failed to find unsafe path between 2 occupied blocks.");
         } catch (Exception e) {
             Assert.assertTrue(true);

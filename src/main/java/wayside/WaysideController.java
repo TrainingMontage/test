@@ -114,6 +114,11 @@ public class WaysideController {
         };
     }
 
+    public static void initTest(TrackModel t) {
+        initTest();
+        tm = t;
+    }
+
     /**
      * Opens the WC UI.
      */
@@ -276,7 +281,7 @@ public class WaysideController {
         return new boolean[TRACK_LEN];
     }
 
-    private static boolean[] buildOccupancy() {
+    static boolean[] buildOccupancy() {
         boolean[] o = new boolean[TRACK_LEN];
         for (int block = 1; block < TRACK_LEN; block++) {
             o[block] = tm.isOccupied(block);
