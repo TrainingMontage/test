@@ -6,6 +6,7 @@ class StaticBlock {
     private double grade;
     private double elevation;
     private double length;
+    private double speed;
     private String station;
     private StaticSwitch staticSwitch;
     private int nextId;
@@ -240,5 +241,26 @@ class StaticBlock {
      */
     public int getPreviousId() {
         return this.previousId;
+    }
+
+    /**
+     * Sets the speet limit.
+     *
+     * @param      speed  The speed limit
+     *
+     * @return     the new speed limit
+     */
+    protected double setSpeedLimit(double speed) {
+        this.speed = speed;
+        return this.speed;
+    }
+
+    /**
+     * Gets the speed limit.
+     *
+     * @return     The speed limit.
+     */
+    public double getSpeedLimit() {
+        return this.speed;
     }
 }
