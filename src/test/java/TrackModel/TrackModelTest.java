@@ -252,6 +252,47 @@ public class TrackModelTest {
     }
 
     /**
+     * Validate green line import.
+     */
+    @Test
+    public void testTrackModelImportGreenLine() throws IOException, SQLException {
+        File file = new File(
+            this.getClass().getClassLoader().getResource("TrackModel/green.csv").getFile());
+
+        // function should return true
+        assertTrue(_tm.importTrack(file));
+
+        // database should now have csv data in it
+        String row = "";
+        Statement _s = _tm.conn.createStatement();
+        ResultSet _rs = _s.executeQuery("SELECT * FROM blocks");
+        _rs.next();
+
+        // extract the first row
+        row =
+            _rs.getString("id") + "," +
+            _rs.getString("region") + "," +
+            _rs.getString("grade") + "," +
+            _rs.getString("elevation") + "," +
+            _rs.getString("length") + "," +
+            _rs.getString("station") + "," +
+            _rs.getString("switch_root") + "," +
+            _rs.getString("switch_leaf") + "," +
+            _rs.getString("rr_crossing") + "," +
+            _rs.getString("underground") + "," +
+            _rs.getString("line") + "," +
+            _rs.getString("next") + "," +
+            _rs.getString("bidirectional") + "," +
+            _rs.getString("speed_limit") + "," +
+            _rs.getString("beacon") + "," +
+            _rs.getString("heater");
+
+        // note: this string was constructed from the database; the export
+        // doesn't have null strings in it
+        assertEquals("1,A,0.5,0.5,100.0,,null,1,0,0,GREEN,2,0,15.27779,null,1", row);
+    }
+
+    /**
      * Validate basic, typical use case export with a new file.
      */
     @Test
@@ -405,6 +446,11 @@ public class TrackModelTest {
         assertEquals(50, block.getLength(), epsilon);
         assertEquals(15, block.getSpeedLimit(), epsilon);
         assertEquals("", block.getStation());
+        assertEquals("GREEN", block.getLine());
+        assertTrue(block.isCrossing());
+        assertFalse(block.isUnderground());
+        assertTrue(block.isBidirectional());
+        assertFalse(block.hasHeater());
         assertEquals(5, block.getNextId());
         assertEquals(3, block.getPreviousId());
         assertNull(block.getStaticSwitch());
@@ -1091,7 +1137,6 @@ public class TrackModelTest {
         assertEquals(2.5, _tm.getTrainPosition(1), epsilon);
         
         // check block occupancies
-        System.err.println(_tm.trainOccupancy);
         ArrayList<StaticBlock> occupancy = _tm.trainOccupancy.get(1);
         assertEquals(_tm.getStaticBlock(1), occupancy.get(0));
     }
@@ -1163,5 +1208,20 @@ public class TrackModelTest {
 
         assertEquals(50, _tm.getTrainPassengers(1));
         assertEquals(0, _tm.getTrainPassengers(1));
+    }
+
+    /**
+     * Validate getstaticBlock(1) on green line
+     */
+    @Test
+    public void testGetStaticBlockGreenLine() throws IOException, SQLException {
+        File file = new File(
+            this.getClass().getClassLoader().getResource("TrackModel/green.csv").getFile());
+
+        // function should return true
+        assertTrue(_tm.importTrack(file));
+
+        // database should now have csv data in it
+        assertNotNull(_tm.getStaticBlock(1));
     }
 }

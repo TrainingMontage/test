@@ -74,7 +74,7 @@ public class TrackModel {
                 "   switch_active integer,\n" +  // dynamic properties
                 "   crossing_active integer,\n" +
                 "   occupied integer,\n" +
-                "   speed integer,\n" +
+                "   speed real,\n" +
                 "   authority integer,\n" +
                 "   signal integer,\n" +
                 "   status integer\n" +
@@ -215,7 +215,7 @@ public class TrackModel {
                 stmt.setInt(i + 1, Integer.parseInt(values[i]));
 
                 i++; // speed limit
-                stmt.setInt(i + 1, Integer.parseInt(values[i]));
+                stmt.setDouble(i + 1, Double.parseDouble(values[i]));
 
                 i++; // beacon
                 if (!values[i].equals("")) {
@@ -446,7 +446,7 @@ public class TrackModel {
      */
     protected StaticBlock getStaticBlock(int blockId, StaticSwitch staticSwitch) {
         try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT id,region,grade,elevation,length,station,switch_root,switch_leaf,next,bidirectional,speed_limit FROM blocks WHERE id = ?");
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT * FROM blocks WHERE id = ?");
             stmt.setInt(1, blockId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -482,7 +482,11 @@ public class TrackModel {
             block.setLength(rs.getDouble("length"));
             block.setSpeedLimit(rs.getDouble("speed_limit"));
             block.setStation(rs.getString("station"));
+            block.setLine(rs.getString("line"));
             block.setNextId(rs.getInt("next"));
+            block.setHeater(rs.getInt("heater") > 0 ? true : false);
+            block.setCrossing(rs.getInt("rr_crossing") > 0 ? true : false);
+            block.setUnderground(rs.getInt("underground") > 0 ? true : false);
             block.setBidirectional(rs.getInt("bidirectional") > 0 ? true : false);
             block.setStaticSwitch(staticSwitch);
 
@@ -514,10 +518,10 @@ public class TrackModel {
                                          "SELECT A.switch_root as switch_id, A.id as root_id, B.id as inactive_id, C.id as active_id " +
                                          "FROM blocks A " +
                                          "LEFT JOIN blocks B " +
-                                         "ON (A.switch_root = B.switch_leaf and A.next = B.id) " +
+                                         "ON (A.switch_root = B.switch_leaf) " +
                                          "LEFT JOIN blocks C " +
-                                         "ON (A.switch_root = C.switch_leaf and A.next <> C.id)" +
-                                         "WHERE A.switch_root = ?");
+                                         "ON (A.switch_root = C.switch_leaf)" +
+                                         "WHERE A.switch_root = ? AND ABS(A.id - B.id) = 1 AND B.id <> C.id");
             stmt.setInt(1, switchId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -678,6 +682,27 @@ public class TrackModel {
         }
 
         return authority;
+    }
+
+    /**
+     * Gets the authority of a block.
+     *
+     * @param      blockId  The block identifier
+     *
+     * @return     The authority
+     */
+    public boolean getAuthority(int blockId) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT authority FROM blocks WHERE id = ?");
+            stmt.setInt(1, blockId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+
+            return rs.getInt("authority") > 0 ? true : false;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -856,7 +881,7 @@ public class TrackModel {
             ResultSet rs = stmt.executeQuery();
             rs.next();
 
-            Integer speed = (Integer) rs.getObject("speed");
+            Double speed = (Double) rs.getObject("speed");
             return speed == null ? 0 : speed;
 
         } catch (Exception e) {

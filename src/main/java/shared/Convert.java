@@ -23,4 +23,8 @@ public class Convert {
     public static double feetToMeters(double feet) {
         return feet / 3.28084;
     }
+
+    public static double metersPerSecondToMPH(double mps) {
+        return 2.23694 * mps;
+    }
 }

@@ -18,15 +18,11 @@ package trackmodel;
 class StaticBlock {
     private int id;
     private String region;
-    private double grade;
-    private double elevation;
-    private double length;
-    private double speed;
-    private String station;
+    private double grade, elevation, length, speed;
+    private String station, line;
     private StaticSwitch staticSwitch;
-    private int nextId;
-    private int previousId;
-    private boolean bidirectional;
+    private int nextId, previousId;
+    private boolean bidirectional, underground, heater, crossing;
 
     protected StaticBlock() {}
 
@@ -213,7 +209,7 @@ class StaticBlock {
     }
 
     public String toString() {
-        return Integer.toString(this.id);
+        return this.region + Integer.toString(this.id);
     }
 
     /**
@@ -277,5 +273,89 @@ class StaticBlock {
      */
     public double getSpeedLimit() {
         return this.speed;
+    }
+
+    /**
+     * Sets whether the block is underground.
+     *
+     * @param      underground  if block is underground
+     *
+     * @return     the new underground value
+     */
+    protected boolean setUnderground(boolean underground) {
+        this.underground = underground;
+        return this.underground;
+    }
+
+    /**
+     * Gets the underground.
+     *
+     * @return     The underground.
+     */
+    public boolean isUnderground() {
+        return this.underground;
+    }
+
+    /**
+     * Sets whether the block is heater.
+     *
+     * @param      heater  if block is heater
+     *
+     * @return     the new heater value
+     */
+    protected boolean setHeater(boolean heater) {
+        this.heater = heater;
+        return this.heater;
+    }
+
+    /**
+     * Gets whether or not a heater is installed on this block.
+     *
+     * @return     whether a heater is installed on this block.
+     */
+    public boolean hasHeater() {
+        return this.heater;
+    }
+
+    /**
+     * Sets whether the block is a crossing.
+     *
+     * @param      crossing  if block is a crossing
+     *
+     * @return     the new crossing value
+     */
+    protected boolean setCrossing(boolean crossing) {
+        this.crossing = crossing;
+        return this.crossing;
+    }
+
+    /**
+     * Gets where this block has crossing infrastructure.
+     *
+     * @return     True/False.
+     */
+    public boolean isCrossing() {
+        return this.crossing;
+    }
+
+    /**
+     * Sets the line.
+     *
+     * @param      line  The line
+     *
+     * @return     the new line
+     */
+    protected String setLine(String line) {
+        this.line = line;
+        return this.line;
+    }
+
+    /**
+     * Gets the line.
+     *
+     * @return     The line.
+     */
+    public String getLine() {
+        return this.line;
     }
 }
