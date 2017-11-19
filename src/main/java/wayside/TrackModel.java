@@ -17,6 +17,7 @@
 package wayside;
 
 import shared.BlockStatus;
+import trackmodel.StaticBlock;
 
 /**
  * A simple static track model aganist which to test WaysideController.
@@ -231,5 +232,3 @@ public class TrackModel {
         return null;
     }
 }
-
-class StaticBlock {}
