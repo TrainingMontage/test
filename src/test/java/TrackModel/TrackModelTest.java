@@ -176,6 +176,8 @@ public class TrackModelTest {
         _s.setInt(i++, 0); // loaded_passengers
         _s.executeUpdate();
 
+        Environment.clock = 0;
+
     }
 
     /**
@@ -849,20 +851,16 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelGetTrainBeacon() throws SQLException {
-        assertNull(_tm.getTrainBeacon(1));
+        assertEquals(-1, _tm.getTrainBeacon(1));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET beacon = ? WHERE id = ?;");
         stmt.setInt(1, 0);
         stmt.setInt(2, 1);
         stmt.execute();
 
-        byte[] beacon = _tm.getTrainBeacon(1);
+        int beacon = _tm.getTrainBeacon(1);
 
-        assertEquals(4, beacon.length);
-        assertEquals((byte) 0, beacon[0]);
-        assertEquals((byte) 0, beacon[1]);
-        assertEquals((byte) 0, beacon[2]);
-        assertEquals((byte) 0, beacon[3]);
+        assertEquals(0, beacon);
     }
 
     /**
