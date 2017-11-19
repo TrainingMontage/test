@@ -74,7 +74,7 @@ public class TrackModel {
                 "   switch_active integer,\n" +  // dynamic properties
                 "   crossing_active integer,\n" +
                 "   occupied integer,\n" +
-                "   speed integer,\n" +
+                "   speed real,\n" +
                 "   authority integer,\n" +
                 "   signal integer,\n" +
                 "   status integer\n" +
@@ -215,7 +215,7 @@ public class TrackModel {
                 stmt.setInt(i + 1, Integer.parseInt(values[i]));
 
                 i++; // speed limit
-                stmt.setInt(i + 1, Integer.parseInt(values[i]));
+                stmt.setDouble(i + 1, Double.parseDouble(values[i]));
 
                 i++; // beacon
                 if (!values[i].equals("")) {
@@ -446,7 +446,7 @@ public class TrackModel {
      */
     protected StaticBlock getStaticBlock(int blockId, StaticSwitch staticSwitch) {
         try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT id,region,grade,elevation,length,station,switch_root,switch_leaf,next,bidirectional FROM blocks WHERE id = ?");
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT * FROM blocks WHERE id = ?");
             stmt.setInt(1, blockId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -480,8 +480,13 @@ public class TrackModel {
             block.setGrade(rs.getDouble("grade"));
             block.setElevation(rs.getDouble("elevation"));
             block.setLength(rs.getDouble("length"));
+            block.setSpeedLimit(rs.getDouble("speed_limit"));
             block.setStation(rs.getString("station"));
+            block.setLine(rs.getString("line"));
             block.setNextId(rs.getInt("next"));
+            block.setHeater(rs.getInt("heater") > 0 ? true : false);
+            block.setCrossing(rs.getInt("rr_crossing") > 0 ? true : false);
+            block.setUnderground(rs.getInt("underground") > 0 ? true : false);
             block.setBidirectional(rs.getInt("bidirectional") > 0 ? true : false);
             block.setStaticSwitch(staticSwitch);
 
@@ -513,10 +518,10 @@ public class TrackModel {
                                          "SELECT A.switch_root as switch_id, A.id as root_id, B.id as inactive_id, C.id as active_id " +
                                          "FROM blocks A " +
                                          "LEFT JOIN blocks B " +
-                                         "ON (A.switch_root = B.switch_leaf and A.next = B.id) " +
+                                         "ON (A.switch_root = B.switch_leaf) " +
                                          "LEFT JOIN blocks C " +
-                                         "ON (A.switch_root = C.switch_leaf and A.next <> C.id)" +
-                                         "WHERE A.switch_root = ?");
+                                         "ON (A.switch_root = C.switch_leaf)" +
+                                         "WHERE A.switch_root = ? AND ABS(A.id - B.id) = 1 AND B.id <> C.id");
             stmt.setInt(1, switchId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -568,6 +573,26 @@ public class TrackModel {
         try {
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET length = ? WHERE id = ?;");
             stmt.setDouble(1, length);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Sets the speed_limit of a block.
+     *
+     * @param      blockId  The block identifier
+     * @param      speed_limit   The speed_limit
+     *
+     * @return     true if successful, false otherwise
+     */
+    protected boolean setSpeedLimit(int blockId, double speed_limit) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET speed_limit = ? WHERE id = ?;");
+            stmt.setDouble(1, speed_limit);
             stmt.setInt(2, blockId);
             stmt.execute();
             return true;
@@ -677,6 +702,27 @@ public class TrackModel {
         }
 
         return authority;
+    }
+
+    /**
+     * Gets the authority of a block.
+     *
+     * @param      blockId  The block identifier
+     *
+     * @return     The authority
+     */
+    public boolean getAuthority(int blockId) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("SELECT authority FROM blocks WHERE id = ?");
+            stmt.setInt(1, blockId);
+            ResultSet rs = stmt.executeQuery();
+            rs.next();
+
+            return rs.getInt("authority") > 0 ? true : false;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -855,7 +901,7 @@ public class TrackModel {
             ResultSet rs = stmt.executeQuery();
             rs.next();
 
-            Integer speed = (Integer) rs.getObject("speed");
+            Double speed = (Double) rs.getObject("speed");
             return speed == null ? 0 : speed;
 
         } catch (Exception e) {
@@ -1460,4 +1506,129 @@ public class TrackModel {
         return 0;
     }
 
+    /**
+     * Sets whether the block is underground.
+     *
+     * @param      blockId       The block identifier
+     * @param      underground   whether block is underground
+     *
+     * @return     new value of the underground flag
+     */
+    protected boolean setUnderground(int blockId, boolean underground) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET underground = ? WHERE id = ?;");
+            stmt.setInt(1, underground ? 1 : 0);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return underground;
+    }
+
+    /**
+     * Sets whether the block has a heater.
+     *
+     * @param      blockId       The block identifier
+     * @param      heater        whether block has a heater
+     *
+     * @return     new value of the heater flag
+     */
+    protected boolean setHeater(int blockId, boolean heater) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET heater = ? WHERE id = ?;");
+            stmt.setInt(1, heater ? 1 : 0);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return heater;
+    }
+
+    /**
+     * Sets whether the block has a rr_crossing.
+     *
+     * @param      blockId       The block identifier
+     * @param      rr_crossing        whether block has a rr_crossing
+     *
+     * @return     new value of the rr_crossing flag
+     */
+    protected boolean setCrossing(int blockId, boolean rr_crossing) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET rr_crossing = ? WHERE id = ?;");
+            stmt.setInt(1, rr_crossing ? 1 : 0);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return rr_crossing;
+    }
+
+    /**
+     * Sets whether the block is bidirectional.
+     *
+     * @param      blockId         The block identifier
+     * @param      bidirectional   whether block is bidirectional
+     *
+     * @return     new value of the bidirectional flag
+     */
+    protected boolean setBidirectional(int blockId, boolean bidirectional) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET bidirectional = ? WHERE id = ?;");
+            stmt.setInt(1, bidirectional ? 1 : 0);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return bidirectional;
+    }
+
+    /**
+     * Sets the block's station.
+     *
+     * @param      blockId         The block identifier
+     * @param      station   name of the station
+     *
+     * @return     new station name
+     */
+    protected String setStation(int blockId, String station) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET station = ? WHERE id = ?;");
+            stmt.setString(1, station);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return station;
+    }
+
+    /**
+     * Sets the block's line.
+     *
+     * @param      blockId         The block identifier
+     * @param      line   name of the line
+     *
+     * @return     new line name
+     */
+    protected String setLine(int blockId, String line) {
+        try {
+            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET line = ? WHERE id = ?;");
+            stmt.setString(1, line);
+            stmt.setInt(2, blockId);
+            stmt.execute();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        return line;
+    }
 }
