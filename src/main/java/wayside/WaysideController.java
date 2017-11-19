@@ -56,6 +56,8 @@ public class WaysideController {
     static int TRACK_LEN = 151;
     static int NUM_SWITCHES = 7;
     static int[] CROSSINGS = {19};
+    
+    static TrackModel tm = TrackModel.getTrackModel();
 
     /**
      * Initiallizes the WaysideController.
@@ -72,7 +74,12 @@ public class WaysideController {
     public static void initTest() {
         TRACK_LEN = 9;
         NUM_SWITCHES = 2;
-        CROSSINGS = null; 
+        CROSSINGS = null;
+    }
+
+    public static void initTest(TrackModel t) {
+        initTest();
+        tm = t;
     }
 
     /**
@@ -100,7 +107,7 @@ public class WaysideController {
      * @return the occupancy of the block, true if it is occupied, false otherwise.
      */
     public static boolean isOccupied(int blockId) {
-        return TrackModel.getTrackModel().isOccupied(blockId);
+        return tm.isOccupied(blockId);
     }
 
     /**
@@ -109,7 +116,7 @@ public class WaysideController {
      * @return the state of the signal, true if it is active, false otherwise.
      */
     public static boolean getSignal(int blockId) {
-        return TrackModel.getTrackModel().getSignal(blockId);
+        return tm.getSignal(blockId);
     }
     
     /**
@@ -118,7 +125,7 @@ public class WaysideController {
      * @return the state of the swtich, true if it is active, false otherwise.
      */
     public static boolean getSwitch(int blockId) {
-        return TrackModel.getTrackModel().getSwitch(blockId);
+        return tm.getSwitch(blockId);
     }
     
     /**
@@ -127,7 +134,7 @@ public class WaysideController {
      * @return the occupancy of the block, true if it is occupied, false otherwise.
      */
     public static boolean getCrossing(int blockId) {
-        return TrackModel.getTrackModel().getCrossingState(blockId);
+        return tm.getCrossingState(blockId);
     }
 
     /**
@@ -136,11 +143,11 @@ public class WaysideController {
      * @return the authority of the block, true if it has authority, false otherwise.
      */
     public static boolean getAuthority(int blockId) {
-        return TrackModel.getTrackModel().getTrainAuthority(blockId) != 0;
+        return tm.getTrainAuthority(blockId) != 0;
     }
 
     public static int getSpeed(int blockId) {
-        return (int) TrackModel.getTrackModel().getTrainSpeed(blockId);
+        return (int) tm.getTrainSpeed(blockId);
     }
 
     /** 
@@ -187,7 +194,7 @@ public class WaysideController {
     static boolean[] checkAndSetSwitches(boolean[] authority) {
         boolean[] pos = new boolean[TRACK_LEN];
         for (int sw = 1; sw < NUM_SWITCHES; sw++) {
-            StaticSwitch ss = TrackModel.getTrackModel().getStaticSwitch(sw);
+            StaticSwitch ss = tm.getStaticSwitch(sw);
             int root = ss.getRoot().getId();
             int def = ss.getDefaultLeaf().getId();
             int active = ss.getActiveLeaf().getId();
@@ -204,6 +211,18 @@ public class WaysideController {
             }
         }
         return pos;
+    }
+
+
+    /**
+     * Implements the staight-line rules discussed before.
+     * @param authority the linear representation of authority.
+     * @return the crossing state, given that this authority is safe.
+     * @throws RuntimeException if this suggestion is not found to be safe.
+     */
+    static boolean[] checkStraightLine(boolean[] authority) {
+        // I need to see if I can find a path from one occupied block to another.
+        return null;
     }
     
     /**

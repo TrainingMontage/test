@@ -23,6 +23,8 @@ import shared.Suggestion;
 import wayside.WaysideController;
 import trackmodel.TrackModel;
 
+import static org.mockito.Mockito.*;
+
 public class EmptyTrack {
     
     @Before
@@ -87,5 +89,15 @@ public class EmptyTrack {
         } catch (Exception e) {
             Assert.assertTrue(true);
         }
+    }
+
+    @Test
+    public void safeStrightLine() {
+        boolean[] authority = new boolean[] {
+            false, true, true, false,
+            false, false, false, false, true
+        };
+        WaysideController.checkStraightLine(authority);
+        Assert.assertTrue(true);
     }
 }
