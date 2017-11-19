@@ -236,7 +236,7 @@ public class StaticBlock {
     /**
      * Sets the id of the previous block.
      *
-     * @param      id    The identifier
+     * @param      previousId    The identifier
      *
      * @return     the new previous id
      */
