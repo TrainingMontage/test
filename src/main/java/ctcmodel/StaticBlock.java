@@ -64,7 +64,7 @@ public class StaticBlock{
     public String getStation(){
         return this.stationName;
     }
-    public boolean hasRailway(){
+    public boolean isCrossing(){
         return this.hasRailway;
     }
     public boolean hasHeater(){

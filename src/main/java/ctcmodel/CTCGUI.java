@@ -82,6 +82,7 @@ public class CTCGUI {
         StaticTrack t = TrackModel.getTrackModel().getStaticTrack();
         ArrayList<Integer> bIds = TrackModel.getTrackModel().getBlockIds();
         Iterator itr = bIds.iterator();
+        //add all the nodes first, it makes adding edges easier
         while(itr.hasNext()){
             int blockId = (Integer)itr.next();
             if(blockId == 151 || blockId == 152){
@@ -165,6 +166,12 @@ public class CTCGUI {
                     e = graph.addEdge(""+blockId, n2, n1, false);
                 }
                 //add switch specific edge properties
+                if(blockId == ss.getRoot().getId()){
+                    e.addAttribute("track.isSwitch", new Boolean(true));
+                    e.addAttribute("track.switch", new Boolean(false));
+                }else{
+                    e.addAttribute("track.isSwitch", new Boolean(false));
+                }
             }else{
                 //ordinary piece of track with 2 neighbors
                 int nextId = sb.getNextId();
@@ -187,10 +194,19 @@ public class CTCGUI {
                 }else{
                     e = graph.addEdge(""+blockId, n2, n1, false);
                 }
+                //add non switch track properties
+                e.addAttribute("track.isSwitch", new Boolean(false));
             }
             //add edge properties
             e.addAttribute("layout.weight", new Double(sb.getLength()));
             e.addAttribute("track.time", new Double(sb.getLength()/sb.getSpeedLimit()));
+            e.addAttribute("track.occupied", new Boolean(false));
+            if(sb.isCrossing()){
+                e.addAttribute("track.isCrossing", new Boolean(true));
+                e.addAttribute("track.crossing", new Boolean(false));
+            }else{
+                e.addAttribute("track.isCrossing", new Boolean(false));
+            }
         }
         //manually add the blocks connected to the yard
         //green line: 151 in, 152 out
@@ -198,10 +214,16 @@ public class CTCGUI {
         Edge greenIn = graph.addEdge("151", nodePrev, nodeYard, false);
         greenIn.addAttribute("layout.weight", new Double(t.getStaticBlock(151).getLength()));
         greenIn.addAttribute("track.time", new Double(t.getStaticBlock(151).getLength()/t.getStaticBlock(151).getSpeedLimit()));
+        greenIn.addAttribute("track.occupied", new Boolean(false));
+        greenIn.addAttribute("track.isCrossing", new Boolean(false));
+        greenIn.addAttribute("track.isSwitch", new Boolean(false));
         Node nodeNext = graph.getNode(t.getStaticBlock(152).getNextId()+" 152");
         Edge greenOut = graph.addEdge("152", nodeYard, nodeNext, false);
         greenOut.addAttribute("layout.weight", new Double(t.getStaticBlock(152).getLength()));
         greenOut.addAttribute("track.time", new Double(t.getStaticBlock(152).getLength()/t.getStaticBlock(152).getSpeedLimit()));
+        greenOut.addAttribute("track.occupied", new Boolean(false));
+        greenOut.addAttribute("track.isCrossing", new Boolean(false));
+        greenOut.addAttribute("track.isSwitch", new Boolean(false));
     }
     
     public static void addComponentsToPane(Container pane){
@@ -1027,7 +1049,7 @@ public class CTCGUI {
         //boolean hasLight = staticBlock.hasLight();
         //boolean hasSwitch = staticBlock.hasSwitch();
         boolean hasSwitch = (staticSwitch != null);
-        boolean hasRailway = staticBlock.hasRailway();
+        boolean hasRailway = staticBlock.isCrossing();
         boolean hasHeater = staticBlock.hasHeater();
         String stationName = staticBlock.getStation();
         if(!hasSwitch){

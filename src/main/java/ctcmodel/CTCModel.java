@@ -136,18 +136,18 @@ public class CTCModel{
         Iterator itr = CTCGUI.getGraph().getEdgeIterator();
         while(itr.hasNext()) {
             Edge element = (Edge) itr.next();
-            Integer blockId = element.getAttribute("track.id");
-            boolean occupied = WaysideController.isOccupied(blockId.intValue());
+            int blockId = Integer.parseInt(element.getId());
+            boolean occupied = WaysideController.isOccupied(blockId);
             element.setAttribute("track.occupied", new Boolean(occupied));
             //Boolean isSwitch = (Boolean) element.getAttribute("track.isSwitch");
             if(((Boolean) element.getAttribute("track.isSwitch")).booleanValue()){
-                boolean switchState = WaysideController.getSwitch(blockId.intValue());
+                boolean switchState = WaysideController.getSwitch(blockId);
                 element.setAttribute("track.switch", new Boolean(switchState));
-                boolean signalState = WaysideController.getSignal(blockId.intValue());
+                boolean signalState = WaysideController.getSignal(blockId);
                 element.setAttribute("track.signal", new Boolean(signalState));
             }
             if(((Boolean) element.getAttribute("track.isCrossing")).booleanValue()){
-                boolean xingState = WaysideController.getCrossing(blockId.intValue());
+                boolean xingState = WaysideController.getCrossing(blockId);
                 element.setAttribute("track.crossing", new Boolean(xingState));
             }
         }
