@@ -23,8 +23,6 @@ import shared.Suggestion;
 import wayside.WaysideController;
 import trackmodel.TrackModel;
 
-import static org.mockito.Mockito.*;
-
 public class EmptyTrack {
     
     @Before
