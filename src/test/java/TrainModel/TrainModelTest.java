@@ -32,8 +32,8 @@ public class TrainModelTest{
 
     @Test
     public void testGetVelocity(){
-        TrainController controller = mock(TrainController.class);
-        when(controller.getPower()).thenReturn(10000.0);
+        testTrainObject.trainController = mock(TrainController.class);
+        when(testTrainObject.trainController.getPower()).thenReturn(10000.0);
         testTrainObject.grade = 0.5;
         testTrainObject.numPassengers = 222;
         testTrainObject.velocity = 10;
