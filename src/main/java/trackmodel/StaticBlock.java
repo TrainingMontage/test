@@ -15,6 +15,10 @@
 
 package trackmodel;
 
+
+/**
+ * Class for static block.
+ */
 public class StaticBlock {
     private int id;
     private String region;
@@ -24,6 +28,9 @@ public class StaticBlock {
     private int nextId, previousId;
     private boolean bidirectional, underground, heater, crossing;
 
+    /**
+     * Constructs the object.
+     */
     protected StaticBlock() {}
 
     /**
@@ -190,7 +197,7 @@ public class StaticBlock {
     /**
      * Sets the id of the next block.
      *
-     * @param      nextId    The identifier
+     * @param      nextId  The next identifier
      *
      * @return     the new next id
      */
@@ -208,6 +215,11 @@ public class StaticBlock {
         return this.nextId;
     }
 
+    /**
+     * Returns a string representation of the object.
+     *
+     * @return     String representation of the object.
+     */
     public String toString() {
         return this.region + Integer.toString(this.id);
     }
@@ -236,7 +248,7 @@ public class StaticBlock {
     /**
      * Sets the id of the previous block.
      *
-     * @param      previousId    The identifier
+     * @param      previousId  The previous identifier
      *
      * @return     the new previous id
      */
