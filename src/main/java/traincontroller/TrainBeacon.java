@@ -16,6 +16,7 @@ package traincontroller;
 import java.lang.Exception;
 import shared.*;
 import trainmodel.Train;
+import trackmodel.TrackModel;
 import trackmodel.StaticBlock;
 import trackmodel.StaticSwitch;
 import trackmodel.StaticTrack;

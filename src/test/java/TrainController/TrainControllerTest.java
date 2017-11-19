@@ -23,6 +23,7 @@ import static org.junit.Assert.*;
 
 import shared.*;
 import trainmodel.Train;
+import trackmodel.TrackModel;
 import trackmodel.StaticBlock;
 import trackmodel.StaticSwitch;
 import trackmodel.StaticTrack;
