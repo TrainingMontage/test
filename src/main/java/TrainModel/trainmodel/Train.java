@@ -129,7 +129,7 @@ public class Train {
         return maxPower;
     }
 
-    /*public boolean blockChange(){
+    public boolean blockChange(){
         return TrackModel.getTrackModel().getTrainBlockChange(trainId);
     }
 
@@ -141,7 +141,7 @@ public class Train {
         return TrackModel.getTrackModel().getTrainSpeed(trainId);
     }
 
-    public int getBeacon(){
+    /*public int getBeacon(){
         return TrackModel.getTrackModel().getTrainBeacon(trainId);
     }*/
 
