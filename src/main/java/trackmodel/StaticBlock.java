@@ -1,14 +1,28 @@
+/*   ______                 _           _
+ *  /_  __/ _____  ____ _  (_) ____    (_) ____    ____ _
+ *   / /   / ___/ / __ `/ / / / __ \  / / / __ \  / __ `/
+ *  / /   / /    / /_/ / / / / / / / / / / / / / / /_/ /
+ * /_/   /_/     \__,_/ /_/ /_/ /_/ /_/ /_/ /_/  \__, /
+ *     __  ___                 __               /____/
+ *    /  |/  / ____    ____   / /_  ____ _  ____ _  ___
+ *   / /|_/ / / __ \  / __ \ / __/ / __ `/ / __ `/ / _ \
+ *  / /  / / / /_/ / / / / // /_  / /_/ / / /_/ / /  __/
+ * /_/  /_/  \____/ /_/ /_/ \__/  \__,_/  \__, /  \___/
+ *                                       /____/
+ *
+ * @author Alec Rosenbaum
+ */
+
 package trackmodel;
 
 class StaticBlock {
     private int id;
     private String region;
-    private double grade;
-    private double elevation;
-    private double length;
-    private String station;
+    private double grade, elevation, length, speed;
+    private String station, line;
     private StaticSwitch staticSwitch;
-    private int nextId;
+    private int nextId, previousId;
+    private boolean bidirectional, underground, heater, crossing;
 
     protected StaticBlock() {}
 
@@ -192,5 +206,156 @@ class StaticBlock {
      */
     public int getNextId() {
         return this.nextId;
+    }
+
+    public String toString() {
+        return this.region + Integer.toString(this.id);
+    }
+
+    /**
+     * Sets whether the block is bidirectional.
+     *
+     * @param      bidirectional  if block is bidirectional
+     *
+     * @return     the new bidirectional value
+     */
+    protected boolean setBidirectional(boolean bidirectional) {
+        this.bidirectional = bidirectional;
+        return this.bidirectional;
+    }
+
+    /**
+     * Gets the bidirectional.
+     *
+     * @return     The bidirectional.
+     */
+    public boolean isBidirectional() {
+        return this.bidirectional;
+    }
+
+    /**
+     * Sets the id of the previous block.
+     *
+     * @param      id    The identifier
+     *
+     * @return     the new previous id
+     */
+    protected int setPreviousId(int previousId) {
+        this.previousId = previousId;
+        return this.previousId;
+    }
+
+    /**
+     * Gets the id of the previous block.
+     *
+     * @return     The id of the previous block.
+     */
+    public int getPreviousId() {
+        return this.previousId;
+    }
+
+    /**
+     * Sets the speet limit.
+     *
+     * @param      speed  The speed limit
+     *
+     * @return     the new speed limit
+     */
+    protected double setSpeedLimit(double speed) {
+        this.speed = speed;
+        return this.speed;
+    }
+
+    /**
+     * Gets the speed limit.
+     *
+     * @return     The speed limit.
+     */
+    public double getSpeedLimit() {
+        return this.speed;
+    }
+
+    /**
+     * Sets whether the block is underground.
+     *
+     * @param      underground  if block is underground
+     *
+     * @return     the new underground value
+     */
+    protected boolean setUnderground(boolean underground) {
+        this.underground = underground;
+        return this.underground;
+    }
+
+    /**
+     * Gets the underground.
+     *
+     * @return     The underground.
+     */
+    public boolean isUnderground() {
+        return this.underground;
+    }
+
+    /**
+     * Sets whether the block is heater.
+     *
+     * @param      heater  if block is heater
+     *
+     * @return     the new heater value
+     */
+    protected boolean setHeater(boolean heater) {
+        this.heater = heater;
+        return this.heater;
+    }
+
+    /**
+     * Gets whether or not a heater is installed on this block.
+     *
+     * @return     whether a heater is installed on this block.
+     */
+    public boolean hasHeater() {
+        return this.heater;
+    }
+
+    /**
+     * Sets whether the block is a crossing.
+     *
+     * @param      crossing  if block is a crossing
+     *
+     * @return     the new crossing value
+     */
+    protected boolean setCrossing(boolean crossing) {
+        this.crossing = crossing;
+        return this.crossing;
+    }
+
+    /**
+     * Gets where this block has crossing infrastructure.
+     *
+     * @return     True/False.
+     */
+    public boolean isCrossing() {
+        return this.crossing;
+    }
+
+    /**
+     * Sets the line.
+     *
+     * @param      line  The line
+     *
+     * @return     the new line
+     */
+    protected String setLine(String line) {
+        this.line = line;
+        return this.line;
+    }
+
+    /**
+     * Gets the line.
+     *
+     * @return     The line.
+     */
+    public String getLine() {
+        return this.line;
     }
 }
