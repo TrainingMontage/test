@@ -56,6 +56,7 @@ public class WaysideController {
     static int TRACK_LEN = 151;
     static int NUM_SWITCHES = 7;
     static int[] CROSSINGS = {19};
+    static int[][] PATHS;
     
     static TrackModel tm = TrackModel.getTrackModel();
 
@@ -75,6 +76,7 @@ public class WaysideController {
         TRACK_LEN = 9;
         NUM_SWITCHES = 2;
         CROSSINGS = null;
+        PATHS = new int[][] {{1,2,3,4,5,6,7,2,1}};
     }
 
     /**
@@ -208,11 +210,6 @@ public class WaysideController {
         return pos;
     }
 
-    // Another horrible hack just to get it "working"
-    private static int[] getPath() {
-        return new int[] {1,2,3,4,5,6,7,2,1};
-    }
-
     /**
      * Implements the staight-line rules discussed before.
      * @param authority the linear representation of authority.
@@ -223,19 +220,21 @@ public class WaysideController {
     static boolean[] checkStraightLine(boolean[] authority, boolean[] occupied) {
         // I need to see if I can find a path from one occupied block to another
         boolean unbrokenPath = false;
-        int[] path = getPath();
-        for (int block: path) {
-            if (unbrokenPath) {
-                if (occupied[block]) {
-                    throw new RuntimeException(String.format(
-                        "Found an unbroken path from some occupied block to %d", block
-                    ));
-                }
-                // This doesn't follow the 2-block rule.
-                unbrokenPath = authority[block];
-            } else {
-                if (occupied[block]) {
-                    unbrokenPath = true;
+        
+        for (int[] path: PATHS) {
+            for (int block: path) {
+                if (unbrokenPath) {
+                    if (occupied[block]) {
+                        throw new RuntimeException(String.format(
+                            "Found an unbroken path from some occupied block to %d", block
+                        ));
+                    }
+                    // This doesn't follow the 2-block rule.
+                    unbrokenPath = authority[block];
+                } else {
+                    if (occupied[block]) {
+                        unbrokenPath = true;
+                    }
                 }
             }
         }
