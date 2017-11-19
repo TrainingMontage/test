@@ -77,11 +77,6 @@ public class WaysideController {
         CROSSINGS = null;
     }
 
-    public static void initTest(TrackModel t) {
-        initTest();
-        tm = t;
-    }
-
     /**
      * Opens the WC UI.
      */

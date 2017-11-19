@@ -16,7 +16,7 @@
 package wayside;
 
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import shared.Suggestion;
@@ -25,8 +25,8 @@ import trackmodel.TrackModel;
 
 public class EmptyTrack {
     
-    @Before
-    public void init() {
+    @BeforeClass
+    public static void init() {
         TrackModel.initWithTestData();
         wayside.TrackModel.setOccupancy(2, true);
         WaysideController.initTest();

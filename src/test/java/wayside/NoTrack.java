@@ -16,7 +16,7 @@
 package wayside;
 
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import shared.Suggestion;
@@ -25,8 +25,8 @@ import wayside.WaysideController;
 
 public class NoTrack {
 
-    @Before
-    public void init() {
+    @BeforeClass
+    public static void init() {
         TrackModel.initWithTestData();
         WaysideController.initTest();
     }
