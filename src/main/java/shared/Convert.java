@@ -27,4 +27,8 @@ public class Convert {
     public static double metersPerSecondToMPH(double mps) {
         return 2.23694 * mps;
     }
+
+    public static double MPHToMetersPerSecond(double mph) {
+        return mph/2.23694;
+    }
 }

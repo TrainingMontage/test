@@ -26,10 +26,10 @@ import shared.*;
 public class GUI {
 
     protected static JButton reloadBlockInfo, submitChanges;
-    protected static JLabel time, temp, switchId, switchBlocks, switchState;
+    protected static JLabel time, temp, switchId, switchBlocks, switchState, next;
     protected static JCheckBox occupied, underground, heater, crossing, bidirectional, authority;
     protected static JComboBox<Integer> blockIdComboBox;
-    protected static JTextArea speed_limit, length, grade, elevation, region, station, next, status, line, signal;
+    protected static JTextArea speed_limit, length, grade, elevation, region, station, status, line, signal;
     private static boolean triggerEvents = true;
 
     public static void addComponentsToPane(Container pane) {
@@ -199,7 +199,7 @@ public class GUI {
         c.gridy = 1;
         panelBlockInfo.add(label, c);
 
-        next = new JTextArea("");
+        next = new JLabel("");
         c.gridx = 3;
         c.gridy = 1;
         panelBlockInfo.add(next, c);
@@ -524,9 +524,21 @@ public class GUI {
             str = length.getText();
             tm.setLength(blockId, Convert.feetToMeters(Double.parseDouble(str.substring(0, str.length() - 2))));
 
+
+            str = speed_limit.getText();
+            tm.setSpeedLimit(blockId, Convert.MPHToMetersPerSecond(Double.parseDouble(str.substring(0, str.length() - 3))));
+
+            tm.setUnderground(blockId, underground.isSelected());
+            tm.setBidirectional(blockId, bidirectional.isSelected());
+            tm.setHeater(blockId, heater.isSelected());
+            tm.setCrossing(blockId, crossing.isSelected());
+            tm.setStation(blockId, station.getText());
+            tm.setLine(blockId, line.getText());
+
             // dynamic data
             tm.setOccupied(blockId, occupied.isSelected());
         } catch (Exception e) {
+            e.printStackTrace();
             refreshGUI();
         }
     }
