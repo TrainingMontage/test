@@ -17,7 +17,7 @@ package trackmodel;
 
 import java.util.HashMap;
 
-class StaticTrack {
+public class StaticTrack {
     private int id;
     private String region;
     private double grade;
