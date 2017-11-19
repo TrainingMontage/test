@@ -25,10 +25,14 @@ import trackmodel.TrackModel;
 
 public class EmptyTrack {
     
+    final boolean[] OCC = new boolean[] {
+        false, false, true, false,
+        false, false, false, false, false
+    };
+
     @BeforeClass
     public static void init() {
         TrackModel.initWithTestData();
-        wayside.TrackModel.setOccupancy(2, true);
         WaysideController.initTest();
     }
 
@@ -96,7 +100,7 @@ public class EmptyTrack {
             false, true, true, false,
             false, false, false, false, true
         };
-        WaysideController.checkStraightLine(authority);
+        WaysideController.checkStraightLine(authority, OCC);
         Assert.assertTrue(true);
     }
 
@@ -107,7 +111,7 @@ public class EmptyTrack {
             true, true, false, true, true
         };
         try {
-            WaysideController.checkStraightLine(authority);
+            WaysideController.checkStraightLine(authority, OCC);
             Assert.assertTrue(true);
         } catch (Exception e) {
             Assert.fail(e.getMessage());
@@ -122,7 +126,7 @@ public class EmptyTrack {
             true, true, true, true, true
         };
         try {
-            WaysideController.checkStraightLine(authority);
+            WaysideController.checkStraightLine(authority, OCC);
             Assert.fail("Failed to find unsafe self loop unsafe.");
         } catch (Exception e) {
             Assert.assertTrue(true);

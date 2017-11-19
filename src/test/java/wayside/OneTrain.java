@@ -25,17 +25,14 @@ import trackmodel.TrackModel;
 
 public class OneTrain {
 
+    final boolean[] OCC = new boolean[] {
+        false, true, false, false, false, true, false, false, false
+    };
+
     @BeforeClass
     public static void init() {
         TrackModel.initWithTestData();
         WaysideController.initTest();
-    }
-
-    @Before
-    public void setup() {
-        wayside.TrackModel.init();
-        wayside.TrackModel.setOccupancy(1, true);
-        wayside.TrackModel.setOccupancy(5, true);
     }
 
     @Test
@@ -45,7 +42,7 @@ public class OneTrain {
             false, true, false, false, false
         };
         try {
-            WaysideController.checkStraightLine(authority);
+            WaysideController.checkStraightLine(authority, OCC);
             Assert.assertTrue(true);
         } catch (Exception e) {
             Assert.fail(e.getMessage());
@@ -59,7 +56,7 @@ public class OneTrain {
             true, true, false, false, false
         };
         try {
-            WaysideController.checkStraightLine(authority);
+            WaysideController.checkStraightLine(authority, OCC);
             Assert.fail("Failed to find unsafe path between 2 occupied blocks.");
         } catch (Exception e) {
             Assert.assertTrue(true);

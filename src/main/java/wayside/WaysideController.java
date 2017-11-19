@@ -138,7 +138,7 @@ public class WaysideController {
      * @return the authority of the block, true if it has authority, false otherwise.
      */
     public static boolean getAuthority(int blockId) {
-        return tm.getTrainAuthority(blockId) != 0;
+        return tm.getTrainAuthority(blockId);
     }
 
     public static int getSpeed(int blockId) {
@@ -216,16 +216,17 @@ public class WaysideController {
     /**
      * Implements the staight-line rules discussed before.
      * @param authority the linear representation of authority.
+     * @param occupied array which holds the current occupancy of the track.
      * @return the crossing state, given that this authority is safe.
      * @throws RuntimeException if this suggestion is not found to be safe.
      */
-    static boolean[] checkStraightLine(boolean[] authority) {
+    static boolean[] checkStraightLine(boolean[] authority, boolean[] occupied) {
         // I need to see if I can find a path from one occupied block to another
         boolean unbrokenPath = false;
         int[] path = getPath();
         for (int block: path) {
             if (unbrokenPath) {
-                if (wayside.TrackModel.isOccupied(block)) {
+                if (occupied[block]) {
                     throw new RuntimeException(String.format(
                         "Found an unbroken path from some occupied block to %d", block
                     ));
@@ -233,12 +234,20 @@ public class WaysideController {
                 // This doesn't follow the 2-block rule.
                 unbrokenPath = authority[block];
             } else {
-                if (wayside.TrackModel.isOccupied(block)) {
+                if (occupied[block]) {
                     unbrokenPath = true;
                 }
             }
         }
         return new boolean[TRACK_LEN];
+    }
+
+    private static boolean[] buildOccupancy() {
+        boolean[] o = new boolean[TRACK_LEN];
+        for (int block = 1; block < TRACK_LEN; block++) {
+            o[block] = tm.isOccupied(block);
+        }
+        return o;
     }
     
     /**
@@ -249,13 +258,28 @@ public class WaysideController {
      * @param suggestion an array of Suggestion objects, one for each train.
      */
     public static void suggest(Suggestion[] suggestion) {
-        boolean[] authority = squash(suggestion);
-        int[] speed = squashSpeed(suggestion);
-        boolean[] switchState = checkAndSetSwitches(authority);
-
-        // check straight line
-        // If valid, write suggested values.
-        // Otherwise, write default values.
+        boolean[] authority;
+        int[] speed;
+        boolean[] switchState;
+        boolean[] crossings;
+        try {
+            authority = squash(suggestion);
+            speed = squashSpeed(suggestion);
+            switchState = checkAndSetSwitches(authority);
+            crossings = checkStraightLine(authority, buildOccupancy());
+        } catch (RuntimeException re) {
+            // write out default values.
+            authority = new boolean[TRACK_LEN];
+            speed = new int[TRACK_LEN];
+            switchState = new boolean[TRACK_LEN];
+            crossings = new boolean[TRACK_LEN];
+        }
+        for (int block = 1; block < TRACK_LEN; block++) {
+            tm.setAuthority(block, authority[block]);
+            tm.setSwitch(block, switchState[block]);
+            tm.setSpeed(block, speed[block]);
+            tm.setCrossingState(block, crossings[block]);
+        }
     }
     
     /**
