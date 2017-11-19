@@ -1,6 +1,23 @@
+/*   ______                 _           _                 
+ *  /_  __/ _____  ____ _  (_) ____    (_) ____    ____ _ 
+ *   / /   / ___/ / __ `/ / / / __ \  / / / __ \  / __ `/ 
+ *  / /   / /    / /_/ / / / / / / / / / / / / / / /_/ /  
+ * /_/   /_/     \__,_/ /_/ /_/ /_/ /_/ /_/ /_/  \__, /   
+ *                                              /____/    
+ *     __  ___                 __                        
+ *    /  |/  / ____    ____   / /_  ____ _  ____ _  ___ 
+ *   / /|_/ / / __ \  / __ \ / __/ / __ `/ / __ `/ / _ \
+ *  / /  / / / /_/ / / / / // /_  / /_/ / / /_/ / /  __/
+ * /_/  /_/  \____/ /_/ /_/ \__/  \__,_/  \__, /  \___/ 
+ *                                       /____/         
+ *
+ * @author Isaac Goss
+ */
+
 package wayside;
 
 import shared.BlockStatus;
+import trackmodel.StaticBlock;
 
 /**
  * A simple static track model aganist which to test WaysideController.
@@ -215,5 +232,3 @@ public class TrackModel {
         return null;
     }
 }
-
-class StaticBlock {}

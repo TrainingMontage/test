@@ -28,6 +28,7 @@ public class EmptyTrack {
     @Before
     public void init() {
         TrackModel.initWithTestData();
+        wayside.TrackModel.setOccupancy(2, true);
         WaysideController.initTest();
     }
 
@@ -97,5 +98,34 @@ public class EmptyTrack {
         };
         WaysideController.checkStraightLine(authority);
         Assert.assertTrue(true);
+    }
+
+    @Test
+    public void safeBrokenLineToSelf() {
+        boolean[] authority = new boolean[] {
+            false, false, true, false,
+            true, true, false, true, true
+        };
+        try {
+            WaysideController.checkStraightLine(authority);
+            Assert.assertTrue(true);
+        } catch (Exception e) {
+            Assert.fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void unsafeUnbrokenLineToSelf() {
+        // This should fail our switch rules anyway.
+        boolean[] authority = new boolean[] {
+            false, false, true, true,
+            true, true, true, true, true
+        };
+        try {
+            WaysideController.checkStraightLine(authority);
+            Assert.fail("Failed to find unsafe self loop unsafe.");
+        } catch (Exception e) {
+            Assert.assertTrue(true);
+        }
     }
 }

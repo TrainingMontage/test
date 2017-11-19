@@ -213,6 +213,10 @@ public class WaysideController {
         return pos;
     }
 
+    // Another horrible hack just to get it "working"
+    private static int[] getPath() {
+        return new int[] {1,2,3,4,5,6,7,2,1};
+    }
 
     /**
      * Implements the staight-line rules discussed before.
@@ -221,8 +225,25 @@ public class WaysideController {
      * @throws RuntimeException if this suggestion is not found to be safe.
      */
     static boolean[] checkStraightLine(boolean[] authority) {
-        // I need to see if I can find a path from one occupied block to another.
-        return null;
+        // I need to see if I can find a path from one occupied block to another
+        boolean unbrokenPath = false;
+        int[] path = getPath();
+        for (int block: path) {
+            if (unbrokenPath) {
+                if (wayside.TrackModel.isOccupied(block)) {
+                    throw new RuntimeException(String.format(
+                        "Found an unbroken path from some occupied block to %d", block
+                    ));
+                }
+                // This doesn't follow the 2-block rule.
+                unbrokenPath = authority[block];
+            } else {
+                if (wayside.TrackModel.isOccupied(block)) {
+                    unbrokenPath = true;
+                }
+            }
+        }
+        return new boolean[TRACK_LEN];
     }
     
     /**
