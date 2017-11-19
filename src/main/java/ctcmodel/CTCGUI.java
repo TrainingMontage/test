@@ -10,6 +10,8 @@ import shared.Convert;
 import shared.BlockStatus;
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
+import org.graphstream.ui.swingViewer.ViewPanel;
+import org.graphstream.ui.view.Viewer;
 
 public class CTCGUI {
     // dummy modules that the GUI needs to interact with
@@ -63,7 +65,21 @@ public class CTCGUI {
     private static JTextArea trackCrossingText;
     
     private static Graph graph;
-    
+    private static ViewPanel graphView;
+    private final String styleSheet =
+        "node {" +
+        "   size: 1px;" +
+        "	fill-color: black;" +
+        "}" +
+        "edge {" +
+        "	fill-color: black;" +
+        "}" +
+        "edge.marked {" +
+        "	fill-color: red;" +
+        "}";
+
+
+
     //has the user pushed the new train button but not yet launched it
     private static boolean isNewTrain;
     
@@ -76,6 +92,10 @@ public class CTCGUI {
     public static void init(){
         System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         graph = new MultiGraph("Map");//allow directed graphs
+        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+        graphView = viewer.addDefaultView(false);   // false indicates "no JFrame".
+        
+        
         
         Node nodeYard = graph.addNode("Yard");
         //read in from track
@@ -898,7 +918,7 @@ public class CTCGUI {
         
         // -------------------- Map panel --------------------
         panelTrackGraph.setLayout(new GridBagLayout());
-        
+        /*
         label = new JLabel("");
         //label.setPreferredSize(new Dimension(75,16));
         c.insets = new Insets(0,0,0,0);//top,left,bottom,right
@@ -1026,6 +1046,8 @@ public class CTCGUI {
         c.gridwidth = 1;
         c.gridheight = 1;
         panelTrackGraph.add(label,c);
+        */
+        panelTrackGraph.add(graphView);
         
         panelTrackGraph.setBorder(BorderFactory.createTitledBorder("Map Panel"));
         c.insets = new Insets(2,2,2,2);//top,left,bottom,right

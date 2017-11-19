@@ -10,7 +10,7 @@ import org.graphstream.graph.implementations.*;
 
 public class CTCModel{
     private static CTCModel model = null;
-    private static TrainTracker trainTracker;
+    //private static TrainTracker trainTracker;
     //private static boolean dataValid;
     //private static ArrayList<Integer> dataTrainID;
     //private static ArrayList<Integer> dataBlockID;
@@ -24,13 +24,14 @@ public class CTCModel{
     private static int last_clock;
     private static StaticTrack track;
     
-    private CTCModel(TrainTracker atrainTracker){
-        trainTracker = atrainTracker;
+    private CTCModel(){
+        //trainTracker = atrainTracker;
+        last_clock = 0;
     }
     
-    public static void init(TrainTracker atrainTracker){
+    public static void init(){
         if (model == null) {
-            model = new CTCModel(atrainTracker);
+            model = new CTCModel();
         }
         track = TrackModel.getTrackModel().getStaticTrack();
         CTCGUI.init();
@@ -79,7 +80,7 @@ public class CTCModel{
     
     public static int createTrain(int startingBlockID, int suggestedSpeed,
                                   String suggestedAuth, int destBlockID){
-        int trainID = trainTracker.createTrain(startingBlockID);
+        int trainID = TrainTracker.getTrainTracker().createTrain(startingBlockID);
         trainData.add(new CTCTrainData(trainID, startingBlockID, suggestedSpeed,
                                        suggestedAuth, startingBlockID, destBlockID));
         return trainID;

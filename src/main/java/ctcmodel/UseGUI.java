@@ -7,8 +7,8 @@ public class UseGUI {
         
         TrackModel.initWithTestData();
         WaysideController.init();
-        TrainTracker trainTracker = new TrainTracker();
-        CTCModel.init(trainTracker);
+        //TrainTracker trainTracker = new TrainTracker();
+        CTCModel.init();
         CTCGUI.run();
     }
 }
