@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 import shared.Convert;
 import shared.BlockStatus;
 import org.graphstream.graph.*;
@@ -73,14 +75,133 @@ public class CTCGUI {
     
     public static void init(){
         System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
-        graph = new MultiGraph("Tutorial 1");//allow directed graphs
+        graph = new MultiGraph("Map");//allow directed graphs
         
-        graph.addNode("Yard");
+        Node nodeYard = graph.addNode("Yard");
         //read in from track
         StaticTrack t = TrackModel.getTrackModel().getStaticTrack();
-        for(;;){
-        
+        ArrayList<Integer> bIds = TrackModel.getTrackModel().getBlockIds();
+        Iterator itr = bIds.iterator();
+        while(itr.hasNext()){
+            int blockId = (Integer)itr.next();
+            if(blockId == 151 || blockId == 152){
+                //special exception for blocks connected to the yard
+                continue;
+            }
+            Node n1,n2;
+            StaticSwitch ss = t.getStaticBlock(blockId).getStaticSwitch();
+            if(ss != null){
+                //special exception for switches
+                n1 = graph.getNode(ss.getRoot().getId()+" "+ss.getDefaultLeaf().getId()+" "+ss.getActiveLeaf().getId());
+                if(n1 == null){
+                    graph.addNode(ss.getRoot().getId()+" "+ss.getDefaultLeaf().getId()+" "+ss.getActiveLeaf().getId());
+                }//else it already exists; do nothing
+            }else{
+                int nextId = t.getStaticBlock(blockId).getNextId();
+                int prevId = t.getStaticBlock(blockId).getPreviousId();
+                String nextStr,prevStr;
+                if(nextId < blockId){
+                    nextStr = nextId+" "+blockId;
+                }else{
+                    nextStr = blockId+" "+nextId;
+                }
+                n1 = graph.getNode(nextStr);
+                if(prevId < blockId){
+                    prevStr = prevId+" "+blockId;
+                }else{
+                    prevStr = blockId+" "+prevId;
+                }
+                n2 = graph.getNode(prevStr);
+                if(n1 == null){
+                    graph.addNode(nextStr);
+                }
+                if(n2 == null){
+                    graph.addNode(prevStr);
+                }
+            }
         }
+        //now all nodes are added, just connect with edges (AKA blocks of track)
+        itr = bIds.iterator();
+        while(itr.hasNext()){
+            int blockId = (Integer)itr.next();
+            if(blockId == 151 || blockId == 152){
+                //special exception for blocks connected to the yard
+                continue;
+            }
+            Node n1,n2;
+            Edge e;
+            StaticBlock sb = t.getStaticBlock(blockId);
+            StaticSwitch ss = sb.getStaticSwitch();
+            if(ss != null){
+                //special exception for switches
+                n1 = graph.getNode(ss.getRoot().getId()+" "+ss.getDefaultLeaf().getId()+" "+ss.getActiveLeaf().getId());
+                int nextId = sb.getNextId();
+                int prevId = sb.getPreviousId();
+                boolean nextDirection = true;
+                String nextStr,prevStr;
+                if(nextId < blockId){
+                    nextStr = nextId+" "+blockId;
+                }else{
+                    nextStr = blockId+" "+nextId;
+                }
+                n2 = graph.getNode(nextStr);
+                if(n2 == null){
+                    //oops, next is pointing into the switch; prev is pointing away from the switch
+                    nextDirection = false;
+                    if(prevId < blockId){
+                        prevStr = prevId+" "+blockId;
+                    }else{
+                        prevStr = blockId+" "+prevId;
+                    }
+                    n2 = graph.getNode(prevStr);
+                }
+                if(nextDirection && sb.isBidirectional()){
+                    e = graph.addEdge(""+blockId, n1, n2, true);
+                }else if(nextDirection && !sb.isBidirectional()){
+                    e = graph.addEdge(""+blockId, n1, n2, false);
+                }else if(!nextDirection && sb.isBidirectional()){
+                    e = graph.addEdge(""+blockId, n2, n1, true);
+                }else{
+                    e = graph.addEdge(""+blockId, n2, n1, false);
+                }
+                //add switch specific edge properties
+            }else{
+                //ordinary piece of track with 2 neighbors
+                int nextId = sb.getNextId();
+                int prevId = sb.getPreviousId();
+                String nextStr,prevStr;
+                if(nextId < blockId){
+                    nextStr = nextId+" "+blockId;
+                }else{
+                    nextStr = blockId+" "+nextId;
+                }
+                n1 = graph.getNode(nextStr);
+                if(prevId < blockId){
+                    prevStr = prevId+" "+blockId;
+                }else{
+                    prevStr = blockId+" "+prevId;
+                }
+                n2 = graph.getNode(prevStr);
+                if(sb.isBidirectional()){
+                    e = graph.addEdge(""+blockId, n2, n1, true);
+                }else{
+                    e = graph.addEdge(""+blockId, n2, n1, false);
+                }
+            }
+            //add edge properties
+            e.addAttribute("layout.weight", new Double(sb.getLength()));
+            e.addAttribute("track.time", new Double(sb.getLength()/sb.getSpeedLimit()));
+        }
+        //manually add the blocks connected to the yard
+        //green line: 151 in, 152 out
+        Node nodePrev = graph.getNode(t.getStaticBlock(151).getPreviousId()+" 151");
+        Edge greenIn = graph.addEdge("151", nodePrev, nodeYard, false);
+        greenIn.addAttribute("layout.weight", new Double(t.getStaticBlock(151).getLength()));
+        greenIn.addAttribute("track.time", new Double(t.getStaticBlock(151).getLength()/t.getStaticBlock(151).getSpeedLimit()));
+        Node nodeNext = graph.getNode(t.getStaticBlock(152).getNextId()+" 152");
+        Edge greenOut = graph.addEdge("152", nodeYard, nodeNext, false);
+        greenOut.addAttribute("layout.weight", new Double(t.getStaticBlock(152).getLength()));
+        greenOut.addAttribute("track.time", new Double(t.getStaticBlock(152).getLength()/t.getStaticBlock(152).getSpeedLimit()));
     }
     
     public static void addComponentsToPane(Container pane){
@@ -964,7 +1085,7 @@ public class CTCGUI {
             //get switch state (dynamic)
             if(WaysideController.getSwitch(root.getId())){
                 //in the activated switch state
-                selectedLeaf = staticSwitch.getInactiveLeaf();
+                selectedLeaf = staticSwitch.getDefaultLeaf();
             }else{
                 //in the default switch state
                 selectedLeaf = staticSwitch.getActiveLeaf();

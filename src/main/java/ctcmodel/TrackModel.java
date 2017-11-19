@@ -2,6 +2,7 @@ package CTCModel;
 
 import java.sql.SQLException;
 import shared.BlockStatus;
+import java.util.ArrayList;
 
 public class TrackModel{
     private static TrackModel model = null;
@@ -46,7 +47,7 @@ public class TrackModel{
                     false, true);
         StaticSwitch ss = new StaticSwitch();
         ss.setRoot(blocks[3]);
-        ss.setInactiveLeaf(new StaticBlock(4, 20, 100, 0.0,
+        ss.setDefaultLeaf(new StaticBlock(4, 20, 100, 0.0,
                     100, false, false,
                     false, false, null,
                     true, true));
@@ -55,7 +56,7 @@ public class TrackModel{
                     false, false, null,
                     true, true));
         blocks[3].setStaticSwitch(ss);
-        ss.getInactiveLeaf().setStaticSwitch(ss);
+        ss.getDefaultLeaf().setStaticSwitch(ss);
         ss.getActiveLeaf().setStaticSwitch(ss);
     }
     
@@ -102,5 +103,13 @@ public class TrackModel{
     }
     public boolean getSwitch(int blockID){
         return mySwitch[blockID];
+    }
+    public ArrayList<Integer> getBlockIds(){
+        ArrayList<Integer> al = new ArrayList<Integer>();
+        al.add(0);
+        al.add(1);
+        al.add(2);
+        al.add(3);
+        return al;
     }
 }

@@ -45,7 +45,7 @@ public class StaticSwitch {
 	 *
 	 * @return     The default leaf.
 	 */
-	public StaticBlock getInactiveLeaf() {
+	public StaticBlock getDefaultLeaf() {
 		return inactiveLeaf;
 	}
 
@@ -56,7 +56,7 @@ public class StaticSwitch {
 	 *
 	 * @return     returns the new default leaf value
 	 */
-	protected StaticBlock setInactiveLeaf(StaticBlock inactiveLeaf) {
+	protected StaticBlock setDefaultLeaf(StaticBlock inactiveLeaf) {
 		this.inactiveLeaf = inactiveLeaf;
 		return this.inactiveLeaf;
 	}
