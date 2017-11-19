@@ -1,3 +1,21 @@
+/*   ______                 _           _
+ *  /_  __/ _____  ____ _  (_) ____    (_) ____    ____ _
+ *   / /   / ___/ / __ `/ / / / __ \  / / / __ \  / __ `/
+ *  / /   / /    / /_/ / / / / / / / / / / / / / / /_/ /
+ * /_/   /_/     \__,_/ /_/ /_/ /_/ /_/ /_/ /_/  \__, /
+ *                                              /____/
+ *     __  ___                 __
+ *    /  |/  / ____    ____   / /_  ____ _  ____ _  ___
+ *   / /|_/ / / __ \  / __ \ / __/ / __ `/ / __ `/ / _ \
+ *  / /  / / / /_/ / / / / // /_  / /_/ / / /_/ / /  __/
+ * /_/  /_/  \____/ /_/ /_/ \__/  \__,_/  \__, /  \___/
+ *                                       /____/
+ *
+ * @author Mitchell Moran
+ */
+
+
+
 package CTCModel;
 
 import java.awt.*;
@@ -8,6 +26,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import shared.Convert;
 import shared.BlockStatus;
+import wayside.WaysideController;
+import trackmodel.TrackModel;
+import trackmodel.StaticBlock;
+import trackmodel.StaticSwitch;
+import trackmodel.StaticTrack;
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
 import org.graphstream.ui.swingViewer.ViewPanel;
