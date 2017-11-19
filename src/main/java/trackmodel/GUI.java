@@ -291,7 +291,7 @@ public class GUI {
         c.gridy = 0;
         panelSwitchInfo.add(label, c);
 
-        switchId = new JLabel("2");
+        switchId = new JLabel("");
         c.gridx = 1;
         c.gridy = 0;
         panelSwitchInfo.add(switchId, c);
@@ -301,7 +301,7 @@ public class GUI {
         c.gridy = 1;
         panelSwitchInfo.add(label, c);
 
-        switchBlocks = new JLabel("A1, A2, A3");
+        switchBlocks = new JLabel("");
         c.gridx = 1;
         c.gridy = 1;
         panelSwitchInfo.add(switchBlocks, c);
@@ -311,7 +311,7 @@ public class GUI {
         c.gridy = 2;
         panelSwitchInfo.add(label, c);
 
-        switchState = new JLabel("A1 -> A3");
+        switchState = new JLabel("");
         c.gridx = 1;
         c.gridy = 2;
         panelSwitchInfo.add(switchState, c);
@@ -466,6 +466,22 @@ public class GUI {
             station.setText(block.getStation());
             line.setText(block.getLine());
             next.setText(tm.getStaticBlock(block.getNextId()).toString());
+
+            StaticSwitch sw = block.getStaticSwitch();
+            if (sw != null) {
+                switchId.setText(String.valueOf(sw.getId()));
+                switchBlocks.setText(sw.getRoot() + ", " + sw.getDefaultLeaf() + ", " + sw.getActiveLeaf());
+                if (tm.getSwitch(blockId)) {
+                    switchState.setText(sw.getRoot() + " -> " + sw.getActiveLeaf());
+                } else {
+                    switchState.setText(sw.getRoot() + " -> " + sw.getDefaultLeaf());
+                }
+                
+            } else {
+                switchId.setText("");
+                switchBlocks.setText("");
+                switchState.setText("");
+            }
 
             // dynamic info
             occupied.setSelected(tm.isOccupied(blockId));
