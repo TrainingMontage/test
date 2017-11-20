@@ -860,15 +860,51 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelGetTrainAuthority() throws SQLException {
-        assertEquals(false, _tm.getTrainAuthority(1));
+        assertFalse(_tm.getTrainAuthority(1));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET authority = ? WHERE id = ?;");
         stmt.setInt(1, 1);
         stmt.setInt(2, 1);
         stmt.execute();
 
-        assertEquals(true, _tm.getTrainAuthority(1));
+        assertTrue(_tm.getTrainAuthority(1));
     }
+
+        /**
+     * Validate force majeure occupancy checks.
+     */
+    @Test
+    public void testTrackModelGetTrainAuthorityForceMajeure() throws SQLException {
+
+        TrackModel spyTM = spy(_tm);
+        doReturn(BlockStatus.OPERATIONAL).when(spyTM).getStatus(1);
+
+        assertFalse(spyTM.getTrainAuthority(1));
+
+        Statement stmt = spyTM.conn.createStatement();
+        stmt.execute("UPDATE blocks SET authority = 1 WHERE id = 1;");
+
+        assertTrue(spyTM.getTrainAuthority(1));
+
+        doReturn(BlockStatus.COMM_FAILURE).when(spyTM).getStatus(1);
+        assertFalse(spyTM.getTrainAuthority(1));
+
+        doReturn(BlockStatus.BROKEN).when(spyTM).getStatus(1);
+        assertTrue(spyTM.getTrainAuthority(1));
+
+        doReturn(BlockStatus.IN_REPAIR).when(spyTM).getStatus(1);
+        assertTrue(spyTM.getTrainAuthority(1));
+
+        doReturn(BlockStatus.FORCE_OCCUPIED).when(spyTM).getStatus(1);
+        assertTrue(spyTM.getTrainAuthority(1));
+
+        doReturn(BlockStatus.TRACK_CIRCUIT_FAILURE).when(spyTM).getStatus(1);
+        assertTrue(spyTM.getTrainAuthority(1));
+
+        doReturn(BlockStatus.POWER_FAILURE).when(spyTM).getStatus(1);
+        assertTrue(spyTM.getTrainAuthority(1));
+    }
+
 
     /**
      * Validate basic train speed get.
