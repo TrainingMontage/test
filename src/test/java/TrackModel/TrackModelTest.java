@@ -870,7 +870,7 @@ public class TrackModelTest {
         assertTrue(_tm.getTrainAuthority(1));
     }
 
-        /**
+    /**
      * Validate force majeure occupancy checks.
      */
     @Test
@@ -905,7 +905,6 @@ public class TrackModelTest {
         assertTrue(spyTM.getTrainAuthority(1));
     }
 
-
     /**
      * Validate basic train speed get.
      */
@@ -919,6 +918,41 @@ public class TrackModelTest {
         stmt.execute();
 
         assertEquals(1, _tm.getTrainSpeed(1), epsilon);
+    }
+
+    /**
+     * Validate force majeure occupancy checks.
+     */
+    @Test
+    public void testTrackModelGetTrainSpeedForceMajeure() throws SQLException {
+
+        TrackModel spyTM = spy(_tm);
+        doReturn(BlockStatus.OPERATIONAL).when(spyTM).getStatus(1);
+
+        assertEquals(0, spyTM.getTrainSpeed(1), epsilon);
+
+        Statement stmt = spyTM.conn.createStatement();
+        stmt.execute("UPDATE blocks SET speed = 1 WHERE id = 1;");
+
+        assertEquals(1, spyTM.getTrainSpeed(1), epsilon);
+
+        doReturn(BlockStatus.COMM_FAILURE).when(spyTM).getStatus(1);
+        assertEquals(-1, spyTM.getTrainSpeed(1), epsilon);
+
+        doReturn(BlockStatus.BROKEN).when(spyTM).getStatus(1);
+        assertEquals(1, spyTM.getTrainSpeed(1), epsilon);
+
+        doReturn(BlockStatus.IN_REPAIR).when(spyTM).getStatus(1);
+        assertEquals(1, spyTM.getTrainSpeed(1), epsilon);
+
+        doReturn(BlockStatus.FORCE_OCCUPIED).when(spyTM).getStatus(1);
+        assertEquals(1, spyTM.getTrainSpeed(1), epsilon);
+
+        doReturn(BlockStatus.TRACK_CIRCUIT_FAILURE).when(spyTM).getStatus(1);
+        assertEquals(1, spyTM.getTrainSpeed(1), epsilon);
+
+        doReturn(BlockStatus.POWER_FAILURE).when(spyTM).getStatus(1);
+        assertEquals(1, spyTM.getTrainSpeed(1), epsilon);
     }
 
     /**
