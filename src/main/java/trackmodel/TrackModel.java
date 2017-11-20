@@ -330,10 +330,24 @@ public class TrackModel {
      *
      * @param      blockId  The block identifier
      *
-     * @return     True if occupied, False otherwise.
+     * @return     True if occupied (or broken), False otherwise.
      */
     public boolean isOccupied(int blockId) {
         this.update();
+
+        switch (this.getStatus(blockId)) {
+            case BROKEN:
+            case IN_REPAIR:
+            case FORCE_OCCUPIED:
+            case TRACK_CIRCUIT_FAILURE:
+            case POWER_FAILURE:
+                return true;
+            case FORCE_UNOCCUPIED:
+                return false;
+            case OPERATIONAL:
+            default:
+                break;
+        }
 
         Integer occupied = null;
         try {
@@ -889,6 +903,14 @@ public class TrackModel {
     public boolean getTrainAuthority(int trainId){
         this.update();
 
+        switch (this.getStatus(this.getTrainBlock(trainId))) {
+            case COMM_FAILURE:
+                return false;
+            case OPERATIONAL:
+            default:
+                break;
+        }
+
         try {
             PreparedStatement stmt = this.conn.prepareStatement("SELECT authority FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
             stmt.setInt(1, trainId);
@@ -913,6 +935,14 @@ public class TrackModel {
      */
     public double getTrainSpeed(int trainId) {
         this.update();
+
+        switch (this.getStatus(this.getTrainBlock(trainId))) {
+            case COMM_FAILURE:
+                return -1;
+            case OPERATIONAL:
+            default:
+                break;
+        }
 
         try {
             PreparedStatement stmt = this.conn.prepareStatement("SELECT speed FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
@@ -939,6 +969,8 @@ public class TrackModel {
      */
     public int getTrainBeacon(int trainId) {
         this.update();
+
+        // beacon is directly read by the train, not communicated by the track. COMM_FAILURE doesn't affect this.
 
         try {
             PreparedStatement stmt = this.conn.prepareStatement("SELECT beacon FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
@@ -1019,7 +1051,6 @@ public class TrackModel {
      *
      * @return     The status.
      *
-     * wasn't valid
      */
     public BlockStatus getStatus(int blockId) {
         try {
@@ -1421,6 +1452,8 @@ public class TrackModel {
      */
     public boolean getTrainBlockChange(int trainId) {
         this.update();
+
+        // This is detected directly by the train, it's not affected by a comms failure
         
         if (!this.getTrainReportedBlockChange(trainId)) {
             this.setTrainReportedBlockChange(trainId, true);
