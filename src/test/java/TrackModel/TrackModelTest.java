@@ -411,6 +411,41 @@ public class TrackModelTest {
     }
 
     /**
+     * Validate force majeure occupancy checks.
+     */
+    @Test
+    public void testTrackModelisOccupiedForceMajeure() throws SQLException {
+
+        TrackModel spyTM = spy(_tm);
+        doReturn(BlockStatus.OPERATIONAL).when(spyTM).getStatus(1);
+
+        assertFalse(spyTM.isOccupied(1));
+
+        Statement stmt = spyTM.conn.createStatement();
+        stmt.execute("UPDATE blocks SET occupied = 1 WHERE id = 1;");
+
+        assertTrue(spyTM.isOccupied(1));
+
+        doReturn(BlockStatus.FORCE_UNOCCUPIED).when(spyTM).getStatus(1);
+        assertFalse(spyTM.isOccupied(1));
+
+        doReturn(BlockStatus.BROKEN).when(spyTM).getStatus(1);
+        assertTrue(spyTM.isOccupied(1));
+
+        doReturn(BlockStatus.IN_REPAIR).when(spyTM).getStatus(1);
+        assertTrue(spyTM.isOccupied(1));
+
+        doReturn(BlockStatus.FORCE_OCCUPIED).when(spyTM).getStatus(1);
+        assertTrue(spyTM.isOccupied(1));
+
+        doReturn(BlockStatus.TRACK_CIRCUIT_FAILURE).when(spyTM).getStatus(1);
+        assertTrue(spyTM.isOccupied(1));
+
+        doReturn(BlockStatus.POWER_FAILURE).when(spyTM).getStatus(1);
+        assertTrue(spyTM.isOccupied(1));
+    }
+
+    /**
      * Validate basic getblocks call.
      */
     @Test
