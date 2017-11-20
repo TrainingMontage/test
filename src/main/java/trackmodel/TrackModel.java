@@ -33,6 +33,8 @@ import shared.Environment;
 import shared.TrainCrashException;
 import shared.CrashIntoSwitchException;
 import shared.BlockStatus;
+import trainmodel.TrainTracker;
+import trainmodel.Train;
 
 /**
  * Class for track model. This is a singleton class, meaning that all methods
@@ -1131,11 +1133,9 @@ public class TrackModel {
      * @param      trainId  The train identifier
      */
     protected void updateTrain(int trainId) {
-        // TODO
-        // fake actually calling a train until there's something there to call
-        // ...getDisplacement()
-        double displacement = 2.50; // hardcode 2.5m displacement for now
-        double train_length = 50; // TODO: train length
+        Train train = this.getTrainModelFromTrainTracker(trainId); 
+        double displacement = train.getDisplacement();
+        double train_length = 50; // TODO: train.getLength()
 
         StaticBlock curr_block = this.getStaticBlock(this.getTrainBlock(trainId));
         double position = this.getTrainPosition(trainId);
@@ -1552,6 +1552,8 @@ public class TrackModel {
     public int getTrainPassengers(int trainId) {
         this.update();
         
+        // Train train = this.getTrainModelFromTrainTracker(trainId); 
+
         if (!this.getTrainReportedPassenger(trainId) && this.getStaticBlock(this.getTrainBlock(trainId)).getStation() != null) {
             this.setTrainReportedPassenger(trainId, true);
 
@@ -1691,5 +1693,9 @@ public class TrackModel {
         }
 
         return line;
+    }
+
+    protected Train getTrainModelFromTrainTracker(int trainId) {
+        return TrainTracker.getTrainTracker().getTrain(trainId);
     }
 }
