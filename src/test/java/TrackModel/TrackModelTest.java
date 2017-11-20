@@ -19,10 +19,14 @@ import java.io.*;
 import java.sql.*;
 import java.util.*;
 import shared.*;
+import trainmodel.Train;
 
 import org.junit.*;
 import org.junit.rules.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import org.mockito.Mock;
+
 
 public class TrackModelTest {
     public TrackModel _tm;
@@ -1125,18 +1129,24 @@ public class TrackModelTest {
         // setup environment clock time
         Environment.clock = 1;
 
+        // mock a train from trainTracker
+        TrackModel spyTM = spy(_tm);
+        Train _train = mock(Train.class);
+        doReturn(2.5).when(_train).getDisplacement();
+        doReturn(_train).when(spyTM).getTrainModelFromTrainTracker(1);
+
         // add train to line on a block (train id, starting block)
-        assertTrue(_tm.initializeTrain(2, 1));
+        assertTrue(spyTM.initializeTrain(2, 1));
 
         // update trackmodel
-        _tm.updateTrain(1);
+        spyTM.updateTrain(1);
 
         // check train position
-        assertEquals(2.5, _tm.getTrainPosition(1), epsilon);
+        assertEquals(2.5, spyTM.getTrainPosition(1), epsilon);
         
         // check block occupancies
-        ArrayList<StaticBlock> occupancy = _tm.trainOccupancy.get(1);
-        assertEquals(_tm.getStaticBlock(1), occupancy.get(0));
+        ArrayList<StaticBlock> occupancy = spyTM.trainOccupancy.get(1);
+        assertEquals(spyTM.getStaticBlock(1), occupancy.get(0));
     }
 
     /**
