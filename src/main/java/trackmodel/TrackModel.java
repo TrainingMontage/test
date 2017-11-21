@@ -44,7 +44,7 @@ import shared.BlockStatus;
  *
  * <pre> {@code TrackModel.initWithTestData(); } </pre>
  */
-public class TrackModel {
+public class TrackModel implements TrackModelInterface {
 
     // singleton object
     private static TrackModel model;
