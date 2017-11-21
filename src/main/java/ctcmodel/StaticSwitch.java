@@ -5,7 +5,7 @@ public class StaticSwitch {
 	private StaticBlock root;
 	private StaticBlock inactiveLeaf;
 	private StaticBlock activeLeaf;
-
+    private int id;
 	/**
 	 * Constructs the Static Switch. Sets all attributes to null by default.
 	 */
@@ -15,7 +15,9 @@ public class StaticSwitch {
 		this.activeLeaf = null;
 	}
 
-
+    public int getId(){
+        return this.id;
+    }
 	/**
 	 * Gets the root of the switch.
 	 *
@@ -43,7 +45,7 @@ public class StaticSwitch {
 	 *
 	 * @return     The default leaf.
 	 */
-	public StaticBlock getInactiveLeaf() {
+	public StaticBlock getDefaultLeaf() {
 		return inactiveLeaf;
 	}
 
@@ -54,7 +56,7 @@ public class StaticSwitch {
 	 *
 	 * @return     returns the new default leaf value
 	 */
-	protected StaticBlock setInactiveLeaf(StaticBlock inactiveLeaf) {
+	protected StaticBlock setDefaultLeaf(StaticBlock inactiveLeaf) {
 		this.inactiveLeaf = inactiveLeaf;
 		return this.inactiveLeaf;
 	}
