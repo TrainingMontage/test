@@ -8,6 +8,7 @@ import java.io.*;
 import trackmodel.RunTrackModel;
 import CTCModel.CTCGUI;
 import wayside.WaysideController;
+import traincontroller.TrainController;
 import trainmodel.TrainModelGUI;
 
 public class GlobalGUI {
@@ -67,7 +68,11 @@ public class GlobalGUI {
         button = new JButton("TrainController");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // TODO
+                try {
+                    TrainController.initUI();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         } );
         c.gridx = 0;

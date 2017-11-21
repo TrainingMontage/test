@@ -64,7 +64,7 @@ public class StaticBlock{
     public String getStation(){
         return this.stationName;
     }
-    public boolean hasRailway(){
+    public boolean isCrossing(){
         return this.hasRailway;
     }
     public boolean hasHeater(){
@@ -75,5 +75,15 @@ public class StaticBlock{
     }
     public StaticSwitch getStaticSwitch(){
         return this.sswitch;
+    }
+    //fake some methods just to get it to compile
+    public boolean isBidirectional(){
+        return true;
+    }
+    public int getNextId(){
+        return 1;
+    }
+    public int getPreviousId(){
+        return 1;
     }
 }

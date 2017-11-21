@@ -2,17 +2,19 @@ package CTCModel;
 
 import java.sql.SQLException;
 import shared.BlockStatus;
+import java.util.ArrayList;
 
 public class TrackModel{
     private static TrackModel model = null;
-    private static StaticBlock[] blocks;
-    private static BlockStatus[] status;
-    private static boolean[] occupied;
-    private static boolean[] signal;
-    private static boolean[] crossing;
-    private static boolean[] mySwitch;//switch is a reserved word
+    private static StaticTrack staticTrack = null;
+    private StaticBlock[] blocks;
+    private BlockStatus[] status;
+    private boolean[] occupied;
+    private boolean[] signal;
+    private boolean[] crossing;
+    private boolean[] mySwitch;//switch is a reserved word
     
-    private TrackModel() throws SQLException, ClassNotFoundException {
+    private TrackModel(){
         blocks = new StaticBlock[4];
         status = new BlockStatus[4];
         occupied = new boolean[4];
@@ -45,7 +47,7 @@ public class TrackModel{
                     false, true);
         StaticSwitch ss = new StaticSwitch();
         ss.setRoot(blocks[3]);
-        ss.setInactiveLeaf(new StaticBlock(4, 20, 100, 0.0,
+        ss.setDefaultLeaf(new StaticBlock(4, 20, 100, 0.0,
                     100, false, false,
                     false, false, null,
                     true, true));
@@ -54,40 +56,60 @@ public class TrackModel{
                     false, false, null,
                     true, true));
         blocks[3].setStaticSwitch(ss);
-        ss.getInactiveLeaf().setStaticSwitch(ss);
+        ss.getDefaultLeaf().setStaticSwitch(ss);
         ss.getActiveLeaf().setStaticSwitch(ss);
     }
     
-    public static TrackModel init() throws SQLException, ClassNotFoundException {
+    
+    public static TrackModel getTrackModel(){
         if (model == null) {
             model = new TrackModel();
         }
         return model;
     }
     
-    public static TrackModel initWithTestData() throws SQLException, ClassNotFoundException {
+    public static TrackModel init(){
+        if (model == null) {
+            model = new TrackModel();
+        }
+        return model;
+    }
+    
+    public static TrackModel initWithTestData(){
         return init();
     }
     
-    public static void addTrain(int blockID){
+    public StaticTrack getStaticTrack(){
+        return this.staticTrack;
+    }
+    
+    public void addTrain(int blockID){
         occupied[blockID] = true;
     }
-    public static StaticBlock getStaticBlock(int blockID){
+    public StaticBlock getStaticBlock(int blockID){
         return blocks[blockID];
     }
-    public static BlockStatus getStatus(int blockID){
+    public BlockStatus getStatus(int blockID){
         return status[blockID];
     }
-    public static boolean isOccupied(int blockID){
+    public boolean isOccupied(int blockID){
         return occupied[blockID];
     }
-    public static boolean getSignal(int blockID){
+    public boolean getSignal(int blockID){
         return signal[blockID];
     }
-    public static boolean getCrossing(int blockID){
+    public boolean getCrossing(int blockID){
         return crossing[blockID];
     }
-    public static boolean getSwitch(int blockID){
+    public boolean getSwitch(int blockID){
         return mySwitch[blockID];
+    }
+    public ArrayList<Integer> getBlockIds(){
+        ArrayList<Integer> al = new ArrayList<Integer>();
+        al.add(0);
+        al.add(1);
+        al.add(2);
+        al.add(3);
+        return al;
     }
 }

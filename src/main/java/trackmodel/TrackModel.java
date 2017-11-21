@@ -15,11 +15,24 @@
 
 package trackmodel;
 
-import java.sql.*;
-import java.io.*;
-import java.util.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.io.FileWriter;
+import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.nio.ByteBuffer;
-import shared.*;
+import shared.Environment;
+import shared.TrainCrashException;
+import shared.CrashIntoSwitchException;
+import shared.BlockStatus;
 
 /**
  * Class for track model. This is a singleton class, meaning that all methods
@@ -320,6 +333,8 @@ public class TrackModel {
      * @return     True if occupied, False otherwise.
      */
     public boolean isOccupied(int blockId) {
+        this.update();
+
         Integer occupied = null;
         try {
             PreparedStatement stmt = this.conn.prepareStatement("SELECT occupied FROM blocks WHERE id = ?;");
@@ -663,7 +678,7 @@ public class TrackModel {
     }
 
     /**
-     * Gets the switch sate.
+     * Gets the switch state.
      *
      * @param      blockId  The block identifier
      *
@@ -691,7 +706,7 @@ public class TrackModel {
      *
      * @return     the new authority value
      */
-    public boolean setAuthority(int blockId, boolean authority) {
+    public boolean setAuthority(int blockId, boolean authority) {        
         try {
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET authority = ? WHERE id = ?;");
             stmt.setInt(1, authority ? 1 : 0);
@@ -872,6 +887,8 @@ public class TrackModel {
      * wasn't valid
      */
     public boolean getTrainAuthority(int trainId){
+        this.update();
+
         try {
             PreparedStatement stmt = this.conn.prepareStatement("SELECT authority FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
             stmt.setInt(1, trainId);
@@ -895,6 +912,8 @@ public class TrackModel {
      * wasn't valid
      */
     public double getTrainSpeed(int trainId) {
+        this.update();
+
         try {
             PreparedStatement stmt = this.conn.prepareStatement("SELECT speed FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
             stmt.setInt(1, trainId);
@@ -918,7 +937,9 @@ public class TrackModel {
      *
      * wasn't valid
      */
-    public byte[] getTrainBeacon(int trainId) {
+    public int getTrainBeacon(int trainId) {
+        this.update();
+
         try {
             PreparedStatement stmt = this.conn.prepareStatement("SELECT beacon FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
             stmt.setInt(1, trainId);
@@ -927,9 +948,9 @@ public class TrackModel {
 
             Integer beacon =  (Integer) rs.getObject("beacon");
             if (beacon != null) {
-                return ByteBuffer.allocate(4).putInt(beacon).array();
+                return beacon;
             } else {
-                return null;
+                return -1;
             }
 
         } catch (Exception e) {
@@ -947,6 +968,8 @@ public class TrackModel {
      * wasn't valid
      */
     public boolean isIcyTrack(int trainId) {
+        this.update();
+        
         if (Environment.temperature > FREEZING) {
             return false;
         }
@@ -974,6 +997,8 @@ public class TrackModel {
      * wasn't valid
      */
     public double getGrade(int trainId) {
+        this.update();
+        
         try {
             PreparedStatement stmt = this.conn.prepareStatement("SELECT grade FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
             stmt.setInt(1, trainId);
@@ -1054,23 +1079,23 @@ public class TrackModel {
     }
 
     /**
-     * { function_description }
+     * update the state of the track model. moves trains and updates occupancies.
      */
     protected void update() {
         if (this.last_updated == Environment.clock) {
             return;
         }
+        this.last_updated = Environment.clock;
 
         for (int trainId : this.getTrainIds()) {
             updateTrain(trainId);
         }
 
         this.updateOccupancies();
-        this.last_updated = Environment.clock;
     }
 
     /**
-     * { function_description }
+     * updates the location of a train on the track
      *
      * @param      trainId  The train identifier
      */
@@ -1267,7 +1292,6 @@ public class TrackModel {
      */
     protected StaticBlock nextBlock(StaticBlock curr_block, boolean direction) {
         StaticSwitch sw = curr_block.getStaticSwitch();
-        // System.err.println("Looking up block: " + curr_block.getNextId());
         StaticBlock next = this.getStaticBlock(curr_block.getNextId());
         if (sw != null && ((sw.contains(next) && direction) || (!sw.contains(next) && !direction))) {
             // moving towards a switch
@@ -1396,6 +1420,8 @@ public class TrackModel {
      * @return     The train block change.
      */
     public boolean getTrainBlockChange(int trainId) {
+        this.update();
+        
         if (!this.getTrainReportedBlockChange(trainId)) {
             this.setTrainReportedBlockChange(trainId, true);
             return true;
@@ -1491,6 +1517,8 @@ public class TrackModel {
      * @return     The train passengers.
      */
     public int getTrainPassengers(int trainId) {
+        this.update();
+        
         if (!this.getTrainReportedPassenger(trainId) && this.getStaticBlock(this.getTrainBlock(trainId)).getStation() != null) {
             this.setTrainReportedPassenger(trainId, true);
 
