@@ -125,6 +125,11 @@ public class Train {
         time = timeInput;
     }
     */
+
+    public void setDisplay(String message){
+        //send to GUI
+    }
+
     public int getMaxPassengers(){
         return maxPassengers;
     }

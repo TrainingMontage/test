@@ -51,6 +51,16 @@ public class TrainModelTest{
     }
 
     @Test
+    public void testGetMaxPassengers(){
+        assertEquals(testTrainObject.getMaxPassengers(), 222);
+    }
+
+    @Test
+    public void testGetLength(){
+        assertEquals(testTrainObject.getLength(), 32.2, delta);
+    }
+
+    @Test
     public void testGetMaxPower(){
         assertEquals(testTrainObject.getMaxPower(), 120000.0, delta);
     }
