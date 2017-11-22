@@ -125,6 +125,13 @@ public class Train {
         time = timeInput;
     }
     */
+    public int getMaxPassengers(){
+        return maxPassengers;
+    }
+
+    public double getLength(){
+        return length;
+    }
     public double getMaxPower(){
         return maxPower;
     }
