@@ -3,5 +3,10 @@ package shared;
 public enum BlockStatus {
     OPERATIONAL,
     BROKEN,
-    IN_REPAIR
+    IN_REPAIR,
+    FORCE_OCCUPIED,
+    FORCE_UNOCCUPIED,
+    COMM_FAILURE,
+    TRACK_CIRCUIT_FAILURE,
+    POWER_FAILURE
 }
