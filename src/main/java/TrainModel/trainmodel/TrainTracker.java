@@ -22,24 +22,30 @@ import java.util.ArrayList;
 
 public class TrainTracker{
     private static TrainTracker tracker;
-
-    ArrayList<Train> trainList = new ArrayList<Train>();
-    int trainId = 0;
+    private static ArrayList<Train> trainList;
+    //private static Train[] trainList;
+    private static int trainId;
 
     public static TrainTracker getTrainTracker(){
         if(tracker == null){
             tracker = new TrainTracker();
+            trainList = new ArrayList<Train>();
+            trainId = 0;
         }
         return tracker;
     }
 
-    public void createTrain(int blockId){
-        Train newTrain = new Train(trainId, blockId);
+    public int createTrain(int blockId){
+        int temp = trainId;
+        Train newTrain = new Train(temp, blockId);
         trainList.add(newTrain);
-        trainId++;
+        //trainList[temp] = newTrain;
+        trainId = trainId+1;
+        return temp;
     }
-    public Train getTrain(int trainId){
-        Train trainModel = trainList.get(trainId);
+    public Train getTrain(int retrieveTrain){
+        //Train trainModel = trainList[retrieveTrain];
+        Train trainModel = trainList.get(retrieveTrain);
         return trainModel;
     }
     public static void main(String args[]){
