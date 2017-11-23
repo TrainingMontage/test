@@ -34,7 +34,8 @@ public interface TrackModelInterface {
 
    // For the wayside controller
    public boolean isOccupied(int blockId);
-   public BlockStatus getStatus(int blockId);
+   public boolean setRepair(int blockId);
+   public boolean setOperational(int blockId);
    public boolean setSignal(int blockId, boolean value);
    public boolean getSignal(int blockId);
    public boolean setSwitch(int blockId, boolean value);

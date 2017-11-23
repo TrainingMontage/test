@@ -1054,7 +1054,7 @@ public class TrackModel implements TrackModelInterface {
      * @return     The status.
      *
      */
-    public BlockStatus getStatus(int blockId) {
+    protected BlockStatus getStatus(int blockId) {
         try {
             PreparedStatement stmt = this.conn.prepareStatement("SELECT status FROM blocks WHERE id = ?");
             stmt.setInt(1, blockId);
@@ -1079,7 +1079,7 @@ public class TrackModel implements TrackModelInterface {
      *
      * wasn't valid
      */
-    public BlockStatus setStatus(int blockId, BlockStatus status) {
+    protected BlockStatus setStatus(int blockId, BlockStatus status) {
         try {
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET status = ? WHERE id = ?;");
             stmt.setInt(1, status.ordinal());
@@ -1697,5 +1697,23 @@ public class TrackModel implements TrackModelInterface {
 
     protected Train getTrainModelFromTrainTracker(int trainId) {
         return TrainTracker.getTrainTracker().getTrain(trainId);
+    }
+
+    public boolean setRepair(int blockId) {
+        try {
+            this.setStatus(blockId, BlockStatus.IN_REPAIR);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean setOperational(int blockId) {
+        try {
+            this.setStatus(blockId, BlockStatus.OPERATIONAL);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
