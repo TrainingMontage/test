@@ -40,21 +40,22 @@ public class WCTrackModel implements TrackModelInterface {
         authority = new boolean[n];
         occupied  = new boolean[n];
         speed     = new int[n];
-        switchesAndBlocks();
+        sw = buildSwitch(1, 2, 3, 8);
         clear();
     }
 
-    private void switchesAndBlocks() {
-        sw = new WCStaticSwitch(1);
-        WCStaticBlock root = new WCStaticBlock(2);
-        WCStaticBlock def = new WCStaticBlock(3);
-        WCStaticBlock act = new WCStaticBlock(8);
-        sw.rootSetter(root);
-        sw.defaultLeafSetter(def);
-        sw.activeLeafSetter(act);
+    private WCStaticSwitch buildSwitch(int switchId, int rootId, int defaultId, int activeId) {
+        WCStaticSwitch s = new WCStaticSwitch(switchId);
+        WCStaticBlock root = new WCStaticBlock(rootId);
+        WCStaticBlock def = new WCStaticBlock(defaultId);
+        WCStaticBlock act = new WCStaticBlock(activeId);
+        s.rootSetter(root);
+        s.defaultLeafSetter(def);
+        s.activeLeafSetter(act);
         root.switchSetter(sw);
         def.switchSetter(sw);
         act.switchSetter(sw);
+        return s;
     }
 
     public boolean occupy(int blockId, boolean value) {
