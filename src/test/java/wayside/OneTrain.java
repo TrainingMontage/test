@@ -24,27 +24,24 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import trackmodel.TrackModel;
+import trackmodel.TrackModelInterface;
+import wayside.trackmock.WCTrackModel;
 
 public class OneTrain {
 
-    final boolean[] OCC = new boolean[] {
-        false, true, false, false, false, true, false, false, false
-    };
+    final WCTrackModel tm;
 
-    @BeforeClass
-    public static void init() {
-        TrackModel.initWithTestData();
-        TrackModel tm = TrackModel.getTrackModel();
-        TrackModel spy = Mockito.spy(tm);
-        Mockito.doReturn(true).when(spy).isOccupied(1);
-        Mockito.doReturn(true).when(spy).isOccupied(5);
-
-        WaysideController.initTest(spy);
+    public OneTrain() {
+        // trains on 1 and 5, I think
+        tm = new WCTrackModel();
+        tm.occupy(1, true);
+        tm.occupy(5, true);
+        WaysideController.initTest(tm);
     }
 
-    @Test
-    public void mockingIsWorking() {
-        Assert.assertArrayEquals(OCC, WaysideController.buildOccupancy());
+    @Before
+    public void clear() {
+        tm.clear();
     }
 
     @Test
@@ -54,7 +51,7 @@ public class OneTrain {
             false, true, false, false, false
         };
         try {
-            WaysideController.checkStraightLine(authority, WaysideController.buildOccupancy());
+            WaysideController.checkStraightLine(authority);
             Assert.assertTrue(true);
         } catch (Exception e) {
             Assert.fail(e.getMessage());
@@ -68,7 +65,7 @@ public class OneTrain {
             true, true, false, false, false
         };
         try {
-            WaysideController.checkStraightLine(authority, WaysideController.buildOccupancy());
+            WaysideController.checkStraightLine(authority);
             Assert.fail("Failed to find unsafe path between 2 occupied blocks.");
         } catch (Exception e) {
             Assert.assertTrue(true);

@@ -28,7 +28,7 @@ public class WCStaticBlock extends StaticBlock {
      * Constructor.
      * @param id the ID of this block.
      */
-    public WCStaticBlock(int id, StaticSwitch sw) {
+    public WCStaticBlock(int id) {
         this.setId(id);
     }
 

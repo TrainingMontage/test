@@ -25,7 +25,7 @@ public class WCStaticSwitch extends StaticSwitch {
         super(id);
     }
 
-    public void rootBlockSetter(StaticBlock sb) {
+    public void rootSetter(StaticBlock sb) {
         this.setRoot(sb);
     }
 

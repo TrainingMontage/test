@@ -19,6 +19,7 @@ package wayside;
 import shared.BlockStatus;
 import shared.Suggestion;
 import trackmodel.TrackModel;
+import trackmodel.TrackModelInterface;
 import trackmodel.StaticBlock;
 import trackmodel.StaticSwitch;
 import wayside.UILayer;
@@ -60,7 +61,7 @@ public class WaysideController {
     private static final int INTO_YARD = 151;
     private static final int FROM_YARD = 152;
     
-    static TrackModel tm = TrackModel.getTrackModel();
+    static TrackModelInterface tm = TrackModel.getTrackModel();
 
     /**
      * Initiallizes the WaysideController.
@@ -114,7 +115,7 @@ public class WaysideController {
         };
     }
 
-    public static void initTest(TrackModel t) {
+    public static void initTest(TrackModelInterface t) {
         initTest();
         tm = t;
     }
@@ -253,18 +254,17 @@ public class WaysideController {
     /**
      * Implements the staight-line rules discussed before.
      * @param authority the linear representation of authority.
-     * @param occupied array which holds the current occupancy of the track.
      * @return the crossing state, given that this authority is safe.
      * @throws RuntimeException if this suggestion is not found to be safe.
      */
-    static boolean[] checkStraightLine(boolean[] authority, boolean[] occupied) {
+    static boolean[] checkStraightLine(boolean[] authority) {
         // I need to see if I can find a path from one occupied block to another
         boolean unbrokenPath = false;
 
         for (int[] path: PATHS) {
             for (int block: path) {
                 if (unbrokenPath) {
-                    if (occupied[block]) {
+                    if (isOccupied(block)) {
                         throw new RuntimeException(String.format(
                             "Found an unbroken path from some occupied block to %d", block
                         ));
@@ -272,7 +272,7 @@ public class WaysideController {
                     // This doesn't follow the 2-block rule.
                     unbrokenPath = authority[block];
                 } else {
-                    if (occupied[block]) {
+                    if (isOccupied(block)) {
                         unbrokenPath = true;
                     }
                 }
@@ -281,14 +281,6 @@ public class WaysideController {
         return new boolean[TRACK_LEN];
     }
 
-    static boolean[] buildOccupancy() {
-        boolean[] o = new boolean[TRACK_LEN];
-        for (int block = 1; block < TRACK_LEN; block++) {
-            o[block] = tm.isOccupied(block);
-        }
-        return o;
-    }
-    
     /**
      * How CTC presents a suggestion of speed and authority for each train.
      * The form of this suggestion can be found in the {@link shared.Suggestion} class.
@@ -305,7 +297,7 @@ public class WaysideController {
             authority = squash(suggestion);
             speed = squashSpeed(suggestion);
             switchState = checkAndSetSwitches(authority);
-            crossings = checkStraightLine(authority, buildOccupancy());
+            crossings = checkStraightLine(authority);
         } catch (RuntimeException re) {
             // write out default values.
             authority = new boolean[TRACK_LEN];

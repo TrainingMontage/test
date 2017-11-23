@@ -20,6 +20,9 @@ import shared.BlockStatus;
 import trackmodel.TrackModelInterface;
 import trackmodel.StaticBlock;
 import trackmodel.StaticSwitch;
+import wayside.trackmock.WCStaticBlock;
+import wayside.trackmock.WCStaticSwitch;
+
 import static wayside.WaysideController.TRACK_LEN;
 
 /**
@@ -30,19 +33,38 @@ public class WCTrackModel implements TrackModelInterface {
     private boolean[] authority;
     private boolean[] occupied;
     private int[] speed;
+    private WCStaticSwitch sw;
 
     public WCTrackModel() {
         int n = TRACK_LEN;
         authority = new boolean[n];
         occupied  = new boolean[n];
         speed     = new int[n];
+        switchesAndBlocks();
         clear();
+    }
+
+    private void switchesAndBlocks() {
+        sw = new WCStaticSwitch(1);
+        WCStaticBlock root = new WCStaticBlock(2);
+        WCStaticBlock def = new WCStaticBlock(3);
+        WCStaticBlock act = new WCStaticBlock(8);
+        sw.rootSetter(root);
+        sw.defaultLeafSetter(def);
+        sw.activeLeafSetter(act);
+        root.switchSetter(sw);
+        def.switchSetter(sw);
+        act.switchSetter(sw);
+    }
+
+    public boolean occupy(int blockId, boolean value) {
+        occupied[blockId] = value;
+        return value;
     }
 
     public void clear() {
         for (int i = 0; i < speed.length; i++) {
             authority[i] = false;
-            occupied[i] = false;
             speed[i] = 0;
         }
     }
@@ -92,7 +114,10 @@ public class WCTrackModel implements TrackModelInterface {
     }
 
     public StaticSwitch getStaticSwitch(int switchID) {
-        return null;
+        if (switchID == 1)
+            return sw;
+        else
+            return null;
     }
 
     public StaticBlock getStaticBlock(int blockId) {

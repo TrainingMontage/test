@@ -20,25 +20,24 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import shared.Suggestion;
-import wayside.WaysideController;
 import trackmodel.TrackModel;
+import wayside.trackmock.WCTrackModel;
+import wayside.WaysideController;
+
 
 public class EmptyTrack {
-    
-    final boolean[] OCC = new boolean[] {
-        false, false, true, false,
-        false, false, false, false, false
-    };
 
-    @BeforeClass
-    public static void init() {
-        TrackModel.initWithTestData();
-        WaysideController.initTest();
+    WCTrackModel tm;
+
+    public EmptyTrack() {
+        tm = new WCTrackModel();
+        tm.occupy(2, true);
+        WaysideController.initTest(tm);
     }
 
     @Test
     public void notOccupied() {
-        Assert.assertFalse(WaysideController.isOccupied(2));
+        Assert.assertTrue(WaysideController.isOccupied(2));
     }
 
     @Test
@@ -100,7 +99,7 @@ public class EmptyTrack {
             false, true, true, false,
             false, false, false, false, true
         };
-        WaysideController.checkStraightLine(authority, OCC);
+        WaysideController.checkStraightLine(authority);
         Assert.assertTrue(true);
     }
 
@@ -111,7 +110,7 @@ public class EmptyTrack {
             true, true, false, true, true
         };
         try {
-            WaysideController.checkStraightLine(authority, OCC);
+            WaysideController.checkStraightLine(authority);
             Assert.assertTrue(true);
         } catch (Exception e) {
             Assert.fail(e.getMessage());
@@ -126,7 +125,7 @@ public class EmptyTrack {
             true, true, true, true, true
         };
         try {
-            WaysideController.checkStraightLine(authority, OCC);
+            WaysideController.checkStraightLine(authority);
             Assert.fail("Failed to find unsafe self loop unsafe.");
         } catch (Exception e) {
             Assert.assertTrue(true);
