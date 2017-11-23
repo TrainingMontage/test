@@ -1135,7 +1135,7 @@ public class TrackModel implements TrackModelInterface {
     protected void updateTrain(int trainId) {
         Train train = this.getTrainModelFromTrainTracker(trainId); 
         double displacement = train.getDisplacement();
-        double train_length = 50; // TODO: train.getLength()
+        double train_length = train.getLength();
 
         StaticBlock curr_block = this.getStaticBlock(this.getTrainBlock(trainId));
         double position = this.getTrainPosition(trainId);
@@ -1552,15 +1552,15 @@ public class TrackModel implements TrackModelInterface {
     public int getTrainPassengers(int trainId) {
         this.update();
         
-        // Train train = this.getTrainModelFromTrainTracker(trainId); 
+        Train train = this.getTrainModelFromTrainTracker(trainId); 
 
         if (!this.getTrainReportedPassenger(trainId) && this.getStaticBlock(this.getTrainBlock(trainId)).getStation() != null) {
             this.setTrainReportedPassenger(trainId, true);
 
             if (this.getTrainLoadedPassenger(trainId)) {
-                return 50; // TODO max passnegers
+                return train.getMaxPassengers();
             } else {
-                // TODO set train model passenger count
+                train.setPassengers(train.getMaxPassengers());
                 this.setTrainLoadedPassenger(trainId, true);
                 return 0;
             }
