@@ -52,9 +52,9 @@ public class WCTrackModel implements TrackModelInterface {
         s.rootSetter(root);
         s.defaultLeafSetter(def);
         s.activeLeafSetter(act);
-        root.switchSetter(sw);
-        def.switchSetter(sw);
-        act.switchSetter(sw);
+        root.switchSetter(s);
+        def.switchSetter(s);
+        act.switchSetter(s);
         return s;
     }
 
