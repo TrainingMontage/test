@@ -186,7 +186,7 @@ public class GUI {
         blockIdComboBox.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent event) {
                 if (triggerEvents && event.getStateChange() == ItemEvent.SELECTED) {
-                    loadBlock(String.valueOf(blockIdComboBox.getSelectedItem()));
+                    loadBlock((Integer) blockIdComboBox.getSelectedItem());
                 }
             }
         });
@@ -267,7 +267,7 @@ public class GUI {
         button = new JButton("Submit Changes");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                setBlock(String.valueOf(blockIdComboBox.getSelectedItem()));
+                setBlock((Integer) blockIdComboBox.getSelectedItem());
             }
         } );
         c.gridx = 2;
@@ -327,34 +327,86 @@ public class GUI {
         panelForceMajeure.setLayout(new GridBagLayout());
 
         button = new JButton("Power Failure");
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int blockId = (Integer) blockIdComboBox.getSelectedItem();
+                TrackModel.getTrackModel().setStatus(blockId, BlockStatus.POWER_FAILURE);
+                loadBlock(blockId);
+            }
+        });
         c.gridx = 0;
         c.gridy = 0;
         c.gridwidth = 1;
         panelForceMajeure.add(button, c);
 
         button = new JButton("Break Rail");
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int blockId = (Integer) blockIdComboBox.getSelectedItem();
+                TrackModel.getTrackModel().setStatus(blockId, BlockStatus.BROKEN);
+                loadBlock(blockId);
+            }
+        });
         c.gridx = 1;
         c.gridy = 0;
         panelForceMajeure.add(button, c);
 
         button = new JButton("Force Occupied");
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int blockId = (Integer) blockIdComboBox.getSelectedItem();
+                TrackModel.getTrackModel().setStatus(blockId, BlockStatus.FORCE_OCCUPIED);
+                loadBlock(blockId);
+            }
+        });
         c.gridx = 0;
         c.gridy = 1;
         panelForceMajeure.add(button, c);
 
         button = new JButton("Track Ciruit Failure");
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int blockId = (Integer) blockIdComboBox.getSelectedItem();
+                TrackModel.getTrackModel().setStatus(blockId, BlockStatus.TRACK_CIRCUIT_FAILURE);
+                loadBlock(blockId);
+            }
+        });
         c.gridx = 1;
         c.gridy = 1;
         panelForceMajeure.add(button, c);
 
         button = new JButton("Force Unoccupied");
-        c.gridx = 0;
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int blockId = (Integer) blockIdComboBox.getSelectedItem();
+                TrackModel.getTrackModel().setStatus(blockId, BlockStatus.FORCE_UNOCCUPIED);
+                loadBlock(blockId);
+            }
+        });        c.gridx = 0;
         c.gridy = 2;
         panelForceMajeure.add(button, c);
 
         button = new JButton("Communications Failure");
-        c.gridx = 1;
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int blockId = (Integer) blockIdComboBox.getSelectedItem();
+                TrackModel.getTrackModel().setStatus(blockId, BlockStatus.COMM_FAILURE);
+                loadBlock(blockId);
+            }
+        }); c.gridx = 1;
         c.gridy = 2;
+        panelForceMajeure.add(button, c);
+
+        button = new JButton("Set Operational");
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int blockId = (Integer) blockIdComboBox.getSelectedItem();
+                TrackModel.getTrackModel().setStatus(blockId, BlockStatus.OPERATIONAL);
+                loadBlock(blockId);
+            }
+        }); c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth = 2;
         panelForceMajeure.add(button, c);
 
         panelForceMajeure.setBorder(BorderFactory.createTitledBorder("Force Majeure"));
@@ -445,8 +497,7 @@ public class GUI {
      *
      * @param      block  The block
      */
-    private static void loadBlock(String blockStr) {
-        int blockId = Integer.parseInt(blockStr);
+    private static void loadBlock(int blockId) {
 
         try {
             TrackModel tm = TrackModel.getTrackModel();
@@ -476,7 +527,7 @@ public class GUI {
                 } else {
                     switchState.setText(sw.getRoot() + " -> " + sw.getDefaultLeaf());
                 }
-                
+
             } else {
                 switchId.setText("");
                 switchBlocks.setText("");
@@ -504,8 +555,7 @@ public class GUI {
      *
      * @param      block  The block
      */
-    private static void setBlock(String block) {
-        int blockId = Integer.parseInt(block);
+    private static void setBlock(int blockId) {
         String str;
 
         try {
