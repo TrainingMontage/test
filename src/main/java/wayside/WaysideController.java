@@ -53,7 +53,7 @@ public class WaysideController {
      * embedding information about the track in this module.
      * Also, this is only the Green line.
      */
-    static int TRACK_LEN = 153;
+    public static int TRACK_LEN = 153;
     static int NUM_SWITCHES = 7;
     static int[] CROSSINGS = {19};
     static int[][] PATHS;

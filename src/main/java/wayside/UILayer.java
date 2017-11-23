@@ -17,9 +17,10 @@
 package wayside;
 
 import shared.Suggestion;
-import wayside.TrackModel;
+import wayside.trackmock.WCTrackModel;
 import wayside.WaysideController;
 import wayside.WaysideControllerGUI;
+
 
 public class UILayer {
 
@@ -31,22 +32,25 @@ public class UILayer {
     }
 
     public static void update() {
-        occupancy();
-        switches();
-        signals();
-        crossings();
-        actualSpeed();
-        actualAuthority();
+        // occupancy();
+        // switches();
+        // signals();
+        // crossings();
+        // actualSpeed();
+        // actualAuthority();
     }
 
     public static void submitAction() {
-        TrackModel.init();
+    }
+}
+/*
+        WCTrackModel.init();
         System.out.println("OCCUPANCY: ");
         System.out.println(gui.getOccupancy());
         for (String b: gui.getOccupancy().split(",")) {
             try {
                 int block = Integer.parseInt(b.trim());
-                TrackModel.setOccupancy(block, true);
+                WCTrackModel.setOccupancy(block, true);
             } catch (NumberFormatException ex) {
                 System.out.println("Please input good numbers in Occupancy tab");
             }
@@ -56,7 +60,7 @@ public class UILayer {
         for (String b: gui.getSwitch().split(",")) {
             try {
                 int block = Integer.parseInt(b.trim());
-                TrackModel.setSwitch(block, true);
+                WCTrackModel.setSwitch(block, true);
             } catch (NumberFormatException ex) {
                 System.out.println("Please input good numbers in Switches tab");
             }
@@ -66,7 +70,7 @@ public class UILayer {
         for (String b: gui.getSignal().split(",")) {
             try {
                 int block = Integer.parseInt(b.trim());
-                TrackModel.setSignal(block, true);
+                WCTrackModel.setSignal(block, true);
             } catch (NumberFormatException ex) {
                 System.out.println("Please input good numbers in Lights tab");
             }
@@ -76,7 +80,7 @@ public class UILayer {
         for (String b: gui.getCrossing().split(",")) {
             try {
                 int block = Integer.parseInt(b.trim());
-                TrackModel.setCrossing(block, true);
+                WCTrackModel.setCrossing(block, true);
             } catch (NumberFormatException ex) {
                 System.out.println("Please input good numbers in Crossings tab");
             }
@@ -104,7 +108,7 @@ public class UILayer {
     private static void occupancy() {
         if (gui == null) return; // Running headless.
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
+        for (int i = 0; i < WCTrackModel.TRACK_LEN; i++) {
             sb.append(i);
             sb.append(": ");
             sb.append(WaysideController.isOccupied(i));
@@ -115,11 +119,11 @@ public class UILayer {
 
     private static void switches() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
-            if (TrackModel.SWITCH == i) {
+        for (int i = 0; i < WCTrackModel.TRACK_LEN; i++) {
+            if (WCTrackModel.SWITCH == i) {
                 sb.append(i);
                 sb.append(": ");
-                sb.append(TrackModel.getSwitch(i));
+                sb.append(WCTrackModel.getSwitch(i));
                 sb.append("\n");
             }
         }
@@ -128,11 +132,11 @@ public class UILayer {
 
     private static void signals() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
-            if (TrackModel.SWITCH == i || TrackModel.ACTIVE_LEAF == i || TrackModel.DEFAULT_LEAF == i) {
+        for (int i = 0; i < WCTrackModel.TRACK_LEN; i++) {
+            if (WCTrackModel.SWITCH == i || WCTrackModel.ACTIVE_LEAF == i || WCTrackModel.DEFAULT_LEAF == i) {
                 sb.append(i);
                 sb.append(": ");
-                sb.append(TrackModel.getSignal(i));
+                sb.append(WCTrackModel.getSignal(i));
                 sb.append("\n");
             }
         }
@@ -141,11 +145,11 @@ public class UILayer {
 
     private static void crossings() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
-            if (TrackModel.CROSSING == i) {
+        for (int i = 0; i < WCTrackModel.TRACK_LEN; i++) {
+            if (WCTrackModel.CROSSING == i) {
                 sb.append(i);
                 sb.append(": ");
-                sb.append(TrackModel.getCrossing(i));
+                sb.append(WCTrackModel.getCrossing(i));
                 sb.append("\n");
             }
         }
@@ -154,10 +158,10 @@ public class UILayer {
 
     private static void actualSpeed() {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
+        for (int i = 0; i < WCTrackModel.TRACK_LEN; i++) {
             sb.append(i);
             sb.append(": ");
-            sb.append(TrackModel.getTrainSpeed(i));
+            sb.append(WCTrackModel.getTrainSpeed(i));
             sb.append("\n");
         }
         gui.setActualSpeed(sb.toString());
@@ -166,7 +170,7 @@ public class UILayer {
     private static void actualAuthority() {
         if (gui == null) return;
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < TrackModel.TRACK_LEN; i++) {
+        for (int i = 0; i < WCTrackModel.TRACK_LEN; i++) {
             sb.append(i);
             sb.append(": ");
             sb.append(WaysideController.getAuthority(i));
@@ -174,4 +178,4 @@ public class UILayer {
         }
         gui.setActualAuthority(sb.toString());
     }
-}
+}*/
