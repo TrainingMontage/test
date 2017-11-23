@@ -530,7 +530,7 @@ public class TrainController implements TrainControllerInterface {
         if(!checkForTrain())
             return -1;
         double distance = 2*theTrain.getCurrentVelocity()*theTrain.getCurrentVelocity();
-        distance /= theTrain.getBrake();
+        distance /= theTrain.getServiceBrake();
         System.err.println("SAFEBRAKE: dist " + distance);
         // d = vt+at^2
         // if a is neg, and we come to a stop,
@@ -564,7 +564,7 @@ public class TrainController implements TrainControllerInterface {
             emergencyStop();
         }
         else
-            velocity = Math.sqrt(2*distLeft*theTrain.getBrake());
+            velocity = Math.sqrt(2*distLeft*theTrain.getServiceBrake());
         System.err.println("SAFESPEED; Brakedist: " + computeSafeBrake());
         System.err.println("SAFESPEED; Velocity: " + velocity);
         if(velocity > theTrain.getSuggestedSpeed())
