@@ -585,13 +585,16 @@ public class TrainController implements TrainControllerInterface {
         if(estop)
         {
             applyEBrakes = true;
-            Pcmd = 0 - theTrain.getEBrakePower();
+            theTrain.setEmergencyBrake(true);
+//            Pcmd = 0 - theTrain.getEBrakePower();
+            return 0;
         }
         if(stop)
         {
+            theTrain.setServiceBrake(true);
             applyBrakes = true;
-            Pcmd = 0 - theTrain.getBrakePower();
-            return Pcmd;
+//            Pcmd = 0 - theTrain.getBrakePower();
+            return 0;
         }
         applyBrakes = false;
         applyEBrakes = false;
@@ -651,7 +654,9 @@ public class TrainController implements TrainControllerInterface {
             if(Pcmd < -1)
             {
                 applyBrakes = true;
-                Pcmd = 0 - theTrain.getBrakePower();
+//                Pcmd = 0 - theTrain.getBrakePower();
+                Pcmd = 0;
+                theTrain.setServiceBrake(true);
             }
             else
             {
@@ -659,9 +664,15 @@ public class TrainController implements TrainControllerInterface {
                 Pcmd = -1;
             }
         else if(Pcmd > Pmax)
+        {
             Pcmd = Pmax;
+            theTrain.setServiceBrake(false);
+        }
         else
+        {
             coast = false;
+            theTrain.setEmergencyBrake(true);
+        }
         System.err.println("Final Power:\t" + Pcmd);
         System.err.println("Final u:\t" + u);
         System.err.println("Final e:\t" + e);
