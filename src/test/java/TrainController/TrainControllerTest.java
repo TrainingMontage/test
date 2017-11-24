@@ -143,10 +143,10 @@ public class TrainControllerTest {
     @Test
     public void testGetPower000() {
         System.out.println("getPower");
-//        TrainController instance = new TrainController(true, 1);
 //        instance.theTrain.setSpeed(0.0);
 //        instance.theTrain.setSuggested(0.0);
         Train _train = mock(Train.class);
+        TrainController instance = new TrainController(_train, 1);
         doReturn(0.0).when(_train).getSuggestedSpeed();
         doReturn(0.0).when(_train).getCurrentVelocity();
         doReturn(120000.0).when(_train).getMaxPower();
@@ -158,35 +158,47 @@ public class TrainControllerTest {
         // TODO review the generated test code and remove the default call to fail.
 //        fail("getPower failure.");
     }
-//    
-//    /**
-//     * Test of getPower method, of class TrainController.
-//     */
-//    @Test
-//    public void testGetPower001() {
-//        System.out.println("getPower");
-//        TrainController instance = new TrainController(true, 1);
-//        double expResult = 2700.0;
-//        double result = instance.getPower();
-//        assertEquals(expResult, result, 0.0);
-//        // TODO review the generated test code and remove the default call to fail.
-////        fail("getPower failure.");
-//    }
-//    
-//     /**
-//     * Test of getPower method, of class TrainController.
-//     */
+    
+    /**
+     * Test of getPower method, of class TrainController.
+     */
+    @Test
+    public void testGetPower001() {
+        System.out.println("getPower");
+        Train _train = mock(Train.class);
+        TrainController instance = new TrainController(_train, 1);
+        doReturn(24).when(_train).getSuggestedSpeed();
+        doReturn(12).when(_train).getCurrentVelocity();
+        doReturn(120000.0).when(_train).getMaxPower();
+        doReturn(-1.2).when(_train).getServiceBrakeRate();
+        doReturn(-2.73).when(_train).getEmergencyBrakeRate();
+        double expResult = 2700.0;
+        double result = instance.getPower();
+        assertEquals(expResult, result, 0.0);
+        // TODO review the generated test code and remove the default call to fail.
+//        fail("getPower failure.");
+    }
+    
+     /**
+     * Test of getPower method, of class TrainController.
+     */
 //    @Test
 //    public void testGetPower002() {
 //        System.out.println("getPower loop");
-//        TrainController instance = new TrainController(true, 1);
+//        Train _train = mock(Train.class);
+//        TrainController instance = new TrainController(_train, 1);
+//        doReturn(0.0).when(_train).getSuggestedSpeed();
+//        doReturn(0.0).when(_train).getCurrentVelocity();
+//        doReturn(120000.0).when(_train).getMaxPower();
+//        doReturn(-1.2).when(_train).getServiceBrakeRate();
+//        doReturn(-2.73).when(_train).getEmergencyBrakeRate();
 //        for(int i = 0; i < 200; i++) {
 //            instance.theTrain.setPower(instance.getPower());
 //        }
 //        double result = instance.theTrain.getCurrentVelocity();
 //        assertEquals(24.0, result, 1.0);
-//        // TODO review the generated test code and remove the default call to fail.
-////        fail("getPower failure.");
+        // TODO review the generated test code and remove the default call to fail.
+//        fail("getPower failure.");
 //    }
 //
 ////    /**
@@ -453,4 +465,4 @@ public class TrainControllerTest {
 //        // TODO review the generated test code and remove the default call to fail.
 ////        fail("displayStation failure.");
 //    }
-//}
+}
