@@ -254,14 +254,18 @@ public class CTCGUI {
         }
         //manually add the blocks connected to the yard
         //green line: 151 in, 152 out
-        Node nodePrev = graph.getNode(t.getStaticBlock(151).getPreviousId()+" 151");
+        StaticBlock sb2 = t.getStaticBlock(151);
+        StaticSwitch ss2 = sb2.getStaticSwitch();
+        Node nodePrev = graph.getNode(ss2.getRoot().getId()+" "+ss2.getDefaultLeaf().getId()+" "+ss2.getActiveLeaf().getId());
         Edge greenIn = graph.addEdge("151", nodePrev, nodeYard, false);
         greenIn.addAttribute("layout.weight", new Double(t.getStaticBlock(151).getLength()));
         greenIn.addAttribute("track.time", new Double(t.getStaticBlock(151).getLength()/t.getStaticBlock(151).getSpeedLimit()));
         greenIn.addAttribute("track.occupied", new Boolean(false));
         greenIn.addAttribute("track.isCrossing", new Boolean(false));
         greenIn.addAttribute("track.isSwitch", new Boolean(false));
-        Node nodeNext = graph.getNode(t.getStaticBlock(152).getNextId()+" 152");
+        sb2 = t.getStaticBlock(152);
+        ss2 = sb2.getStaticSwitch();
+        Node nodeNext = graph.getNode(ss2.getRoot().getId()+" "+ss2.getDefaultLeaf().getId()+" "+ss2.getActiveLeaf().getId());
         Edge greenOut = graph.addEdge("152", nodeYard, nodeNext, false);
         greenOut.addAttribute("layout.weight", new Double(t.getStaticBlock(152).getLength()));
         greenOut.addAttribute("track.time", new Double(t.getStaticBlock(152).getLength()/t.getStaticBlock(152).getSpeedLimit()));
