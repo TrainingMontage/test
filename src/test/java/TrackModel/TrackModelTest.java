@@ -1344,4 +1344,34 @@ public class TrackModelTest {
         // database should now have csv data in it
         assertNotNull(_tm.getStaticBlock(1));
     }
+
+    /**
+     * Validate getstaticSwitch(151) on green line
+     */
+    @Test
+    public void testGetStaticSwitchGreenLineYard() throws IOException, SQLException {
+        File file = new File(
+            this.getClass().getClassLoader().getResource("TrackModel/green.csv").getFile());
+
+        // function should return true
+        assertTrue(_tm.importTrack(file));
+
+        // database should now have csv data in it
+        assertNotNull(_tm.getStaticBlock(151).getStaticSwitch());
+    }
+
+    /**
+     * Validate line is empty after import
+     */
+    @Test
+    public void testGetStaticSwitchGreenLineImportOccupancy() throws IOException, SQLException {
+        File file = new File(
+            this.getClass().getClassLoader().getResource("TrackModel/green.csv").getFile());
+
+        // function should return true
+        assertTrue(_tm.importTrack(file));
+
+        // database should now have csv data in it
+        assertFalse(_tm.isOccupied(152));
+    }
 }
