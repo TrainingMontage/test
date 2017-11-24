@@ -65,6 +65,7 @@ public class App {
         if (args.length > 0) {
             // System.out.println("importing " + args[0]);
             TrackModel.getTrackModel().importTrack(new File(args[0]));
+            System.out.println(TrackModel.getTrackModel().getStaticBlock(151).getStaticSwitch());
             // System.out.println(Arrays.toString(TrackModel.getTrackModel().getBlockIds().toArray()));
         } 
         WaysideController.init();
