@@ -609,7 +609,7 @@ public class TrainController implements TrainControllerInterface {
         }
         else
 //            velocity = Math.sqrt(2*distLeft*theTrain.getServiceBrakes());
-            velocity = Math.sqrt(-2*distLeft*theTrain.getServiceBrakeRate());
+            velocity = Math.sqrt((-2)*distLeft*theTrain.getServiceBrakeRate());
         System.err.println("SAFESPEED; Brakedist: " + computeSafeBrake());
         System.err.println("SAFESPEED; Velocity: " + velocity);
         if(velocity > theTrain.getSuggestedSpeed())
