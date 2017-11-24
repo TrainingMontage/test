@@ -292,6 +292,36 @@ public class TrainController implements TrainControllerInterface {
         UIexists = true;
     }
     
+        public TrainController(Train newTrain, int trainID, boolean showUI) {
+        theTrain = newTrain;
+        lastTime = Environment.clock;// seconds
+        // ultimate gain
+        ku = 0;
+    
+        // Set initial last values to 0
+        lastE = 0;
+        lastU = 0;
+        // Set initial power to 0
+        Pcmd = 0;
+        ID = trainID;
+        addTrainController(this);
+        currentBlock = null;
+        theTrack = TrackModel.getTrackModel().getStaticTrack();
+//        try {
+//            theTrack = TrackModel.getTrackModel().getStaticTrack();
+//        } catch(SQLException | ClassNotFoundException e) {
+//            System.err.println("You done effed up.");
+//        }
+        if(showUI)
+        {
+            UI = new TrainControllerUI();
+            UI.initialize(this);
+            UIexists = true;
+        }
+        else
+            UIexists = false;
+    }
+    
     public TrainController(Train newTrain, int trainID, StaticBlock startBlock) {
     theTrain = newTrain;
     lastTime = Environment.clock;// seconds

@@ -146,7 +146,7 @@ public class TrainControllerTest {
 //        instance.theTrain.setSpeed(0.0);
 //        instance.theTrain.setSuggested(0.0);
         Train _train = mock(Train.class);
-        TrainController instance = new TrainController(_train, 1);
+        TrainController instance = new TrainController(_train, 1, false);
         doReturn(0.0).when(_train).getSuggestedSpeed();
         doReturn(0.0).when(_train).getCurrentVelocity();
         doReturn(120000.0).when(_train).getMaxPower();
@@ -166,7 +166,7 @@ public class TrainControllerTest {
     public void testGetPower001() {
         System.out.println("getPower");
         Train _train = mock(Train.class);
-        TrainController instance = new TrainController(_train, 1);
+        TrainController instance = new TrainController(_train, 1, false);
         doReturn(24).when(_train).getSuggestedSpeed();
         doReturn(12).when(_train).getCurrentVelocity();
         doReturn(120000.0).when(_train).getMaxPower();
