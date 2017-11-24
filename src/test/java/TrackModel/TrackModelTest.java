@@ -1238,6 +1238,7 @@ public class TrackModelTest {
         TrackModel spyTM = spy(_tm);
         Train _train = mock(Train.class);
         doReturn(2.5).when(_train).getDisplacement();
+        doReturn(50.0).when(_train).getLength();
         doReturn(_train).when(spyTM).getTrainModelFromTrainTracker(1);
 
         // add train to line on a block (train id, starting block)
@@ -1314,13 +1315,19 @@ public class TrackModelTest {
      */
     @Test
     public void testGetTrainPassengers() throws SQLException {
-        assertEquals(0, _tm.getTrainPassengers(1));
+        // mock a train from trainTracker
+        TrackModel spyTM = spy(_tm);
+        Train _train = mock(Train.class);
+        doReturn(50).when(_train).getMaxPassengers();
+        doReturn(_train).when(spyTM).getTrainModelFromTrainTracker(1);
+
+        assertEquals(0, spyTM.getTrainPassengers(1));
 
         // set reported passengers flag to false (simulate movement)
-        _tm.setTrainReportedPassenger(1, false);
+        spyTM.setTrainReportedPassenger(1, false);
 
-        assertEquals(50, _tm.getTrainPassengers(1));
-        assertEquals(0, _tm.getTrainPassengers(1));
+        assertEquals(50, spyTM.getTrainPassengers(1));
+        assertEquals(0, spyTM.getTrainPassengers(1));
     }
 
     /**

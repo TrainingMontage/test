@@ -1054,7 +1054,7 @@ public class TrackModel implements TrackModelInterface {
      * @return     The status.
      *
      */
-    public BlockStatus getStatus(int blockId) {
+    protected BlockStatus getStatus(int blockId) {
         try {
             PreparedStatement stmt = this.conn.prepareStatement("SELECT status FROM blocks WHERE id = ?");
             stmt.setInt(1, blockId);
@@ -1079,7 +1079,7 @@ public class TrackModel implements TrackModelInterface {
      *
      * wasn't valid
      */
-    public BlockStatus setStatus(int blockId, BlockStatus status) {
+    protected BlockStatus setStatus(int blockId, BlockStatus status) {
         try {
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET status = ? WHERE id = ?;");
             stmt.setInt(1, status.ordinal());
@@ -1135,7 +1135,7 @@ public class TrackModel implements TrackModelInterface {
     protected void updateTrain(int trainId) {
         Train train = this.getTrainModelFromTrainTracker(trainId); 
         double displacement = train.getDisplacement();
-        double train_length = 50; // TODO: train.getLength()
+        double train_length = train.getLength();
 
         StaticBlock curr_block = this.getStaticBlock(this.getTrainBlock(trainId));
         double position = this.getTrainPosition(trainId);
@@ -1552,15 +1552,15 @@ public class TrackModel implements TrackModelInterface {
     public int getTrainPassengers(int trainId) {
         this.update();
         
-        // Train train = this.getTrainModelFromTrainTracker(trainId); 
+        Train train = this.getTrainModelFromTrainTracker(trainId); 
 
         if (!this.getTrainReportedPassenger(trainId) && this.getStaticBlock(this.getTrainBlock(trainId)).getStation() != null) {
             this.setTrainReportedPassenger(trainId, true);
 
             if (this.getTrainLoadedPassenger(trainId)) {
-                return 50; // TODO max passnegers
+                return train.getMaxPassengers();
             } else {
-                // TODO set train model passenger count
+                train.setPassengers(train.getMaxPassengers());
                 this.setTrainLoadedPassenger(trainId, true);
                 return 0;
             }
@@ -1697,5 +1697,23 @@ public class TrackModel implements TrackModelInterface {
 
     protected Train getTrainModelFromTrainTracker(int trainId) {
         return TrainTracker.getTrainTracker().getTrain(trainId);
+    }
+
+    public boolean setRepair(int blockId) {
+        try {
+            this.setStatus(blockId, BlockStatus.IN_REPAIR);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean setOperational(int blockId) {
+        try {
+            this.setStatus(blockId, BlockStatus.OPERATIONAL);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
