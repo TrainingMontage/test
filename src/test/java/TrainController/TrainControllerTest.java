@@ -192,7 +192,7 @@ public class TrainControllerTest {
         doReturn(false).when(_train).getAuthority();
         
         doReturn(10000.0).when(_block).getLength();
-        double expResult = 2700.0;
+        double expResult = 2429.9999999999995;
         double result = instance.getPower();
         assertEquals(expResult, result, 0.0);
         // TODO review the generated test code and remove the default call to fail.
