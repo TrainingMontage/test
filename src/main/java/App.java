@@ -60,7 +60,7 @@ public class App {
      *
      * @param args Command-line arguments.
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         //init each module
         TrackModel.init();
         if (args.length > 0) {
@@ -89,6 +89,7 @@ public class App {
         while (true) {
             CTCModel.update();
             Environment.clock += speedMultiplier;
+            Thread.sleep(1000);
         }
     }
 }
