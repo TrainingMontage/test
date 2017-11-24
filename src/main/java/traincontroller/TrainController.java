@@ -908,4 +908,8 @@ public class TrainController implements TrainControllerInterface {
     protected void setStaticBlock(StaticBlock block) {
         currentBlock = block;
     }
+    
+    protected void setT(double newT) {
+        t = newT;
+    }
 }
