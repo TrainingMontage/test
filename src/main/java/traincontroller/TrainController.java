@@ -242,7 +242,8 @@ public class TrainController implements TrainControllerInterface {
     }
     
     public TrainController(int trainID) {
-        theTrain = new Train();
+//        theTrain = new Train();
+        theTrain = null;
         lastTime = Environment.clock;// seconds
         // ultimate gain
         ku = 0;
@@ -531,7 +532,8 @@ public class TrainController implements TrainControllerInterface {
         if(!checkForTrain())
             return -1;
         double distance = 2*theTrain.getCurrentVelocity()*theTrain.getCurrentVelocity();
-        distance /= theTrain.getServiceBrakes();
+//        distance /= theTrain.getServiceBrakes();
+        distance /= theTrain.getServiceBrakeRate();
         System.err.println("SAFEBRAKE: dist " + distance);
         // d = vt+at^2
         // if a is neg, and we come to a stop,
@@ -565,7 +567,8 @@ public class TrainController implements TrainControllerInterface {
             emergencyStop();
         }
         else
-            velocity = Math.sqrt(2*distLeft*theTrain.getServiceBrakes());
+//            velocity = Math.sqrt(2*distLeft*theTrain.getServiceBrakes());
+            velocity = Math.sqrt(2*distLeft*theTrain.getServiceBrakeRate());
         System.err.println("SAFESPEED; Brakedist: " + computeSafeBrake());
         System.err.println("SAFESPEED; Velocity: " + velocity);
         if(velocity > theTrain.getSuggestedSpeed())
