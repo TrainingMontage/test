@@ -146,75 +146,75 @@ public class TrainController implements TrainControllerInterface {
      * @param period is the number of iterations per second
      * @throws InterruptedException if the thread.sleep fails.
      */
-    public static void runTest(int period) throws InterruptedException {
-        int[] stations = {1,2,3,4};
-        int station = 0;
-        int timer = 1; // counts
-        int iterations = 0;
-        boolean testing = true;
-        double power;
-        Train testTrain = new Train(0);
-        TrainController TC = new TrainController(testTrain, 1);
-        TrainControllerUI UI = new TrainControllerUI();
-        UI.initialize(TC);
-//        UI.setVisible(true);
-//        testTrain.setSuggested(20);
-        TC.setKu(500);
-        while(testing) {
-            UI.updateAll();
-//            UI.updateDoors();
-            // Get up to speed
-            System.err.println("SPEED:\t"+testTrain.getCurrentVelocity());
-            power = TC.getPower();
-            System.err.println("Power:\t" + power);
-            testTrain.setPower(power);
-            
-            // For when the station is being shown
-            if(timer - 30 == 0)
-                TC.displayStation("");
-            
-            // Start braking
-            if(timer - 90 == 0)
-            {
-                testTrain.setSuggested(1);
-                TC.displayStation("APPROACHING STATION " + stations[station]);
-                System.err.println("APPROACHING STATION " + stations[station]);
-                UI.updateStation("APPROACHING STATION " + stations[station]);
-            }
-            
-            // Just stop
-            if(timer - 120 == 0)
-            {
-                TC.displayStation("STATION " + stations[station]);
-                System.err.println("STATION " + stations[station]);
-                TC.setDoors(true, true);
-                TC.justStop();
-                station++;
-            }
-            
-            // Wait
-            if(timer - 180 == 0)
-            {
-                TC.displayStation("LEAVING STATION");
-                System.err.println("LEAVING STATION");
-                TC.setLights(!TC.lightsShouldBeOn);
-                TC.setDoors(false, false);
-                timer = 0;
-                iterations++;
-                TC.youCanGoNow();
-//                testTrain.setSuggested(20);
-                testTrain.randSuggested();
-            }
-            Thread.sleep(1000/period);
-            timer++;
-            
-            if(iterations >= 3)
-                testing = false;
-                
-        }
-        System.err.println("TEST COMPLETE");
-        
-    }
+//    public static void runTest(int period) throws InterruptedException {
+//        int[] stations = {1,2,3,4};
+//        int station = 0;
+//        int timer = 1; // counts
+//        int iterations = 0;
+//        boolean testing = true;
+//        double power;
+//        Train testTrain = new Train(0);
+//        TrainController TC = new TrainController(testTrain, 1);
+//        TrainControllerUI UI = new TrainControllerUI();
+//        UI.initialize(TC);
+////        UI.setVisible(true);
+////        testTrain.setSuggested(20);
+//        TC.setKu(500);
+//        while(testing) {
+//            UI.updateAll();
+////            UI.updateDoors();
+//            // Get up to speed
+//            System.err.println("SPEED:\t"+testTrain.getCurrentVelocity());
+//            power = TC.getPower();
+//            System.err.println("Power:\t" + power);
+//            testTrain.setPower(power);
+//            
+//            // For when the station is being shown
+//            if(timer - 30 == 0)
+//                TC.displayStation("");
+//            
+//            // Start braking
+//            if(timer - 90 == 0)
+//            {
+//                testTrain.setSuggested(1);
+//                TC.displayStation("APPROACHING STATION " + stations[station]);
+//                System.err.println("APPROACHING STATION " + stations[station]);
+//                UI.updateStation("APPROACHING STATION " + stations[station]);
+//            }
+//            
+//            // Just stop
+//            if(timer - 120 == 0)
+//            {
+//                TC.displayStation("STATION " + stations[station]);
+//                System.err.println("STATION " + stations[station]);
+//                TC.setDoors(true, true);
+//                TC.justStop();
+//                station++;
+//            }
+//            
+//            // Wait
+//            if(timer - 180 == 0)
+//            {
+//                TC.displayStation("LEAVING STATION");
+//                System.err.println("LEAVING STATION");
+//                TC.setLights(!TC.lightsShouldBeOn);
+//                TC.setDoors(false, false);
+//                timer = 0;
+//                iterations++;
+//                TC.youCanGoNow();
+////                testTrain.setSuggested(20);
+//                testTrain.randSuggested();
+//            }
+//            Thread.sleep(1000/period);
+//            timer++;
+//            
+//            if(iterations >= 3)
+//                testing = false;
+//                
+//        }
+//        System.err.println("TEST COMPLETE");
+//        
+//    }
     
     public TrainController() {
 //        theTrain = new Train();
