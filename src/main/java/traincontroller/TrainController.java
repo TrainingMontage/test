@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.sql.SQLException;
 import shared.*;
 import trainmodel.Train;
-// import trainmodel.trainmodel.Train;
+//import trainmodel.trainmodel.Train;
 import trackmodel.TrackModel;
 import trackmodel.StaticBlock;
 import trackmodel.StaticSwitch;
@@ -531,7 +531,7 @@ public class TrainController implements TrainControllerInterface {
         if(!checkForTrain())
             return -1;
         double distance = 2*theTrain.getCurrentVelocity()*theTrain.getCurrentVelocity();
-        distance /= theTrain.getServiceBrake();
+        distance /= theTrain.getServiceBrakes();
         System.err.println("SAFEBRAKE: dist " + distance);
         // d = vt+at^2
         // if a is neg, and we come to a stop,
@@ -565,7 +565,7 @@ public class TrainController implements TrainControllerInterface {
             emergencyStop();
         }
         else
-            velocity = Math.sqrt(2*distLeft*theTrain.getServiceBrake());
+            velocity = Math.sqrt(2*distLeft*theTrain.getServiceBrakes());
         System.err.println("SAFESPEED; Brakedist: " + computeSafeBrake());
         System.err.println("SAFESPEED; Velocity: " + velocity);
         if(velocity > theTrain.getSuggestedSpeed())
@@ -586,13 +586,13 @@ public class TrainController implements TrainControllerInterface {
         if(estop)
         {
             applyEBrakes = true;
-            theTrain.setEmergencyBrake(true);
+            theTrain.setEmergencyBrakes(true);
 //            Pcmd = 0 - theTrain.getEBrakePower();
             return 0;
         }
         if(stop)
         {
-            theTrain.setServiceBrake(true);
+            theTrain.setServiceBrakes(true);
             applyBrakes = true;
 //            Pcmd = 0 - theTrain.getBrakePower();
             return 0;
@@ -657,7 +657,7 @@ public class TrainController implements TrainControllerInterface {
                 applyBrakes = true;
 //                Pcmd = 0 - theTrain.getBrakePower();
                 Pcmd = 0;
-                theTrain.setServiceBrake(true);
+                theTrain.setServiceBrakes(true);
             }
             else
             {
@@ -667,12 +667,12 @@ public class TrainController implements TrainControllerInterface {
         else if(Pcmd > Pmax)
         {
             Pcmd = Pmax;
-            theTrain.setServiceBrake(false);
+            theTrain.setServiceBrakes(false);
         }
         else
         {
             coast = false;
-            theTrain.setEmergencyBrake(true);
+            theTrain.setEmergencyBrakes(true);
         }
         System.err.println("Final Power:\t" + Pcmd);
         System.err.println("Final u:\t" + u);
