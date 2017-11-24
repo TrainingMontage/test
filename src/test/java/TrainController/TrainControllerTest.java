@@ -146,13 +146,18 @@ public class TrainControllerTest {
 //        instance.theTrain.setSpeed(0.0);
 //        instance.theTrain.setSuggested(0.0);
         Train _train = mock(Train.class);
+        StaticBlock _block = mock(StaticBlock.class);
         TrainController instance = new TrainController(_train, 1, false);
+        instance.setStaticBlock(_block);
         doReturn(-1).when(_train).getBeacon();
         doReturn(0.0).when(_train).getSuggestedSpeed();
         doReturn(0.0).when(_train).getCurrentVelocity();
         doReturn(120000.0).when(_train).getMaxPower();
         doReturn(-1.2).when(_train).getServiceBrakeRate();
         doReturn(-2.73).when(_train).getEmergencyBrakeRate();
+        doReturn(false).when(_train).getAuthority();
+        
+        doReturn(10000.0).when(_block).getLength();
         double expResult = 0.0;
         double result = instance.getPower();
         assertEquals(expResult, result, 0.0);
@@ -167,13 +172,18 @@ public class TrainControllerTest {
     public void testGetPower001() {
         System.out.println("getPower");
         Train _train = mock(Train.class);
+        StaticBlock _block = mock(StaticBlock.class);
         TrainController instance = new TrainController(_train, 1, false);
+        instance.setStaticBlock(_block);
         doReturn(-1).when(_train).getBeacon();
         doReturn(24.0).when(_train).getSuggestedSpeed();
         doReturn(12.0).when(_train).getCurrentVelocity();
         doReturn(120000.0).when(_train).getMaxPower();
         doReturn(-1.2).when(_train).getServiceBrakeRate();
         doReturn(-2.73).when(_train).getEmergencyBrakeRate();
+        doReturn(false).when(_train).getAuthority();
+        
+        doReturn(10000.0).when(_block).getLength();
         double expResult = 2700.0;
         double result = instance.getPower();
         assertEquals(expResult, result, 0.0);

@@ -904,4 +904,8 @@ public class TrainController implements TrainControllerInterface {
 //    protected StaticTrack defaultTrack() {
 //        
 //    }
+    
+    protected void setStaticBlock(StaticBlock block) {
+        currentBlock = block;
+    }
 }
