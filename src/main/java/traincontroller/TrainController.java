@@ -144,8 +144,8 @@ public class TrainController implements TrainControllerInterface {
      * Minute two: slow to station
      * Thirty seconds: wait at station
      * 
-     * @param period is the number of iterations per second
-     * @throws InterruptedException if the thread.sleep fails.
+//     * @param period is the number of iterations per second
+//     * @throws InterruptedException if the thread.sleep fails.
      */
 //    public static void runTest(int period) throws InterruptedException {
 //        int[] stations = {1,2,3,4};
@@ -415,6 +415,7 @@ public class TrainController implements TrainControllerInterface {
      * Computes the remaining distance the train can go before reaching the
      * end of its authority.
      * 
+     * @return the distance to the end of authority
      */
     protected double distToAuthEnd() { 
         // I need the length of the block I'm on, my estimated distance traveled on
@@ -443,6 +444,7 @@ public class TrainController implements TrainControllerInterface {
     /**
      * Checks to see if we've changed blocks, resets distanceTraveled.
      * 
+     * @return returns true if we've changed block, false if not.
      */
     protected boolean blockChange() {
         if(theTrain.blockChange())
