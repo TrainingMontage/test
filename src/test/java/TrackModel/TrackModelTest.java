@@ -19,10 +19,14 @@ import java.io.*;
 import java.sql.*;
 import java.util.*;
 import shared.*;
+import trainmodel.Train;
 
 import org.junit.*;
 import org.junit.rules.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import org.mockito.Mock;
+
 
 public class TrackModelTest {
     public TrackModel _tm;
@@ -404,6 +408,41 @@ public class TrackModelTest {
         }
 
         assertNull(occupied);
+    }
+
+    /**
+     * Validate force majeure occupancy checks.
+     */
+    @Test
+    public void testTrackModelisOccupiedForceMajeure() throws SQLException {
+
+        TrackModel spyTM = spy(_tm);
+        doReturn(BlockStatus.OPERATIONAL).when(spyTM).getStatus(1);
+
+        assertFalse(spyTM.isOccupied(1));
+
+        Statement stmt = spyTM.conn.createStatement();
+        stmt.execute("UPDATE blocks SET occupied = 1 WHERE id = 1;");
+
+        assertTrue(spyTM.isOccupied(1));
+
+        doReturn(BlockStatus.FORCE_UNOCCUPIED).when(spyTM).getStatus(1);
+        assertFalse(spyTM.isOccupied(1));
+
+        doReturn(BlockStatus.BROKEN).when(spyTM).getStatus(1);
+        assertTrue(spyTM.isOccupied(1));
+
+        doReturn(BlockStatus.IN_REPAIR).when(spyTM).getStatus(1);
+        assertTrue(spyTM.isOccupied(1));
+
+        doReturn(BlockStatus.FORCE_OCCUPIED).when(spyTM).getStatus(1);
+        assertTrue(spyTM.isOccupied(1));
+
+        doReturn(BlockStatus.TRACK_CIRCUIT_FAILURE).when(spyTM).getStatus(1);
+        assertTrue(spyTM.isOccupied(1));
+
+        doReturn(BlockStatus.POWER_FAILURE).when(spyTM).getStatus(1);
+        assertTrue(spyTM.isOccupied(1));
     }
 
     /**
@@ -821,14 +860,49 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelGetTrainAuthority() throws SQLException {
-        assertEquals(false, _tm.getTrainAuthority(1));
+        assertFalse(_tm.getTrainAuthority(1));
 
         PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET authority = ? WHERE id = ?;");
         stmt.setInt(1, 1);
         stmt.setInt(2, 1);
         stmt.execute();
 
-        assertEquals(true, _tm.getTrainAuthority(1));
+        assertTrue(_tm.getTrainAuthority(1));
+    }
+
+    /**
+     * Validate force majeure occupancy checks.
+     */
+    @Test
+    public void testTrackModelGetTrainAuthorityForceMajeure() throws SQLException {
+
+        TrackModel spyTM = spy(_tm);
+        doReturn(BlockStatus.OPERATIONAL).when(spyTM).getStatus(1);
+
+        assertFalse(spyTM.getTrainAuthority(1));
+
+        Statement stmt = spyTM.conn.createStatement();
+        stmt.execute("UPDATE blocks SET authority = 1 WHERE id = 1;");
+
+        assertTrue(spyTM.getTrainAuthority(1));
+
+        doReturn(BlockStatus.COMM_FAILURE).when(spyTM).getStatus(1);
+        assertFalse(spyTM.getTrainAuthority(1));
+
+        doReturn(BlockStatus.BROKEN).when(spyTM).getStatus(1);
+        assertTrue(spyTM.getTrainAuthority(1));
+
+        doReturn(BlockStatus.IN_REPAIR).when(spyTM).getStatus(1);
+        assertTrue(spyTM.getTrainAuthority(1));
+
+        doReturn(BlockStatus.FORCE_OCCUPIED).when(spyTM).getStatus(1);
+        assertTrue(spyTM.getTrainAuthority(1));
+
+        doReturn(BlockStatus.TRACK_CIRCUIT_FAILURE).when(spyTM).getStatus(1);
+        assertTrue(spyTM.getTrainAuthority(1));
+
+        doReturn(BlockStatus.POWER_FAILURE).when(spyTM).getStatus(1);
+        assertTrue(spyTM.getTrainAuthority(1));
     }
 
     /**
@@ -844,6 +918,41 @@ public class TrackModelTest {
         stmt.execute();
 
         assertEquals(1, _tm.getTrainSpeed(1), epsilon);
+    }
+
+    /**
+     * Validate force majeure occupancy checks.
+     */
+    @Test
+    public void testTrackModelGetTrainSpeedForceMajeure() throws SQLException {
+
+        TrackModel spyTM = spy(_tm);
+        doReturn(BlockStatus.OPERATIONAL).when(spyTM).getStatus(1);
+
+        assertEquals(0, spyTM.getTrainSpeed(1), epsilon);
+
+        Statement stmt = spyTM.conn.createStatement();
+        stmt.execute("UPDATE blocks SET speed = 1 WHERE id = 1;");
+
+        assertEquals(1, spyTM.getTrainSpeed(1), epsilon);
+
+        doReturn(BlockStatus.COMM_FAILURE).when(spyTM).getStatus(1);
+        assertEquals(-1, spyTM.getTrainSpeed(1), epsilon);
+
+        doReturn(BlockStatus.BROKEN).when(spyTM).getStatus(1);
+        assertEquals(1, spyTM.getTrainSpeed(1), epsilon);
+
+        doReturn(BlockStatus.IN_REPAIR).when(spyTM).getStatus(1);
+        assertEquals(1, spyTM.getTrainSpeed(1), epsilon);
+
+        doReturn(BlockStatus.FORCE_OCCUPIED).when(spyTM).getStatus(1);
+        assertEquals(1, spyTM.getTrainSpeed(1), epsilon);
+
+        doReturn(BlockStatus.TRACK_CIRCUIT_FAILURE).when(spyTM).getStatus(1);
+        assertEquals(1, spyTM.getTrainSpeed(1), epsilon);
+
+        doReturn(BlockStatus.POWER_FAILURE).when(spyTM).getStatus(1);
+        assertEquals(1, spyTM.getTrainSpeed(1), epsilon);
     }
 
     /**
@@ -1125,18 +1234,25 @@ public class TrackModelTest {
         // setup environment clock time
         Environment.clock = 1;
 
+        // mock a train from trainTracker
+        TrackModel spyTM = spy(_tm);
+        Train _train = mock(Train.class);
+        doReturn(2.5).when(_train).getDisplacement();
+        doReturn(50.0).when(_train).getLength();
+        doReturn(_train).when(spyTM).getTrainModelFromTrainTracker(1);
+
         // add train to line on a block (train id, starting block)
-        assertTrue(_tm.initializeTrain(2, 1));
+        assertTrue(spyTM.initializeTrain(2, 1));
 
         // update trackmodel
-        _tm.updateTrain(1);
+        spyTM.updateTrain(1);
 
         // check train position
-        assertEquals(2.5, _tm.getTrainPosition(1), epsilon);
+        assertEquals(2.5, spyTM.getTrainPosition(1), epsilon);
         
         // check block occupancies
-        ArrayList<StaticBlock> occupancy = _tm.trainOccupancy.get(1);
-        assertEquals(_tm.getStaticBlock(1), occupancy.get(0));
+        ArrayList<StaticBlock> occupancy = spyTM.trainOccupancy.get(1);
+        assertEquals(spyTM.getStaticBlock(1), occupancy.get(0));
     }
 
     /**
@@ -1199,13 +1315,19 @@ public class TrackModelTest {
      */
     @Test
     public void testGetTrainPassengers() throws SQLException {
-        assertEquals(0, _tm.getTrainPassengers(1));
+        // mock a train from trainTracker
+        TrackModel spyTM = spy(_tm);
+        Train _train = mock(Train.class);
+        doReturn(50).when(_train).getMaxPassengers();
+        doReturn(_train).when(spyTM).getTrainModelFromTrainTracker(1);
+
+        assertEquals(0, spyTM.getTrainPassengers(1));
 
         // set reported passengers flag to false (simulate movement)
-        _tm.setTrainReportedPassenger(1, false);
+        spyTM.setTrainReportedPassenger(1, false);
 
-        assertEquals(50, _tm.getTrainPassengers(1));
-        assertEquals(0, _tm.getTrainPassengers(1));
+        assertEquals(50, spyTM.getTrainPassengers(1));
+        assertEquals(0, spyTM.getTrainPassengers(1));
     }
 
     /**
@@ -1221,5 +1343,35 @@ public class TrackModelTest {
 
         // database should now have csv data in it
         assertNotNull(_tm.getStaticBlock(1));
+    }
+
+    /**
+     * Validate getstaticSwitch(151) on green line
+     */
+    @Test
+    public void testGetStaticSwitchGreenLineYard() throws IOException, SQLException {
+        File file = new File(
+            this.getClass().getClassLoader().getResource("TrackModel/green.csv").getFile());
+
+        // function should return true
+        assertTrue(_tm.importTrack(file));
+
+        // database should now have csv data in it
+        assertNotNull(_tm.getStaticBlock(151).getStaticSwitch());
+    }
+
+    /**
+     * Validate line is empty after import
+     */
+    @Test
+    public void testGetStaticSwitchGreenLineImportOccupancy() throws IOException, SQLException {
+        File file = new File(
+            this.getClass().getClassLoader().getResource("TrackModel/green.csv").getFile());
+
+        // function should return true
+        assertTrue(_tm.importTrack(file));
+
+        // database should now have csv data in it
+        assertFalse(_tm.isOccupied(152));
     }
 }

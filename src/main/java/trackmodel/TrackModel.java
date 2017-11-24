@@ -33,6 +33,8 @@ import shared.Environment;
 import shared.TrainCrashException;
 import shared.CrashIntoSwitchException;
 import shared.BlockStatus;
+import trainmodel.TrainTracker;
+import trainmodel.Train;
 
 /**
  * Class for track model. This is a singleton class, meaning that all methods
@@ -330,10 +332,24 @@ public class TrackModel implements TrackModelInterface {
      *
      * @param      blockId  The block identifier
      *
-     * @return     True if occupied, False otherwise.
+     * @return     True if occupied (or broken), False otherwise.
      */
     public boolean isOccupied(int blockId) {
         this.update();
+
+        switch (this.getStatus(blockId)) {
+            case BROKEN:
+            case IN_REPAIR:
+            case FORCE_OCCUPIED:
+            case TRACK_CIRCUIT_FAILURE:
+            case POWER_FAILURE:
+                return true;
+            case FORCE_UNOCCUPIED:
+                return false;
+            case OPERATIONAL:
+            default:
+                break;
+        }
 
         Integer occupied = null;
         try {
@@ -347,7 +363,7 @@ public class TrackModel implements TrackModelInterface {
             throw new RuntimeException(e);
         }
 
-        return occupied != null;
+        return occupied != null && occupied > 0;
     }
 
     /**
@@ -506,7 +522,7 @@ public class TrackModel implements TrackModelInterface {
             block.setStaticSwitch(staticSwitch);
 
             // determine and set previous id
-            stmt = this.conn.prepareStatement("SELECT id FROM blocks WHERE next = ?");
+            stmt = this.conn.prepareStatement("SELECT id FROM blocks WHERE next = ? AND next <> id");
             stmt.setInt(1, blockId);
             rs = stmt.executeQuery();
             if (rs.next()) {
@@ -889,6 +905,14 @@ public class TrackModel implements TrackModelInterface {
     public boolean getTrainAuthority(int trainId){
         this.update();
 
+        switch (this.getStatus(this.getTrainBlock(trainId))) {
+            case COMM_FAILURE:
+                return false;
+            case OPERATIONAL:
+            default:
+                break;
+        }
+
         try {
             PreparedStatement stmt = this.conn.prepareStatement("SELECT authority FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
             stmt.setInt(1, trainId);
@@ -913,6 +937,14 @@ public class TrackModel implements TrackModelInterface {
      */
     public double getTrainSpeed(int trainId) {
         this.update();
+
+        switch (this.getStatus(this.getTrainBlock(trainId))) {
+            case COMM_FAILURE:
+                return -1;
+            case OPERATIONAL:
+            default:
+                break;
+        }
 
         try {
             PreparedStatement stmt = this.conn.prepareStatement("SELECT speed FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
@@ -939,6 +971,8 @@ public class TrackModel implements TrackModelInterface {
      */
     public int getTrainBeacon(int trainId) {
         this.update();
+
+        // beacon is directly read by the train, not communicated by the track. COMM_FAILURE doesn't affect this.
 
         try {
             PreparedStatement stmt = this.conn.prepareStatement("SELECT beacon FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
@@ -1019,9 +1053,8 @@ public class TrackModel implements TrackModelInterface {
      *
      * @return     The status.
      *
-     * wasn't valid
      */
-    public BlockStatus getStatus(int blockId) {
+    protected BlockStatus getStatus(int blockId) {
         try {
             PreparedStatement stmt = this.conn.prepareStatement("SELECT status FROM blocks WHERE id = ?");
             stmt.setInt(1, blockId);
@@ -1046,7 +1079,7 @@ public class TrackModel implements TrackModelInterface {
      *
      * wasn't valid
      */
-    public BlockStatus setStatus(int blockId, BlockStatus status) {
+    protected BlockStatus setStatus(int blockId, BlockStatus status) {
         try {
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET status = ? WHERE id = ?;");
             stmt.setInt(1, status.ordinal());
@@ -1085,9 +1118,11 @@ public class TrackModel implements TrackModelInterface {
         if (this.last_updated == Environment.clock) {
             return;
         }
+        System.err.println("TrackModel updating...");
         this.last_updated = Environment.clock;
 
         for (int trainId : this.getTrainIds()) {
+            System.err.println("TrackModel Updating " + trainId);
             updateTrain(trainId);
         }
 
@@ -1100,11 +1135,9 @@ public class TrackModel implements TrackModelInterface {
      * @param      trainId  The train identifier
      */
     protected void updateTrain(int trainId) {
-        // TODO
-        // fake actually calling a train until there's something there to call
-        // ...getDisplacement()
-        double displacement = 2.50; // hardcode 2.5m displacement for now
-        double train_length = 50; // TODO: train length
+        Train train = this.getTrainModelFromTrainTracker(trainId); 
+        double displacement = train.getDisplacement();
+        double train_length = train.getLength();
 
         StaticBlock curr_block = this.getStaticBlock(this.getTrainBlock(trainId));
         double position = this.getTrainPosition(trainId);
@@ -1364,6 +1397,7 @@ public class TrackModel implements TrackModelInterface {
                     if (this.isOccupied(block.getId())) {
                         throw new TrainCrashException();
                     }
+                    System.err.println("TrackModel updating occupancy: " + block.getId() + " " + key);
                     this.setOccupied(block.getId(), true);
                 }
             }
@@ -1421,6 +1455,8 @@ public class TrackModel implements TrackModelInterface {
      */
     public boolean getTrainBlockChange(int trainId) {
         this.update();
+
+        // This is detected directly by the train, it's not affected by a comms failure
         
         if (!this.getTrainReportedBlockChange(trainId)) {
             this.setTrainReportedBlockChange(trainId, true);
@@ -1519,13 +1555,15 @@ public class TrackModel implements TrackModelInterface {
     public int getTrainPassengers(int trainId) {
         this.update();
         
+        Train train = this.getTrainModelFromTrainTracker(trainId); 
+
         if (!this.getTrainReportedPassenger(trainId) && this.getStaticBlock(this.getTrainBlock(trainId)).getStation() != null) {
             this.setTrainReportedPassenger(trainId, true);
 
             if (this.getTrainLoadedPassenger(trainId)) {
-                return 50; // TODO max passnegers
+                return train.getMaxPassengers();
             } else {
-                // TODO set train model passenger count
+                train.setPassengers(train.getMaxPassengers());
                 this.setTrainLoadedPassenger(trainId, true);
                 return 0;
             }
@@ -1658,5 +1696,27 @@ public class TrackModel implements TrackModelInterface {
         }
 
         return line;
+    }
+
+    protected Train getTrainModelFromTrainTracker(int trainId) {
+        return TrainTracker.getTrainTracker().getTrain(trainId);
+    }
+
+    public boolean setRepair(int blockId) {
+        try {
+            this.setStatus(blockId, BlockStatus.IN_REPAIR);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean setOperational(int blockId) {
+        try {
+            this.setStatus(blockId, BlockStatus.OPERATIONAL);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

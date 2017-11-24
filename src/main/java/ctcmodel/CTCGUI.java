@@ -133,7 +133,7 @@ public class CTCGUI {
                 continue;
             }
             Node n1,n2;
-            System.out.println(""+blockId);
+            //System.out.println(""+blockId);
             StaticSwitch ss = t.getStaticBlock(blockId).getStaticSwitch();
             if(ss != null){
                 //special exception for switches

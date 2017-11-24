@@ -49,6 +49,8 @@ public class CTCModel{
     private CTCModel(){
         //trainTracker = atrainTracker;
         last_clock = 0;
+        suggestions = new ArrayList<Suggestion>();
+        trainData = new ArrayList<CTCTrainData>();
     }
     
     public static void init(){
@@ -67,7 +69,7 @@ public class CTCModel{
         }catch(NumberFormatException ex){
             return 1;
         }
-        if(tempint != 0){//have to spawn next to the yard TODO: make this not fixed ID
+        if(tempint != 152){//have to spawn next to the yard TODO: make this not fixed ID
             return 1;
         }
         //speed test
@@ -85,16 +87,10 @@ public class CTCModel{
         }catch(NumberFormatException ex){
             return 3;
         }
-        if(tempint < 0 || tempint > 5){
-            return 3;
-        }
         //destination test
         try{
             tempint = Integer.parseInt(destination);
         }catch(NumberFormatException ex){
-            return 4;
-        }
-        if(tempint < 0 || tempint > 3){
             return 4;
         }
         return 0;
@@ -135,7 +131,10 @@ public class CTCModel{
         return;
     }
     public static void sendSuggestions(){
-        WaysideController.suggest(suggestions.toArray(new Suggestion[suggestions.size()]));
+        //System.out.println(""+suggestions.size());
+        if(suggestions.size() != 0){
+            WaysideController.suggest(suggestions.toArray(new Suggestion[suggestions.size()]));
+        }
     }
     public static CTCTrainData getTrainData(int blockID){
         for (CTCTrainData data: trainData){
