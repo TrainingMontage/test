@@ -836,7 +836,7 @@ public class TrainController implements TrainControllerInterface {
         return theTrain.getCurrentTemperature();
     }
     
-    protected boolean addTrain(Train newTrain) {
+    protected boolean addTrain(Train newTrain, int trainID) {
         if(theTrain != null)
         {
             System.err.println("Train already populated");
@@ -845,6 +845,7 @@ public class TrainController implements TrainControllerInterface {
         else
         {
             theTrain = newTrain;
+            ID = trainID;
             return true;
         }
     }
