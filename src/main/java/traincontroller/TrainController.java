@@ -293,7 +293,7 @@ public class TrainController implements TrainControllerInterface {
         UIexists = true;
     }
     
-        public TrainController(Train newTrain, int trainID, boolean showUI) {
+        public TrainController(boolean showUI, Train newTrain, int trainID) {
         theTrain = newTrain;
         lastTime = Environment.clock;// seconds
         // ultimate gain
@@ -707,7 +707,8 @@ public class TrainController implements TrainControllerInterface {
             else
             {
                 coast = true;
-                Pcmd = -1;
+//                Pcmd = -1;
+                Pcmd = 0;
             }
         else if(Pcmd > Pmax)
         {
