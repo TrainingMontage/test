@@ -22,30 +22,29 @@ import shared.BlockStatus;
  * Authority and BlockStatus are enums.
  */
 
-/*
-public abstract class TrackModelInterface {
+
+public interface TrackModelInterface {
    // For the train model
-   public static int getTrainAuthority(int trainId);
-   public static double getTrainSpeed(int trainId);
-   public static byte[] getTrainBeacon(int trainId);
-   public static int getPassengers(int trainId);
-   public static boolean isIcyTrack(int trainId);
-   public static double getGrade(int trainId);
+   public boolean getTrainAuthority(int trainId);
+   public double getTrainSpeed(int trainId);
+   public int getTrainBeacon(int trainId);
+   public int getTrainPassengers(int trainId);
+   public boolean isIcyTrack(int trainId);
+   public double getGrade(int trainId);
 
    // For the wayside controller
-   + public static boolean isOccupied(int blockId);
-   public static BlockStatus getStatus(int blockId);
-   + public static boolean setSignal(int blockId, boolean value);
-   + public static boolean getSignal(int blockId);
-   + public static boolean setSwitch(int blockId, boolean value);
-   + public static boolean getSwitch(int blockId);
-   + public static boolean setCrossing(int blockId, boolean active); // setCrossing -> setCrossingState
-   + public static boolean getCrossing(int blockId); // getCrossing -> getCrossingState
-   + public static boolean setAuthority(int blockId, boolean authority);
-   + public static int setSpeed(int blockId, int speed);
+   public boolean isOccupied(int blockId);
+   public BlockStatus getStatus(int blockId);
+   public boolean setSignal(int blockId, boolean value);
+   public boolean getSignal(int blockId);
+   public boolean setSwitch(int blockId, boolean value);
+   public boolean getSwitch(int blockId);
+   public boolean setCrossingState(int blockId, boolean active); // setCrossing -> setCrossingState
+   public boolean getCrossingState(int blockId); // getCrossing -> getCrossingState
+   public boolean setAuthority(int blockId, boolean authority);
+   public int setSpeed(int blockId, int speed);
 
    // for everybody
-   + public static StaticSwitch getStaticSwitch(int switchID);
-   + public static StaticBlock getStaticBlock(int blockId);
+   public StaticSwitch getStaticSwitch(int switchID);
+   public StaticBlock getStaticBlock(int blockId);
 }
-*/
