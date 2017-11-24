@@ -331,36 +331,36 @@ public class TrainController implements TrainControllerInterface {
         UIexists = true;
     }
     
-    public TrainController(boolean test, int trainID) {
-        if(test)
-        {
-            theTrain = new Train(true);
-        }
-        else
-        {
-            theTrain = new Train();
-        }
-        lastTime = Environment.clock;// seconds
-        // ultimate gain
-        if(test)
-            ku = 500;
-        else
-            ku = 0;
-    
-        // Set initial last values to 0
-        lastE = 0;
-        lastU = 0;
-        // Set initial power to 0
-        Pcmd = 0;
-        ID = trainID;
-        addTrainController(this);
-        if(!test)
-        {
-            UI = new TrainControllerUI();
-            UI.initialize(this);
-            UIexists = true;
-        }
-    }
+//    public TrainController(boolean test, int trainID) {
+//        if(test)
+//        {
+//            theTrain = new Train(true);
+//        }
+//        else
+//        {
+//            theTrain = new Train();
+//        }
+//        lastTime = Environment.clock;// seconds
+//        // ultimate gain
+//        if(test)
+//            ku = 500;
+//        else
+//            ku = 0;
+//    
+//        // Set initial last values to 0
+//        lastE = 0;
+//        lastU = 0;
+//        // Set initial power to 0
+//        Pcmd = 0;
+//        ID = trainID;
+//        addTrainController(this);
+//        if(!test)
+//        {
+//            UI = new TrainControllerUI();
+//            UI.initialize(this);
+//            UIexists = true;
+//        }
+//    }
     
     protected void setTrack(StaticTrack newTrack) {
         theTrack = newTrack;
