@@ -574,7 +574,7 @@ public class TrainController implements TrainControllerInterface {
             return -1;
         double distance = 2*theTrain.getCurrentVelocity()*theTrain.getCurrentVelocity();
 //        distance /= theTrain.getServiceBrakes();
-        distance /= (-1)*theTrain.getServiceBrakeRate();
+        distance /= Math.abs(theTrain.getServiceBrakeRate());
         System.err.println("SAFEBRAKE: dist " + distance);
         // d = vt+at^2
         // if a is neg, and we come to a stop,
@@ -609,7 +609,7 @@ public class TrainController implements TrainControllerInterface {
         }
         else
 //            velocity = Math.sqrt(2*distLeft*theTrain.getServiceBrakes());
-            velocity = Math.sqrt((-2)*distLeft*theTrain.getServiceBrakeRate());
+            velocity = Math.sqrt(Math.abs(2*distLeft*theTrain.getServiceBrakeRate()));
         System.err.println("SAFESPEED; Brakedist: " + computeSafeBrake());
         System.err.println("SAFESPEED; Velocity: " + velocity);
         if(velocity > theTrain.getSuggestedSpeed())
@@ -625,6 +625,7 @@ public class TrainController implements TrainControllerInterface {
      * 
      * NOTE: Could also simply return void and update the train.
      */
+     @Override
      public double getPower(){
         doAllUpdates();
         if(estop)
