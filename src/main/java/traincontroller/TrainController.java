@@ -231,11 +231,12 @@ public class TrainController implements TrainControllerInterface {
         Pcmd = 0;
         ID = 0;
         addTrainController(this);
-        try {
-            theTrack = TrackModel.getTrackModel().getStaticTrack();
-        } catch(SQLException | ClassNotFoundException e) {
-            System.err.println("You done effed up.");
-        }
+        theTrack = TrackModel.getTrackModel().getStaticTrack();
+//        try {
+//            theTrack = TrackModel.getTrackModel().getStaticTrack();
+//        } catch(SQLException | ClassNotFoundException e) {
+//            System.err.println("You done effed up.");
+//        }
         UI = new TrainControllerUI();
         UI.initialize(this);
         UIexists = true;
@@ -255,11 +256,12 @@ public class TrainController implements TrainControllerInterface {
         Pcmd = 0;
         ID = trainID;
         addTrainController(this);
-        try {
-            theTrack = TrackModel.getTrackModel().getStaticTrack();
-        } catch(SQLException | ClassNotFoundException e) {
-            System.err.println("You done effed up.");
-        }
+        theTrack = TrackModel.getTrackModel().getStaticTrack();
+//        try {
+//            theTrack = TrackModel.getTrackModel().getStaticTrack();
+//        } catch(SQLException | ClassNotFoundException e) {
+//            System.err.println("You done effed up.");
+//        }
         UI = new TrainControllerUI();
         UI.initialize(this);
         UIexists = true;
@@ -279,11 +281,12 @@ public class TrainController implements TrainControllerInterface {
         ID = trainID;
         addTrainController(this);
         currentBlock = null;
-        try {
-            theTrack = TrackModel.getTrackModel().getStaticTrack();
-        } catch(SQLException | ClassNotFoundException e) {
-            System.err.println("You done effed up.");
-        }
+        theTrack = TrackModel.getTrackModel().getStaticTrack();
+//        try {
+//            theTrack = TrackModel.getTrackModel().getStaticTrack();
+//        } catch(SQLException | ClassNotFoundException e) {
+//            System.err.println("You done effed up.");
+//        }
         UI = new TrainControllerUI();
         UI.initialize(this);
         UIexists = true;
@@ -303,11 +306,12 @@ public class TrainController implements TrainControllerInterface {
     ID = trainID;
     addTrainController(this);
     currentBlock = startBlock;
-    try {
-        theTrack = TrackModel.getTrackModel().getStaticTrack();
-    } catch(SQLException | ClassNotFoundException e) {
-        System.err.println("You done effed up.");
-    }
+    theTrack = TrackModel.getTrackModel().getStaticTrack();
+//    try {
+//        theTrack = TrackModel.getTrackModel().getStaticTrack();
+//    } catch(SQLException | ClassNotFoundException e) {
+//        System.err.println("You done effed up.");
+//    }
     UI = new TrainControllerUI();
     UI.initialize(this);
     UIexists = true;
