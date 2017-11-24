@@ -69,7 +69,7 @@ public class CTCModel{
         }catch(NumberFormatException ex){
             return 1;
         }
-        if(tempint != 0){//have to spawn next to the yard TODO: make this not fixed ID
+        if(tempint != 152){//have to spawn next to the yard TODO: make this not fixed ID
             return 1;
         }
         //speed test
@@ -87,16 +87,10 @@ public class CTCModel{
         }catch(NumberFormatException ex){
             return 3;
         }
-        if(tempint < 0 || tempint > 5){
-            return 3;
-        }
         //destination test
         try{
             tempint = Integer.parseInt(destination);
         }catch(NumberFormatException ex){
-            return 4;
-        }
-        if(tempint < 0 || tempint > 3){
             return 4;
         }
         return 0;
