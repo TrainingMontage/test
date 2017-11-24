@@ -1,3 +1,21 @@
+/*   ______                 _           _
+ *  /_  __/ _____  ____ _  (_) ____    (_) ____    ____ _
+ *   / /   / ___/ / __ `/ / / / __ \  / / / __ \  / __ `/
+ *  / /   / /    / /_/ / / / / / / / / / / / / / / /_/ /
+ * /_/   /_/     \__,_/ /_/ /_/ /_/ /_/ /_/ /_/  \__, /
+ *                                              /____/
+ *     __  ___                 __
+ *    /  |/  / ____    ____   / /_  ____ _  ____ _  ___
+ *   / /|_/ / / __ \  / __ \ / __/ / __ `/ / __ `/ / _ \
+ *  / /  / / / /_/ / / / / // /_  / /_/ / / /_/ / /  __/
+ * /_/  /_/  \____/ /_/ /_/ \__/  \__,_/  \__, /  \___/
+ *                                       /____/
+ *
+ * @author Mitchell Moran
+ */
+
+
+
 package CTCModel;
 
 import java.awt.*;
@@ -7,7 +25,12 @@ import javax.swing.border.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import shared.Convert;
-import shared.BlockStatus;
+//import shared.BlockStatus;
+import wayside.WaysideController;
+import trackmodel.TrackModel;
+import trackmodel.StaticBlock;
+import trackmodel.StaticSwitch;
+import trackmodel.StaticTrack;
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
 import org.graphstream.ui.swingViewer.ViewPanel;
@@ -110,6 +133,7 @@ public class CTCGUI {
                 continue;
             }
             Node n1,n2;
+            System.out.println(""+blockId);
             StaticSwitch ss = t.getStaticBlock(blockId).getStaticSwitch();
             if(ss != null){
                 //special exception for switches
@@ -693,7 +717,15 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(label,c);
         
-        label = new JLabel("Block Passable");
+        //label = new JLabel("Block Passable");
+        //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
+        //c.gridx = 0;
+        //c.gridy = 6;
+        //c.gridwidth = 1;
+        //c.gridheight = 1;
+        //panelTrackInfo.add(label,c);
+        
+        label = new JLabel("Heater State");
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 0;
         c.gridy = 6;
@@ -701,7 +733,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(label,c);
         
-        label = new JLabel("Heater State");
+        label = new JLabel("Underground");
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 0;
         c.gridy = 7;
@@ -709,7 +741,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(label,c);
         
-        label = new JLabel("Underground");
+        label = new JLabel("Light State");
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 0;
         c.gridy = 8;
@@ -717,7 +749,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(label,c);
         
-        label = new JLabel("Light State");
+        label = new JLabel("Switch State");
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 0;
         c.gridy = 9;
@@ -725,7 +757,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(label,c);
         
-        label = new JLabel("Switch State");
+        label = new JLabel("Station Name");
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 0;
         c.gridy = 10;
@@ -733,7 +765,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(label,c);
         
-        label = new JLabel("Station Name");
+        label = new JLabel("Waiting Passengers");
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 0;
         c.gridy = 11;
@@ -741,18 +773,10 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(label,c);
         
-        label = new JLabel("Waiting Passengers");
-        //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
-        //c.gridx = 0;
-        c.gridy = 12;
-        //c.gridwidth = 1;
-        //c.gridheight = 1;
-        panelTrackInfo.add(label,c);
-        
         label = new JLabel("Crossing State");
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 0;
-        c.gridy = 13;
+        c.gridy = 12;
         //c.gridwidth = 1;
         //c.gridheight = 1;
         panelTrackInfo.add(label,c);
@@ -817,7 +841,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(trackElevationText,c);
         
-        trackPassableText = new JTextArea("Passable");
+        /*trackPassableText = new JTextArea("Passable");
         trackPassableText.setEnabled(false);
         trackPassableText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -825,14 +849,14 @@ public class CTCGUI {
         c.gridy = 6;
         //c.gridwidth = 1;
         //c.gridheight = 1;
-        panelTrackInfo.add(trackPassableText,c);
+        panelTrackInfo.add(trackPassableText,c);*/
         
         trackHeaterText = new JTextArea("No Heater");
         trackHeaterText.setEnabled(false);
         trackHeaterText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 1;
-        c.gridy = 7;
+        c.gridy = 6;
         //c.gridwidth = 1;
         //c.gridheight = 1;
         panelTrackInfo.add(trackHeaterText,c);
@@ -842,7 +866,7 @@ public class CTCGUI {
         trackUndergroundText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 1;
-        c.gridy = 8;
+        c.gridy = 7;
         //c.gridwidth = 1;
         //c.gridheight = 1;
         panelTrackInfo.add(trackUndergroundText,c);
@@ -852,7 +876,7 @@ public class CTCGUI {
         trackLightText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 1;
-        c.gridy = 9;
+        c.gridy = 8;
         //c.gridwidth = 1;
         //c.gridheight = 1;
         panelTrackInfo.add(trackLightText,c);
@@ -862,7 +886,7 @@ public class CTCGUI {
         trackSwitchText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 1;
-        c.gridy = 10;
+        c.gridy = 9;
         //c.gridwidth = 1;
         //c.gridheight = 1;
         panelTrackInfo.add(trackSwitchText,c);
@@ -872,7 +896,7 @@ public class CTCGUI {
         trackStationText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 1;
-        c.gridy = 11;
+        c.gridy = 10;
         //c.gridwidth = 1;
         //c.gridheight = 1;
         panelTrackInfo.add(trackStationText,c);
@@ -882,7 +906,7 @@ public class CTCGUI {
         trackPassengersText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 1;
-        c.gridy = 12;
+        c.gridy = 11;
         //c.gridwidth = 1;
         //c.gridheight = 1;
         panelTrackInfo.add(trackPassengersText,c);
@@ -892,7 +916,7 @@ public class CTCGUI {
         trackCrossingText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 1;
-        c.gridy = 13;
+        c.gridy = 12;
         //c.gridwidth = 1;
         //c.gridheight = 1;
         panelTrackInfo.add(trackCrossingText,c);
@@ -1098,22 +1122,22 @@ public class CTCGUI {
         }else{
             trackOccupiedText.setText("Not Occupied");
         }
-        BlockStatus asdf = WaysideController.getStatus(blockID);
-        switch(asdf){
-        case OPERATIONAL:
-            trackPassableText.setText("Passable");
-            break;
-        case BROKEN:
-            trackPassableText.setText("Broken");
-            break;
-        case IN_REPAIR:
-            trackPassableText.setText("Maintenance");
-            break;
-        default:
-            //unknown status; leave blank
-            trackPassableText.setText("");
-            break;
-        }
+        //BlockStatus asdf = WaysideController.getStatus(blockID);
+        //switch(asdf){
+        //case OPERATIONAL:
+        //    trackPassableText.setText("Passable");
+        //    break;
+        //case BROKEN:
+        //    trackPassableText.setText("Broken");
+        //    break;
+        //case IN_REPAIR:
+        //    trackPassableText.setText("Maintenance");
+        //    break;
+        //default:
+        //    //unknown status; leave blank
+        //    trackPassableText.setText("");
+        //    break;
+        //}
         if(hasSwitch){
             if(WaysideController.getSignal(blockID)){
                 trackLightText.setText("Green");
