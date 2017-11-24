@@ -75,6 +75,7 @@ public class TrainController implements TrainControllerInterface {
     protected String station = "";
     private int ID;
     private int index;
+    private boolean t_override = false;
     
     public static void initUI() {
         TrainControllerUI TCUI = new TrainControllerUI();
@@ -467,8 +468,11 @@ public class TrainController implements TrainControllerInterface {
     }
     
     protected void updateTime() {
-        t = Environment.clock - lastTime;
-        lastTime = Environment.clock;
+        if(!t_override)
+        {
+            t = Environment.clock - lastTime;
+            lastTime = Environment.clock;
+        }
     }
     
     /**
@@ -911,5 +915,6 @@ public class TrainController implements TrainControllerInterface {
     
     protected void setT(double newT) {
         t = newT;
+        t_override = true;
     }
 }
