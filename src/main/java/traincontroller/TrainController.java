@@ -574,7 +574,7 @@ public class TrainController implements TrainControllerInterface {
             return -1;
         double distance = 2*theTrain.getCurrentVelocity()*theTrain.getCurrentVelocity();
 //        distance /= theTrain.getServiceBrakes();
-        distance /= theTrain.getServiceBrakeRate();
+        distance /= -1*theTrain.getServiceBrakeRate();
         System.err.println("SAFEBRAKE: dist " + distance);
         // d = vt+at^2
         // if a is neg, and we come to a stop,
