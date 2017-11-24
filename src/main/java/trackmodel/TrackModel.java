@@ -522,7 +522,7 @@ public class TrackModel implements TrackModelInterface {
             block.setStaticSwitch(staticSwitch);
 
             // determine and set previous id
-            stmt = this.conn.prepareStatement("SELECT id FROM blocks WHERE next = ?");
+            stmt = this.conn.prepareStatement("SELECT id FROM blocks WHERE next = ? AND next <> id");
             stmt.setInt(1, blockId);
             rs = stmt.executeQuery();
             if (rs.next()) {
