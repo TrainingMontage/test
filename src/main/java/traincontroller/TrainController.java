@@ -494,9 +494,10 @@ public class TrainController implements TrainControllerInterface {
         TrainBeacon beacon;
         try{
             int beaconID = theTrain.getBeacon();
-            if(beaconID == -1) // no beacon
-                return;
-            else
+//            if(beaconID == -1) // no beacon
+//                return;
+//            else
+            if(beaconID != -1)
             {
                beacon = new TrainBeacon(beaconID);
                if(beacon.getType())
