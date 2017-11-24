@@ -198,7 +198,7 @@ public class WaysideController {
         boolean[] authority = new boolean[TRACK_LEN];
         for (Suggestion s: suggestion) {
             for (int block: s.authority) {
-                if (authority[block]) {
+                if (authority[block-1]) {
                     // TODO: make custom exception UnsafeSuggestion
                     throw new RuntimeException(String.format(
                         "Block %d was suggested twice", block
@@ -224,64 +224,6 @@ public class WaysideController {
     }
 
     /**
-     * Given the linear authorty is safe around all switches.
-     * @param authority the linear representation of authority.
-     * @return the switch positions based on authority.
-     * @throws RuntimeException if authority is found to be unsafe around switches.
-     */
-    static boolean[] checkAndSetSwitches(boolean[] authority) {
-        boolean[] pos = new boolean[TRACK_LEN];
-        for (int sw = 1; sw < NUM_SWITCHES; sw++) {
-            StaticSwitch ss = tm.getStaticSwitch(sw);
-            int root = ss.getRoot().getId();
-            int def = ss.getDefaultLeaf().getId();
-            int active = ss.getActiveLeaf().getId();
-            if (authority[def] && authority[active]) {
-                // both default and active branch cannot have authority
-                throw new RuntimeException(String.format(
-                    "Both leaves of a switch cannot be given authority.  " +
-                    "Blocks %d and %d were given suggested authority", def, active
-                ));
-            }
-            // which way should the switch go?
-            if (authority[active]) {
-                pos[root] = true;
-            }
-        }
-        return pos;
-    }
-
-    /**
-     * Implements the staight-line rules discussed before.
-     * @param authority the linear representation of authority.
-     * @return the crossing state, given that this authority is safe.
-     * @throws RuntimeException if this suggestion is not found to be safe.
-     */
-    static boolean[] checkStraightLine(boolean[] authority) {
-        // I need to see if I can find a path from one occupied block to another
-        boolean unbrokenPath = false;
-
-        for (int[] path: PATHS) {
-            for (int block: path) {
-                if (unbrokenPath) {
-                    if (isOccupied(block)) {
-                        throw new RuntimeException(String.format(
-                            "Found an unbroken path from some occupied block to %d", block
-                        ));
-                    }
-                    // This doesn't follow the 2-block rule.
-                    unbrokenPath = authority[block];
-                } else {
-                    if (isOccupied(block)) {
-                        unbrokenPath = true;
-                    }
-                }
-            }
-        }
-        return new boolean[TRACK_LEN];
-    }
-
-    /**
      * How CTC presents a suggestion of speed and authority for each train.
      * The form of this suggestion can be found in the {@link shared.Suggestion} class.
      * IMPLEMENTATION SUBJECT TO CHANGE.
@@ -289,28 +231,10 @@ public class WaysideController {
      * @param suggestion an array of Suggestion objects, one for each train.
      */
     public static void suggest(Suggestion[] suggestion) {
-        boolean[] authority;
-        int[] speed;
-        boolean[] switchState;
-        boolean[] crossings;
-        try {
-            authority = squash(suggestion);
-            speed = squashSpeed(suggestion);
-            switchState = checkAndSetSwitches(authority);
-            crossings = checkStraightLine(authority);
-        } catch (RuntimeException re) {
-            // write out default values.
-            authority = new boolean[TRACK_LEN];
-            speed = new int[TRACK_LEN];
-            switchState = new boolean[TRACK_LEN];
-            crossings = new boolean[TRACK_LEN];
-        }
-        for (int block = 1; block < TRACK_LEN; block++) {
-            tm.setAuthority(block, authority[block]);
-            tm.setSwitch(block, switchState[block]);
-            tm.setSpeed(block, speed[block]);
-            tm.setCrossingState(block, crossings[block]);
-        }
+        boolean[] authority = squash(suggestion);
+        int[] speed = squashSpeed(suggestion);
+        decider.sugget(authority, speed);
+        
     }
     
     /**
