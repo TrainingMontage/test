@@ -26,7 +26,7 @@ import shared.Environment;
 public class Train {
     int trainId;
     int blockId;
-    protected TrainController trainController = new TrainController();
+    protected TrainController trainController;
 
     protected int authority;
     protected double power; //W
@@ -67,6 +67,7 @@ public class Train {
 
 
     public Train(int newTrainId, int newblockId){
+        //trainController = new TrainController(this, trainId);
         trainId = newTrainId;
         blockId = newblockId;
         numPassengers = 0;
@@ -128,6 +129,7 @@ public class Train {
 
     public void setDisplay(String message){
         //send to GUI
+
     }
 
     public int getMaxPassengers(){
@@ -153,9 +155,9 @@ public class Train {
         return TrackModel.getTrackModel().getTrainSpeed(trainId);
     }
 
-    /*public int getBeacon(){
+    public int getBeacon(){
         return TrackModel.getTrackModel().getTrainBeacon(trainId);
-    }*/
+    }
 
     public void setPower(double powerInput){
         double forceApplied;
@@ -209,17 +211,25 @@ public class Train {
         }
     }
 
-    public boolean getEmergancyBrakes(){
+    public boolean getEmergencyBrakes(){
         return emergencyBrake;
     }
 
-    public void setEmergancyBrakes(boolean status){
+    public void setEmergencyBrakes(boolean status){
         if(status == true){
             emergencyBrake = true;
         }
         else{
             emergencyBrake = false;
         }
+    }
+
+    public double getEmergencyBrakeRate(){
+        return emergencyBrakeRate;
+    }
+
+    public double getServiceBrakeRate(){
+        return serviceBrakeRate;
     }
 
 
