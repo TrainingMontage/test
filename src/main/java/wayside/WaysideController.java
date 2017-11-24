@@ -21,7 +21,7 @@ import shared.Suggestion;
 import trackmodel.TrackModel;
 import trackmodel.StaticBlock;
 import trackmodel.StaticSwitch;
-import wayside.UILayer;
+import wayside.WaysideUI;
 
 import java.util.List;
 
@@ -61,6 +61,7 @@ public class WaysideController {
     private static final int FROM_YARD = 152;
     
     static TrackModel tm = TrackModel.getTrackModel();
+    static WaysideUI gui = new WaysideUI();
 
     /**
      * Initiallizes the WaysideController.
@@ -118,7 +119,7 @@ public class WaysideController {
      * Opens the WC UI.
      */
     public static void openWindow() {
-        UILayer.init();
+        gui.setVisible(true);
     }
 
 
