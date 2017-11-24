@@ -48,7 +48,7 @@ public class CTCGUI {
     //private static String dataAuthority;
     //private static int dataOrigin;
     //private static int dataDestination;
-    private static JLabel trainLabel;
+    //private static JLabel trainLabel;
     // private env temperature
     private static double temperature;
     // constants for initializing GUI components
@@ -631,7 +631,7 @@ public class CTCGUI {
                     //dataAuthority = trainAuthorityText.getText();
                     //dataOrigin = dataBlockID;
                     //dataDestination = Integer.parseInt(trainDestinationText.getText());
-                    trainLabel.setText("Train");
+                    //trainLabel.setText("Train");
                     //disable the submit button
                     launchTrainButton.setEnabled(false);
                     isNewTrain = false;
