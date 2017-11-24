@@ -24,6 +24,30 @@ public class WaysideUI extends javax.swing.JFrame {
         initComponents();
     }
 
+    void setOccupancy(int blockId, boolean value) {
+        jTable1.getModel().setValueAt(value, blockId-1, 1);
+    }
+
+    void setSwitch(int blockId, boolean value) {
+        jTable1.getModel().setValueAt(value, blockId-1, 2);
+    }
+
+    void setSignal(int blockId, boolean value) {
+        jTable1.getModel().setValueAt(value, blockId-1, 3);
+    }
+
+    void setCrossing(int blockId, boolean value) {
+        jTable1.getModel().setValueAt(value, blockId-1, 3);
+    }
+
+    void setSpeed(int blockId, int value) {
+        jTable1.getModel().setValueAt(value, blockId-1, 5);
+    }
+
+    void setAuthority(int blockId, boolean value) {
+        jTable1.getModel().setValueAt(value, blockId-1, 6);
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -44,24 +68,13 @@ public class WaysideUI extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
+        Object[][] data = new Object[153][8];
+        for (int i = 0; i < 153; i++) {
+            data[i][0] = i+1;
+        }
+
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null, null}
-            },
+            data,
             new String [] {
                 "Block ID", "Occupancy", "Switches", "Signals", "Crossing", "Status", "Speed", "Authority"
             }

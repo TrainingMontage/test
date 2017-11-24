@@ -140,7 +140,9 @@ public class WaysideController {
      * @return the occupancy of the block, true if it is occupied, false otherwise.
      */
     public static boolean isOccupied(int blockId) {
-        return tm.isOccupied(blockId);
+        boolean o = tm.isOccupied(blockId);
+        gui.setOccupancy(blockId, o);
+        return o;
     }
 
     /**
@@ -314,6 +316,11 @@ public class WaysideController {
             tm.setSwitch(block, switchState[block]);
             tm.setSpeed(block, speed[block]);
             tm.setCrossingState(block, crossings[block]);
+
+            gui.setAuthority(block, authority[block]);
+            gui.setSwitch(block, switchState[block]);
+            gui.setSpeed(block, speed[block]);
+            gui.setCrossing(block, crossings[block]);
         }
     }
     
