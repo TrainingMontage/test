@@ -145,12 +145,12 @@ public class TrainControllerTest {
         System.out.println("getPower");
 //        instance.theTrain.setSpeed(0.0);
 //        instance.theTrain.setSuggested(0.0);
-        Train _train = mock(Train.class);
+//        Train _train = mock(Train.class);
         StaticBlock _block = mock(StaticBlock.class);
 //        Train _train = new Train(1, 1);
         StaticBlock _block = mock(StaticBlock.class);
-        StaticBlock _block = new StaticBlock();
-        TrainController instance = new TrainController(_train, 1, false);
+//        StaticBlock _block = new StaticBlock();
+        TrainController instance = new TrainController(false, _train, 1);
         instance.setStaticBlock(_block);
         instance.setKu(500);
         instance.setT(1.0);
