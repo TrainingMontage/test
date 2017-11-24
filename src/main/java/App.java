@@ -16,6 +16,8 @@
 
 import javax.swing.*;
 import java.sql.SQLException;
+import java.io.File;
+import java.util.Arrays;
 
 import shared.GlobalGUI;
 import shared.Environment;
@@ -46,7 +48,7 @@ public class App {
      * @throws SQLException in case DB stuff.
      * @throws ClassNotFoundException in case JDBC in not found.
      */
-    public static void run() throws SQLException, ClassNotFoundException {
+    public static void run() {
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 GlobalGUI.createAndShowGUI();
@@ -61,9 +63,14 @@ public class App {
      * @throws SQLException in case DB stuff.
      * @throws ClassNotFoundException in case JDBC in not found.
      */
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+    public static void main(String[] args) {
         //init each module
         TrackModel.init();
+        if (args.length > 0) {
+            // System.out.println("importing " + args[0]);
+            TrackModel.getTrackModel().importTrack(new File(args[0]));
+            // System.out.println(Arrays.toString(TrackModel.getTrackModel().getBlockIds().toArray()));
+        } 
         WaysideController.init();
         CTCModel.init();
         TrainTracker.getTrainTracker();
