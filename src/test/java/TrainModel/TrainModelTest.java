@@ -102,18 +102,28 @@ public class TrainModelTest{
     }
 
     @Test
-    public void testGetEmergancyBrakes(){
-        assertEquals(testTrainObject.getEmergancyBrakes(), false);
+    public void testGetEmergencyBrakes(){
+        assertEquals(testTrainObject.getEmergencyBrakes(), false);
     }
 
     @Test
-    public void testSetEmergancyBrakes(){
+    public void testSetEmergencyBrakes(){
         //turn on
-        testTrainObject.setEmergancyBrakes(true);
-        assertEquals(testTrainObject.getEmergancyBrakes(), true);
+        testTrainObject.setEmergencyBrakes(true);
+        assertEquals(testTrainObject.getEmergencyBrakes(), true);
         //turn off
-        testTrainObject.setEmergancyBrakes(false);
-        assertEquals(testTrainObject.getEmergancyBrakes(), false);
+        testTrainObject.setEmergencyBrakes(false);
+        assertEquals(testTrainObject.getEmergencyBrakes(), false);
+    }
+
+    @Test
+    public void testGetEmergencyBrakeRate(){
+        assertEquals(-2.73, testTrainObject.getEmergencyBrakeRate(), delta);
+    }
+
+    @Test
+    public void testGetServiceBrakeRate(){
+        assertEquals(-1.2, testTrainObject.getServiceBrakeRate(), delta);
     }
 
     @Test
