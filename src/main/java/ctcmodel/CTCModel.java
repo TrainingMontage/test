@@ -49,6 +49,8 @@ public class CTCModel{
     private CTCModel(){
         //trainTracker = atrainTracker;
         last_clock = 0;
+        suggestions = new ArrayList<Suggestion>();
+        trainData = new ArrayList<CTCTrainData>();
     }
     
     public static void init(){
@@ -135,7 +137,10 @@ public class CTCModel{
         return;
     }
     public static void sendSuggestions(){
-        WaysideController.suggest(suggestions.toArray(new Suggestion[suggestions.size()]));
+        //System.out.println(""+suggestions.size());
+        if(suggestions.size() != 0){
+            WaysideController.suggest(suggestions.toArray(new Suggestion[suggestions.size()]));
+        }
     }
     public static CTCTrainData getTrainData(int blockID){
         for (CTCTrainData data: trainData){
