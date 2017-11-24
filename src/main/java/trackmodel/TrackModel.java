@@ -363,7 +363,7 @@ public class TrackModel implements TrackModelInterface {
             throw new RuntimeException(e);
         }
 
-        return occupied != null;
+        return occupied != null && occupied > 0;
     }
 
     /**
@@ -1118,9 +1118,11 @@ public class TrackModel implements TrackModelInterface {
         if (this.last_updated == Environment.clock) {
             return;
         }
+        System.err.println("TrackModel updating...");
         this.last_updated = Environment.clock;
 
         for (int trainId : this.getTrainIds()) {
+            System.err.println("TrackModel Updating " + trainId);
             updateTrain(trainId);
         }
 
@@ -1395,6 +1397,7 @@ public class TrackModel implements TrackModelInterface {
                     if (this.isOccupied(block.getId())) {
                         throw new TrainCrashException();
                     }
+                    System.err.println("TrackModel updating occupancy: " + block.getId() + " " + key);
                     this.setOccupied(block.getId(), true);
                 }
             }
