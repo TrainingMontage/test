@@ -48,7 +48,7 @@ public class CTCGUI {
     //private static String dataAuthority;
     //private static int dataOrigin;
     //private static int dataDestination;
-    private static JLabel trainLabel;
+    //private static JLabel trainLabel;
     // private env temperature
     private static double temperature;
     // constants for initializing GUI components
@@ -89,9 +89,9 @@ public class CTCGUI {
     
     private static Graph graph;
     private static ViewPanel graphView;
-    private final String styleSheet =
+    private static final String styleSheet =
         "node {" +
-        "   size: 1px;" +
+        "   size: 10px;" +
         "	fill-color: black;" +
         "}" +
         "edge {" +
@@ -115,12 +115,12 @@ public class CTCGUI {
     public static void init(){
         System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         graph = new MultiGraph("Map");//allow directed graphs
-        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
-        graphView = viewer.addDefaultView(false);   // false indicates "no JFrame".
+        graph.addAttribute("ui.stylesheet",styleSheet);
         
         
         
         Node nodeYard = graph.addNode("Yard");
+        nodeYard.addAttribute("ui.label", "YARD");
         //read in from track
         StaticTrack t = TrackModel.getTrackModel().getStaticTrack();
         ArrayList<Integer> bIds = TrackModel.getTrackModel().getBlockIds();
@@ -139,7 +139,8 @@ public class CTCGUI {
                 //special exception for switches
                 n1 = graph.getNode(ss.getRoot().getId()+" "+ss.getDefaultLeaf().getId()+" "+ss.getActiveLeaf().getId());
                 if(n1 == null){
-                    graph.addNode(ss.getRoot().getId()+" "+ss.getDefaultLeaf().getId()+" "+ss.getActiveLeaf().getId());
+                    n1 = graph.addNode(ss.getRoot().getId()+" "+ss.getDefaultLeaf().getId()+" "+ss.getActiveLeaf().getId());
+                    //n1.addAttribute("ui.label", ss.getRoot().getId()+" "+ss.getDefaultLeaf().getId()+" "+ss.getActiveLeaf().getId());
                 }//else it already exists; do nothing
             }else{
                 int nextId = t.getStaticBlock(blockId).getNextId();
@@ -158,10 +159,12 @@ public class CTCGUI {
                 }
                 n2 = graph.getNode(prevStr);
                 if(n1 == null){
-                    graph.addNode(nextStr);
+                    n1 = graph.addNode(nextStr);
+                    //n1.addAttribute("ui.label", nextStr);
                 }
                 if(n2 == null){
-                    graph.addNode(prevStr);
+                    n2 = graph.addNode(prevStr);
+                    //n2.addAttribute("ui.label", prevStr);
                 }
             }
         }
@@ -242,6 +245,7 @@ public class CTCGUI {
                 e.addAttribute("track.isSwitch", new Boolean(false));
             }
             //add edge properties
+            e.addAttribute("ui.label",e.getId()+"");
             e.addAttribute("layout.weight", new Double(sb.getLength()));
             e.addAttribute("track.time", new Double(sb.getLength()/sb.getSpeedLimit()));
             e.addAttribute("track.occupied", new Boolean(false));
@@ -272,6 +276,9 @@ public class CTCGUI {
         greenOut.addAttribute("track.occupied", new Boolean(false));
         greenOut.addAttribute("track.isCrossing", new Boolean(false));
         greenOut.addAttribute("track.isSwitch", new Boolean(false));
+        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+        viewer.enableAutoLayout();
+        graphView = viewer.addDefaultView(false);   // false indicates "no JFrame".
     }
     
     public static void addComponentsToPane(Container pane){
@@ -631,7 +638,7 @@ public class CTCGUI {
                     //dataAuthority = trainAuthorityText.getText();
                     //dataOrigin = dataBlockID;
                     //dataDestination = Integer.parseInt(trainDestinationText.getText());
-                    trainLabel.setText("Train");
+                    //trainLabel.setText("Train");
                     //disable the submit button
                     launchTrainButton.setEnabled(false);
                     isNewTrain = false;
@@ -1075,7 +1082,14 @@ public class CTCGUI {
         c.gridheight = 1;
         panelTrackGraph.add(label,c);
         */
-        panelTrackGraph.add(graphView);
+        
+        graphView.setPreferredSize(new Dimension(600,600));
+        c.insets = new Insets(0,0,0,0);//top,left,bottom,right
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        panelTrackGraph.add(graphView,c);
         
         panelTrackGraph.setBorder(BorderFactory.createTitledBorder("Map Panel"));
         c.insets = new Insets(2,2,2,2);//top,left,bottom,right
