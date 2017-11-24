@@ -16,7 +16,8 @@ package traincontroller;
 import java.util.Arrays;
 import java.sql.SQLException;
 import shared.*;
-import trainmodel.Train;
+//import trainmodel.Train;
+import trainmodel.trainmodel.Train;
 import trackmodel.TrackModel;
 import trackmodel.StaticBlock;
 import trackmodel.StaticSwitch;
@@ -98,7 +99,7 @@ public class TrainController implements TrainControllerInterface {
 //        UI.updateLights();
 //        UI.setVisible(true);
         
-        runTest(4);
+//        runTest(4);
         System.err.println();
 ////        for(int j = 1; j < 11; j++) {
 ////            TC.setKu((double)j);
