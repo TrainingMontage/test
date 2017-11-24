@@ -149,6 +149,7 @@ public class TrainControllerTest {
         StaticBlock _block = mock(StaticBlock.class);
         TrainController instance = new TrainController(_train, 1, false);
         instance.setStaticBlock(_block);
+        instance.setKu(500);
         doReturn(-1).when(_train).getBeacon();
         doReturn(0.0).when(_train).getSuggestedSpeed();
         doReturn(0.0).when(_train).getCurrentVelocity();
@@ -175,6 +176,7 @@ public class TrainControllerTest {
         StaticBlock _block = mock(StaticBlock.class);
         TrainController instance = new TrainController(_train, 1, false);
         instance.setStaticBlock(_block);
+        instance.setKu(500);
         doReturn(-1).when(_train).getBeacon();
         doReturn(24.0).when(_train).getSuggestedSpeed();
         doReturn(12.0).when(_train).getCurrentVelocity();
