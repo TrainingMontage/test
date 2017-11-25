@@ -55,7 +55,7 @@ public class WaysideController {
      */
     static int TRACK_LEN = 153;
     static int[] SWITCHES = new int[] {1, 2, 10, 11, 12, 13};
-    static int[] SWITCH_BLOCKS = new int[] {63}; // the only one I need for now.
+    static int[] SWITCH_BLOCKS = new int[] {13, 28, 57, 63, 77, 85};
     static int[] CROSSINGS = {19};
     static int[][] PATHS;
     private static final int INTO_YARD = 151;
