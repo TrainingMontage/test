@@ -235,10 +235,10 @@ public class WaysideController {
             int root = ss.getRoot().getId();
             int def = ss.getDefaultLeaf().getId();
             int active = ss.getActiveLeaf().getId();
-            System.err.println("A Switch:");
-            System.err.println("\troot: " + root);
-            System.err.println("\tdef: " + def);
-            System.err.println("\tactive: " + active);
+            // System.err.println("A Switch:");
+            // System.err.println("\troot: " + root);
+            // System.err.println("\tdef: " + def);
+            // System.err.println("\tactive: " + active);
             
             if (authority[def] && authority[active]) {
                 // both default and active branch cannot have authority
@@ -333,8 +333,13 @@ public class WaysideController {
             re.printStackTrace();
         }
         for (int block = 1; block < TRACK_LEN; block++) {
+            if (switchState[block]) {
+                System.err.println("Setting the swtich at block " + block);
+            }
             tm.setAuthority(block, authority[block]);
-            tm.setSwitch(block, switchState[block]);
+            if (contains(SWITCHES, block)) {
+                tm.setSwitch(block, switchState[block]);
+            }
             tm.setSpeed(block, speed[block]);
             tm.setCrossingState(block, crossings[block]);
 
@@ -343,6 +348,13 @@ public class WaysideController {
             gui.setSpeed(block, speed[block]);
             gui.setCrossing(block, crossings[block]);
         }
+    }
+
+    private static boolean contains(int[] array, int data) {
+        for (int elem: array) {
+            if (elem == data) return true;
+        }
+        return false;
     }
     
     /**
