@@ -55,7 +55,8 @@ public class WaysideController {
      * Also, this is only the Green line.
      */
     public static int TRACK_LEN = 153;
-    static int NUM_SWITCHES = 7;
+    static int[] SWITCHES = new int[] {1, 2, 10, 11, 12, 13};
+    static int[] SWITCH_BLOCKS = new int[] {13, 28, 57, 63, 77, 85};
     static int[] CROSSINGS = {19};
     static int[][] PATHS;
     private static final int INTO_YARD = 151;
@@ -108,7 +109,8 @@ public class WaysideController {
      */
     public static void initTest() {
         TRACK_LEN = 9;
-        NUM_SWITCHES = 2;
+        SWITCHES = new int[] {1};
+        SWITCH_BLOCKS = new int[] {2};
         CROSSINGS = null;
         PATHS = new int[][] {
             new int[] {1,2,3,4,5,6,7},
