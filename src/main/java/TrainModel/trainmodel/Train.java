@@ -23,6 +23,9 @@ import traincontroller.TrainController;
 import shared.Convert;
 import shared.Environment;
 
+import static org.mockito.Mockito.*;
+
+
 public class Train {
     int trainId;
     int blockId;
@@ -83,7 +86,12 @@ public class Train {
         time = 0;
 
         //Create controller
-        //trainController = new TrainController(this, this.trainId, this.blockId);
+        // trainController = new TrainController(this, this.blockId);
+        trainController = mock(TrainController.class);
+        when(trainController.getPower()).thenReturn(5.0);
+
+        // register with track
+        TrackModel.getTrackModel().initializeTrain(this.trainId, this.blockId);
 
         boolean brakeFailure = false;
         boolean engineFailure = false;
