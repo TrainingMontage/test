@@ -101,6 +101,7 @@ public class CTCModel{
         int trainID = TrainTracker.getTrainTracker().createTrain(startingBlockID);
         trainData.add(new CTCTrainData(trainID, startingBlockID, suggestedSpeed,
                                        suggestedAuth, startingBlockID, destBlockID));
+        addSuggestion(trainID, suggestedSpeed, suggestedAuth);
         return trainID;
     }
     public static void addSuggestion(int trainID, int suggestedSpeed, String suggestedAuthority){
