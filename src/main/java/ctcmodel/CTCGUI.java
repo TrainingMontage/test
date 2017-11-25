@@ -327,15 +327,22 @@ public class CTCGUI {
             }
             avgx = avgx/numPlacedNeigh;
             avgy = avgy/numPlacedNeigh;
-            //if 2 or 3 neighbors are placed
             if(numPlacedNeigh != 1){
+                //if 2 or 3 neighbors are placed
                 nn.setAttribute("xyz", avgx, avgy, 0.0);
                 toBePos.remove(nn);
                 donePos.add(nn);
             }else{
-            //if 1 neighbor is placed
+                //if 1 neighbor is placed
                 if(yardCpy){//this placed neighbor is the yard
-                    
+                    //place up or down
+                    if(donePos.size() == 1){
+                        nn.setAttribute("xyz", 0.0, , 0.0);
+                    }else{
+                        
+                    }
+                }else{
+                    //follow the last angle
                 }
             }
             
