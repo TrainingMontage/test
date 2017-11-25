@@ -61,7 +61,7 @@ public class WaysideController {
     private static final int FROM_YARD = 152;
     
     static TrackModel tm = TrackModel.getTrackModel();
-    static WaysideUI gui = new WaysideUI();
+    static WaysideUI gui = null;
 
     /**
      * Initiallizes the WaysideController.
@@ -69,6 +69,7 @@ public class WaysideController {
      * as though there's only one WC.
      */
     public static void init() {
+        gui = new WaysideUI();
         PATHS = new int[][] {
             // The long circuit around the entire track.
             new int[] {
@@ -141,7 +142,8 @@ public class WaysideController {
      */
     public static boolean isOccupied(int blockId) {
         boolean o = tm.isOccupied(blockId);
-        gui.setOccupancy(blockId, o);
+        if (gui != null)
+            gui.setOccupancy(blockId, o);
         return o;
     }
 
