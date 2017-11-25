@@ -21,7 +21,7 @@ import shared.Suggestion;
 import trackmodel.TrackModel;
 import trackmodel.StaticBlock;
 import trackmodel.StaticSwitch;
-import wayside.UILayer;
+import wayside.WaysideUI;
 
 import java.util.List;
 
@@ -61,6 +61,7 @@ public class WaysideController {
     private static final int FROM_YARD = 152;
     
     static TrackModel tm = TrackModel.getTrackModel();
+    static WaysideUI gui = null;
 
     /**
      * Initiallizes the WaysideController.
@@ -68,6 +69,7 @@ public class WaysideController {
      * as though there's only one WC.
      */
     public static void init() {
+        gui = new WaysideUI();
         PATHS = new int[][] {
             // The long circuit around the entire track.
             new int[] {
@@ -118,7 +120,7 @@ public class WaysideController {
      * Opens the WC UI.
      */
     public static void openWindow() {
-        UILayer.init();
+        gui.setVisible(true);
     }
 
 
@@ -139,7 +141,10 @@ public class WaysideController {
      * @return the occupancy of the block, true if it is occupied, false otherwise.
      */
     public static boolean isOccupied(int blockId) {
-        return tm.isOccupied(blockId);
+        boolean o = tm.isOccupied(blockId);
+        if (gui != null)
+            gui.setOccupancy(blockId, o);
+        return o;
     }
 
     /**
@@ -313,6 +318,11 @@ public class WaysideController {
             tm.setSwitch(block, switchState[block]);
             tm.setSpeed(block, speed[block]);
             tm.setCrossingState(block, crossings[block]);
+
+            gui.setAuthority(block, authority[block]);
+            gui.setSwitch(block, switchState[block]);
+            gui.setSpeed(block, speed[block]);
+            gui.setCrossing(block, crossings[block]);
         }
     }
     
