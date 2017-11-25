@@ -69,7 +69,11 @@ public class Train {
     protected NumberFormat formatter = new DecimalFormat("#0.00");
 
 
-    public Train(int newTrainId, int newblockId){
+    public Train(int newTrainId, int newblockId) {
+        this(newTrainId, newblockId, TrackModel.getTrackModel());
+    }
+
+    public Train(int newTrainId, int newblockId, TrackModel tm){
         //trainController = new TrainController(this, trainId);
         trainId = newTrainId;
         blockId = newblockId;
@@ -91,7 +95,7 @@ public class Train {
         when(trainController.getPower()).thenReturn(5.0);
 
         // register with track
-        TrackModel.getTrackModel().initializeTrain(this.trainId, this.blockId);
+        tm.initializeTrain(this.trainId, this.blockId);
 
         boolean brakeFailure = false;
         boolean engineFailure = false;
