@@ -334,9 +334,6 @@ public class WaysideController {
             re.printStackTrace();
         }
         for (int block = 1; block < TRACK_LEN; block++) {
-            if (switchState[block]) {
-                System.err.println("Setting the swtich at block " + block);
-            }
             tm.setAuthority(block, authority[block]);
             if (contains(SWITCH_BLOCKS, block)) {
                 System.out.println("Setting switch at block " + block);
