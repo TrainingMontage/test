@@ -45,6 +45,7 @@ public class CTCModel{
     //private static JLabel trainLabel;
     private static int last_clock;
     private static StaticTrack track;
+    private static ArrayList<Integer> bIds;
     
     private CTCModel(){
         //trainTracker = atrainTracker;
@@ -58,6 +59,7 @@ public class CTCModel{
             model = new CTCModel();
         }
         track = TrackModel.getTrackModel().getStaticTrack();
+        bIds = TrackModel.getTrackModel().getBlockIds();
         CTCGUI.init();
     }
     
@@ -101,7 +103,7 @@ public class CTCModel{
         int trainID = TrainTracker.getTrainTracker().createTrain(startingBlockID);
         trainData.add(new CTCTrainData(trainID, startingBlockID, suggestedSpeed,
                                        suggestedAuth, startingBlockID, destBlockID));
-        addSuggestion(trainID, suggestedSpeed, suggestedAuthority);
+        addSuggestion(trainID, suggestedSpeed, suggestedAuth);
         return trainID;
     }
     public static void addSuggestion(int trainID, int suggestedSpeed, String suggestedAuthority){
@@ -150,6 +152,8 @@ public class CTCModel{
         
         updateTrack();
         
+        //check that train hasn't left its block
+        
         sendSuggestions();
         
         last_clock = current_time;
@@ -180,7 +184,4 @@ public class CTCModel{
             }
         }
     }
-    //TODO: i was writing a new function here but i forgot what it was. i'm leaving this as a reminder for now
-    //public static int
-    
 }

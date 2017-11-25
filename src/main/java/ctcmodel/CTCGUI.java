@@ -290,7 +290,7 @@ public class CTCGUI {
         
         ArrayList<Node> toBePos = new ArrayList<Node>();
         ArrayList<Node> donePos = new ArrayList<Node>();
-        nodeYard.setAttribute("xyz", 0, 0, 0);
+        nodeYard.setAttribute("xyz", 0.0, 0.0, 0.0);
         donePos.add(nodeYard);
         Iterator<Edge> edgeIter = nodeYard.getEachEdge().iterator();
         
@@ -299,13 +299,47 @@ public class CTCGUI {
             if(!donePos.contains(toAdd.getNode0()) && !toBePos.contains(toAdd.getNode0())){
                 toBePos.add(toAdd.getNode0());
             }
-            if(!donePos.contains(toAdd.getNode1()) && !donePos.contains(toAdd.getNode1())){
+            if(!donePos.contains(toAdd.getNode1()) && !toBePos.contains(toAdd.getNode1())){
                 toBePos.add(toAdd.getNode1());
             }
         }
         
         while(toBePos.size() != 0){
+            Node nn = toBePos.get(0);
+            Iterator neighIter = nn.getNeighborNodeIterator();
+            int numPlacedNeigh = 0;
+            float avgx = 0;
+            float avgy = 0;
+            Node neigh;
+            boolean yardCpy = false;
+            while(neighIter.hasNext()){
+                neigh = (Node)neighIter.next();
+                if(neigh.equals(nodeYard)){
+                    yardCpy = true;
+                }
+                if(donePos.contains(neigh)){
+                    numPlacedNeigh++;
+                    Object[] pos = neigh.getAttribute("xyz");
+                    avgx += (Float) pos[0];
+                    avgy += (Float) pos[1];
+                    //could do a weighted avg b/t edges
+                }
+            }
+            avgx = avgx/numPlacedNeigh;
+            avgy = avgy/numPlacedNeigh;
+            //if 2 or 3 neighbors are placed
+            if(numPlacedNeigh != 1){
+                nn.setAttribute("xyz", avgx, avgy, 0.0);
+                toBePos.remove(nn);
+                donePos.add(nn);
+            }else{
+            //if 1 neighbor is placed
+                if(yardCpy){//this placed neighbor is the yard
+                    
+                }
+            }
             
+            //find its edges and add those
         }
         
         
