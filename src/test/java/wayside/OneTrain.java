@@ -29,13 +29,23 @@ import wayside.trackmock.WCTrackModel;
 
 public class OneTrain {
 
-    final WCTrackModel tm;
+    WCTrackModel tm;
+    Decider decider;
+    final int[] speed = {1,2,3,4,5,6,7,8};
+    final boolean[] occupancy = {
+        false, false, true, false, false, true, false, false, false
+    };
+    final int[][] PATHS = new int[][] {
+        new int[] {1,2,3,4,5,6,7},
+        new int[] {3,4,5,6,7,2,1}
+    };
 
     public OneTrain() {
         // trains on 1 and 5, I think
         tm = new WCTrackModel();
         tm.occupy(1, true);
         tm.occupy(5, true);
+        decider = new Decider(occupancy, PATHS);
         WaysideController.initTest(tm);
     }
 
@@ -50,25 +60,15 @@ public class OneTrain {
             false, true, true, true,
             false, true, false, false, false
         };
-        try {
-            WaysideController.checkStraightLine(authority);
-            Assert.assertTrue(true);
-        } catch (Exception e) {
-            Assert.fail(e.getMessage());
-        }
+        Assert.assertTrue(decider.suggest(authority, speed));
     }
 
     @Test
     public void unsafeStriaghtLine() {
         boolean[] authority = new boolean[] {
             false, true, true, true,
-            true, true, false, false, false
+            true, true, true, false, false
         };
-        try {
-            WaysideController.checkStraightLine(authority);
-            Assert.fail("Failed to find unsafe path between 2 occupied blocks.");
-        } catch (Exception e) {
-            Assert.assertTrue(true);
-        }
+        Assert.assertFalse(decider.suggest(authority, speed));
     }
 }

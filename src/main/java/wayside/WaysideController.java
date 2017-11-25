@@ -199,7 +199,7 @@ public class WaysideController {
         boolean[] authority = new boolean[TRACK_LEN];
         for (Suggestion s: suggestion) {
             for (int block: s.authority) {
-                if (authority[block-1]) {
+                if (authority[block]) {
                     // TODO: make custom exception UnsafeSuggestion
                     throw new RuntimeException(String.format(
                         "Block %d was suggested twice", block

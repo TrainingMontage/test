@@ -30,8 +30,10 @@ public class EmptyTrack {
     WCTrackModel tm;
     Decider decider;
     final int[] speed = {1,2,3,4,5,6,7,8};
-    final boolean[] occupancy = {false, false, true, false, false, false, false, false};
-    final int[] PATHS = new int[][] {
+    final boolean[] occupancy = {
+        false, false, true, false, false, false, false, false, false
+    };
+    final int[][] PATHS = new int[][] {
         new int[] {1,2,3,4,5,6,7},
         new int[] {3,4,5,6,7,2,1}
     };
@@ -72,9 +74,11 @@ public class EmptyTrack {
             false, false, false, false,
             true, true, true, false, false
         };
-        boolean[] switchPos = WaysideController.checkAndSetSwitches(authority);
         boolean[] expected = new boolean[WaysideController.TRACK_LEN];
-        Assert.assertArrayEquals(expected, switchPos);
+        decider.suggest(authority, speed);
+        for (int i = 0; i < WaysideController.TRACK_LEN; i++) {
+            Assert.assertEquals(expected[i], decider.getSwitch(i));
+        }
     }
 
     @Test
@@ -85,8 +89,10 @@ public class EmptyTrack {
         };
         boolean[] expected = new boolean[WaysideController.TRACK_LEN];
         expected[2] = true;
-        boolean[] switchPos = WaysideController.checkAndSetSwitches(authority);
-        Assert.assertArrayEquals(expected, switchPos);
+        decider.suggest(authority, speed);
+        for (int i = 0; i < WaysideController.TRACK_LEN; i++) {
+            Assert.assertEquals(expected[i], decider.getSwitch(i));
+        }
     }
 
     @Test
@@ -95,12 +101,7 @@ public class EmptyTrack {
             false, false, false, true,
             false, false, false, false, true
         };
-        try {
-            WaysideController.checkAndSetSwitches(authority);
-            Assert.fail("Did not find unsafe authority unsafe around switch 1");
-        } catch (Exception e) {
-            Assert.assertTrue(true);
-        }
+        Assert.assertFalse(decider.suggest(authority, speed));
     }
 
     @Test
@@ -109,8 +110,7 @@ public class EmptyTrack {
             false, true, true, false,
             false, false, false, false, true
         };
-        WaysideController.checkStraightLine(authority);
-        Assert.assertTrue(true);
+        Assert.assertTrue(decider.suggest(authority, speed));
     }
 
     @Test
@@ -119,12 +119,7 @@ public class EmptyTrack {
             false, false, true, false,
             true, true, false, true, true
         };
-        try {
-            WaysideController.checkStraightLine(authority);
-            Assert.assertTrue(true);
-        } catch (Exception e) {
-            Assert.fail(e.getMessage());
-        }
+        Assert.assertTrue(decider.suggest(authority, speed));
     }
 
     @Test
@@ -134,11 +129,6 @@ public class EmptyTrack {
             false, false, true, true,
             true, true, true, true, true
         };
-        try {
-            WaysideController.checkStraightLine(authority);
-            Assert.fail("Failed to find unsafe self loop unsafe.");
-        } catch (Exception e) {
-            Assert.assertTrue(true);
-        }
+        Assert.assertFalse(decider.suggest(authority, speed));
     }
 }
