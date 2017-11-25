@@ -101,6 +101,7 @@ public class CTCModel{
         int trainID = TrainTracker.getTrainTracker().createTrain(startingBlockID);
         trainData.add(new CTCTrainData(trainID, startingBlockID, suggestedSpeed,
                                        suggestedAuth, startingBlockID, destBlockID));
+        addSuggestion(trainID, suggestedSpeed, suggestedAuthority);
         return trainID;
     }
     public static void addSuggestion(int trainID, int suggestedSpeed, String suggestedAuthority){
@@ -161,6 +162,11 @@ public class CTCModel{
             int blockId = Integer.parseInt(element.getId());
             boolean occupied = WaysideController.isOccupied(blockId);
             element.setAttribute("track.occupied", new Boolean(occupied));
+            if(occupied){
+                element.setAttribute("ui.class", "occupied");
+            }else{
+                element.removeAttribute("ui.class");
+            }
             //Boolean isSwitch = (Boolean) element.getAttribute("track.isSwitch");
             if(((Boolean) element.getAttribute("track.isSwitch")).booleanValue()){
                 boolean switchState = WaysideController.getSwitch(blockId);

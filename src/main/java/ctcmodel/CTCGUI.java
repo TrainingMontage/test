@@ -88,16 +88,19 @@ public class CTCGUI {
     private static JTextArea trackCrossingText;
     
     private static Graph graph;
-    private static ViewPanel graphView;
+    //private static ViewPanel graphView;
+    private static Viewer viewer;
     private static final String styleSheet =
         "node {" +
         "   size: 10px;" +
         "	fill-color: black;" +
+        "   text-offset: 15, 0;" +
         "}" +
         "edge {" +
         "	fill-color: black;" +
+        "   text-offset: 7, 7;" +
         "}" +
-        "edge.marked {" +
+        "edge.occupied {" +
         "	fill-color: red;" +
         "}";
 
@@ -267,6 +270,7 @@ public class CTCGUI {
         greenIn.addAttribute("track.occupied", new Boolean(false));
         greenIn.addAttribute("track.isCrossing", new Boolean(false));
         greenIn.addAttribute("track.isSwitch", new Boolean(false));
+        greenIn.addAttribute("ui.label",greenIn.getId()+"");
         sb2 = t.getStaticBlock(152);
         ss2 = sb2.getStaticSwitch();
         Node nodeNext = graph.getNode(ss2.getRoot().getId()+" "+ss2.getDefaultLeaf().getId()+" "+ss2.getActiveLeaf().getId());
@@ -276,9 +280,36 @@ public class CTCGUI {
         greenOut.addAttribute("track.occupied", new Boolean(false));
         greenOut.addAttribute("track.isCrossing", new Boolean(false));
         greenOut.addAttribute("track.isSwitch", new Boolean(false));
-        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
-        viewer.enableAutoLayout();
-        graphView = viewer.addDefaultView(false);   // false indicates "no JFrame".
+        greenOut.addAttribute("ui.label",greenOut.getId()+"");
+        
+        //hardcode some positions to make the graph look better
+        //nodeYard.setAttribute("xyz", 9, 4, 0);
+        //graph.getNode("14 15").setAttribute("xyz", 7, 2, 0);
+        //graph.getNode("78 79").setAttribute("xyz", 3, 1, 0);
+        //graph.getNode("84 85").setAttribute("xyz", 0, 0, 0);
+        
+        ArrayList<Node> toBePos = new ArrayList<Node>();
+        ArrayList<Node> donePos = new ArrayList<Node>();
+        nodeYard.setAttribute("xyz", 0, 0, 0);
+        donePos.add(nodeYard);
+        Iterator<Edge> edgeIter = nodeYard.getEachEdge().iterator();
+        
+        while(edgeIter.hasNext()){
+            Edge toAdd = (Edge) edgeIter.next();
+            if(!donePos.contains(toAdd.getNode0()) && !toBePos.contains(toAdd.getNode0())){
+                toBePos.add(toAdd.getNode0());
+            }
+            if(!donePos.contains(toAdd.getNode1()) && !donePos.contains(toAdd.getNode1())){
+                toBePos.add(toAdd.getNode1());
+            }
+        }
+        
+        while(toBePos.size() != 0){
+            
+        }
+        
+        
+        viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
     }
     
     public static void addComponentsToPane(Container pane){
@@ -374,6 +405,7 @@ public class CTCGUI {
                     //enable the submit button
                     launchTrainButton.setEnabled(true);
                 }
+                viewer.disableAutoLayout();
             }
         });
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -401,6 +433,7 @@ public class CTCGUI {
                     //disable the submit button
                     launchTrainButton.setEnabled(false);
                 }
+                viewer.enableAutoLayout();
             }
         });
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -1082,7 +1115,8 @@ public class CTCGUI {
         c.gridheight = 1;
         panelTrackGraph.add(label,c);
         */
-        
+        viewer.disableAutoLayout();
+        ViewPanel graphView = viewer.addDefaultView(false);   // false indicates "no JFrame".
         graphView.setPreferredSize(new Dimension(600,600));
         c.insets = new Insets(0,0,0,0);//top,left,bottom,right
         c.gridx = 0;
