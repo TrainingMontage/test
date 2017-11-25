@@ -682,10 +682,13 @@ public class TrackModel implements TrackModelInterface {
      */
     public boolean setSwitch(int blockId, boolean active) {
         System.err.println("Setting switch @ block " + blockId + " to " + active);
+        StaticBlock blk = this.getStaticBlock(blockId);
+
         try {
+            int rootId = blk.getStaticSwitch().getRoot().getId();
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET switch_active = ? WHERE id = ?;");
             stmt.setInt(1, active ? 1 : 0);
-            stmt.setInt(2, blockId);
+            stmt.setInt(2, rootId);
             stmt.execute();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -702,7 +705,10 @@ public class TrackModel implements TrackModelInterface {
      * @return     The switch state. (True for engaged)
      */
     public boolean getSwitch(int blockId) {
+        StaticBlock blk = this.getStaticBlock(blockId);
+        
         try {
+            int rootId = blk.getStaticSwitch().getRoot().getId();
             PreparedStatement stmt = this.conn.prepareStatement("SELECT switch_active FROM blocks WHERE id = ?");
             stmt.setInt(1, blockId);
             ResultSet rs = stmt.executeQuery();
