@@ -1374,4 +1374,17 @@ public class TrackModelTest {
         // database should now have csv data in it
         assertFalse(_tm.isOccupied(152));
     }
+
+    /**
+     * Validate getstaticSwitch(151) on test line
+     */
+    @Test
+    public void testGetStaticSwitchTestLineYard() throws IOException, SQLException {
+        
+        TrackModel tm = TrackModel.initWithTestData();
+        StaticTrack _st = tm.getStaticTrack();
+
+        // database should now have csv data in it
+        assertEquals(2, _st.getStaticSwitch(1).getRoot().getId());
+    }
 }
