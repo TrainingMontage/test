@@ -681,7 +681,7 @@ public class TrackModel implements TrackModelInterface {
      * @return     new value of the switch (active/inactive)
      */
     public boolean setSwitch(int blockId, boolean active) {
-        System.err.println("Setting switch @ block " + blockId + " to " + active);
+        // System.err.println("Setting switch @ block " + blockId + " to " + active);
         try {
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET switch_active = ? WHERE id = ?;");
             stmt.setInt(1, active ? 1 : 0);
