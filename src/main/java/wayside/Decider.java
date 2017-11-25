@@ -48,11 +48,11 @@ public class Decider {
      *      The order of the numbers in each subarray will represent a valid path for a train.
      */
     public Decider(boolean[] occupancy, int[][] paths) {
-        occupied = Arrays.copy(occupancy);
+        occupied = occupancy;
         this.paths = paths; // could copy this.
         track = new TrackState[occupancy.length];
         for (int i = 0; i < occupancy.length; i++) {
-            track = new TrackState();
+            track[i] = new TrackState();
         }
     }
 
@@ -63,7 +63,7 @@ public class Decider {
      * @param speed linear repr of suggested speed.
      * @return is this suggestion safe?
      */
-    public boolean suggest(boolean[] authority, boolean[] speed) {
+    public boolean suggest(boolean[] authority, int[] speed) {
         suggestedAuthority = authority;
         suggestedSpeed = speed;
         if (checkSwitches() && checkStraightLine())
@@ -91,7 +91,7 @@ public class Decider {
                         return false;
                     }
                     // This doesn't follow the 2-block rule.
-                    unbrokenPath = authority[block];
+                    unbrokenPath = suggestedAuthority[block];
                 } else {
                     if (occupied[block]) {
                         unbrokenPath = true;
@@ -111,14 +111,38 @@ public class Decider {
         int root = 2;
         int def = 3;
         int active = 8;
-        if (authority[def] && authority[active]) {
+        if (suggestedAuthority[def] && suggestedAuthority[active]) {
             // both default and active branch cannot have authority
             return false;
         }
         // which way should the switch go?
-        if (authority[active]) {
+        if (suggestedAuthority[active]) {
             track[root].switchState = true;
         }
         return true;
+    }
+
+    boolean isOccupied(int blockId) {
+        return occupied[blockId];
+    }
+
+    boolean getCrossing(int blockId) {
+        return track[blockId].crossing;
+    }
+
+    boolean getSwitch(int blockId) {
+        return track[blockId].switchState;
+    }
+
+    boolean getSignal(int blockId) {
+        return track[blockId].signal;
+    }
+
+    boolean getAuthority(int blockId) {
+        return track[blockId].authority;
+    }
+
+    int getSpeed(int blockId) {
+        return track[blockId].speed;
     }
 }

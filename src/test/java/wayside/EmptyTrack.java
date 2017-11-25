@@ -28,10 +28,18 @@ import wayside.WaysideController;
 public class EmptyTrack {
 
     WCTrackModel tm;
+    Decider decider;
+    final int[] speed = {1,2,3,4,5,6,7,8};
+    final boolean[] occupancy = {false, false, true, false, false, false, false, false};
+    final int[] PATHS = new int[][] {
+        new int[] {1,2,3,4,5,6,7},
+        new int[] {3,4,5,6,7,2,1}
+    };
 
     public EmptyTrack() {
         tm = new WCTrackModel();
         tm.occupy(2, true);
+        decider = new Decider(occupancy, PATHS);
         WaysideController.initTest(tm);
     }
 
@@ -51,9 +59,11 @@ public class EmptyTrack {
             false, true, true, true,
             false, false, false, false, false
         };
-        boolean[] switchPos = WaysideController.checkAndSetSwitches(authority);
+        decider.suggest(authority, speed);
         boolean[] expected = new boolean[WaysideController.TRACK_LEN];
-        Assert.assertArrayEquals(expected, switchPos);
+        for (int i = 0; i < WaysideController.TRACK_LEN; i++) {
+            Assert.assertEquals(expected[i], decider.getSwitch(i));
+        }
     }
 
     @Test

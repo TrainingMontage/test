@@ -62,6 +62,7 @@ public class WaysideController {
     private static final int FROM_YARD = 152;
     
     static TrackModelInterface tm = TrackModel.getTrackModel();
+    static Decider decider;
 
     /**
      * Initiallizes the WaysideController.
@@ -233,8 +234,14 @@ public class WaysideController {
     public static void suggest(Suggestion[] suggestion) {
         boolean[] authority = squash(suggestion);
         int[] speed = squashSpeed(suggestion);
-        decider.sugget(authority, speed);
-        
+        decider.suggest(authority, speed);
+        for (int block = 0; block < TRACK_LEN; block++) {
+            tm.setAuthority(block, decider.getAuthority(block));
+            tm.setSwitch(block, decider.getSwitch(block));
+            tm.setSignal(block, decider.getSignal(block));
+            tm.setSpeed(block, decider.getSpeed(block));
+            tm.setCrossingState(block, decider.getCrossing(block));
+        }
     }
     
     /**
