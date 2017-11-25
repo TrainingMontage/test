@@ -308,6 +308,7 @@ public class WaysideController {
             crossings = checkStraightLine(authority, buildOccupancy());
         } catch (RuntimeException re) {
             // write out default values.
+            System.err.println("WC: Unsafe suggestion!");
             authority = new boolean[TRACK_LEN];
             speed = new int[TRACK_LEN];
             switchState = new boolean[TRACK_LEN];
