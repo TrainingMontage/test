@@ -21,6 +21,7 @@ import shared.Suggestion;
 import trackmodel.TrackModel;
 import trackmodel.StaticBlock;
 import trackmodel.StaticSwitch;
+import trackmodel.StaticTrack;
 import wayside.WaysideUI;
 
 import java.util.List;
@@ -63,6 +64,7 @@ public class WaysideController {
     
     static TrackModel tm = TrackModel.getTrackModel();
     static WaysideUI gui = null;
+    static StaticTrack st = tm.getStaticTrack();
 
     /**
      * Initiallizes the WaysideController.
@@ -232,7 +234,7 @@ public class WaysideController {
     static boolean[] checkAndSetSwitches(boolean[] authority) {
         boolean[] pos = new boolean[TRACK_LEN];
         for (int sw: SWITCHES) {
-            StaticSwitch ss = tm.getStaticSwitch(sw);
+            StaticSwitch ss = st.getStaticSwitch(sw);
             int root = ss.getRoot().getId();
             int def = ss.getDefaultLeaf().getId();
             int active = ss.getActiveLeaf().getId();
