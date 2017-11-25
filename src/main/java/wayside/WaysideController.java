@@ -330,6 +330,7 @@ public class WaysideController {
             speed = new int[TRACK_LEN];
             switchState = new boolean[TRACK_LEN];
             crossings = new boolean[TRACK_LEN];
+            re.printStackTrace();
         }
         for (int block = 1; block < TRACK_LEN; block++) {
             tm.setAuthority(block, authority[block]);
