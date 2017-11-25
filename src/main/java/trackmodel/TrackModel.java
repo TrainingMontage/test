@@ -685,6 +685,8 @@ public class TrackModel implements TrackModelInterface {
         StaticBlock blk = this.getStaticBlock(blockId);
         try {
             int rootId = blk.getStaticSwitch().getRoot().getId();
+            System.err.println("setSwitch for block " + rootId + " to " + active);
+
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET switch_active = ? WHERE id = ?;");
             stmt.setInt(1, active ? 1 : 0);
             stmt.setInt(2, rootId);
@@ -708,11 +710,13 @@ public class TrackModel implements TrackModelInterface {
         
         try {
             int rootId = blk.getStaticSwitch().getRoot().getId();
+            System.err.println("getSwitch for block " + rootId);
             PreparedStatement stmt = this.conn.prepareStatement("SELECT switch_active FROM blocks WHERE id = ?");
-            stmt.setInt(1, blockId);
+            stmt.setInt(1, rootId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
 
+            System.err.println("switch_active " + rs.getInt("switch_active"));
             return rs.getInt("switch_active") > 0 ? true : false;
 
         } catch (Exception e) {
@@ -1341,6 +1345,8 @@ public class TrackModel implements TrackModelInterface {
                 return this.getSwitch(curr_block.getId()) ? sw.getActiveLeaf() : sw.getDefaultLeaf();
             }
             if (curr_block.equals(sw.getActiveLeaf())) { // current block is the active leaf
+                System.err.println(curr_block.getId());
+                System.err.println(this.getSwitch(curr_block.getId()));
                 if (this.getSwitch(curr_block.getId())) {
                     return sw.getRoot();
                 }
