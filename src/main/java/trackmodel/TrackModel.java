@@ -1338,16 +1338,16 @@ public class TrackModel implements TrackModelInterface {
             // moving towards a switch
 
             if (curr_block.equals(sw.getRoot())) { // current block is the root
-                return this.getSwitch(sw.getId()) ? sw.getActiveLeaf() : sw.getDefaultLeaf();
+                return this.getSwitch(curr_block.getId()) ? sw.getActiveLeaf() : sw.getDefaultLeaf();
             }
             if (curr_block.equals(sw.getActiveLeaf())) { // current block is the active leaf
-                if (this.getSwitch(sw.getId())) {
+                if (this.getSwitch(curr_block.getId())) {
                     return sw.getRoot();
                 }
                 throw new CrashIntoSwitchException();
             }
             if (curr_block.equals(sw.getDefaultLeaf())) { // current block is the default leaf
-                if (!this.getSwitch(sw.getId())) {
+                if (!this.getSwitch(curr_block.getId())) {
                     return sw.getRoot();
                 }
                 throw new CrashIntoSwitchException();
