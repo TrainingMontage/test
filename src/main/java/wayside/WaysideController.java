@@ -297,6 +297,8 @@ public class WaysideController {
      * @param suggestion an array of Suggestion objects, one for each train.
      */
     public static void suggest(Suggestion[] suggestion) {
+        System.err.println("WC: recieved suggestions");
+        
         boolean[] authority;
         int[] speed;
         boolean[] switchState;
@@ -315,6 +317,7 @@ public class WaysideController {
             crossings = new boolean[TRACK_LEN];
         }
         for (int block = 1; block < TRACK_LEN; block++) {
+            System.err.println("WC: Setting block " + block);
             tm.setAuthority(block, authority[block]);
             tm.setSwitch(block, switchState[block]);
             tm.setSpeed(block, speed[block]);
