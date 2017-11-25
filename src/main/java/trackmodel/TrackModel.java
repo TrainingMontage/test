@@ -681,6 +681,7 @@ public class TrackModel implements TrackModelInterface {
      * @return     new value of the switch (active/inactive)
      */
     public boolean setSwitch(int blockId, boolean active) {
+        System.err.println("Setting switch @ block " + blockId + " to " + active);
         try {
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET switch_active = ? WHERE id = ?;");
             stmt.setInt(1, active ? 1 : 0);
@@ -877,7 +878,7 @@ public class TrackModel implements TrackModelInterface {
     public boolean initializeTrain(int trainId, int starting_blockId) {
         String sql_load = "INSERT INTO trains " +
                           "(id,curr_block,position,direction,reported_change,reported_passengers,loaded_passengers) " +
-                          "VALUES (?, ?, ?, 0, 0, 0, 0);";
+                          "VALUES (?, ?, ?, 1, 0, 0, 0);";
 
         try {
             PreparedStatement stmt = this.conn.prepareStatement(sql_load);
@@ -1217,6 +1218,7 @@ public class TrackModel implements TrackModelInterface {
      * wasn't valid
      */
     private double setTrainPosition(int trainId, double position) {
+        System.err.println("Setting Train " + trainId + " to position " + position);
         try {
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET position = ? WHERE id = ?;");
             stmt.setDouble(1, position);
@@ -1324,6 +1326,7 @@ public class TrackModel implements TrackModelInterface {
      * @return     { description_of_the_return_value }
      */
     protected StaticBlock nextBlock(StaticBlock curr_block, boolean direction) {
+        System.err.println("Getting next block. Curr block: " + curr_block + " " + direction);
         StaticSwitch sw = curr_block.getStaticSwitch();
         StaticBlock next = this.getStaticBlock(curr_block.getNextId());
         if (sw != null && ((sw.contains(next) && direction) || (!sw.contains(next) && !direction))) {
