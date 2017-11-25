@@ -65,6 +65,8 @@ public class WaysideController {
     static TrackModel tm = TrackModel.getTrackModel();
     static WaysideUI gui = null;
     static StaticTrack st = tm.getStaticTrack();
+    
+    static boolean[] occupancy = new boolean[TRACK_LEN];
 
     /**
      * Initiallizes the WaysideController.
@@ -144,7 +146,7 @@ public class WaysideController {
      * @return the occupancy of the block, true if it is occupied, false otherwise.
      */
     public static boolean isOccupied(int blockId) {
-        boolean o = tm.isOccupied(blockId);
+        boolean o = occupancy[blockId];
         if (gui != null)
             gui.setOccupancy(blockId, o);
         return o;
@@ -290,11 +292,11 @@ public class WaysideController {
     }
 
     private static boolean[] buildOccupancy() {
-        boolean[] o = new boolean[TRACK_LEN];
+        occupancy = new boolean[TRACK_LEN];
         for (int block = 1; block < TRACK_LEN; block++) {
-            o[block] = tm.isOccupied(block);
+            occupancy[block] = tm.isOccupied(block);
         }
-        return o;
+        return occupancy;
     }
     
     // DELETE THIS WHEN DONE DEBUGGING!
