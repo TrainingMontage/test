@@ -99,16 +99,20 @@ public class CTCGUI {
         "}" +
         "node.yard {" +
         "   text-color: red;" +
+        "   size: 4px;" +
+        "	fill-color: red;" +
         "   text-size: 12;" +
-        "   text-offset: -15, 0;" +
+        "   text-offset: -20, -7;" +
         "}" +
         "edge {" +
-        "	fill-color: black;" +
-        "   text-offset: 7, 7;" +
+        "	fill-color: darkgreen;" +
+        "   text-offset: -25, 8;" +
         "   arrow-size: 4, 4;" +
         "}" +
         "edge.occupied {" +
-        "	fill-color: red;" +
+        "	fill-color: green;" +
+        //"   text-color: green;" +
+        "   text-size: 12;" +
         "}";
 
 
@@ -215,13 +219,13 @@ public class CTCGUI {
                     n2 = graph.getNode(prevStr);
                 }
                 if(nextDirection && sb.isBidirectional()){
-                    e = graph.addEdge(""+blockId, n1, n2, true);
-                }else if(nextDirection && !sb.isBidirectional()){
                     e = graph.addEdge(""+blockId, n1, n2, false);
+                }else if(nextDirection && !sb.isBidirectional()){
+                    e = graph.addEdge(""+blockId, n1, n2, true);
                 }else if(!nextDirection && sb.isBidirectional()){
-                    e = graph.addEdge(""+blockId, n2, n1, true);
-                }else{
                     e = graph.addEdge(""+blockId, n2, n1, false);
+                }else{
+                    e = graph.addEdge(""+blockId, n2, n1, true);
                 }
                 //add switch specific edge properties
                 if(blockId == ss.getRoot().getId()){
@@ -248,9 +252,9 @@ public class CTCGUI {
                 }
                 n2 = graph.getNode(prevStr);
                 if(sb.isBidirectional()){
-                    e = graph.addEdge(""+blockId, n2, n1, true);
-                }else{
                     e = graph.addEdge(""+blockId, n2, n1, false);
+                }else{
+                    e = graph.addEdge(""+blockId, n2, n1, true);
                 }
                 //add non switch track properties
                 e.addAttribute("track.isSwitch", new Boolean(false));
@@ -429,8 +433,8 @@ public class CTCGUI {
                             double y0 = (Double) pos1[1];
                             double x1 = (Double) pos2[0];//point to rotate
                             double y1 = (Double) pos2[1];
-                            double s = Math.sin(-2*Math.PI/3);//120 degrees in radians
-                            double c = Math.cos(-2*Math.PI/3);
+                            double s = Math.sin(2*Math.PI/3);//-120 degrees in radians
+                            double c = Math.cos(2*Math.PI/3);
                             
                             //translate to origin
                             x1 -= x0;

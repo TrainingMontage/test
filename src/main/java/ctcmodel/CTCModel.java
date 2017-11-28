@@ -169,6 +169,7 @@ public class CTCModel{
             if(occupied){
                 element.setAttribute("ui.class", "occupied");
                 element.addAttribute("ui.label",element.getId()+"");
+                System.out.println("**CTC found block "+blockId+" occupied**");
             }else{
                 element.removeAttribute("ui.class");
                 element.removeAttribute("ui.label");
