@@ -22,6 +22,7 @@ import org.junit.Test;
 import shared.Suggestion;
 import wayside.WaysideController;
 import trackmodel.TrackModel;
+import trackmodel.StaticTrack;
 
 public class EmptyTrack {
     
@@ -34,6 +35,12 @@ public class EmptyTrack {
     public static void init() {
         TrackModel.initWithTestData();
         WaysideController.initTest();
+    }
+
+    @Test
+    public void trackModelSwitchPositions() {
+        StaticTrack st = TrackModel.getTrackModel().getStaticTrack();
+        Assert.assertEquals(2, st.getStaticSwitch(1).getRoot().getId());
     }
 
     @Test

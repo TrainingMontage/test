@@ -1,9 +1,26 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/*   ______                 _           _
+ *  /_  __/ _____  ____ _  (_) ____    (_) ____    ____ _
+ *   / /   / ___/ / __ `/ / / / __ \  / / / __ \  / __ `/
+ *  / /   / /    / /_/ / / / / / / / / / / / / / / /_/ /
+ * /_/   /_/     \__,_/ /_/ /_/ /_/ /_/ /_/ /_/  \__, /
+ *     __  ___                 __               /____/
+ *    /  |/  / ____    ____   / /_  ____ _  ____ _  ___
+ *   / /|_/ / / __ \  / __ \ / __/ / __ `/ / __ `/ / _ \
+ *  / /  / / / /_/ / / / / // /_  / /_/ / / /_/ / /  __/
+ * /_/  /_/  \____/ /_/ /_/ \__/  \__,_/  \__, /  \___/
+ *                                       /____/
+ *
+ * @author Aric Hudson
  */
 package traincontroller;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import shared.*;
+import trainmodel.Train;
+import trackmodel.TrackModel;
+import trackmodel.StaticBlock;
+import trackmodel.StaticSwitch;
+import trackmodel.StaticTrack;
 
 /**
  *
@@ -31,20 +48,20 @@ public class TrainControllerUI extends javax.swing.JFrame {
             System.err.println("INIT: there's a train");
             authField.setText("" + TC.theTrain.getAuthority());
             
-            currentSpeedField.setText("" + TC.theTrain.getVelocity());
+            currentSpeedField.setText("" + truncDouble(TC.theTrain.getCurrentVelocity(), 4));
             
-            safeBrakeField.setText("" + TC.computeSafeBrake());
+            safeBrakeField.setText("" + truncDouble(TC.computeSafeBrake(), 4));
             
             if(TC.computeSafeSpeed() < TC.theTrain.getSuggestedSpeed())
-                setSpeedField.setText("" + TC.computeSafeSpeed());
+                setSpeedField.setText("" + truncDouble(TC.computeSafeSpeed(), 4));
             else
-                setSpeedField.setText("" + TC.theTrain.getSuggestedSpeed());
+                setSpeedField.setText("" + truncDouble(TC.theTrain.getSuggestedSpeed(), 4));
             
-            maxSafeField.setText("" + TC.computeSafeSpeed());
+            maxSafeField.setText("" + truncDouble(TC.computeSafeSpeed(), 4));
             
-            safeBrakeField.setText("" + TC.computeSafeBrake());
+            safeBrakeField.setText("" + truncDouble(TC.computeSafeBrake(), 4));
             
-            suggestedField.setText("" + TC.theTrain.getSuggestedSpeed());
+            suggestedField.setText("" + truncDouble(TC.theTrain.getSuggestedSpeed(), 4));
             
             manOFFButton.setSelected(true);
         }
@@ -64,11 +81,11 @@ public class TrainControllerUI extends javax.swing.JFrame {
             suggestedField.setText("No Train");
         }
         
-        calcPowerField.setText("" + TC.Pcmd);
+        calcPowerField.setText("" + truncDouble(TC.Pcmd, 4));
             
-        currentPowerField.setText("" + TC.Pcmd);
+        currentPowerField.setText("" + truncDouble(TC.Pcmd, 4));
         
-        setPowerField.setText("" + TC.Pcmd);
+        setPowerField.setText("" + truncDouble(TC.Pcmd, 4));
         
         upcomingStationLabel.setText("" + TC.station);
         
@@ -87,14 +104,23 @@ public class TrainControllerUI extends javax.swing.JFrame {
         setVisible(true);
     }
     
+    public Double truncDouble(double toTrunc, int precision) {
+        Double D = new Double(toTrunc);
+
+        Double truncated = BigDecimal.valueOf(D)
+            .setScale(precision, RoundingMode.HALF_UP)
+            .doubleValue();
+        return truncated;
+    }
+    
     public void updateSpeeds() {
         if(TC.computeSafeSpeed() < TC.theTrain.getSuggestedSpeed())
             setSpeedField.setText("" + TC.computeSafeSpeed());
         else
             setSpeedField.setText("" + TC.theTrain.getSuggestedSpeed());
         
-        currentSpeedField.setText("" + TC.theTrain.getVelocity());
-        System.err.println("UPDATESPEED: current speed is " + TC.theTrain.getVelocity());
+        currentSpeedField.setText("" + TC.theTrain.getCurrentVelocity());
+        System.err.println("UPDATESPEED: current speed is " + TC.theTrain.getCurrentVelocity());
         maxSafeField.setText("" + TC.computeSafeSpeed());
         safeBrakeField.setText("" + TC.computeSafeBrake());
         suggestedField.setText("" + TC.theTrain.getSuggestedSpeed());
@@ -140,7 +166,7 @@ public class TrainControllerUI extends javax.swing.JFrame {
     }
     
     public void toggleBrake() {
-        if(TC.theTrain.getVelocity() == 0)
+        if(TC.theTrain.getCurrentVelocity() == 0)
             applyBrakeButton.setSelected(true);
         else
             applyBrakeButton.setSelected(TC.applyBrakes);

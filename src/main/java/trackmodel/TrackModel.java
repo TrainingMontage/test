@@ -681,10 +681,15 @@ public class TrackModel implements TrackModelInterface {
      * @return     new value of the switch (active/inactive)
      */
     public boolean setSwitch(int blockId, boolean active) {
+        // System.err.println("Setting switch @ block " + blockId + " to " + active);
+        StaticBlock blk = this.getStaticBlock(blockId);
         try {
+            int rootId = blk.getStaticSwitch().getRoot().getId();
+            System.err.println("setSwitch for block " + rootId + " to " + active);
+
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET switch_active = ? WHERE id = ?;");
             stmt.setInt(1, active ? 1 : 0);
-            stmt.setInt(2, blockId);
+            stmt.setInt(2, rootId);
             stmt.execute();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -701,12 +706,17 @@ public class TrackModel implements TrackModelInterface {
      * @return     The switch state. (True for engaged)
      */
     public boolean getSwitch(int blockId) {
+        StaticBlock blk = this.getStaticBlock(blockId);
+        
         try {
+            int rootId = blk.getStaticSwitch().getRoot().getId();
+            System.err.println("getSwitch for block " + rootId);
             PreparedStatement stmt = this.conn.prepareStatement("SELECT switch_active FROM blocks WHERE id = ?");
-            stmt.setInt(1, blockId);
+            stmt.setInt(1, rootId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
 
+            System.err.println("switch_active " + rs.getInt("switch_active"));
             return rs.getInt("switch_active") > 0 ? true : false;
 
         } catch (Exception e) {
@@ -877,7 +887,7 @@ public class TrackModel implements TrackModelInterface {
     public boolean initializeTrain(int trainId, int starting_blockId) {
         String sql_load = "INSERT INTO trains " +
                           "(id,curr_block,position,direction,reported_change,reported_passengers,loaded_passengers) " +
-                          "VALUES (?, ?, ?, 0, 0, 0, 0);";
+                          "VALUES (?, ?, ?, 1, 0, 0, 0);";
 
         try {
             PreparedStatement stmt = this.conn.prepareStatement(sql_load);
@@ -1217,6 +1227,7 @@ public class TrackModel implements TrackModelInterface {
      * wasn't valid
      */
     private double setTrainPosition(int trainId, double position) {
+        System.err.println("Setting Train " + trainId + " to position " + position);
         try {
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET position = ? WHERE id = ?;");
             stmt.setDouble(1, position);
@@ -1324,22 +1335,25 @@ public class TrackModel implements TrackModelInterface {
      * @return     { description_of_the_return_value }
      */
     protected StaticBlock nextBlock(StaticBlock curr_block, boolean direction) {
+        System.err.println("Getting next block. Curr block: " + curr_block + " " + direction);
         StaticSwitch sw = curr_block.getStaticSwitch();
         StaticBlock next = this.getStaticBlock(curr_block.getNextId());
         if (sw != null && ((sw.contains(next) && direction) || (!sw.contains(next) && !direction))) {
             // moving towards a switch
 
             if (curr_block.equals(sw.getRoot())) { // current block is the root
-                return this.getSwitch(sw.getId()) ? sw.getActiveLeaf() : sw.getDefaultLeaf();
+                return this.getSwitch(curr_block.getId()) ? sw.getActiveLeaf() : sw.getDefaultLeaf();
             }
             if (curr_block.equals(sw.getActiveLeaf())) { // current block is the active leaf
-                if (this.getSwitch(sw.getId())) {
+                System.err.println(curr_block.getId());
+                System.err.println(this.getSwitch(curr_block.getId()));
+                if (this.getSwitch(curr_block.getId())) {
                     return sw.getRoot();
                 }
                 throw new CrashIntoSwitchException();
             }
             if (curr_block.equals(sw.getDefaultLeaf())) { // current block is the default leaf
-                if (!this.getSwitch(sw.getId())) {
+                if (!this.getSwitch(curr_block.getId())) {
                     return sw.getRoot();
                 }
                 throw new CrashIntoSwitchException();

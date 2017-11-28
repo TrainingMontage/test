@@ -89,7 +89,7 @@ public class App {
         while (true) {
             CTCModel.update();
             Environment.clock += speedMultiplier;
-            Thread.sleep(1000);
+            Thread.sleep(200);
         }
     }
 }

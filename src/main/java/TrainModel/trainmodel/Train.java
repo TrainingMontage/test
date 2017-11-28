@@ -23,6 +23,9 @@ import traincontroller.TrainController;
 import shared.Convert;
 import shared.Environment;
 
+import static org.mockito.Mockito.*;
+
+
 public class Train {
     int trainId;
     int blockId;
@@ -66,7 +69,11 @@ public class Train {
     protected NumberFormat formatter = new DecimalFormat("#0.00");
 
 
-    public Train(int newTrainId, int newblockId){
+    public Train(int newTrainId, int newblockId) {
+        this(newTrainId, newblockId, TrackModel.getTrackModel());
+    }
+
+    public Train(int newTrainId, int newblockId, TrackModel tm){
         //trainController = new TrainController(this, trainId);
         trainId = newTrainId;
         blockId = newblockId;
@@ -83,7 +90,12 @@ public class Train {
         time = 0;
 
         //Create controller
-        //trainController = new TrainController(this, this.trainId, this.blockId);
+        // trainController = new TrainController(this, this.blockId);
+        trainController = mock(TrainController.class);
+        when(trainController.getPower()).thenReturn(5.0);
+
+        // register with track
+        tm.initializeTrain(this.trainId, this.blockId);
 
         boolean brakeFailure = false;
         boolean engineFailure = false;
