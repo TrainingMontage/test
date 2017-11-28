@@ -1184,13 +1184,16 @@ public class TrackModel implements TrackModelInterface {
         for (StaticBlock block : occupancyList) {
             sum += block.getLength();
         }
-        while (sum > train_length)  {
+        double overhang = sum - occupancyList.get(occupancyList.size() - 1).getLength() - train_length + this.getTrainPosition(trainId);
+        while (overhang > occupancyList.get(0).getLength())  {
+            System.err.println("Occupancy trail: " + sum + " > " + train_length + " - " + occupancyList.get(0));
             occupancyList.remove(0);
 
             sum = 0;
             for (StaticBlock block : occupancyList) {
                 sum += block.getLength();
             }
+            overhang = sum - occupancyList.get(occupancyList.size() - 1).getLength() - train_length + this.getTrainPosition(trainId);
         }
         this.trainOccupancy.put(trainId, occupancyList);
     }
