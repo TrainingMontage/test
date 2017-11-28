@@ -40,7 +40,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     // sqlite jdbc
-    compile 'org.xerial:sqlite-jdbc:3.7.2'
+    compile 'org.xerial:sqlite-jdbc:3.20.1'
 
 
     //mockito
