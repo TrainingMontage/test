@@ -24,6 +24,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.lang.Math;
 import shared.Convert;
 //import shared.BlockStatus;
 import wayside.WaysideController;
@@ -92,13 +93,19 @@ public class CTCGUI {
     private static Viewer viewer;
     private static final String styleSheet =
         "node {" +
-        "   size: 10px;" +
+        "   size: 1px;" +
         "	fill-color: black;" +
         "   text-offset: 15, 0;" +
+        "}" +
+        "node.yard {" +
+        "   text-color: red;" +
+        "   text-size: 12;" +
+        "   text-offset: -15, 0;" +
         "}" +
         "edge {" +
         "	fill-color: black;" +
         "   text-offset: 7, 7;" +
+        "   arrow-size: 4, 4;" +
         "}" +
         "edge.occupied {" +
         "	fill-color: red;" +
@@ -117,13 +124,14 @@ public class CTCGUI {
     
     public static void init(){
         System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
-        graph = new MultiGraph("Map");//allow directed graphs
+        graph = new SingleGraph("Map");//allow directed graphs
         graph.addAttribute("ui.stylesheet",styleSheet);
         
         
         
         Node nodeYard = graph.addNode("Yard");
         nodeYard.addAttribute("ui.label", "YARD");
+        nodeYard.addAttribute("ui.class", "yard");
         //read in from track
         StaticTrack t = TrackModel.getTrackModel().getStaticTrack();
         ArrayList<Integer> bIds = TrackModel.getTrackModel().getBlockIds();
@@ -248,7 +256,7 @@ public class CTCGUI {
                 e.addAttribute("track.isSwitch", new Boolean(false));
             }
             //add edge properties
-            e.addAttribute("ui.label",e.getId()+"");
+            //e.addAttribute("ui.label",e.getId()+"");
             e.addAttribute("layout.weight", new Double(sb.getLength()));
             e.addAttribute("track.time", new Double(sb.getLength()/sb.getSpeedLimit()));
             e.addAttribute("track.occupied", new Boolean(false));
@@ -270,7 +278,7 @@ public class CTCGUI {
         greenIn.addAttribute("track.occupied", new Boolean(false));
         greenIn.addAttribute("track.isCrossing", new Boolean(false));
         greenIn.addAttribute("track.isSwitch", new Boolean(false));
-        greenIn.addAttribute("ui.label",greenIn.getId()+"");
+        //greenIn.addAttribute("ui.label",greenIn.getId()+"");
         sb2 = t.getStaticBlock(152);
         ss2 = sb2.getStaticSwitch();
         Node nodeNext = graph.getNode(ss2.getRoot().getId()+" "+ss2.getDefaultLeaf().getId()+" "+ss2.getActiveLeaf().getId());
@@ -280,7 +288,7 @@ public class CTCGUI {
         greenOut.addAttribute("track.occupied", new Boolean(false));
         greenOut.addAttribute("track.isCrossing", new Boolean(false));
         greenOut.addAttribute("track.isSwitch", new Boolean(false));
-        greenOut.addAttribute("ui.label",greenOut.getId()+"");
+        //greenOut.addAttribute("ui.label",greenOut.getId()+"");
         
         //hardcode some positions to make the graph look better
         //nodeYard.setAttribute("xyz", 9, 4, 0);
@@ -302,32 +310,36 @@ public class CTCGUI {
             if(!donePos.contains(toAdd.getNode1()) && !toBePos.contains(toAdd.getNode1())){
                 toBePos.add(toAdd.getNode1());
             }
-        }
+        }//only add the nodes connected to the yard for now. this ensures that we start building off of the yard node
         
         while(toBePos.size() != 0){
             Node nn = toBePos.get(0);
             Iterator neighIter = nn.getNeighborNodeIterator();
             int numPlacedNeigh = 0;
-            float avgx = 0;
-            float avgy = 0;
+            double avgx = 0;
+            double avgy = 0;
             Node neigh;
             boolean yardCpy = false;
+            Node lastNode = null;
             while(neighIter.hasNext()){
                 neigh = (Node)neighIter.next();
                 if(neigh.equals(nodeYard)){
                     yardCpy = true;
                 }
                 if(donePos.contains(neigh)){
+                    lastNode = neigh;
                     numPlacedNeigh++;
                     Object[] pos = neigh.getAttribute("xyz");
-                    avgx += (Float) pos[0];
-                    avgy += (Float) pos[1];
+                    avgx += ((Double) pos[0]);
+                    avgy += ((Double) pos[1]);
                     //could do a weighted avg b/t edges
                 }
             }
             avgx = avgx/numPlacedNeigh;
             avgy = avgy/numPlacedNeigh;
-            if(numPlacedNeigh != 1){
+            System.out.println("numPlacedNeigh: "+numPlacedNeigh);
+            System.out.println("yardCpy: "+yardCpy);
+            if(numPlacedNeigh == 3 || (numPlacedNeigh == 2 && nn.getDegree() != 3)){
                 //if 2 or 3 neighbors are placed
                 nn.setAttribute("xyz", avgx, avgy, 0.0);
                 toBePos.remove(nn);
@@ -337,16 +349,121 @@ public class CTCGUI {
                 if(yardCpy){//this placed neighbor is the yard
                     //place up or down
                     if(donePos.size() == 1){
-                        nn.setAttribute("xyz", 0.0, , 0.0);
+                        //the yard is the only node placed
+                        avgx = 1.0;
+                        avgy = 1.0;
                     }else{
-                        
+                        avgx = -1.0;
+                        avgy = -1.0;
                     }
+                    nn.setAttribute("xyz", avgx, avgy, 0.0);
+                    toBePos.remove(nn);
+                    donePos.add(nn);
                 }else{
-                    //follow the last angle
+                    //not next to the yard
+                    if(lastNode.getDegree() == 2){
+                        //previously placed node is not a switch, follow the last angle
+                        Node prevPrevNode = null;
+                        Iterator prevNeighIter = lastNode.getNeighborNodeIterator();
+                        while(prevNeighIter.hasNext()){
+                            prevPrevNode = (Node) prevNeighIter.next();
+                            if(!prevPrevNode.equals(nn)){
+                                break;//we found the last 2 nodes, now we can find the angle b/t them
+                            }
+                        }
+                        Object[] pos2 = prevPrevNode.getAttribute("xyz");
+                        avgx += avgx - ((Double) pos2[0]);
+                        avgy += avgy - ((Double) pos2[1]);
+                        nn.setAttribute("xyz", avgx, avgy, 0.0);
+                        toBePos.remove(nn);
+                        donePos.add(nn);
+                    }else{
+                        //previously placed node is a switch, make angles even
+                        Node prevPrevNode1 = null;
+                        Node prevPrevNode2 = null;
+                        Iterator prevNeighIter = lastNode.getNeighborNodeIterator();
+                        while(prevNeighIter.hasNext()){
+                            prevPrevNode1 = (Node) prevNeighIter.next();
+                            if(!prevPrevNode1.equals(nn)){
+                                if(prevPrevNode2 == null){
+                                    prevPrevNode2 = prevPrevNode1;
+                                }else{
+                                    break;//we found the last 2 nodes, now we can find the angle b/t them
+                                }
+                            }
+                        }
+                        //if other 2 from switch are placed
+                        if(donePos.contains(prevPrevNode1) && donePos.contains(prevPrevNode2)){
+                            //this is messy
+                            System.out.println("my mess");
+                            System.out.println(lastNode.getId());
+                            System.out.println(prevPrevNode1.getId());
+                            System.out.println(prevPrevNode2.getId());
+                            Object[] pos1 = lastNode.getAttribute("xyz");
+                            Object[] pos2 = prevPrevNode1.getAttribute("xyz");
+                            Object[] pos3 = prevPrevNode2.getAttribute("xyz");
+                            double x0 = (Double) pos1[0];
+                            double y0 = (Double) pos1[1];
+                            double x1 = (((Double) pos2[0]) + ((Double) pos3[0]))/2;
+                            double y1 = (((Double) pos2[1]) + ((Double) pos3[1]))/2;
+                            double m = (y1-y0)/(x1-x0);
+                            avgx = Math.sqrt(1/(1+m*m))+x0;
+                            double negavgx = -avgx;
+                            avgy = y0+m*(avgx-x0);
+                            double negavgy = y0+m*(negavgx-x0);
+                            if((avgx-x1)*(avgx-x1)+(avgy-y1)*(avgy-y1) > (negavgx-x1)*(negavgx-x1)+(negavgy-y1)*(negavgy-y1)){
+                                //oops we put the new line on the wrong side
+                                System.out.println("negative stuff");
+                                avgx = negavgx;
+                                avgy = negavgy;
+                            }
+                        }else{
+                            //only one of the switch nodes is placed
+                            if(donePos.contains(prevPrevNode2)){
+                                prevPrevNode1 = prevPrevNode2;
+                            }//now the already placed node is in prevPrevNode1. we no longer care about prevPrevNode2
+                            //find the point where prevPrevNode1 would be rotated 120 degrees around the switch center
+                            Object[] pos1 = lastNode.getAttribute("xyz");
+                            Object[] pos2 = prevPrevNode1.getAttribute("xyz");
+                            double x0 = (Double) pos1[0];//pivot point
+                            double y0 = (Double) pos1[1];
+                            double x1 = (Double) pos2[0];//point to rotate
+                            double y1 = (Double) pos2[1];
+                            double s = Math.sin(-2*Math.PI/3);//120 degrees in radians
+                            double c = Math.cos(-2*Math.PI/3);
+                            
+                            //translate to origin
+                            x1 -= x0;
+                            y1 -= y0;
+                            
+                            //do rotation
+                            avgx = x1*c - y1*s;
+                            avgy = x1*s + y1*c;
+                            
+                            //translate back
+                            avgx += x0;
+                            avgy += y0;
+                        }
+                        
+                        
+                        nn.setAttribute("xyz", avgx, avgy, 0.0);
+                        toBePos.remove(nn);
+                        donePos.add(nn);
+                    }
                 }
             }
-            
+            System.out.println("added node "+nn.getId()+" at pos x="+avgx+" y="+avgy);
             //find its edges and add those
+            edgeIter = nn.getEachEdge().iterator();
+            while(edgeIter.hasNext()){
+                Edge toAdd = (Edge) edgeIter.next();
+                if(!donePos.contains(toAdd.getNode0()) && !toBePos.contains(toAdd.getNode0())){
+                    toBePos.add(toAdd.getNode0());
+                }
+                if(!donePos.contains(toAdd.getNode1()) && !toBePos.contains(toAdd.getNode1())){
+                    toBePos.add(toAdd.getNode1());
+                }
+            }
         }
         
         

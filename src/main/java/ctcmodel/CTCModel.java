@@ -168,8 +168,10 @@ public class CTCModel{
             element.setAttribute("track.occupied", new Boolean(occupied));
             if(occupied){
                 element.setAttribute("ui.class", "occupied");
+                element.addAttribute("ui.label",element.getId()+"");
             }else{
                 element.removeAttribute("ui.class");
+                element.removeAttribute("ui.label");
             }
             //Boolean isSwitch = (Boolean) element.getAttribute("track.isSwitch");
             if(((Boolean) element.getAttribute("track.isSwitch")).booleanValue()){
