@@ -168,6 +168,9 @@ public class CTCModel{
     public static void update(){
         int current_time = Environment.clock;
         
+        //process any click events on the graph
+        CTCGUI.handleGraphEvents();
+        
         //add a train if the user entered one during the last update
         addTrain();
         
