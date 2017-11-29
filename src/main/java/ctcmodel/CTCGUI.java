@@ -109,6 +109,9 @@ public class CTCGUI {
         "   text-offset: -25, 8;" +
         "   arrow-size: 4, 4;" +
         "}" +
+        "edge.broken {" +
+        "   fill-color: purple;" +
+        "}" +
         "edge.occupied {" +
         "	fill-color: green;" +
         //"   text-color: green;" +
@@ -837,6 +840,10 @@ public class CTCGUI {
                     //disable the submit button
                     launchTrainButton.setEnabled(false);
                     isNewTrain = false;
+                    try{
+                        Thread.sleep(250);//sleep to give the track model time to register the new train
+                    }catch(InterruptedException ex){
+                    }
                     fillTrackInfo(Integer.parseInt(trainBlockText.getText()));
                     break;
                 case 1:

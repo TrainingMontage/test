@@ -124,9 +124,10 @@ public class CTCModel{
         for(String str: authorityStrArr){
             authorityIntArr[i++] = Integer.parseInt(str.trim());
         }
-        for(Suggestion sugg: suggestions){
-            if(sugg.blockId == blockID){
-                suggestions.remove(sugg);
+        for(int j = 0; j < suggestions.size(); j++){
+            if(suggestions.get(j).blockId == blockID){
+                suggestions.remove(j);
+                break;
             }
         }
         suggestions.add(new Suggestion(blockID, suggestedSpeed, authorityIntArr));
@@ -160,19 +161,134 @@ public class CTCModel{
         return;
     }
     public static void updateTrack(){
+        ArrayList<Integer> allHistory = new ArrayList<Integer>();
+        for(int i = 0; i < trainData.size(); i++){
+            for(int j = 0; j < trainData.get(i).historySize(); j++){
+                allHistory.add(trainData.get(i).historyGet(j));
+            }
+        }
         Iterator itr = CTCGUI.getGraph().getEdgeIterator();
         while(itr.hasNext()) {
             Edge element = (Edge) itr.next();
             int blockId = Integer.parseInt(element.getId());
             boolean occupied = WaysideController.isOccupied(blockId);
             element.setAttribute("track.occupied", new Boolean(occupied));
+            boolean classSet = false;
             if(occupied){
-                element.setAttribute("ui.class", "occupied");
-                element.addAttribute("ui.label",element.getId()+"");
+                CTCTrainData data = null;
+                boolean inHistory = false;
+                for(int i = 0; i < trainData.size(); i++){//these for loops will be expensive if there are a lot of trains but that probably won't be an issue
+                    if(blockId == trainData.get(i).getBlockID()){
+                        data = trainData.get(i);
+                        break;
+                    }
+                    if(allHistory.contains(blockId)){
+                        inHistory = true;
+                        element.removeAttribute("ui.label");
+                        classSet = true;
+                        break;
+                    }
+                }
+                System.out.println("inHistory "+inHistory);
+                System.out.println("data null? "+(data==null));
+                if(data == null && !inHistory){
+                    //was unoccupied before, update traindata
+                    //find neighbors
+                    System.out.println("here");
+                    //classSet = false;
+                    ArrayList<Edge> neighList = new ArrayList<Edge>();
+                    Edge e = CTCGUI.getGraph().getEdge(""+blockId);
+                    Iterator edgeIter = e.getNode0().getEdgeIterator();
+                    while(edgeIter.hasNext()){
+                        Edge ee = (Edge) edgeIter.next();
+                        if(!ee.equals(e)){
+                            neighList.add(ee);
+                            System.out.println("** "+ee.getId());
+                        }
+                    }
+                    edgeIter = e.getNode1().getEdgeIterator();
+                    while(edgeIter.hasNext()){
+                        Edge ee = (Edge) edgeIter.next();
+                        if(!ee.equals(e)){
+                            neighList.add(ee);
+                            System.out.println("** "+ee.getId());
+                        }
+                    }
+                    
+                    //check if any neighbor was occupied
+                    String edgestr = "";
+                    int numOccEdges = 0;
+                    CTCTrainData data2 = null;
+                    CTCTrainData dataTemp = null;
+                    for(int i = 0; i < neighList.size(); i++){
+                        for(int j = 0; j < trainData.size(); j++){
+                            System.out.println("^^"+neighList.get(i).getId()+" "+trainData.get(j).getBlockID());
+                            if(Integer.parseInt(neighList.get(i).getId()) == trainData.get(j).getBlockID()){
+                                data2 = trainData.get(j);
+                                dataTemp = data2;
+                                break;
+                            }
+                        }
+                        if(dataTemp != null){
+                            numOccEdges++;
+                            edgestr += neighList.get(i).getId()+", ";
+                            dataTemp = null;
+                        }
+                    }
+                    System.out.println("-->numOccEdges"+numOccEdges);
+                    if(numOccEdges > 1){
+                        //if more than 1
+                        throw new RuntimeException("Edges "+edgestr+
+                            "were occupied. Then a train entered block "+element.getId()+
+                            ". Train data could not be updated.");
+                    }else if(numOccEdges == 1){
+                        //if 1 then update traindata and suggestion
+                        //change blockid, change authority
+                        int oldBlockId = data2.getBlockID();
+                        String[] authArr = data2.getAuthority().split(",");
+                        String newAuth = "";
+                        for(int i = 0; i < authArr.length; i++){
+                            if(Integer.parseInt(authArr[i]) != oldBlockId){
+                                if(newAuth.length() != 0){
+                                    newAuth += ","+authArr[i];
+                                }
+                                newAuth = authArr[i];
+                            }
+                        }
+                        data2.setAuthority(newAuth);
+                        addSuggestion(data2.getTrainID(),data2.getSpeed(),newAuth);
+                        data2.setBlockID(blockId);
+                        data2.historyAdd(oldBlockId);
+                        allHistory.add(oldBlockId);
+                    }else{
+                        //else mark as broken
+                        classSet = true;
+                        element.setAttribute("ui.class", "broken");
+                    }
+                }
+                if(!classSet){
+                    element.setAttribute("ui.class", "occupied");
+                    element.addAttribute("ui.label",element.getId()+"");
+                }
                 System.out.println("**CTC found block "+blockId+" occupied**");
+//            }else if(inHistory){
+//                ;//don't need to do anything special, just don't set as unoccupied on display
             }else{
+                //returned unoccupied
+                if(allHistory.contains(blockId)){
+                    allHistory.remove(new Integer(blockId));
+                    for(int i = 0; i < trainData.size(); i++){
+                        for(int j = 0; j < trainData.get(i).historySize(); j++){
+                            if(trainData.get(i).historyGet(j) == blockId){
+                                trainData.get(i).historyRemove(j);
+                                break;
+                            }
+                        }
+                    }
+                }
                 element.removeAttribute("ui.class");
                 element.removeAttribute("ui.label");
+                
             }
             //Boolean isSwitch = (Boolean) element.getAttribute("track.isSwitch");
             if(((Boolean) element.getAttribute("track.isSwitch")).booleanValue()){

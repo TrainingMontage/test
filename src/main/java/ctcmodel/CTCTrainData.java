@@ -17,6 +17,8 @@
 
 package CTCModel;
 
+import java.util.ArrayList;
+
 public class CTCTrainData{
     private int dataTrainID;
     private int dataBlockID;
@@ -24,6 +26,7 @@ public class CTCTrainData{
     private String dataAuthority;
     private int dataOrigin;
     private int dataDestination;
+    private ArrayList<Integer> history;
     
     protected CTCTrainData(){
         dataTrainID = -1;
@@ -32,6 +35,7 @@ public class CTCTrainData{
         dataAuthority = null;
         dataOrigin = -1;
         dataDestination = -1;
+        history = new ArrayList<Integer>();
     }
     protected CTCTrainData(int trainID, int blockID, int speed, String authority, int origin, int destination){
         dataTrainID = trainID;
@@ -40,6 +44,7 @@ public class CTCTrainData{
         dataAuthority = authority;
         dataOrigin = origin;
         dataDestination = destination;
+        history = new ArrayList<Integer>();
     }
     
     public int getTrainID(){
@@ -78,6 +83,18 @@ public class CTCTrainData{
     }
     public void setDestination(int destination){
         dataDestination = destination;
+    }
+    public void historyAdd(int bId){
+        history.add(0,bId);
+    }
+    public int historyGet(int index){
+        return history.get(index);
+    }
+    public void historyRemove(int index){
+        history.remove(index);
+    }
+    public int historySize(){
+        return history.size();
     }
     
 }
