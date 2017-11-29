@@ -49,7 +49,7 @@ public class CTCModel{
     
     //Train-To-Add (TTA) data (to ensure trains aren't added in the middle of an update)
     private static int TTAstartingBlock;
-    private static int TTAspeed;
+    private static double TTAspeed;
     private static String TTAauthority;
     private static int TTAdestBlock;
     
@@ -70,20 +70,16 @@ public class CTCModel{
         CTCGUI.init();
     }
     
-    static int checkTrainInputs(String block, String speed, String authority, String destination){
+    static int checkTrainInputs(int line, String speed, String authority, String destination){
         int tempint;
-        //block number test
-        try{
-            tempint = Integer.parseInt(block);
-        }catch(NumberFormatException ex){
-            return 1;
-        }
-        if(tempint != 152){//have to spawn next to the yard TODO: make this not fixed ID
+        double tempdoub;
+        //line test
+        if(line != 152){//have to spawn next to the yard TODO: make this not fixed ID
             return 1;
         }
         //speed test
         try{
-            tempint = Integer.parseInt(speed);
+            tempdoub = Double.parseDouble(speed);
         }catch(NumberFormatException ex){
             return 2;
         }
@@ -105,7 +101,7 @@ public class CTCModel{
         return 0;
     }
     
-    public static void createTrain(int startingBlockID, int suggestedSpeed,
+    public static void createTrain(int startingBlockID, double suggestedSpeed,
                                   String suggestedAuth, int destBlockID){
         /*int trainID = TrainTracker.getTrainTracker().createTrain(startingBlockID);
         trainData.add(new CTCTrainData(trainID, startingBlockID, suggestedSpeed,
@@ -127,7 +123,7 @@ public class CTCModel{
         }
         TTAauthority = null;
     }
-    public static void addSuggestion(int trainID, int suggestedSpeed, String suggestedAuthority){
+    public static void addSuggestion(int trainID, double suggestedSpeed, String suggestedAuthority){
         //there are no checks for input correctness here because checkTrainInputs must be called before using this function
         int blockID = -1;
         for (CTCTrainData data: trainData){
@@ -151,7 +147,7 @@ public class CTCModel{
                 break;
             }
         }
-        suggestions.add(new Suggestion(blockID, suggestedSpeed, authorityIntArr));
+        suggestions.add(new Suggestion(blockID, (int) suggestedSpeed, authorityIntArr));
         
         return;
     }
@@ -171,6 +167,9 @@ public class CTCModel{
     }
     public static void update(){
         int current_time = Environment.clock;
+        
+        //process any click events on the graph
+        CTCGUI.handleGraphEvents();
         
         //add a train if the user entered one during the last update
         addTrain();

@@ -36,8 +36,10 @@ import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
 import org.graphstream.ui.swingViewer.ViewPanel;
 import org.graphstream.ui.view.Viewer;
+import org.graphstream.ui.view.ViewerListener;
+import org.graphstream.ui.view.ViewerPipe;
 
-public class CTCGUI {
+public class CTCGUI implements ViewerListener{
     // dummy modules that the GUI needs to interact with
     //private static TrackModel trackModel;
     //private static TrainModel trainModel;
@@ -51,6 +53,7 @@ public class CTCGUI {
     //private static int dataDestination;
     //private static JLabel trainLabel;
     // private env temperature
+    private static CTCGUI myself = null;
     private static double temperature;
     // constants for initializing GUI components
     final static boolean shouldFill = true;
@@ -70,7 +73,7 @@ public class CTCGUI {
     private static JTextArea trainBlockText;
     private static JTextArea trainSpeedText;
     private static JTextArea trainAuthorityText;
-    private static JTextArea trainOriginText;
+    //private static JTextArea trainOriginText;
     private static JTextArea trainDestinationText;
     // track textArea handles
     private static JTextArea trackIDText;
@@ -87,10 +90,13 @@ public class CTCGUI {
     private static JTextArea trackStationText;
     private static JTextArea trackPassengersText;
     private static JTextArea trackCrossingText;
+    // line combobox
+    private static JComboBox<String> lineComboBox;
     
     private static Graph graph;
     //private static ViewPanel graphView;
     private static Viewer viewer;
+    private static ViewerPipe fromViewer;
     private static final String styleSheet =
         "node {" +
         "   size: 1px;" +
@@ -130,6 +136,9 @@ public class CTCGUI {
     }
     
     public static void init(){
+        if(myself == null){
+            myself = new CTCGUI();
+        }
         System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         graph = new SingleGraph("Map");//allow directed graphs
         graph.addAttribute("ui.stylesheet",styleSheet);
@@ -473,8 +482,11 @@ public class CTCGUI {
             }
         }
         
-        
         viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+        viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.HIDE_ONLY);
+        fromViewer = viewer.newViewerPipe();
+        fromViewer.addViewerListener(myself);
+        //fromViewer.addSink(graph);
     }
     
     public static void addComponentsToPane(Container pane){
@@ -563,10 +575,11 @@ public class CTCGUI {
                 newTrainButton.setEnabled(true);
                 if(isNewTrain){
                     //enable the text boxes
-                    trainBlockText.setEnabled(true);
+                    //trainBlockText.setEnabled(true);
                     trainSpeedText.setEnabled(true);
                     trainAuthorityText.setEnabled(true);
                     trainDestinationText.setEnabled(true);
+                    lineComboBox.setEnabled(true);
                     //enable the submit button
                     launchTrainButton.setEnabled(true);
                 }
@@ -591,7 +604,7 @@ public class CTCGUI {
                 newTrainButton.setEnabled(false);
                 if(isNewTrain){
                     //disable the text boxes
-                    trainBlockText.setEnabled(false);
+                    //trainBlockText.setEnabled(false);
                     trainSpeedText.setEnabled(false);
                     trainAuthorityText.setEnabled(false);
                     trainDestinationText.setEnabled(false);
@@ -691,7 +704,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrainInfo.add(label,c);
         
-        label = new JLabel("Origin");
+        label = new JLabel("Line");
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 0;
         c.gridy = 4;
@@ -747,15 +760,21 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrainInfo.add(trainAuthorityText,c);
         
-        trainOriginText = new JTextArea("Shadyside");
-        trainOriginText.setEnabled(false);
-        trainOriginText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
+        lineComboBox = new JComboBox<>();
+        lineComboBox.addItem("Green");
+        lineComboBox.addItem("Red");
+        lineComboBox.setSelectedIndex(0);
+        lineComboBox.setEnabled(false);
+        lineComboBox.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
+        //trainOriginText = new JTextArea("Shadyside");
+        //trainOriginText.setEnabled(false);
+        //trainOriginText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 1;
         c.gridy = 4;
         //c.gridwidth = 1;
         //c.gridheight = 1;
-        panelTrainInfo.add(trainOriginText,c);
+        panelTrainInfo.add(lineComboBox,c);
         
         trainDestinationText = new JTextArea("Edgebrook");
         trainDestinationText.setEnabled(false);
@@ -775,13 +794,14 @@ public class CTCGUI {
                 trainBlockText.setText("");
                 trainSpeedText.setText("");
                 trainAuthorityText.setText("");
-                trainOriginText.setText("");
+                //trainOriginText.setText("");
                 trainDestinationText.setText("");
                 //enable the text boxes
-                trainBlockText.setEnabled(true);
+                //trainBlockText.setEnabled(true);
                 trainSpeedText.setEnabled(true);
                 trainAuthorityText.setEnabled(true);
                 trainDestinationText.setEnabled(true);
+                lineComboBox.setEnabled(true);
                 //enable the submit button
                 launchTrainButton.setEnabled(true);
                 isNewTrain = true;
@@ -800,31 +820,41 @@ public class CTCGUI {
             public void actionPerformed(ActionEvent ae) {
                 //reset all borders
                 Border border = new JTextArea("").getBorder();
-                trainBlockText.setBorder(border);
+                //trainBlockText.setBorder(border);
                 trainSpeedText.setBorder(border);
                 trainAuthorityText.setBorder(border);
                 trainDestinationText.setBorder(border);
+                int blockFromLine;
+                if(lineComboBox.getSelectedIndex() == 0){
+                    //green line
+                    blockFromLine = 152;
+                }else{
+                    //red line
+                    blockFromLine = -1;//FIXME: update when there is a red line
+                }
                 //check text
-                int error = CTCModel.checkTrainInputs(trainBlockText.getText(),
+                int error = CTCModel.checkTrainInputs(blockFromLine,
                                              trainSpeedText.getText(),
                                              trainAuthorityText.getText(),
                                              trainDestinationText.getText());
                 switch(error){
                 case 0:
                     //input valid
-                    if(WaysideController.isOccupied(Integer.parseInt(trainBlockText.getText()))){
+                    if(WaysideController.isOccupied(blockFromLine)){
                         //block is occupied, can't put a train there
                         trainBlockText.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
                         break;
                     }
                     //disable text boxes
-                    trainBlockText.setEnabled(false);
+                    //trainBlockText.setEnabled(false);
                     trainSpeedText.setEnabled(false);
                     trainAuthorityText.setEnabled(false);
                     trainDestinationText.setEnabled(false);
+                    lineComboBox.setEnabled(false);
+                    
                     //send to createTrain
-                    CTCModel.createTrain(Integer.parseInt(trainBlockText.getText()),
-                                         Integer.parseInt(trainSpeedText.getText()),
+                    CTCModel.createTrain(blockFromLine,
+                                         Convert.MPHToMetersPerSecond(Double.parseDouble(trainSpeedText.getText())),
                                          trainAuthorityText.getText(),
                                          Integer.parseInt(trainDestinationText.getText()));
                                          //don't send trainID get from return value
@@ -844,10 +874,10 @@ public class CTCGUI {
                         Thread.sleep(500);//sleep to give the track model time to register the new train
                     }catch(InterruptedException ex){
                     }
-                    fillTrackInfo(Integer.parseInt(trainBlockText.getText()));
+                    fillTrackInfo(blockFromLine);
                     break;
                 case 1:
-                    trainBlockText.setBorder(BorderFactory.createLineBorder(Color.RED));
+                    lineComboBox.setBorder(BorderFactory.createLineBorder(Color.RED));
                     break;
                 case 2:
                     trainSpeedText.setBorder(BorderFactory.createLineBorder(Color.RED));
@@ -1308,10 +1338,10 @@ public class CTCGUI {
         StaticBlock staticBlock = TrackModel.getTrackModel().getStaticBlock(blockID);
         StaticSwitch staticSwitch = staticBlock.getStaticSwitch();
         trackIDText.setText("" + staticBlock.getId());
-        trackSpeedText.setText("" + Convert.metersToFeet(staticBlock.getSpeedLimit())*3600.0/5280.0 + " mph");//convert units
-        trackLengthText.setText("" + staticBlock.getLength() + " ft");
+        trackSpeedText.setText("" + Convert.metersPerSecondToMPH(staticBlock.getSpeedLimit()) + " mph");
+        trackLengthText.setText("" + Convert.metersToFeet(staticBlock.getLength()) + " ft");
         trackGradeText.setText("" + staticBlock.getGrade() + "%");
-        trackElevationText.setText("" + staticBlock.getElevation() + " ft");
+        trackElevationText.setText("" + Convert.metersToFeet(staticBlock.getElevation()) + " ft");
         trackUndergroundText.setText("" + staticBlock.isUnderground());
         //boolean hasLight = staticBlock.hasLight();
         //boolean hasSwitch = staticBlock.hasSwitch();
@@ -1405,7 +1435,11 @@ public class CTCGUI {
             trainBlockText.setText("" + data.getBlockID());
             trainSpeedText.setText("" + Convert.metersToFeet(data.getSpeed())*3600.0/5280.0 + " mph");//convert m/s to mph
             trainAuthorityText.setText(data.getAuthority());
-            trainOriginText.setText("" + data.getOrigin());
+            if(data.getOrigin() == 152){
+                lineComboBox.setSelectedIndex(0);
+            }else{
+                lineComboBox.setSelectedIndex(1);
+            }
             trainDestinationText.setText("" + data.getDestination());
         }else{
             //blank everything
@@ -1414,11 +1448,26 @@ public class CTCGUI {
                 trainBlockText.setText("");
                 trainSpeedText.setText("");
                 trainAuthorityText.setText("");
-                trainOriginText.setText("");
+                //trainOriginText.setText("");
                 trainDestinationText.setText("");
             }
         }
         
+    }
+    //these functions have to be public void so the ViewerPipe can find them
+    public void viewClosed(String id) {
+        ;//loop = false;
+    }
+
+    public void buttonPushed(String id) {
+        System.out.println("Button pushed on node "+id);
+    }
+
+    public void buttonReleased(String id) {
+        System.out.println("Button released on node "+id);
+    }
+    public static void handleGraphEvents(){
+        fromViewer.pump();
     }
     public static Graph getGraph(){
         return graph;
