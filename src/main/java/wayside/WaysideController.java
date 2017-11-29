@@ -272,7 +272,8 @@ public class WaysideController {
         boolean unbrokenPath = false;
 
         for (int[] path: PATHS) {
-            for (int block: path) {
+            for (int i = 0; i < path.length; i++) {
+                int block = path[i];
                 if (unbrokenPath) {
                     if (occupied[block]) {
                         throw new RuntimeException(String.format(
@@ -282,7 +283,8 @@ public class WaysideController {
                     // This doesn't follow the 2-block rule.
                     unbrokenPath = authority[block];
                 } else {
-                    if (occupied[block]) {
+                    // Don't want to call a train stradling two blocks an authority violation.
+                    if (occupied[block] && !occupied[path[i+1]]) {
                         unbrokenPath = true;
                     }
                 }
