@@ -47,11 +47,18 @@ public class CTCModel{
     private static StaticTrack track;
     private static ArrayList<Integer> bIds;
     
+    //Train-To-Add (TTA) data (to ensure trains aren't added in the middle of an update)
+    private static int TTAstartingBlock;
+    private static int TTAspeed;
+    private static String TTAauthority;
+    private static int TTAdestBlock;
+    
     private CTCModel(){
         //trainTracker = atrainTracker;
         last_clock = 0;
         suggestions = new ArrayList<Suggestion>();
         trainData = new ArrayList<CTCTrainData>();
+        TTAauthority = null;
     }
     
     public static void init(){
@@ -98,13 +105,27 @@ public class CTCModel{
         return 0;
     }
     
-    public static int createTrain(int startingBlockID, int suggestedSpeed,
+    public static void createTrain(int startingBlockID, int suggestedSpeed,
                                   String suggestedAuth, int destBlockID){
-        int trainID = TrainTracker.getTrainTracker().createTrain(startingBlockID);
+        /*int trainID = TrainTracker.getTrainTracker().createTrain(startingBlockID);
         trainData.add(new CTCTrainData(trainID, startingBlockID, suggestedSpeed,
                                        suggestedAuth, startingBlockID, destBlockID));
         addSuggestion(trainID, suggestedSpeed, suggestedAuth);
         return trainID;
+        */
+        TTAauthority = suggestedAuth;
+        TTAstartingBlock = startingBlockID;
+        TTAspeed = suggestedSpeed;
+        TTAdestBlock = destBlockID;
+    }
+    private static void addTrain(){
+        if(TTAauthority != null){
+            int trainID = TrainTracker.getTrainTracker().createTrain(TTAstartingBlock);
+            trainData.add(new CTCTrainData(trainID, TTAstartingBlock, TTAspeed,
+                                           TTAauthority, TTAstartingBlock, TTAdestBlock));
+            addSuggestion(trainID, TTAspeed, TTAauthority);
+        }
+        TTAauthority = null;
     }
     public static void addSuggestion(int trainID, int suggestedSpeed, String suggestedAuthority){
         //there are no checks for input correctness here because checkTrainInputs must be called before using this function
@@ -150,6 +171,9 @@ public class CTCModel{
     }
     public static void update(){
         int current_time = Environment.clock;
+        
+        //add a train if the user entered one during the last update
+        addTrain();
         
         updateTrack();
         
@@ -271,8 +295,6 @@ public class CTCModel{
                     element.addAttribute("ui.label",element.getId()+"");
                 }
                 System.out.println("**CTC found block "+blockId+" occupied**");
-//            }else if(inHistory){
-//                ;//don't need to do anything special, just don't set as unoccupied on display
             }else{
                 //returned unoccupied
                 if(allHistory.contains(blockId)){

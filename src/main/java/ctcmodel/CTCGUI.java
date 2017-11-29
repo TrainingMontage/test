@@ -841,7 +841,7 @@ public class CTCGUI {
                     launchTrainButton.setEnabled(false);
                     isNewTrain = false;
                     try{
-                        Thread.sleep(250);//sleep to give the track model time to register the new train
+                        Thread.sleep(500);//sleep to give the track model time to register the new train
                     }catch(InterruptedException ex){
                     }
                     fillTrackInfo(Integer.parseInt(trainBlockText.getText()));
