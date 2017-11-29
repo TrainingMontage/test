@@ -272,7 +272,7 @@ public class WaysideController {
         boolean unbrokenPath = false;
 
         for (int[] path: PATHS) {
-            for (int i = 0; i < path.length; i++) {
+            for (int i = 0; i < path.length-1; i++) {
                 int block = path[i];
                 if (unbrokenPath) {
                     if (occupied[block]) {
