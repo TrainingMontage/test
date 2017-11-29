@@ -739,16 +739,16 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelSetSpeed() throws SQLException {
-        assertEquals(14, _tm.setSpeed(1, 14));
+        assertEquals(14, _tm.setSpeed(1, 14), epsilon);
 
-        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT speed FROM blocks WHERE id = ?;");
-        stmt.setInt(1, 1);
-        ResultSet rs = stmt.executeQuery();
+        // PreparedStatement stmt = _tm.conn.prepareStatement("SELECT speed FROM blocks WHERE id = ?;");
+        // stmt.setInt(1, 1);
+        // ResultSet rs = stmt.executeQuery();
 
-        rs.next();
-        int speed = rs.getInt("speed");
+        // rs.next();
+        // int speed = rs.getInt("speed");
 
-        assertEquals(14, speed);
+        assertEquals(14, _tm.blockSpeed.get(1), epsilon);
     }
 
     /**
@@ -880,10 +880,12 @@ public class TrackModelTest {
     public void testTrackModelGetTrainAuthority() throws SQLException {
         assertFalse(_tm.getTrainAuthority(1));
 
-        PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET authority = ? WHERE id = ?;");
-        stmt.setInt(1, 1);
-        stmt.setInt(2, 1);
-        stmt.execute();
+        // PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET authority = ? WHERE id = ?;");
+        // stmt.setInt(1, 1);
+        // stmt.setInt(2, 1);
+        // stmt.execute();
+
+        _tm.blockAuthority.put(1, true);
 
         assertTrue(_tm.getTrainAuthority(1));
     }
@@ -899,8 +901,9 @@ public class TrackModelTest {
 
         assertFalse(spyTM.getTrainAuthority(1));
 
-        Statement stmt = spyTM.conn.createStatement();
-        stmt.execute("UPDATE blocks SET authority = 1 WHERE id = 1;");
+        // Statement stmt = spyTM.conn.createStatement();
+        // stmt.execute("UPDATE blocks SET authority = 1 WHERE id = 1;");
+        spyTM.blockAuthority.put(1, true);
 
         assertTrue(spyTM.getTrainAuthority(1));
 
@@ -930,10 +933,12 @@ public class TrackModelTest {
     public void testTrackModelGetTrainSpeed() throws SQLException {
         assertEquals(0, _tm.getTrainSpeed(1), epsilon);
 
-        PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET speed = ? WHERE id = ?;");
-        stmt.setInt(1, 1);
-        stmt.setInt(2, 1);
-        stmt.execute();
+        _tm.blockSpeed.put(1, 1.0);
+
+        // PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET speed = ? WHERE id = ?;");
+        // stmt.setInt(1, 1);
+        // stmt.setInt(2, 1);
+        // stmt.execute();
 
         assertEquals(1, _tm.getTrainSpeed(1), epsilon);
     }
@@ -949,8 +954,9 @@ public class TrackModelTest {
 
         assertEquals(0, spyTM.getTrainSpeed(1), epsilon);
 
-        Statement stmt = spyTM.conn.createStatement();
-        stmt.execute("UPDATE blocks SET speed = 1 WHERE id = 1;");
+        // Statement stmt = spyTM.conn.createStatement();
+        // stmt.execute("UPDATE blocks SET speed = 1 WHERE id = 1;");
+        spyTM.blockSpeed.put(1, 1.0);
 
         assertEquals(1, spyTM.getTrainSpeed(1), epsilon);
 
