@@ -63,6 +63,8 @@ public class TrackModel implements TrackModelInterface {
     protected HashMap<Integer, StaticSwitch> staticSwitchCache;
     protected HashMap<Integer, Boolean> blockOccupancy;
     protected HashMap<Integer, Boolean> blockAuthority;
+    protected HashMap<Integer, Boolean> switchState;
+    protected HashMap<Integer, Boolean> crossingState;
 
     /**
      * Constructs the Track Model (privately).
@@ -125,6 +127,9 @@ public class TrackModel implements TrackModelInterface {
             this.staticSwitchCache = new HashMap<Integer, StaticSwitch>();
             this.blockOccupancy = new HashMap<Integer, Boolean>();
             this.blockAuthority = new HashMap<Integer, Boolean>();
+            this.switchState = new HashMap<Integer, Boolean>();
+            this.crossingState = new HashMap<Integer, Boolean>();
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -712,21 +717,24 @@ public class TrackModel implements TrackModelInterface {
      * @return     new value of the switch (active/inactive)
      */
     public boolean setSwitch(int blockId, boolean active) {
-        // System.err.println("Setting switch @ block " + blockId + " to " + active);
         StaticBlock blk = this.getStaticBlock(blockId);
-        try {
-            int rootId = blk.getStaticSwitch().getRoot().getId();
-            System.err.println("setSwitch for block " + rootId + " to " + active);
+        int rootId = blk.getStaticSwitch().getRoot().getId();
+        System.err.println("setSwitch for block " + rootId + " to " + active);
 
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET switch_active = ? WHERE id = ?;");
-            stmt.setInt(1, active ? 1 : 0);
-            stmt.setInt(2, rootId);
-            stmt.execute();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        this.switchState.put(blockId, active);
+        return this.switchState.get(blockId);
+        
+        // try {
 
-        return active;
+        //     PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET switch_active = ? WHERE id = ?;");
+        //     stmt.setInt(1, active ? 1 : 0);
+        //     stmt.setInt(2, rootId);
+        //     stmt.execute();
+        // } catch (Exception e) {
+        //     throw new RuntimeException(e);
+        // }
+
+        // return active;
     }
 
     /**
@@ -738,21 +746,24 @@ public class TrackModel implements TrackModelInterface {
      */
     public boolean getSwitch(int blockId) {
         StaticBlock blk = this.getStaticBlock(blockId);
+        int rootId = blk.getStaticSwitch().getRoot().getId();
+        System.err.println("getSwitch for block " + rootId);
+
+        Boolean state = this.switchState.get(rootId);
+        return state == null ? false : state;
         
-        try {
-            int rootId = blk.getStaticSwitch().getRoot().getId();
-            System.err.println("getSwitch for block " + rootId);
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT switch_active FROM blocks WHERE id = ?");
-            stmt.setInt(1, rootId);
-            ResultSet rs = stmt.executeQuery();
-            rs.next();
+        // try {
+        //     PreparedStatement stmt = this.conn.prepareStatement("SELECT switch_active FROM blocks WHERE id = ?");
+        //     stmt.setInt(1, rootId);
+        //     ResultSet rs = stmt.executeQuery();
+        //     rs.next();
 
-            System.err.println("switch_active " + rs.getInt("switch_active"));
-            return rs.getInt("switch_active") > 0 ? true : false;
+        //     System.err.println("switch_active " + rs.getInt("switch_active"));
+        //     return rs.getInt("switch_active") > 0 ? true : false;
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        // } catch (Exception e) {
+        //     throw new RuntimeException(e);
+        // }
     }
 
     /**
@@ -839,16 +850,19 @@ public class TrackModel implements TrackModelInterface {
      * @return     The crossing state.
      */
     public boolean getCrossingState(int blockId) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT crossing_active FROM blocks WHERE id = ?");
-            stmt.setInt(1, blockId);
-            ResultSet rs = stmt.executeQuery();
-            rs.next();
+        Boolean state = this.crossingState.get(blockId);
+        return state == null ? false : state;
 
-            return rs.getInt("crossing_active") > 0 ? true : false;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        // try {
+        //     PreparedStatement stmt = this.conn.prepareStatement("SELECT crossing_active FROM blocks WHERE id = ?");
+        //     stmt.setInt(1, blockId);
+        //     ResultSet rs = stmt.executeQuery();
+        //     rs.next();
+
+        //     return rs.getInt("crossing_active") > 0 ? true : false;
+        // } catch (Exception e) {
+        //     throw new RuntimeException(e);
+        // }
     }
 
     /**
@@ -860,18 +874,21 @@ public class TrackModel implements TrackModelInterface {
      * @return     The new crossing state
      */
     public boolean setCrossingState(int blockId, boolean active) {
-        long startTime = System.nanoTime();
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET crossing_active = ? WHERE id = ?;");
-            stmt.setInt(1, active ? 1 : 0);
-            stmt.setInt(2, blockId);
-            stmt.executeUpdate();
+        this.crossingState.put(blockId, active);
+        return this.crossingState.get(blockId);
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        System.err.println("Updating crossing state took: " + ((System.nanoTime() - startTime)/1000000) + "ms");
-        return active;
+        // long startTime = System.nanoTime();
+        // try {
+        //     PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET crossing_active = ? WHERE id = ?;");
+        //     stmt.setInt(1, active ? 1 : 0);
+        //     stmt.setInt(2, blockId);
+        //     stmt.executeUpdate();
+
+        // } catch (Exception e) {
+        //     throw new RuntimeException(e);
+        // }
+        // System.err.println("Updating crossing state took: " + ((System.nanoTime() - startTime)/1000000) + "ms");
+        // return active;
     }
 
     /**

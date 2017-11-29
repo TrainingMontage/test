@@ -650,14 +650,16 @@ public class TrackModelTest {
     public void testTrackModelSetSwitchActive() throws SQLException {
         assertTrue(_tm.setSwitch(1, true));
 
-        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT switch_active FROM blocks WHERE id = ?;");
-        stmt.setInt(1, 1);
-        ResultSet rs = stmt.executeQuery();
+        assertTrue(_tm.switchState.get(1));
 
-        rs.next();
-        int switch_active = rs.getInt("switch_active");
+        // PreparedStatement stmt = _tm.conn.prepareStatement("SELECT switch_active FROM blocks WHERE id = ?;");
+        // stmt.setInt(1, 1);
+        // ResultSet rs = stmt.executeQuery();
 
-        assertTrue(switch_active > 0);
+        // rs.next();
+        // int switch_active = rs.getInt("switch_active");
+
+        // assertTrue(switch_active > 0);
     }
 
     /**
@@ -684,10 +686,12 @@ public class TrackModelTest {
     public void testTrackModelGetSwitch() throws SQLException {
         assertFalse(_tm.getSwitch(1));
 
-        PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET switch_active = ? WHERE id = ?;");
-        stmt.setInt(1, 1);
-        stmt.setInt(2, 1);
-        stmt.execute();
+        _tm.switchState.put(1, true);
+
+        // PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET switch_active = ? WHERE id = ?;");
+        // stmt.setInt(1, 1);
+        // stmt.setInt(2, 1);
+        // stmt.execute();
 
         assertTrue(_tm.getSwitch(1));
     }
@@ -754,14 +758,16 @@ public class TrackModelTest {
     public void testTrackModelSetCrossingStateTrue() throws SQLException {
         assertTrue(_tm.setCrossingState(1, true));
 
-        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT crossing_active FROM blocks WHERE id = ?;");
-        stmt.setInt(1, 1);
-        ResultSet rs = stmt.executeQuery();
+        assertTrue(_tm.crossingState.get(1));
 
-        rs.next();
-        int crossing_active = rs.getInt("crossing_active");
+        // PreparedStatement stmt = _tm.conn.prepareStatement("SELECT crossing_active FROM blocks WHERE id = ?;");
+        // stmt.setInt(1, 1);
+        // ResultSet rs = stmt.executeQuery();
 
-        assertTrue(crossing_active > 0);
+        // rs.next();
+        // int crossing_active = rs.getInt("crossing_active");
+
+        // assertTrue(crossing_active > 0);
     }
 
     /**
@@ -771,14 +777,17 @@ public class TrackModelTest {
     public void testTrackModelSetCrossingStateFalse() throws SQLException {
         assertFalse(_tm.setCrossingState(1, false));
 
-        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT crossing_active FROM blocks WHERE id = ?;");
-        stmt.setInt(1, 1);
-        ResultSet rs = stmt.executeQuery();
+        assertFalse(_tm.crossingState.get(1));
 
-        rs.next();
-        int crossing_active = rs.getInt("crossing_active");
 
-        assertEquals(0, crossing_active);
+        // PreparedStatement stmt = _tm.conn.prepareStatement("SELECT crossing_active FROM blocks WHERE id = ?;");
+        // stmt.setInt(1, 1);
+        // ResultSet rs = stmt.executeQuery();
+
+        // rs.next();
+        // int crossing_active = rs.getInt("crossing_active");
+
+        // assertEquals(0, crossing_active);
     }
 
     /**
@@ -788,10 +797,11 @@ public class TrackModelTest {
     public void testTrackModelGetCrossingState() throws SQLException {
         assertFalse(_tm.getCrossingState(1));
 
-        PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET crossing_active = ? WHERE id = ?;");
-        stmt.setInt(1, 1);
-        stmt.setInt(2, 1);
-        stmt.execute();
+        _tm.crossingState.put(1, true);
+        // PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET crossing_active = ? WHERE id = ?;");
+        // stmt.setInt(1, 1);
+        // stmt.setInt(2, 1);
+        // stmt.execute();
 
         assertTrue(_tm.getCrossingState(1));
     }
