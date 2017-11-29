@@ -61,6 +61,8 @@ public class TrackModel implements TrackModelInterface {
     protected HashMap<Integer, ArrayList<StaticBlock>> trainOccupancy;
     protected HashMap<Integer, StaticBlock> staticBlockCache;
     protected HashMap<Integer, StaticSwitch> staticSwitchCache;
+    protected HashMap<Integer, Boolean> blockOccupancy;
+    protected HashMap<Integer, Boolean> blockAuthority;
 
     /**
      * Constructs the Track Model (privately).
@@ -121,6 +123,8 @@ public class TrackModel implements TrackModelInterface {
             this.trainOccupancy = new HashMap<Integer, ArrayList<StaticBlock>>();
             this.staticBlockCache = new HashMap<Integer, StaticBlock>();
             this.staticSwitchCache = new HashMap<Integer, StaticSwitch>();
+            this.blockOccupancy = new HashMap<Integer, Boolean>();
+            this.blockAuthority = new HashMap<Integer, Boolean>();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -356,19 +360,22 @@ public class TrackModel implements TrackModelInterface {
                 break;
         }
 
-        Integer occupied = null;
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT occupied FROM blocks WHERE id = ?;");
-            stmt.setInt(1, blockId);
-            ResultSet rs = stmt.executeQuery();
+        Boolean occupied = blockOccupancy.get(blockId);
+        return occupied == null ? false : occupied;
 
-            rs.next();
-            occupied = (Integer) rs.getObject("occupied");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        // Integer occupied = null;
+        // try {
+        //     PreparedStatement stmt = this.conn.prepareStatement("SELECT occupied FROM blocks WHERE id = ?;");
+        //     stmt.setInt(1, blockId);
+        //     ResultSet rs = stmt.executeQuery();
 
-        return occupied != null && occupied > 0;
+        //     rs.next();
+        //     occupied = (Integer) rs.getObject("occupied");
+        // } catch (Exception e) {
+        //     throw new RuntimeException(e);
+        // }
+
+        // return occupied != null && occupied > 0;
     }
 
     /**
@@ -380,19 +387,22 @@ public class TrackModel implements TrackModelInterface {
      * @return     the new value for occupied
      */
     protected boolean setOccupied(int blockId, boolean occupied) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET occupied = ? WHERE id = ?;");
-            if (occupied) {
-                stmt.setInt(1, 1);
-            } else {
-                stmt.setNull(1, java.sql.Types.INTEGER);
-            }
-            stmt.setInt(2, blockId);
-            stmt.execute();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return occupied;
+        blockOccupancy.put(blockId, occupied);
+        return blockOccupancy.get(blockId);
+
+        // try {
+        //     PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET occupied = ? WHERE id = ?;");
+        //     if (occupied) {
+        //         stmt.setInt(1, 1);
+        //     } else {
+        //         stmt.setNull(1, java.sql.Types.INTEGER);
+        //     }
+        //     stmt.setInt(2, blockId);
+        //     stmt.execute();
+        // } catch (Exception e) {
+        //     throw new RuntimeException(e);
+        // }
+        // return occupied;
     }
 
     /**
@@ -753,29 +763,24 @@ public class TrackModel implements TrackModelInterface {
      *
      * @return     the new authority value
      */
-    public boolean setAuthority(int blockId, boolean authority) {  
-        long startTime = System.nanoTime();
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET authority = ? WHERE id = ?;");
-            stmt.setInt(1, authority ? 1 : 0);
-            stmt.setInt(2, blockId);
-            stmt.executeUpdate();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    public boolean setAuthority(int blockId, boolean authority) {
+        blockAuthority.put(blockId, authority);
+        return blockAuthority.get(blockId);
 
-        System.err.println("Updating Authority took: " + ((System.nanoTime() - startTime)/1000000) + "ms");
-        
+        // long startTime = System.nanoTime();
+
         // try {
-        //     PreparedStatement stmt = this.conn.prepareStatement("SELECT COUNT(*) AS CNT from blocks;");
-        //     ResultSet rs = stmt.executeQuery();
-        //     rs.next();
-        //     System.err.println("Number of rows: " + rs.getInt("CNT"));
+        //     PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET authority = ? WHERE id = ?;");
+        //     stmt.setInt(1, authority ? 1 : 0);
+        //     stmt.setInt(2, blockId);
+        //     stmt.executeUpdate();
         // } catch (Exception e) {
         //     throw new RuntimeException(e);
         // }
 
-        return authority;
+        // System.err.println("Updating Authority took: " + ((System.nanoTime() - startTime)/1000000) + "ms");
+        // return authority;
+       
     }
 
     /**
@@ -786,17 +791,20 @@ public class TrackModel implements TrackModelInterface {
      * @return     The authority
      */
     public boolean getAuthority(int blockId) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT authority FROM blocks WHERE id = ?");
-            stmt.setInt(1, blockId);
-            ResultSet rs = stmt.executeQuery();
-            rs.next();
+        Boolean authority = blockAuthority.get(blockId);
+        return authority == null ? false : authority;
 
-            return rs.getInt("authority") > 0 ? true : false;
+        // try {
+        //     PreparedStatement stmt = this.conn.prepareStatement("SELECT authority FROM blocks WHERE id = ?");
+        //     stmt.setInt(1, blockId);
+        //     ResultSet rs = stmt.executeQuery();
+        //     rs.next();
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        //     return rs.getInt("authority") > 0 ? true : false;
+
+        // } catch (Exception e) {
+        //     throw new RuntimeException(e);
+        // }
     }
 
     /**
@@ -1441,8 +1449,9 @@ public class TrackModel implements TrackModelInterface {
     protected void updateOccupancies() {
         try {
             // destroy previous occupancy
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET occupied = 0;");
-            stmt.execute();
+            this.blockOccupancy = new HashMap<Integer, Boolean>();
+            // PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET occupied = 0;");
+            // stmt.execute();
 
             for (Map.Entry<Integer, ArrayList<StaticBlock>> entry : this.trainOccupancy.entrySet()) {
                 Integer key = entry.getKey();

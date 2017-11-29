@@ -358,8 +358,9 @@ public class TrackModelTest {
     public void testTrackModelisOccupied() throws SQLException {
         assertFalse(_tm.isOccupied(1));
 
-        Statement stmt = _tm.conn.createStatement();
-        stmt.execute("UPDATE blocks SET occupied = 1 WHERE id = 1;");
+        // Statement stmt = _tm.conn.createStatement();
+        // stmt.execute("UPDATE blocks SET occupied = 1 WHERE id = 1;");
+        _tm.blockOccupancy.put(1, true);
 
         assertTrue(_tm.isOccupied(1));
     }
@@ -372,19 +373,21 @@ public class TrackModelTest {
 
         assertTrue(_tm.setOccupied(1, true));
 
-        Integer occupied = null;
-        try {
-            PreparedStatement stmt = _tm.conn.prepareStatement("SELECT occupied FROM blocks WHERE id = ?;");
-            stmt.setInt(1, 1);
-            ResultSet rs = stmt.executeQuery();
+        assertTrue(_tm.blockOccupancy.get(1));
 
-            rs.next();
-            occupied = (Integer) rs.getObject("occupied");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // Integer occupied = null;
+        // try {
+        //     PreparedStatement stmt = _tm.conn.prepareStatement("SELECT occupied FROM blocks WHERE id = ?;");
+        //     stmt.setInt(1, 1);
+        //     ResultSet rs = stmt.executeQuery();
 
-        assertEquals(occupied, (Integer) 1);
+        //     rs.next();
+        //     occupied = (Integer) rs.getObject("occupied");
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        // }
+
+        // assertEquals(occupied, (Integer) 1);
     }
 
     /**
@@ -421,8 +424,9 @@ public class TrackModelTest {
 
         assertFalse(spyTM.isOccupied(1));
 
-        Statement stmt = spyTM.conn.createStatement();
-        stmt.execute("UPDATE blocks SET occupied = 1 WHERE id = 1;");
+        // Statement stmt = spyTM.conn.createStatement();
+        // stmt.execute("UPDATE blocks SET occupied = 1 WHERE id = 1;");
+        spyTM.blockOccupancy.put(1, true);
 
         assertTrue(spyTM.isOccupied(1));
 
@@ -695,14 +699,16 @@ public class TrackModelTest {
     public void testTrackModelSetAuthorityTrue() throws SQLException {
         assertTrue(_tm.setAuthority(1, true));
 
-        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT authority FROM blocks WHERE id = ?;");
-        stmt.setInt(1, 1);
-        ResultSet rs = stmt.executeQuery();
+        assertTrue(_tm.blockAuthority.get(1));
 
-        rs.next();
-        int authority = rs.getInt("authority");
+        // PreparedStatement stmt = _tm.conn.prepareStatement("SELECT authority FROM blocks WHERE id = ?;");
+        // stmt.setInt(1, 1);
+        // ResultSet rs = stmt.executeQuery();
 
-        assertTrue(authority > 0);
+        // rs.next();
+        // int authority = rs.getInt("authority");
+
+        // assertTrue(authority > 0);
     }
 
     /**
@@ -711,15 +717,17 @@ public class TrackModelTest {
     @Test
     public void testTrackModelSetAuthorityFalse() throws SQLException {
         assertFalse(_tm.setAuthority(1, false));
+       
+        assertFalse(_tm.blockAuthority.get(1));
 
-        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT authority FROM blocks WHERE id = ?;");
-        stmt.setInt(1, 1);
-        ResultSet rs = stmt.executeQuery();
+        // PreparedStatement stmt = _tm.conn.prepareStatement("SELECT authority FROM blocks WHERE id = ?;");
+        // stmt.setInt(1, 1);
+        // ResultSet rs = stmt.executeQuery();
 
-        rs.next();
-        int authority = rs.getInt("authority");
+        // rs.next();
+        // int authority = rs.getInt("authority");
 
-        assertEquals(0, authority);
+        // assertEquals(0, authority);
     }
 
     /**
