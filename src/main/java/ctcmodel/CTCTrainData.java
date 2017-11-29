@@ -22,7 +22,7 @@ import java.util.ArrayList;
 public class CTCTrainData{
     private int dataTrainID;
     private int dataBlockID;
-    private int dataSpeed;
+    private double dataSpeed;
     private String dataAuthority;
     private int dataOrigin;
     private int dataDestination;
@@ -37,7 +37,7 @@ public class CTCTrainData{
         dataDestination = -1;
         history = new ArrayList<Integer>();
     }
-    protected CTCTrainData(int trainID, int blockID, int speed, String authority, int origin, int destination){
+    protected CTCTrainData(int trainID, int blockID, double speed, String authority, int origin, int destination){
         dataTrainID = trainID;
         dataBlockID = blockID;
         dataSpeed = speed;
@@ -53,7 +53,7 @@ public class CTCTrainData{
     public int getBlockID(){
         return dataBlockID;
     }
-    public int getSpeed(){
+    public double getSpeed(){
         return dataSpeed;
     }
     public String getAuthority(){
@@ -72,7 +72,7 @@ public class CTCTrainData{
     public void setBlockID(int blockID){
         dataBlockID = blockID;
     }
-    public void setSpeed(int speed){
+    public void setSpeed(double speed){
         dataSpeed = speed;
     }
     public void setAuthority(String authority){

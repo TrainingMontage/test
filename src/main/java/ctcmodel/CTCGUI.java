@@ -70,7 +70,7 @@ public class CTCGUI {
     private static JTextArea trainBlockText;
     private static JTextArea trainSpeedText;
     private static JTextArea trainAuthorityText;
-    private static JTextArea trainOriginText;
+    //private static JTextArea trainOriginText;
     private static JTextArea trainDestinationText;
     // track textArea handles
     private static JTextArea trackIDText;
@@ -87,6 +87,8 @@ public class CTCGUI {
     private static JTextArea trackStationText;
     private static JTextArea trackPassengersText;
     private static JTextArea trackCrossingText;
+    // line combobox
+    private static JComboBox<String> lineComboBox;
     
     private static Graph graph;
     //private static ViewPanel graphView;
@@ -563,10 +565,11 @@ public class CTCGUI {
                 newTrainButton.setEnabled(true);
                 if(isNewTrain){
                     //enable the text boxes
-                    trainBlockText.setEnabled(true);
+                    //trainBlockText.setEnabled(true);
                     trainSpeedText.setEnabled(true);
                     trainAuthorityText.setEnabled(true);
                     trainDestinationText.setEnabled(true);
+                    lineComboBox.setEnabled(true);
                     //enable the submit button
                     launchTrainButton.setEnabled(true);
                 }
@@ -591,7 +594,7 @@ public class CTCGUI {
                 newTrainButton.setEnabled(false);
                 if(isNewTrain){
                     //disable the text boxes
-                    trainBlockText.setEnabled(false);
+                    //trainBlockText.setEnabled(false);
                     trainSpeedText.setEnabled(false);
                     trainAuthorityText.setEnabled(false);
                     trainDestinationText.setEnabled(false);
@@ -691,7 +694,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrainInfo.add(label,c);
         
-        label = new JLabel("Origin");
+        label = new JLabel("Line");
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 0;
         c.gridy = 4;
@@ -747,15 +750,21 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrainInfo.add(trainAuthorityText,c);
         
-        trainOriginText = new JTextArea("Shadyside");
-        trainOriginText.setEnabled(false);
-        trainOriginText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
+        lineComboBox = new JComboBox<>();
+        lineComboBox.addItem("Green");
+        lineComboBox.addItem("Red");
+        lineComboBox.setSelectedIndex(0);
+        lineComboBox.setEnabled(false);
+        lineComboBox.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
+        //trainOriginText = new JTextArea("Shadyside");
+        //trainOriginText.setEnabled(false);
+        //trainOriginText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 1;
         c.gridy = 4;
         //c.gridwidth = 1;
         //c.gridheight = 1;
-        panelTrainInfo.add(trainOriginText,c);
+        panelTrainInfo.add(lineComboBox,c);
         
         trainDestinationText = new JTextArea("Edgebrook");
         trainDestinationText.setEnabled(false);
@@ -775,13 +784,14 @@ public class CTCGUI {
                 trainBlockText.setText("");
                 trainSpeedText.setText("");
                 trainAuthorityText.setText("");
-                trainOriginText.setText("");
+                //trainOriginText.setText("");
                 trainDestinationText.setText("");
                 //enable the text boxes
-                trainBlockText.setEnabled(true);
+                //trainBlockText.setEnabled(true);
                 trainSpeedText.setEnabled(true);
                 trainAuthorityText.setEnabled(true);
                 trainDestinationText.setEnabled(true);
+                lineComboBox.setEnabled(true);
                 //enable the submit button
                 launchTrainButton.setEnabled(true);
                 isNewTrain = true;
@@ -800,31 +810,41 @@ public class CTCGUI {
             public void actionPerformed(ActionEvent ae) {
                 //reset all borders
                 Border border = new JTextArea("").getBorder();
-                trainBlockText.setBorder(border);
+                //trainBlockText.setBorder(border);
                 trainSpeedText.setBorder(border);
                 trainAuthorityText.setBorder(border);
                 trainDestinationText.setBorder(border);
+                int blockFromLine;
+                if(lineComboBox.getSelectedIndex() == 0){
+                    //green line
+                    blockFromLine = 152;
+                }else{
+                    //red line
+                    blockFromLine = -1;//FIXME: update when there is a red line
+                }
                 //check text
-                int error = CTCModel.checkTrainInputs(trainBlockText.getText(),
+                int error = CTCModel.checkTrainInputs(blockFromLine,
                                              trainSpeedText.getText(),
                                              trainAuthorityText.getText(),
                                              trainDestinationText.getText());
                 switch(error){
                 case 0:
                     //input valid
-                    if(WaysideController.isOccupied(Integer.parseInt(trainBlockText.getText()))){
+                    if(WaysideController.isOccupied(blockFromLine)){
                         //block is occupied, can't put a train there
                         trainBlockText.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
                         break;
                     }
                     //disable text boxes
-                    trainBlockText.setEnabled(false);
+                    //trainBlockText.setEnabled(false);
                     trainSpeedText.setEnabled(false);
                     trainAuthorityText.setEnabled(false);
                     trainDestinationText.setEnabled(false);
+                    lineComboBox.setEnabled(false);
+                    
                     //send to createTrain
-                    CTCModel.createTrain(Integer.parseInt(trainBlockText.getText()),
-                                         Integer.parseInt(trainSpeedText.getText()),
+                    CTCModel.createTrain(blockFromLine,
+                                         Convert.MPHToMetersPerSecond(Double.parseDouble(trainSpeedText.getText())),
                                          trainAuthorityText.getText(),
                                          Integer.parseInt(trainDestinationText.getText()));
                                          //don't send trainID get from return value
@@ -844,10 +864,10 @@ public class CTCGUI {
                         Thread.sleep(500);//sleep to give the track model time to register the new train
                     }catch(InterruptedException ex){
                     }
-                    fillTrackInfo(Integer.parseInt(trainBlockText.getText()));
+                    fillTrackInfo(blockFromLine);
                     break;
                 case 1:
-                    trainBlockText.setBorder(BorderFactory.createLineBorder(Color.RED));
+                    lineComboBox.setBorder(BorderFactory.createLineBorder(Color.RED));
                     break;
                 case 2:
                     trainSpeedText.setBorder(BorderFactory.createLineBorder(Color.RED));
@@ -1308,10 +1328,10 @@ public class CTCGUI {
         StaticBlock staticBlock = TrackModel.getTrackModel().getStaticBlock(blockID);
         StaticSwitch staticSwitch = staticBlock.getStaticSwitch();
         trackIDText.setText("" + staticBlock.getId());
-        trackSpeedText.setText("" + Convert.metersToFeet(staticBlock.getSpeedLimit())*3600.0/5280.0 + " mph");//convert units
-        trackLengthText.setText("" + staticBlock.getLength() + " ft");
+        trackSpeedText.setText("" + Convert.metersPerSecondToMPH(staticBlock.getSpeedLimit()) + " mph");
+        trackLengthText.setText("" + Convert.metersToFeet(staticBlock.getLength()) + " ft");
         trackGradeText.setText("" + staticBlock.getGrade() + "%");
-        trackElevationText.setText("" + staticBlock.getElevation() + " ft");
+        trackElevationText.setText("" + Convert.metersToFeet(staticBlock.getElevation()) + " ft");
         trackUndergroundText.setText("" + staticBlock.isUnderground());
         //boolean hasLight = staticBlock.hasLight();
         //boolean hasSwitch = staticBlock.hasSwitch();
@@ -1405,7 +1425,7 @@ public class CTCGUI {
             trainBlockText.setText("" + data.getBlockID());
             trainSpeedText.setText("" + Convert.metersToFeet(data.getSpeed())*3600.0/5280.0 + " mph");//convert m/s to mph
             trainAuthorityText.setText(data.getAuthority());
-            trainOriginText.setText("" + data.getOrigin());
+            lineComboBox.setSelectedIndex(data.getOrigin());
             trainDestinationText.setText("" + data.getDestination());
         }else{
             //blank everything
@@ -1414,7 +1434,7 @@ public class CTCGUI {
                 trainBlockText.setText("");
                 trainSpeedText.setText("");
                 trainAuthorityText.setText("");
-                trainOriginText.setText("");
+                //trainOriginText.setText("");
                 trainDestinationText.setText("");
             }
         }
