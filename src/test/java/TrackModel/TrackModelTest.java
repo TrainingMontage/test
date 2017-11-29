@@ -39,7 +39,7 @@ public class TrackModelTest {
     public void setup() throws SQLException, ClassNotFoundException {
 
         // init track model
-        _tm = TrackModel.init();
+        _tm = new TrackModel();
 
         // clear and create a blank database
         Statement stmt = _tm.conn.createStatement();
@@ -525,7 +525,7 @@ public class TrackModelTest {
         assertNotNull(block);
         assertEquals(2, block.getId());
         assertEquals("A", block.getRegion());
-        assertEquals(.5, block.getGrade(), epsilon);
+        assertEquals(0.5, block.getGrade(), epsilon);
         assertEquals(17, block.getElevation(), epsilon);
         assertEquals(50, block.getLength(), epsilon);
         assertEquals("", block.getStation());

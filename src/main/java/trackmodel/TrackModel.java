@@ -59,13 +59,15 @@ public class TrackModel implements TrackModelInterface {
     protected Connection conn;
     protected int last_updated = 0;
     protected HashMap<Integer, ArrayList<StaticBlock>> trainOccupancy;
+    protected HashMap<Integer, StaticBlock> staticBlockCache;
+    protected HashMap<Integer, StaticSwitch> staticSwitchCache;
 
     /**
      * Constructs the Track Model (privately).
      *
      * constructs the database.
      */
-    private TrackModel() {
+    protected TrackModel() {
         try {
             // construct the database
             String sql_create_blocks =
@@ -109,6 +111,7 @@ public class TrackModel implements TrackModelInterface {
             Class.forName("org.sqlite.JDBC");
             this.conn = DriverManager.getConnection("jdbc:sqlite::memory:");
 
+
             // create tables
             Statement stmt = conn.createStatement();
             stmt.execute(sql_create_blocks);
@@ -116,6 +119,8 @@ public class TrackModel implements TrackModelInterface {
 
             // initalize train occupancy
             this.trainOccupancy = new HashMap<Integer, ArrayList<StaticBlock>>();
+            this.staticBlockCache = new HashMap<Integer, StaticBlock>();
+            this.staticSwitchCache = new HashMap<Integer, StaticSwitch>();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -464,7 +469,12 @@ public class TrackModel implements TrackModelInterface {
      * @return     The static block.
      */
     public StaticBlock getStaticBlock(int blockId) {
-        return getStaticBlock(blockId, null);
+        StaticBlock blk = staticBlockCache.get(blockId);
+        if (blk == null || blk.needsUpdate()) {
+            // update block
+            staticBlockCache.put(blockId, getStaticBlock(blockId, null));
+        }
+        return staticBlockCache.get(blockId);
     }
 
     /**
@@ -544,6 +554,11 @@ public class TrackModel implements TrackModelInterface {
      * @return     The static switch.
      */
     public StaticSwitch getStaticSwitch(int switchId) {
+        StaticSwitch sw = staticSwitchCache.get(switchId);
+        if (sw != null) {
+            return sw;
+        }
+
         try {
             PreparedStatement stmt = this.conn.prepareStatement(
                                          "SELECT A.switch_root as switch_id, A.id as root_id, B.id as inactive_id, C.id as active_id " +
@@ -561,10 +576,11 @@ public class TrackModel implements TrackModelInterface {
             int inactive_id = rs.getInt("inactive_id");
             int active_id = rs.getInt("active_id");
 
-            StaticSwitch sw = new StaticSwitch(rs.getInt("switch_id"));
+            sw = new StaticSwitch(rs.getInt("switch_id"));
             sw.setRoot(getStaticBlock(root_id, sw));
             sw.setDefaultLeaf(getStaticBlock(inactive_id, sw));
             sw.setActiveLeaf(getStaticBlock(active_id, sw));
+            staticSwitchCache.put(switchId, sw);
             return sw;
 
         } catch (Exception e) {
@@ -586,6 +602,7 @@ public class TrackModel implements TrackModelInterface {
             stmt.setString(1, region);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
             return true;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -606,6 +623,7 @@ public class TrackModel implements TrackModelInterface {
             stmt.setDouble(1, length);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
             return true;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -626,6 +644,7 @@ public class TrackModel implements TrackModelInterface {
             stmt.setDouble(1, speed_limit);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
             return true;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -646,6 +665,7 @@ public class TrackModel implements TrackModelInterface {
             stmt.setDouble(1, elevation);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
             return true;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -666,6 +686,7 @@ public class TrackModel implements TrackModelInterface {
             stmt.setDouble(1, grade);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
             return true;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -732,15 +753,27 @@ public class TrackModel implements TrackModelInterface {
      *
      * @return     the new authority value
      */
-    public boolean setAuthority(int blockId, boolean authority) {        
+    public boolean setAuthority(int blockId, boolean authority) {  
+        long startTime = System.nanoTime();
         try {
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET authority = ? WHERE id = ?;");
             stmt.setInt(1, authority ? 1 : 0);
             stmt.setInt(2, blockId);
-            stmt.execute();
+            stmt.executeUpdate();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+        System.err.println("Updating Authority took: " + ((System.nanoTime() - startTime)/1000000) + "ms");
+        
+        // try {
+        //     PreparedStatement stmt = this.conn.prepareStatement("SELECT COUNT(*) AS CNT from blocks;");
+        //     ResultSet rs = stmt.executeQuery();
+        //     rs.next();
+        //     System.err.println("Number of rows: " + rs.getInt("CNT"));
+        // } catch (Exception e) {
+        //     throw new RuntimeException(e);
+        // }
 
         return authority;
     }
@@ -775,15 +808,18 @@ public class TrackModel implements TrackModelInterface {
      * @return     the new suggested speed
      */
     public int setSpeed(int blockId, int speed) {
+        long startTime = System.nanoTime();
+
         try {
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET speed = ? WHERE id = ?;");
             stmt.setInt(1, speed);
             stmt.setInt(2, blockId);
-            stmt.execute();
+            stmt.executeUpdate();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
+        System.err.println("Updating Speed took: " + ((System.nanoTime() - startTime)/1000000) + "ms");
         return speed;
     }
 
@@ -816,15 +852,17 @@ public class TrackModel implements TrackModelInterface {
      * @return     The new crossing state
      */
     public boolean setCrossingState(int blockId, boolean active) {
+        long startTime = System.nanoTime();
         try {
             PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET crossing_active = ? WHERE id = ?;");
             stmt.setInt(1, active ? 1 : 0);
             stmt.setInt(2, blockId);
-            stmt.execute();
+            stmt.executeUpdate();
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        System.err.println("Updating crossing state took: " + ((System.nanoTime() - startTime)/1000000) + "ms");
         return active;
     }
 
@@ -1382,12 +1420,12 @@ public class TrackModel implements TrackModelInterface {
     }
 
     /**
-     * { function_description }
+     * determines a new direction based on current and next block
      *
      * @param      curr_block  The curr block
      * @param      next_block  The next block
      *
-     * @return     { description_of_the_return_value }
+     * @return     the direction relative to the next block
      */
     protected boolean nextDirection(StaticBlock curr_block, StaticBlock next_block) {
         if (next_block.getNextId() == curr_block.getId() || (next_block.getStaticSwitch() != null && next_block.getStaticSwitch().getActiveLeaf().equals(curr_block))) {
@@ -1603,6 +1641,7 @@ public class TrackModel implements TrackModelInterface {
             stmt.setInt(1, underground ? 1 : 0);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -1624,6 +1663,7 @@ public class TrackModel implements TrackModelInterface {
             stmt.setInt(1, heater ? 1 : 0);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -1645,6 +1685,7 @@ public class TrackModel implements TrackModelInterface {
             stmt.setInt(1, rr_crossing ? 1 : 0);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -1666,6 +1707,7 @@ public class TrackModel implements TrackModelInterface {
             stmt.setInt(1, bidirectional ? 1 : 0);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -1687,6 +1729,7 @@ public class TrackModel implements TrackModelInterface {
             stmt.setString(1, station);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -1708,6 +1751,7 @@ public class TrackModel implements TrackModelInterface {
             stmt.setString(1, line);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -1734,6 +1778,14 @@ public class TrackModel implements TrackModelInterface {
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    public void setStaticBlockUpdate(int blockId) {
+        StaticBlock blk = staticBlockCache.get(blockId);
+        if (blk != null) {
+            blk.setNeedsUpdate(true);
+            staticBlockCache.put(blockId, blk);
         }
     }
 }
