@@ -58,6 +58,20 @@ public class NoTrack {
     }
 
     @Test
+    public void goodMultiSquash() {
+        Suggestion[] s = new Suggestion[] {
+            new Suggestion(2, 3, new int[] {2,3}),
+            new Suggestion(5, 3, new int[] {5,6})
+        };
+        boolean[] auth = WaysideController.squash(s);
+        boolean[] expected = new boolean[] {
+            false, false, true, true,
+            false, true, true, false, false
+        };
+        Assert.assertArrayEquals(expected, auth);
+    }
+
+    @Test
     public void squshSpeed() {
         Suggestion[] s = new Suggestion[] {
             new Suggestion(2, 3, new int[] {2, 3})
