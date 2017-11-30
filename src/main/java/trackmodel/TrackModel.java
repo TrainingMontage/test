@@ -712,7 +712,6 @@ public class TrackModel implements TrackModelInterface {
     public boolean setSwitch(int blockId, boolean active) {
         StaticBlock blk = this.getStaticBlock(blockId);
         int rootId = blk.getStaticSwitch().getRoot().getId();
-        System.err.println("setSwitch for block " + rootId + " to " + active);
 
         this.switchState.put(blockId, active);
         return this.switchState.get(blockId);
@@ -740,7 +739,6 @@ public class TrackModel implements TrackModelInterface {
     public boolean getSwitch(int blockId) {
         StaticBlock blk = this.getStaticBlock(blockId);
         int rootId = blk.getStaticSwitch().getRoot().getId();
-        System.err.println("getSwitch for block " + rootId);
 
         Boolean state = this.switchState.get(rootId);
         return state == null ? false : state;
@@ -1473,16 +1471,6 @@ public class TrackModel implements TrackModelInterface {
                 return false;
             }
         }
-
-        // if (next_block.getNextId() == curr_block.getId() || (next_block.getStaticSwitch() != null && next_block.getStaticSwitch().getActiveLeaf().equals(curr_block))) {
-        //     System.err.println("false");
-        //     return false;
-        // } else {
-        //     System.err.println("true");
-        //     return true;
-        // }
-
-
     }
 
     /**

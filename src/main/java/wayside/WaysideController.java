@@ -343,7 +343,6 @@ public class WaysideController {
         for (int block = 1; block < TRACK_LEN; block++) {
             tm.setAuthority(block, authority[block]);
             if (contains(SWITCH_BLOCKS, block)) {
-                System.out.println("Setting switch at block " + block);
                 tm.setSwitch(block, switchState[block]);
             }
             tm.setSpeed(block, speed[block]);
