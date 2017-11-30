@@ -3,6 +3,8 @@ package wayside;
 
 import java.io.*;
 import java.util.Scanner;
+import java.util.List;
+import java.util.ArrayList;
 
 public class PlcImporter {
 
@@ -12,9 +14,12 @@ public class PlcImporter {
     private int[] defaultSwitches;
     private int[] activeSwitches;
     private int[] crossings;
+    private List<int[]> paths;
 
     public PlcImporter(File file) throws IOException {
         Scanner in = new Scanner(file);
+        paths = new ArrayList<int[]>();
+
         read_file: while (in.hasNextLine()) {
             String temp = in.nextLine();
             String[] line = temp.split("=");
@@ -42,6 +47,9 @@ public class PlcImporter {
                     break;
                 case "CROSSINGS":
                     crossings = buildArray(rhs);
+                    break;
+                case "PATHS":
+                    paths.add(buildArray(rhs));
                     break;
             }
         }
@@ -78,5 +86,13 @@ public class PlcImporter {
 
     public int[] getCrossings() {
         return crossings;
+    }
+
+    public int[][] getPaths() {
+        int[][] p = new int[paths.size()][];
+        for (int i = 0; i < p.length; i++) {
+            p[i] = (int[]) paths.get(i);
+        }
+        return p;
     }
 }
