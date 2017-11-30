@@ -150,7 +150,8 @@ public class TrainControllerTest {
 //        Train _train = new Train(1, 1);
 //        StaticBlock _block = new StaticBlock();
         TrainController instance = new TrainController(false, _train, 1);
-        instance.setStaticBlock(_block);
+        instance.theMap.setCurrentBlock(_block);
+//        instance.setStaticBlock(_block);
         instance.setKu(500);
         instance.setT(1.0);
         doReturn(-1).when(_train).getBeacon();
@@ -180,7 +181,8 @@ public class TrainControllerTest {
         StaticBlock _block = mock(StaticBlock.class);
 //        StaticBlock _block = new StaticBlock();
         TrainController instance = new TrainController(false, _train, 1);
-        instance.setStaticBlock(_block);
+//        instance.setStaticBlock(_block);
+        instance.theMap.setCurrentBlock(_block);
         instance.setKu(500);
         instance.setT(1.0);
         doReturn(-1).when(_train).getBeacon();
