@@ -19,7 +19,7 @@ public class TrainModelTest{
     @Before
     public void setup() {
         TrackModel _tm = mock(TrackModel.class);
-        testTrainObject = new Train(1, 0, _tm);
+        testTrainObject = new Train(1, 0, _tm, 1);
     }
 
     @Test
