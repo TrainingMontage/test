@@ -40,11 +40,12 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     // sqlite jdbc
-    compile 'org.xerial:sqlite-jdbc:3.7.2'
+    compile 'org.xerial:sqlite-jdbc:3.20.1'
 
 
     //mockito
     testCompile 'org.mockito:mockito-core:1.10.19'
+    compile 'org.mockito:mockito-core:1.10.19'
 
 
     // CTC graph libs

@@ -45,6 +45,7 @@ public class OneTrain {
             WaysideController.checkStraightLine(authority, OCC);
             Assert.assertTrue(true);
         } catch (Exception e) {
+            e.printStackTrace();
             Assert.fail(e.getMessage());
         }
     }
