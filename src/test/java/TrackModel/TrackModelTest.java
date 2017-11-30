@@ -1314,8 +1314,8 @@ public class TrackModelTest {
     @Test
     public void testGetStaticSwitchTestLineYard() throws IOException, SQLException {
         
-        TrackModel tm = TrackModel.initWithTestData();
-        StaticTrack _st = tm.getStaticTrack();
+        _tm.loadTestData();
+        StaticTrack _st = _tm.getStaticTrack();
 
         // database should now have csv data in it
         assertEquals(2, _st.getStaticSwitch(1).getRoot().getId());
