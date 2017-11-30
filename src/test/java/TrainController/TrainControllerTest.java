@@ -96,4 +96,5 @@ public class TrainControllerTest {
         double expResult = 2429.9999999999995;
         double result = instance.getPower();
         assertEquals(expResult, result, 0.0);
+	}
 }
