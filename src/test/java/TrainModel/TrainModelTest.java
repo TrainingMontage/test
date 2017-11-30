@@ -84,6 +84,8 @@ public class TrainModelTest{
     }
     @Test
     public void testSetPowerTooLarge(){
+        TrainModel tm = mock(TrainModel.class);
+        when(tm.getGrade()).thenReturn(0.5);
         testTrainObject.setPower(300000);
         assertEquals(testTrainObject.getPower(), 120000, delta);
     }
