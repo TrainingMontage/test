@@ -40,6 +40,9 @@ import org.graphstream.ui.view.ViewerListener;
 import org.graphstream.ui.view.ViewerPipe;
 import org.graphstream.ui.spriteManager.SpriteManager;
 import org.graphstream.ui.spriteManager.Sprite;
+import org.graphstream.ui.layout.springbox.implementations.SpringBox;
+import java.util.Random;
+
 
 public class CTCGUI implements ViewerListener{
     // dummy modules that the GUI needs to interact with
@@ -164,7 +167,7 @@ public class CTCGUI implements ViewerListener{
     private static boolean isNewTrain;
     
     //CTCGUI(TrackModel atrackModel, TrainModel atrainModel){
-    CTCGUI(){
+    protected CTCGUI(){
         //trackModel = atrackModel;
         //trainModel = atrainModel;
     }
@@ -312,7 +315,8 @@ public class CTCGUI implements ViewerListener{
             //e.addAttribute("ui.label",e.getId()+"");
             e.addAttribute("ui.selected", new Boolean(true));
             e.addAttribute("ui.clicked", new Boolean(true));
-            e.addAttribute("layout.weight", new Double(sb.getLength()));
+            e.addAttribute("layout.weight", 0.01);
+            // e.addAttribute("layout.weight", new Double(sb.getLength()));
             e.addAttribute("track.time", new Double(sb.getLength()/sb.getSpeedLimit()));
             e.addAttribute("track.occupied", new Boolean(false));
             if(sb.isCrossing()){
@@ -329,7 +333,8 @@ public class CTCGUI implements ViewerListener{
         StaticSwitch ss2 = sb2.getStaticSwitch();
         Node nodePrev = graph.getNode(ss2.getRoot().getId()+" "+ss2.getDefaultLeaf().getId()+" "+ss2.getActiveLeaf().getId());
         Edge greenIn = graph.addEdge("151", nodePrev, nodeYard, false);
-        greenIn.addAttribute("layout.weight", new Double(t.getStaticBlock(151).getLength()));
+        greenIn.addAttribute("layout.weight", 0.0);
+        // greenIn.addAttribute("layout.weight", new Double(t.getStaticBlock(151).getLength()));
         greenIn.addAttribute("track.time", new Double(t.getStaticBlock(151).getLength()/t.getStaticBlock(151).getSpeedLimit()));
         greenIn.addAttribute("track.occupied", new Boolean(false));
         greenIn.addAttribute("track.isCrossing", new Boolean(false));
@@ -339,7 +344,8 @@ public class CTCGUI implements ViewerListener{
         ss2 = sb2.getStaticSwitch();
         Node nodeNext = graph.getNode(ss2.getRoot().getId()+" "+ss2.getDefaultLeaf().getId()+" "+ss2.getActiveLeaf().getId());
         Edge greenOut = graph.addEdge("152", nodeYard, nodeNext, false);
-        greenOut.addAttribute("layout.weight", new Double(t.getStaticBlock(152).getLength()));
+        greenOut.addAttribute("layout.weight", 0.0);
+        // greenOut.addAttribute("layout.weight", new Double(t.getStaticBlock(152).getLength()));
         greenOut.addAttribute("track.time", new Double(t.getStaticBlock(152).getLength()/t.getStaticBlock(152).getSpeedLimit()));
         greenOut.addAttribute("track.occupied", new Boolean(false));
         greenOut.addAttribute("track.isCrossing", new Boolean(false));
@@ -348,182 +354,231 @@ public class CTCGUI implements ViewerListener{
         
         //hardcode some positions to make the graph look better
         //nodeYard.setAttribute("xyz", 9, 4, 0);
-        //graph.getNode("14 15").setAttribute("xyz", 7, 2, 0);
-        //graph.getNode("78 79").setAttribute("xyz", 3, 1, 0);
-        //graph.getNode("84 85").setAttribute("xyz", 0, 0, 0);
+        nodeYard.addAttribute("layout.frozen");
+        nodeYard.setAttribute("xy", 455, 600-213);
         
-        ArrayList<Node> toBePos = new ArrayList<Node>();
-        ArrayList<Node> donePos = new ArrayList<Node>();
-        nodeYard.setAttribute("xyz", 0.0, 0.0, 0.0);
-        donePos.add(nodeYard);
-        Iterator<Edge> edgeIter = nodeYard.getEachEdge().iterator();
+        graph.getNode("63 64").addAttribute("layout.frozen");
+        graph.getNode("63 64").setAttribute("xy", 454, 600-335);
+
+        graph.getNode("67 68").addAttribute("layout.frozen");
+        graph.getNode("67 68").setAttribute("xy", 459, 600-508);
         
-        while(edgeIter.hasNext()){
-            Edge toAdd = (Edge) edgeIter.next();
-            if(!donePos.contains(toAdd.getNode0()) && !toBePos.contains(toAdd.getNode0())){
-                toBePos.add(toAdd.getNode0());
-            }
-            if(!donePos.contains(toAdd.getNode1()) && !toBePos.contains(toAdd.getNode1())){
-                toBePos.add(toAdd.getNode1());
-            }
-        }//only add the nodes connected to the yard for now. this ensures that we start building off of the yard node
+        graph.getNode("74 75").addAttribute("layout.frozen");
+        graph.getNode("74 75").setAttribute("xy", 389, 600-590);
         
-        while(toBePos.size() != 0){
-            Node nn = toBePos.get(0);
-            Iterator neighIter = nn.getNeighborNodeIterator();
-            int numPlacedNeigh = 0;
-            double avgx = 0;
-            double avgy = 0;
-            Node neigh;
-            boolean yardCpy = false;
-            Node lastNode = null;
-            while(neighIter.hasNext()){
-                neigh = (Node)neighIter.next();
-                if(neigh.equals(nodeYard)){
-                    yardCpy = true;
-                }
-                if(donePos.contains(neigh)){
-                    lastNode = neigh;
-                    numPlacedNeigh++;
-                    Object[] pos = neigh.getAttribute("xyz");
-                    avgx += ((Double) pos[0]);
-                    avgy += ((Double) pos[1]);
-                    //could do a weighted avg b/t edges
-                }
-            }
-            avgx = avgx/numPlacedNeigh;
-            avgy = avgy/numPlacedNeigh;
-            System.out.println("numPlacedNeigh: "+numPlacedNeigh);
-            System.out.println("yardCpy: "+yardCpy);
-            if(numPlacedNeigh == 3 || (numPlacedNeigh == 2 && nn.getDegree() != 3)){
-                //if 2 or 3 neighbors are placed
-                nn.setAttribute("xyz", avgx, avgy, 0.0);
-                toBePos.remove(nn);
-                donePos.add(nn);
-            }else{
-                //if 1 neighbor is placed
-                if(yardCpy){//this placed neighbor is the yard
-                    //place up or down
-                    if(donePos.size() == 1){
-                        //the yard is the only node placed
-                        avgx = 1.0;
-                        avgy = 1.0;
-                    }else{
-                        avgx = -1.0;
-                        avgy = -1.0;
-                    }
-                    nn.setAttribute("xyz", avgx, avgy, 0.0);
-                    toBePos.remove(nn);
-                    donePos.add(nn);
-                }else{
-                    //not next to the yard
-                    if(lastNode.getDegree() == 2){
-                        //previously placed node is not a switch, follow the last angle
-                        Node prevPrevNode = null;
-                        Iterator prevNeighIter = lastNode.getNeighborNodeIterator();
-                        while(prevNeighIter.hasNext()){
-                            prevPrevNode = (Node) prevNeighIter.next();
-                            if(!prevPrevNode.equals(nn)){
-                                break;//we found the last 2 nodes, now we can find the angle b/t them
-                            }
-                        }
-                        Object[] pos2 = prevPrevNode.getAttribute("xyz");
-                        avgx += avgx - ((Double) pos2[0]);
-                        avgy += avgy - ((Double) pos2[1]);
-                        nn.setAttribute("xyz", avgx, avgy, 0.0);
-                        toBePos.remove(nn);
-                        donePos.add(nn);
-                    }else{
-                        //previously placed node is a switch, make angles even
-                        Node prevPrevNode1 = null;
-                        Node prevPrevNode2 = null;
-                        Iterator prevNeighIter = lastNode.getNeighborNodeIterator();
-                        while(prevNeighIter.hasNext()){
-                            prevPrevNode1 = (Node) prevNeighIter.next();
-                            if(!prevPrevNode1.equals(nn)){
-                                if(prevPrevNode2 == null){
-                                    prevPrevNode2 = prevPrevNode1;
-                                }else{
-                                    break;//we found the last 2 nodes, now we can find the angle b/t them
-                                }
-                            }
-                        }
-                        //if other 2 from switch are placed
-                        if(donePos.contains(prevPrevNode1) && donePos.contains(prevPrevNode2)){
-                            //this is messy
-                            System.out.println("my mess");
-                            System.out.println(lastNode.getId());
-                            System.out.println(prevPrevNode1.getId());
-                            System.out.println(prevPrevNode2.getId());
-                            Object[] pos1 = lastNode.getAttribute("xyz");
-                            Object[] pos2 = prevPrevNode1.getAttribute("xyz");
-                            Object[] pos3 = prevPrevNode2.getAttribute("xyz");
-                            double x0 = (Double) pos1[0];
-                            double y0 = (Double) pos1[1];
-                            double x1 = (((Double) pos2[0]) + ((Double) pos3[0]))/2;
-                            double y1 = (((Double) pos2[1]) + ((Double) pos3[1]))/2;
-                            double m = (y1-y0)/(x1-x0);
-                            avgx = Math.sqrt(1/(1+m*m))+x0;
-                            double negavgx = -avgx;
-                            avgy = y0+m*(avgx-x0);
-                            double negavgy = y0+m*(negavgx-x0);
-                            if((avgx-x1)*(avgx-x1)+(avgy-y1)*(avgy-y1) > (negavgx-x1)*(negavgx-x1)+(negavgy-y1)*(negavgy-y1)){
-                                //oops we put the new line on the wrong side
-                                System.out.println("negative stuff");
-                                avgx = negavgx;
-                                avgy = negavgy;
-                            }
-                        }else{
-                            //only one of the switch nodes is placed
-                            if(donePos.contains(prevPrevNode2)){
-                                prevPrevNode1 = prevPrevNode2;
-                            }//now the already placed node is in prevPrevNode1. we no longer care about prevPrevNode2
-                            //find the point where prevPrevNode1 would be rotated 120 degrees around the switch center
-                            Object[] pos1 = lastNode.getAttribute("xyz");
-                            Object[] pos2 = prevPrevNode1.getAttribute("xyz");
-                            double x0 = (Double) pos1[0];//pivot point
-                            double y0 = (Double) pos1[1];
-                            double x1 = (Double) pos2[0];//point to rotate
-                            double y1 = (Double) pos2[1];
-                            double s = Math.sin(2*Math.PI/3);//-120 degrees in radians
-                            double c = Math.cos(2*Math.PI/3);
+        graph.getNode("84 85").addAttribute("layout.frozen");
+        graph.getNode("84 85").setAttribute("xy", 139, 600-590);
+
+        graph.getNode("88 89").addAttribute("layout.frozen");
+        graph.getNode("88 89").setAttribute("xy", 43, 600-590);
+
+        graph.getNode("96 97").addAttribute("layout.frozen");
+        graph.getNode("96 97").setAttribute("xy", 72, 600-508);
+
+        graph.getNode("101 102").addAttribute("layout.frozen");
+        graph.getNode("101 102").setAttribute("xy", 282, 600-575);
+
+        graph.getNode("117 118").addAttribute("layout.frozen");
+        graph.getNode("117 118").setAttribute("xy", 427, 600-387);
+
+        graph.getNode("144 145").addAttribute("layout.frozen");
+        graph.getNode("144 145").setAttribute("xy", 116, 600-299);
+
+        graph.getNode("149 150").addAttribute("layout.frozen");
+        graph.getNode("149 150").setAttribute("xy", 59, 600-252);
+
+        graph.getNode("27 28").addAttribute("layout.frozen");
+        graph.getNode("27 28").setAttribute("xy", 94, 600-162);
+
+        graph.getNode("35 36").addAttribute("layout.frozen");
+        graph.getNode("35 36").setAttribute("xy", 136, 600-262);
+
+        graph.getNode("56 57").addAttribute("layout.frozen");
+        graph.getNode("56 57").setAttribute("xy", 357, 600-262);
+
+        graph.getNode("20 21").addAttribute("layout.frozen");
+        graph.getNode("20 21").setAttribute("xy", 104, 600-27);
+        
+        graph.getNode("10 11").addAttribute("layout.frozen");
+        graph.getNode("10 11").setAttribute("xy", 380, 600-55);
+
+        // ArrayList<Node> toBePos = new ArrayList<Node>();
+        // ArrayList<Node> donePos = new ArrayList<Node>();
+        // nodeYard.setAttribute("xyz", 0.0, 0.0, 0.0);
+
+        // donePos.add(nodeYard);
+        // Iterator<Edge> edgeIter = nodeYard.getEachEdge().iterator();
+        
+        // while(edgeIter.hasNext()){
+        //     Edge toAdd = (Edge) edgeIter.next();
+        //     if(!donePos.contains(toAdd.getNode0()) && !toBePos.contains(toAdd.getNode0())){
+        //         toBePos.add(toAdd.getNode0());
+        //     }
+        //     if(!donePos.contains(toAdd.getNode1()) && !toBePos.contains(toAdd.getNode1())){
+        //         toBePos.add(toAdd.getNode1());
+        //     }
+        // }//only add the nodes connected to the yard for now. this ensures that we start building off of the yard node
+        
+        // while(toBePos.size() != 0){
+        //     Node nn = toBePos.get(0);
+        //     Iterator neighIter = nn.getNeighborNodeIterator();
+        //     int numPlacedNeigh = 0;
+        //     double avgx = 0;
+        //     double avgy = 0;
+        //     Node neigh;
+        //     boolean yardCpy = false;
+        //     Node lastNode = null;
+        //     while(neighIter.hasNext()){
+        //         neigh = (Node)neighIter.next();
+        //         if(neigh.equals(nodeYard)){
+        //             yardCpy = true;
+        //         }
+        //         if(donePos.contains(neigh)){
+        //             lastNode = neigh;
+        //             numPlacedNeigh++;
+        //             Object[] pos = neigh.getAttribute("xyz");
+        //             avgx += ((Double) pos[0]);
+        //             avgy += ((Double) pos[1]);
+        //             //could do a weighted avg b/t edges
+        //         }
+        //     }
+        //     avgx = avgx/numPlacedNeigh;
+        //     avgy = avgy/numPlacedNeigh;
+        //     System.out.println("numPlacedNeigh: "+numPlacedNeigh);
+        //     System.out.println("yardCpy: "+yardCpy);
+        //     if(numPlacedNeigh == 3 || (numPlacedNeigh == 2 && nn.getDegree() != 3)){
+        //         //if 2 or 3 neighbors are placed
+        //         nn.setAttribute("xyz", avgx, avgy, 0.0);
+        //         toBePos.remove(nn);
+        //         donePos.add(nn);
+        //     }else{
+        //         //if 1 neighbor is placed
+        //         if(yardCpy){//this placed neighbor is the yard
+        //             //place up or down
+        //             if(donePos.size() == 1){
+        //                 //the yard is the only node placed
+        //                 avgx = 1.0;
+        //                 avgy = 1.0;
+        //             }else{
+        //                 avgx = -1.0;
+        //                 avgy = -1.0;
+        //             }
+        //             nn.setAttribute("xyz", avgx, avgy, 0.0);
+        //             toBePos.remove(nn);
+        //             donePos.add(nn);
+        //         }else{
+        //             //not next to the yard
+        //             if(lastNode.getDegree() == 2){
+        //                 //previously placed node is not a switch, follow the last angle
+        //                 Node prevPrevNode = null;
+        //                 Iterator prevNeighIter = lastNode.getNeighborNodeIterator();
+        //                 while(prevNeighIter.hasNext()){
+        //                     prevPrevNode = (Node) prevNeighIter.next();
+        //                     if(!prevPrevNode.equals(nn)){
+        //                         break;//we found the last 2 nodes, now we can find the angle b/t them
+        //                     }
+        //                 }
+        //                 Object[] pos2 = prevPrevNode.getAttribute("xyz");
+        //                 avgx += avgx - ((Double) pos2[0]);
+        //                 avgy += avgy - ((Double) pos2[1]);
+        //                 nn.setAttribute("xyz", avgx, avgy, 0.0);
+        //                 toBePos.remove(nn);
+        //                 donePos.add(nn);
+        //             }else{
+        //                 //previously placed node is a switch, make angles even
+        //                 Node prevPrevNode1 = null;
+        //                 Node prevPrevNode2 = null;
+        //                 Iterator prevNeighIter = lastNode.getNeighborNodeIterator();
+        //                 while(prevNeighIter.hasNext()){
+        //                     prevPrevNode1 = (Node) prevNeighIter.next();
+        //                     if(!prevPrevNode1.equals(nn)){
+        //                         if(prevPrevNode2 == null){
+        //                             prevPrevNode2 = prevPrevNode1;
+        //                         }else{
+        //                             break;//we found the last 2 nodes, now we can find the angle b/t them
+        //                         }
+        //                     }
+        //                 }
+        //                 //if other 2 from switch are placed
+        //                 if(donePos.contains(prevPrevNode1) && donePos.contains(prevPrevNode2)){
+        //                     //this is messy
+        //                     System.out.println("my mess");
+        //                     System.out.println(lastNode.getId());
+        //                     System.out.println(prevPrevNode1.getId());
+        //                     System.out.println(prevPrevNode2.getId());
+        //                     Object[] pos1 = lastNode.getAttribute("xyz");
+        //                     Object[] pos2 = prevPrevNode1.getAttribute("xyz");
+        //                     Object[] pos3 = prevPrevNode2.getAttribute("xyz");
+        //                     double x0 = (Double) pos1[0];
+        //                     double y0 = (Double) pos1[1];
+        //                     double x1 = (((Double) pos2[0]) + ((Double) pos3[0]))/2;
+        //                     double y1 = (((Double) pos2[1]) + ((Double) pos3[1]))/2;
+        //                     double m = (y1-y0)/(x1-x0);
+        //                     avgx = Math.sqrt(1/(1+m*m))+x0;
+        //                     double negavgx = -avgx;
+        //                     avgy = y0+m*(avgx-x0);
+        //                     double negavgy = y0+m*(negavgx-x0);
+        //                     if((avgx-x1)*(avgx-x1)+(avgy-y1)*(avgy-y1) > (negavgx-x1)*(negavgx-x1)+(negavgy-y1)*(negavgy-y1)){
+        //                         //oops we put the new line on the wrong side
+        //                         System.out.println("negative stuff");
+        //                         avgx = negavgx;
+        //                         avgy = negavgy;
+        //                     }
+        //                 }else{
+        //                     //only one of the switch nodes is placed
+        //                     if(donePos.contains(prevPrevNode2)){
+        //                         prevPrevNode1 = prevPrevNode2;
+        //                     }//now the already placed node is in prevPrevNode1. we no longer care about prevPrevNode2
+        //                     //find the point where prevPrevNode1 would be rotated 120 degrees around the switch center
+        //                     Object[] pos1 = lastNode.getAttribute("xyz");
+        //                     Object[] pos2 = prevPrevNode1.getAttribute("xyz");
+        //                     double x0 = (Double) pos1[0];//pivot point
+        //                     double y0 = (Double) pos1[1];
+        //                     double x1 = (Double) pos2[0];//point to rotate
+        //                     double y1 = (Double) pos2[1];
+        //                     double s = Math.sin(2*Math.PI/3);//-120 degrees in radians
+        //                     double c = Math.cos(2*Math.PI/3);
                             
-                            //translate to origin
-                            x1 -= x0;
-                            y1 -= y0;
+        //                     //translate to origin
+        //                     x1 -= x0;
+        //                     y1 -= y0;
                             
-                            //do rotation
-                            avgx = x1*c - y1*s;
-                            avgy = x1*s + y1*c;
+        //                     //do rotation
+        //                     avgx = x1*c - y1*s;
+        //                     avgy = x1*s + y1*c;
                             
-                            //translate back
-                            avgx += x0;
-                            avgy += y0;
-                        }
+        //                     //translate back
+        //                     avgx += x0;
+        //                     avgy += y0;
+        //                 }
                         
                         
-                        nn.setAttribute("xyz", avgx, avgy, 0.0);
-                        toBePos.remove(nn);
-                        donePos.add(nn);
-                    }
-                }
-            }
-            System.out.println("added node "+nn.getId()+" at pos x="+avgx+" y="+avgy);
-            //find its edges and add those
-            edgeIter = nn.getEachEdge().iterator();
-            while(edgeIter.hasNext()){
-                Edge toAdd = (Edge) edgeIter.next();
-                if(!donePos.contains(toAdd.getNode0()) && !toBePos.contains(toAdd.getNode0())){
-                    toBePos.add(toAdd.getNode0());
-                }
-                if(!donePos.contains(toAdd.getNode1()) && !toBePos.contains(toAdd.getNode1())){
-                    toBePos.add(toAdd.getNode1());
-                }
-            }
-        }
+        //                 nn.setAttribute("xyz", avgx, avgy, 0.0);
+        //                 toBePos.remove(nn);
+        //                 donePos.add(nn);
+        //             }
+        //         }
+        //     }
+        //     System.out.println("added node "+nn.getId()+" at pos x="+avgx+" y="+avgy);
+        //     //find its edges and add those
+        //     edgeIter = nn.getEachEdge().iterator();
+        //     while(edgeIter.hasNext()){
+        //         Edge toAdd = (Edge) edgeIter.next();
+        //         if(!donePos.contains(toAdd.getNode0()) && !toBePos.contains(toAdd.getNode0())){
+        //             toBePos.add(toAdd.getNode0());
+        //         }
+        //         if(!donePos.contains(toAdd.getNode1()) && !toBePos.contains(toAdd.getNode1())){
+        //             toBePos.add(toAdd.getNode1());
+        //         }
+        //     }
+        // }
         
         viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
         viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.HIDE_ONLY);
+
+        SpringBox layout = new SpringBox(false, new Random(0));
+        viewer.enableAutoLayout(layout);
+        
         fromViewer = viewer.newViewerPipe();
         fromViewer.addViewerListener(myself);
         //fromViewer.addSink(graph);
