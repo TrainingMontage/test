@@ -87,7 +87,7 @@ public class Train {
         lights = false;
         leftDoor = 0;
         rightDoor = 0;
-        time = 0;
+        time = Environment.clock;
 
         //Create controller
         // trainController = new TrainController(this, this.blockId);
