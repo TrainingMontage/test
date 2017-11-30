@@ -28,4 +28,12 @@ public class TestPlcImport {
         int[] expected = new int[] {13,28,57,63,77,85};
         Assert.assertArrayEquals(expected, plc.getSwitchBlocks());
     }
+
+    @Test
+    public void switchDefault() {
+        Assert.assertArrayEquals(
+            new int[] {12,29,58,62,76,86},
+            plc.getDefaultSwitches()
+        );
+    }
 }
