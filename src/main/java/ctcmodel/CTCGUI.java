@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.lang.Math;
 import shared.Convert;
-//import shared.BlockStatus;
+import shared.Environment;
 import wayside.WaysideController;
 import trackmodel.TrackModel;
 import trackmodel.StaticBlock;
@@ -68,6 +68,8 @@ public class CTCGUI implements ViewerListener{
     private static JButton autoButton;
     private static JButton newTrainButton;
     private static JButton launchTrainButton;
+    // global textArea handles
+    private static JTextArea temperatureText = null;
     // train textArea handles
     private static JTextArea trainIDText;
     private static JTextArea trainBlockText;
@@ -643,15 +645,15 @@ public class CTCGUI implements ViewerListener{
         //c.gridheight = 1;
         panelCTCInfo.add(label,c);
         
-        textArea = new JTextArea("70°F");
-        textArea.setEnabled(false);
-        textArea.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
+        temperatureText = new JTextArea("70°F");
+        temperatureText.setEnabled(false);
+        temperatureText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         c.gridx = 1;
         c.gridy = 0;
         //c.gridwidth = 1;
         //c.gridheight = 1;
-        panelCTCInfo.add(textArea,c);
+        panelCTCInfo.add(temperatureText,c);
         
         textArea = new JTextArea("5000 people");
         textArea.setEnabled(false);
@@ -1470,6 +1472,10 @@ public class CTCGUI implements ViewerListener{
     }
     public static void handleGraphEvents(){
         fromViewer.pump();
+        temperature = Environment.temperature;
+        if(temperatureText != null){
+            temperatureText.setText(temperature+"°F");
+        }
     }
     public static Graph getGraph(){
         return graph;
