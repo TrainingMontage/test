@@ -129,20 +129,21 @@ public class TrainController implements TrainControllerInterface {
         UIexists = true;
     }
     
-    public TrainController(Train newTrain, int trainID) {
+    public TrainController(Train newTrain, int trackID) {
         theTrain = newTrain;
         lastTime = Environment.clock;// seconds
         // ultimate gain
-        ku = 0;
+        ku = 500;
     
         // Set initial last values to 0
         lastE = 0;
         lastU = 0;
         // Set initial power to 0
         Pcmd = 0;
-        ID = trainID;
+//        ID = trainID;
+        ID = newTrain.getTrainId();
         addTrainController(this);
-        theMap = new MapTracker(theTrain);
+        theMap = new MapTracker(theTrain, trackID);
 //        theTrack = TrackModel.getTrackModel().getStaticTrack();
 //        try {
 //            theTrack = TrackModel.getTrackModel().getStaticTrack();
@@ -202,6 +203,7 @@ public class TrainController implements TrainControllerInterface {
     }
     
     protected void doAllUpdates() {
+        System.out.println("Doing Updates");
         // Update Time
         updateTime();
         // Update map
@@ -437,6 +439,7 @@ public class TrainController implements TrainControllerInterface {
      @Override
      public double getPower(){
         doAllUpdates();
+        System.out.println("Getting Power");
         if(estop)
         {
             applyEBrakes = true;
@@ -534,6 +537,8 @@ public class TrainController implements TrainControllerInterface {
         System.err.println("Final e:\t" + e);
         lastU = u;
         lastE = e;
+        
+        System.out.println("Returning " + Pcmd + " Watts");
         return Pcmd;
     }
     

@@ -36,6 +36,14 @@ public class MapTracker {
         this.theTrain = theTrain;
     }
     
+    public MapTracker(Train theTrain, int blockID) {
+        lastBlock = null;
+        theTrack = TrackModel.getTrackModel().getStaticTrack();
+        currentBlock = theTrack.getStaticBlock(blockID);
+        getNextBlock();
+        this.theTrain = theTrain;
+    }
+    
     public MapTracker(StaticTrack initTrack, Train theTrain) {
         theTrack = initTrack;
         lastBlock = null;
@@ -66,6 +74,7 @@ public class MapTracker {
      * Computes the remaining distance the train can go before reaching the
      * end of its authority.
      * 
+     * @param distanceTraveled is the distance along the block the train has already traveled
      * @return the distance to the end of authority
      */
     protected double distToAuthEnd(double distanceTraveled) { 
