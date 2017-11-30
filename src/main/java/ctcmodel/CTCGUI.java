@@ -38,6 +38,8 @@ import org.graphstream.ui.swingViewer.ViewPanel;
 import org.graphstream.ui.view.Viewer;
 import org.graphstream.ui.view.ViewerListener;
 import org.graphstream.ui.view.ViewerPipe;
+import org.graphstream.ui.spriteManager.SpriteManager;
+import org.graphstream.ui.spriteManager.Sprite;
 
 public class CTCGUI implements ViewerListener{
     // dummy modules that the GUI needs to interact with
@@ -94,11 +96,15 @@ public class CTCGUI implements ViewerListener{
     private static JTextArea trackCrossingText;
     // line combobox
     private static JComboBox<String> lineComboBox;
+    // textArea and button for select
+    private static JTextArea selectBlockText;
+    private static JButton selectBlockButton;
     
     private static Graph graph;
     //private static ViewPanel graphView;
     private static Viewer viewer;
     private static ViewerPipe fromViewer;
+    private static SpriteManager sm;
     private static final String styleSheet =
         "node {" +
         "   size: 1px;" +
@@ -115,10 +121,34 @@ public class CTCGUI implements ViewerListener{
         "}" +
         "edge {" +
         "	fill-color: darkgreen;" +
-        "   text-offset: -10, 8;" +
+        "   text-offset: 0, 8;" +
+        "   text-alignment: along;" +
         "   text-background-mode: plain;" +
         "   arrow-size: 4, 4;" +
+        "   size: 2px;" +
         "}" +
+        "node:clicked {" +
+        "   fill-color: red;" +
+        "}" +
+        //"edge:clicked {" +
+        //"   fill-color: red;" +
+        //"}" +
+        "node:selected {" +
+        "   fill-color: red;" +
+        "}" +
+        //"sprite#occupied {" +
+        //"   fill-color: red;" +
+        //"   shape: flow;" +
+        //"   size: 30px;" +
+        //"}" +
+        //"sprite#unoccupied {" +
+        //"   fill-color: red;" +
+        //"   shape: flow;" +
+        //"   size: 30px;" +
+        //"}" +
+        //"edge:selected {" +
+        //"   fill-color: red;" +
+        //"}" +
         "edge.broken {" +
         "   fill-color: purple;" +
         "}" +
@@ -145,6 +175,9 @@ public class CTCGUI implements ViewerListener{
         }
         System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         graph = new SingleGraph("Map");//allow directed graphs
+        //sm = new SpriteManager(graph);
+        //Sprite occ = sm.addSprite("occupied");
+        //Sprite unocc = sm.addSprite("unoccupied");
         graph.addAttribute("ui.stylesheet",styleSheet);
         
         
@@ -277,6 +310,8 @@ public class CTCGUI implements ViewerListener{
             }
             //add edge properties
             //e.addAttribute("ui.label",e.getId()+"");
+            e.addAttribute("ui.selected", new Boolean(true));
+            e.addAttribute("ui.clicked", new Boolean(true));
             e.addAttribute("layout.weight", new Double(sb.getLength()));
             e.addAttribute("track.time", new Double(sb.getLength()/sb.getSpeedLimit()));
             e.addAttribute("track.occupied", new Boolean(false));
@@ -286,6 +321,7 @@ public class CTCGUI implements ViewerListener{
             }else{
                 e.addAttribute("track.isCrossing", new Boolean(false));
             }
+            //unocc.attachToEdge(""+blockId);
         }
         //manually add the blocks connected to the yard
         //green line: 151 in, 152 out
@@ -529,6 +565,7 @@ public class CTCGUI implements ViewerListener{
         JPanel panelTrackInfo = new JPanel();
         JPanel panelSchedule = new JPanel();
         JPanel panelTrackGraph = new JPanel();
+        JPanel panelSelect = new JPanel();
         
         //new Dimension(width,height)
         panelCTCInfo.setPreferredSize(new Dimension(300,62));
@@ -536,6 +573,7 @@ public class CTCGUI implements ViewerListener{
         panelTrackInfo.setPreferredSize(new Dimension(300,310));
         panelSchedule.setPreferredSize(new Dimension(600,300));
         panelTrackGraph.setPreferredSize(new Dimension(700,643));
+        panelSelect.setPreferredSize(new Dimension(300,50));
         
         // -------------------- menu bar --------------------
         //menuCreateTrain.addActionListener(new ActionListener() {
@@ -913,6 +951,49 @@ public class CTCGUI implements ViewerListener{
         c.gridheight = 1;
         pane.add(panelTrainInfo,c);
         
+        // -------------------- Select panel --------------------
+        panelSelect.setLayout(new GridBagLayout());
+        
+        selectBlockText = new JTextArea("");
+        selectBlockText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
+        c.insets = new Insets(0,0,0,0);//top,left,bottom,right
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        panelSelect.add(selectBlockText,c);
+        
+        
+        
+        selectBlockButton = new JButton("Select Block");
+        selectBlockButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                //read textArea and check if it is edge id
+                String s = selectBlockText.getText();
+                Edge e = graph.getEdge(s);
+                //if yes call fill
+                if(e != null){
+                    fillTrackInfo(Integer.parseInt(s));
+                }
+            }
+        });
+        //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
+        c.gridx = 1;
+        //c.gridy = 0;
+        //c.gridwidth = 1;
+        //c.gridheight = 1;
+        panelSelect.add(selectBlockButton,c);
+        
+        
+        
+        panelSelect.setBorder(BorderFactory.createTitledBorder("Select Panel"));
+        c.insets = new Insets(2,2,2,2);//top,left,bottom,right
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth = 2;
+        c.gridheight = 1;
+        pane.add(panelSelect,c);
+        
         // -------------------- Track panel --------------------
         panelTrackInfo.setLayout(new GridBagLayout());
         
@@ -1173,7 +1254,7 @@ public class CTCGUI implements ViewerListener{
         c.gridx = 2;
         c.gridy = 1;
         c.gridwidth = 2;
-        c.gridheight = 2;
+        c.gridheight = 3;
         pane.add(panelTrackInfo,c);
         
         // -------------------- Schedule panel --------------------
@@ -1182,7 +1263,7 @@ public class CTCGUI implements ViewerListener{
         panelSchedule.setBorder(BorderFactory.createTitledBorder("Schedule Panel"));
         c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         c.gridx = 0;
-        c.gridy = 3;
+        c.gridy = 4;
         c.gridwidth = 4;
         c.gridheight = 1;
         pane.add(panelSchedule,c);
@@ -1333,7 +1414,7 @@ public class CTCGUI implements ViewerListener{
         c.gridx = 4;
         c.gridy = 0;
         c.gridwidth = 1;
-        c.gridheight = 4;
+        c.gridheight = 5;
         pane.add(panelTrackGraph,c);
     }
     
@@ -1432,7 +1513,15 @@ public class CTCGUI implements ViewerListener{
         }
         
         //if there is a train there, fill train info
-        isNewTrain = false;
+        //but first disable the train data entering
+        if(isNewTrain){
+            trainSpeedText.setEnabled(false);
+            trainAuthorityText.setEnabled(false);
+            trainDestinationText.setEnabled(false);
+            lineComboBox.setEnabled(false);
+            launchTrainButton.setEnabled(false);
+            isNewTrain = false;
+        }
         CTCTrainData data = CTCModel.getTrainData(blockID);
         if(data != null){
             trainIDText.setText("" + data.getTrainID());
