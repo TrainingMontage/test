@@ -107,7 +107,7 @@ public class Train {
 
 
         //GUI
-        gui = new TrainModelGUI();
+        gui = new TrainModelGUI(this);
         gui.setVisible(true);
         gui.temperatureDisplayLabel.setText(String.format("%.1f", temperature) + "F");
         gui.lengthDisplayLabel.setText(String.format("%.2f",length*3.28084) + "ft");
