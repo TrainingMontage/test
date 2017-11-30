@@ -379,7 +379,7 @@ public class Train {
         displacement = (dVelocity * (currentTime - lastTime) + (.5*(acceleration)*Math.pow((currentTime-lastTime),2)));
         time = Environment.clock;
         gui.currentTrainSpeedDisplayLabel.setText(String.format("%.2f", (getCurrentVelocity() * 2.23694)) + "mph");
-        gui.accelerationDisplayLabel.setText(String.format("%.6f", acceleration) + "");
+        gui.accelerationDisplayLabel.setText(String.format("%.4f", acceleration) + "");
         return displacement;
 
     }
