@@ -168,6 +168,9 @@ public class CTCModel{
     public static void update(){
         int current_time = Environment.clock;
         
+        //process any click events on the graph
+        CTCGUI.handleGraphEvents();
+        
         //add a train if the user entered one during the last update
         addTrain();
         
@@ -277,6 +280,15 @@ public class CTCModel{
                         }
                         data2.setAuthority(newAuth);
                         addSuggestion(data2.getTrainID(),data2.getSpeed(),newAuth);
+                        //ensure the suggestion block changes
+                        for(int i = 0; i < suggestions.size(); i++){
+                            Suggestion oldSugg = suggestions.get(i);
+                            if(oldSugg.blockId == oldBlockId){
+                                Suggestion newSugg = new Suggestion(blockId, oldSugg.speed, oldSugg.authority);
+                                suggestions.set(i,newSugg);
+                                break;
+                            }
+                        }
                         data2.setBlockID(blockId);
                         data2.historyAdd(oldBlockId);
                         allHistory.add(oldBlockId);

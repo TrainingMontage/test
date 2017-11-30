@@ -36,8 +36,10 @@ import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
 import org.graphstream.ui.swingViewer.ViewPanel;
 import org.graphstream.ui.view.Viewer;
+import org.graphstream.ui.view.ViewerListener;
+import org.graphstream.ui.view.ViewerPipe;
 
-public class CTCGUI {
+public class CTCGUI implements ViewerListener{
     // dummy modules that the GUI needs to interact with
     //private static TrackModel trackModel;
     //private static TrainModel trainModel;
@@ -51,6 +53,7 @@ public class CTCGUI {
     //private static int dataDestination;
     //private static JLabel trainLabel;
     // private env temperature
+    private static CTCGUI myself = null;
     private static double temperature;
     // constants for initializing GUI components
     final static boolean shouldFill = true;
@@ -93,6 +96,7 @@ public class CTCGUI {
     private static Graph graph;
     //private static ViewPanel graphView;
     private static Viewer viewer;
+    private static ViewerPipe fromViewer;
     private static final String styleSheet =
         "node {" +
         "   size: 1px;" +
@@ -132,6 +136,9 @@ public class CTCGUI {
     }
     
     public static void init(){
+        if(myself == null){
+            myself = new CTCGUI();
+        }
         System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         graph = new SingleGraph("Map");//allow directed graphs
         graph.addAttribute("ui.stylesheet",styleSheet);
@@ -475,8 +482,11 @@ public class CTCGUI {
             }
         }
         
-        
         viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+        viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.HIDE_ONLY);
+        fromViewer = viewer.newViewerPipe();
+        fromViewer.addViewerListener(myself);
+        //fromViewer.addSink(graph);
     }
     
     public static void addComponentsToPane(Container pane){
@@ -1425,7 +1435,11 @@ public class CTCGUI {
             trainBlockText.setText("" + data.getBlockID());
             trainSpeedText.setText("" + Convert.metersToFeet(data.getSpeed())*3600.0/5280.0 + " mph");//convert m/s to mph
             trainAuthorityText.setText(data.getAuthority());
-            lineComboBox.setSelectedIndex(data.getOrigin());
+            if(data.getOrigin() == 152){
+                lineComboBox.setSelectedIndex(0);
+            }else{
+                lineComboBox.setSelectedIndex(1);
+            }
             trainDestinationText.setText("" + data.getDestination());
         }else{
             //blank everything
@@ -1439,6 +1453,21 @@ public class CTCGUI {
             }
         }
         
+    }
+    //these functions have to be public void so the ViewerPipe can find them
+    public void viewClosed(String id) {
+        ;//loop = false;
+    }
+
+    public void buttonPushed(String id) {
+        System.out.println("Button pushed on node "+id);
+    }
+
+    public void buttonReleased(String id) {
+        System.out.println("Button released on node "+id);
+    }
+    public static void handleGraphEvents(){
+        fromViewer.pump();
     }
     public static Graph getGraph(){
         return graph;

@@ -92,7 +92,7 @@ public class Train {
         //Create controller
         // trainController = new TrainController(this, this.blockId);
         trainController = mock(TrainController.class);
-        when(trainController.getPower()).thenReturn(5.0);
+        when(trainController.getPower()).thenReturn(50.0);
 
         // register with track
         tm.initializeTrain(this.trainId, this.blockId);
