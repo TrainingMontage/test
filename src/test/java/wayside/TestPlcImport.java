@@ -22,4 +22,10 @@ public class TestPlcImport {
         int[] expected = new int[] {1,2,10,11,12,13};
         Assert.assertArrayEquals(expected, plc.getSwitches());
     }
+
+    @Test
+    public void switchRoots() {
+        int[] expected = new int[] {13,28,57,63,77,85};
+        Assert.assertArrayEquals(expected, plc.getSwitchBlocks());
+    }
 }

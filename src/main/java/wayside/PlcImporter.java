@@ -8,6 +8,7 @@ public class PlcImporter {
 
     private int track_len;
     private int[] switches;
+    private int[] switchBlocks;
 
     public PlcImporter(File file) throws IOException {
         Scanner in = new Scanner(file);
@@ -25,6 +26,8 @@ public class PlcImporter {
                     track_len = Integer.parseInt(rhs);
                 case "SWITCHES":
                     switches = buildArray(rhs);
+                case "SWITCH_BLOCKS":
+                    switchBlocks = buildArray(rhs);
             }
         }
     }
@@ -44,5 +47,9 @@ public class PlcImporter {
 
     public int[] getSwitches() {
         return switches;
+    }
+
+    public int[] getSwitchBlocks() {
+        return switchBlocks;
     }
 }
