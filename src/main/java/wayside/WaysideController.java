@@ -59,6 +59,8 @@ public class WaysideController {
     static int TRACK_LEN = 9;
     static int[] SWITCHES = new int[] {1};
     static int[] SWITCH_BLOCKS = new int[] {2};
+    static int[] SWITCH_ACTIVE = new int[] {8};
+    static int[] SWITCH_DEFAULT = new int[] {3};
     static int[] CROSSINGS = new int[] {};
     static int[][] PATHS = new int[][] {
         new int[] {1,2,3,4,5,6,7},
@@ -76,7 +78,9 @@ public class WaysideController {
         int FROM_YARD = 152;
         TRACK_LEN = 153;
         SWITCHES = new int[] {1, 2, 10, 11, 12, 13};
-        SWITCH_BLOCKS = new int[] {13, 28, 57, 63, 77, 85};
+        SWITCH_BLOCKS  = new int[] {13,  28,  57,  63,  77,  85};
+        SWITCH_ACTIVE  = new int[] { 1, 150, 151, 152, 101, 100};
+        SWITCH_DEFAULT = new int[] {12,  29,  58,  62,  76,  86};
         CROSSINGS = new int[] {19};
         PATHS = new int[][] {
             // The long circuit around the entire track.
@@ -118,6 +122,7 @@ public class WaysideController {
      */
     public static void init() {
         gui = new WaysideUI();
+        parseFile();
     }
 
     /**
@@ -243,11 +248,14 @@ public class WaysideController {
      */
     static boolean[] checkAndSetSwitches(boolean[] authority) {
         boolean[] pos = new boolean[TRACK_LEN];
-        for (int sw: SWITCHES) {
-            StaticSwitch ss = st.getStaticSwitch(sw);
-            int root = ss.getRoot().getId();
-            int def = ss.getDefaultLeaf().getId();
-            int active = ss.getActiveLeaf().getId();
+        for (int sw = 0; sw < SWITCHES.length; sw++) {
+            int root = SWITCH_BLOCKS[sw];
+            int def = SWITCH_DEFAULT[sw];
+            int active = SWITCH_ACTIVE[sw];
+            // StaticSwitch ss = st.getStaticSwitch(sw);
+            // int root = ss.getRoot().getId();
+            // int def = ss.getDefaultLeaf().getId();
+            // int active = ss.getActiveLeaf().getId();
             // System.err.println("A Switch:");
             // System.err.println("\troot: " + root);
             // System.err.println("\tdef: " + def);
