@@ -201,19 +201,39 @@ public class TrainControllerTest {
 //        fail("getPower failure.");
     }
     
-    /**
-     * Test of UpdateTime.
-     */
-    @Test
-    public void testUpdateTime000() {
-        System.out.println("Update Time 000");
-        Train _train = mock(Train.class);
-        TrainController instance = new TrainController(false, _train, 1);
-        Environment.clock++;
-        instance.updateTime();
-        double result = 1;
-        assertEquals(instance.t, result, 0.0);
-    }
+//    /**
+//     * Test of UpdateTime.
+//     */
+//    @Test
+//    public void testUpdateTime000() {
+//        System.out.println("Update Time 000");
+//        Train _train = mock(Train.class);
+//        TrainController instance = new TrainController(false, _train, 1);
+//        Environment.clock++;
+//        instance.updateTime();
+//        double result = 1;
+//        assertEquals(instance.t, result, 0.0);
+//    }
+    
+//    /**
+//     * Test of BlockChange.
+//     */
+//    @Test
+//    public void testBlockChange000() {
+//        System.out.println("BlockChange 000");
+//        Train _train = mock(Train.class);
+//        TrainController instance = new TrainController(false, _train, 1);
+//        StaticBlock _block = mock(StaticBlock.class);
+//        TrackModel _trkMdl = mock(TrackModel.class);
+//        StaticTrack _statTrk = mock(StaticTrack.class);
+//        doReturn(trkMdl).when.(_trkMdl)getTrackModel();
+//        doReturn(statTrk).when.(_trkMdl)getStaticTrack();
+//        doReturn(statTrk).when.(_trkMdl)getStaticTrack();
+//        Environment.clock++;
+//        instance.updateTime();
+//        double result = 1;
+//        assertEquals(instance.t, result, 0.0);
+//    }
     
      /**
      * Test of getPower method, of class TrainController.
