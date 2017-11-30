@@ -5,7 +5,6 @@
  */
 package traincontroller;
 
-import static traincontroller.TrainController.theTrack;
 import shared.*;
 import trainmodel.Train;
 import trackmodel.TrackModel;
