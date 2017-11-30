@@ -201,6 +201,7 @@ public class WaysideController {
     static boolean[] squash(Suggestion[] suggestion) {
         boolean[] authority = new boolean[TRACK_LEN];
         for (Suggestion s: suggestion) {
+            if (s.authority == null) continue;
             for (int block: s.authority) {
                 if (authority[block]) {
                     // TODO: make custom exception UnsafeSuggestion
