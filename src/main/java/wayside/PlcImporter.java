@@ -12,4 +12,8 @@ public class PlcImporter {
             String temp = in.nextLine();
         }
     }
+
+    public int getTrackLen() {
+        return 153;
+    }
 }
