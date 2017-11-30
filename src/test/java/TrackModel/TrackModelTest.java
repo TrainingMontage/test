@@ -358,8 +358,6 @@ public class TrackModelTest {
     public void testTrackModelisOccupied() throws SQLException {
         assertFalse(_tm.isOccupied(1));
 
-        // Statement stmt = _tm.conn.createStatement();
-        // stmt.execute("UPDATE blocks SET occupied = 1 WHERE id = 1;");
         _tm.blockOccupancy.put(1, true);
 
         assertTrue(_tm.isOccupied(1));
@@ -374,20 +372,6 @@ public class TrackModelTest {
         assertTrue(_tm.setOccupied(1, true));
 
         assertTrue(_tm.blockOccupancy.get(1));
-
-        // Integer occupied = null;
-        // try {
-        //     PreparedStatement stmt = _tm.conn.prepareStatement("SELECT occupied FROM blocks WHERE id = ?;");
-        //     stmt.setInt(1, 1);
-        //     ResultSet rs = stmt.executeQuery();
-
-        //     rs.next();
-        //     occupied = (Integer) rs.getObject("occupied");
-        // } catch (Exception e) {
-        //     e.printStackTrace();
-        // }
-
-        // assertEquals(occupied, (Integer) 1);
     }
 
     /**
@@ -424,8 +408,6 @@ public class TrackModelTest {
 
         assertFalse(spyTM.isOccupied(1));
 
-        // Statement stmt = spyTM.conn.createStatement();
-        // stmt.execute("UPDATE blocks SET occupied = 1 WHERE id = 1;");
         spyTM.blockOccupancy.put(1, true);
 
         assertTrue(spyTM.isOccupied(1));
@@ -652,14 +634,6 @@ public class TrackModelTest {
 
         assertTrue(_tm.switchState.get(1));
 
-        // PreparedStatement stmt = _tm.conn.prepareStatement("SELECT switch_active FROM blocks WHERE id = ?;");
-        // stmt.setInt(1, 1);
-        // ResultSet rs = stmt.executeQuery();
-
-        // rs.next();
-        // int switch_active = rs.getInt("switch_active");
-
-        // assertTrue(switch_active > 0);
     }
 
     /**
@@ -688,11 +662,6 @@ public class TrackModelTest {
 
         _tm.switchState.put(1, true);
 
-        // PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET switch_active = ? WHERE id = ?;");
-        // stmt.setInt(1, 1);
-        // stmt.setInt(2, 1);
-        // stmt.execute();
-
         assertTrue(_tm.getSwitch(1));
     }
 
@@ -705,14 +674,6 @@ public class TrackModelTest {
 
         assertTrue(_tm.blockAuthority.get(1));
 
-        // PreparedStatement stmt = _tm.conn.prepareStatement("SELECT authority FROM blocks WHERE id = ?;");
-        // stmt.setInt(1, 1);
-        // ResultSet rs = stmt.executeQuery();
-
-        // rs.next();
-        // int authority = rs.getInt("authority");
-
-        // assertTrue(authority > 0);
     }
 
     /**
@@ -723,15 +684,6 @@ public class TrackModelTest {
         assertFalse(_tm.setAuthority(1, false));
        
         assertFalse(_tm.blockAuthority.get(1));
-
-        // PreparedStatement stmt = _tm.conn.prepareStatement("SELECT authority FROM blocks WHERE id = ?;");
-        // stmt.setInt(1, 1);
-        // ResultSet rs = stmt.executeQuery();
-
-        // rs.next();
-        // int authority = rs.getInt("authority");
-
-        // assertEquals(0, authority);
     }
 
     /**
@@ -740,13 +692,6 @@ public class TrackModelTest {
     @Test
     public void testTrackModelSetSpeed() throws SQLException {
         assertEquals(14, _tm.setSpeed(1, 14), epsilon);
-
-        // PreparedStatement stmt = _tm.conn.prepareStatement("SELECT speed FROM blocks WHERE id = ?;");
-        // stmt.setInt(1, 1);
-        // ResultSet rs = stmt.executeQuery();
-
-        // rs.next();
-        // int speed = rs.getInt("speed");
 
         assertEquals(14, _tm.blockSpeed.get(1), epsilon);
     }
@@ -759,15 +704,6 @@ public class TrackModelTest {
         assertTrue(_tm.setCrossingState(1, true));
 
         assertTrue(_tm.crossingState.get(1));
-
-        // PreparedStatement stmt = _tm.conn.prepareStatement("SELECT crossing_active FROM blocks WHERE id = ?;");
-        // stmt.setInt(1, 1);
-        // ResultSet rs = stmt.executeQuery();
-
-        // rs.next();
-        // int crossing_active = rs.getInt("crossing_active");
-
-        // assertTrue(crossing_active > 0);
     }
 
     /**
@@ -778,16 +714,6 @@ public class TrackModelTest {
         assertFalse(_tm.setCrossingState(1, false));
 
         assertFalse(_tm.crossingState.get(1));
-
-
-        // PreparedStatement stmt = _tm.conn.prepareStatement("SELECT crossing_active FROM blocks WHERE id = ?;");
-        // stmt.setInt(1, 1);
-        // ResultSet rs = stmt.executeQuery();
-
-        // rs.next();
-        // int crossing_active = rs.getInt("crossing_active");
-
-        // assertEquals(0, crossing_active);
     }
 
     /**
@@ -798,10 +724,6 @@ public class TrackModelTest {
         assertFalse(_tm.getCrossingState(1));
 
         _tm.crossingState.put(1, true);
-        // PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET crossing_active = ? WHERE id = ?;");
-        // stmt.setInt(1, 1);
-        // stmt.setInt(2, 1);
-        // stmt.execute();
 
         assertTrue(_tm.getCrossingState(1));
     }
@@ -880,11 +802,6 @@ public class TrackModelTest {
     public void testTrackModelGetTrainAuthority() throws SQLException {
         assertFalse(_tm.getTrainAuthority(1));
 
-        // PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET authority = ? WHERE id = ?;");
-        // stmt.setInt(1, 1);
-        // stmt.setInt(2, 1);
-        // stmt.execute();
-
         _tm.blockAuthority.put(1, true);
 
         assertTrue(_tm.getTrainAuthority(1));
@@ -935,11 +852,6 @@ public class TrackModelTest {
 
         _tm.blockSpeed.put(1, 1.0);
 
-        // PreparedStatement stmt = _tm.conn.prepareStatement("UPDATE blocks SET speed = ? WHERE id = ?;");
-        // stmt.setInt(1, 1);
-        // stmt.setInt(2, 1);
-        // stmt.execute();
-
         assertEquals(1, _tm.getTrainSpeed(1), epsilon);
     }
 
@@ -953,9 +865,6 @@ public class TrackModelTest {
         doReturn(BlockStatus.OPERATIONAL).when(spyTM).getStatus(1);
 
         assertEquals(0, spyTM.getTrainSpeed(1), epsilon);
-
-        // Statement stmt = spyTM.conn.createStatement();
-        // stmt.execute("UPDATE blocks SET speed = 1 WHERE id = 1;");
         spyTM.blockSpeed.put(1, 1.0);
 
         assertEquals(1, spyTM.getTrainSpeed(1), epsilon);
