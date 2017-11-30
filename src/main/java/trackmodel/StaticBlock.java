@@ -26,12 +26,14 @@ public class StaticBlock {
     private String station, line;
     private StaticSwitch staticSwitch;
     private int nextId, previousId;
-    private boolean bidirectional, underground, heater, crossing;
+    private boolean bidirectional, underground, heater, crossing, needsUpdate;
 
     /**
      * Constructs the object.
      */
-    protected StaticBlock() {}
+    protected StaticBlock() {
+        needsUpdate = false;
+    }
 
     /**
      * Sets the identifier.
@@ -369,5 +371,26 @@ public class StaticBlock {
      */
     public String getLine() {
         return this.line;
+    }
+
+    /**
+     * Sets whether the block is out of date.
+     *
+     * @param      needsUpdate  if block need to be updated
+     *
+     * @return     the new needsUpdate value
+     */
+    protected boolean setNeedsUpdate(boolean needsUpdate) {
+        this.needsUpdate = needsUpdate;
+        return this.needsUpdate;
+    }
+
+    /**
+     * Gets whether the block is out of date.
+     *
+     * @return     the needsUpdate value
+     */
+    protected boolean needsUpdate() {
+        return this.needsUpdate;
     }
 }
