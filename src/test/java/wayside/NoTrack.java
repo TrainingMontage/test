@@ -67,4 +67,13 @@ public class NoTrack {
         Assert.assertEquals(3, speed[2]);
         Assert.assertEquals(0, speed[3]);
     }
+
+    @Test
+    public void squashNullAuthority() {
+        Suggestion[] s = new Suggestion[] {
+            new Suggestion(2, 3, null)
+        };
+        boolean[] authority = WaysideController.squash(s);
+        Assert.assertArrayEquals(new boolean[WaysideController.TRACK_LEN], authority);
+    }
 }
