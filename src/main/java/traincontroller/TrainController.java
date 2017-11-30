@@ -33,12 +33,12 @@ public class TrainController implements TrainControllerInterface {
     static int numTrains = 0;
     static TrainController[] allTrainControllers = new TrainController[100];
 //    static StaticTrack theTrack;
-    static MapTracker theMap;
+    static protected MapTracker theMap;
     
     protected Train theTrain;
 
     protected boolean onSwitch = false;
-    private double t; // delta time, in seconds
+    protected double t; // delta time, in seconds
     private double lastTime;
     // ultimate gain
     private double ku;
@@ -244,12 +244,12 @@ public class TrainController implements TrainControllerInterface {
     }
     */
     
-    /**
-     * Computes the remaining distance the train can go before reaching the
-     * end of its authority.
-     * 
-     * @return the distance to the end of authority
-     */
+//    /**
+//     * Computes the remaining distance the train can go before reaching the
+//     * end of its authority.
+//     * 
+//     * @return the distance to the end of authority
+//     */
     /*
     protected double distToAuthEnd() { 
         // I need the length of the block I'm on, my estimated distance traveled on
