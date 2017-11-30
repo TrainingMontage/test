@@ -43,7 +43,7 @@ public interface TrackModelInterface {
    public boolean setCrossingState(int blockId, boolean active); // setCrossing -> setCrossingState
    public boolean getCrossingState(int blockId); // getCrossing -> getCrossingState
    public boolean setAuthority(int blockId, boolean authority);
-   public int setSpeed(int blockId, int speed);
+   public double setSpeed(int blockId, double speed);
 
    // for everybody
    public StaticSwitch getStaticSwitch(int switchID);

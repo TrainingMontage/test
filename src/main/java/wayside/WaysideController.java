@@ -21,6 +21,7 @@ import shared.Suggestion;
 import trackmodel.TrackModel;
 import trackmodel.StaticBlock;
 import trackmodel.StaticSwitch;
+import trackmodel.StaticTrack;
 import wayside.WaysideUI;
 
 import java.util.List;
@@ -54,7 +55,8 @@ public class WaysideController {
      * Also, this is only the Green line.
      */
     static int TRACK_LEN = 153;
-    static int NUM_SWITCHES = 7;
+    static int[] SWITCHES = new int[] {1, 2, 10, 11, 12, 13};
+    static int[] SWITCH_BLOCKS = new int[] {13, 28, 57, 63, 77, 85};
     static int[] CROSSINGS = {19};
     static int[][] PATHS;
     private static final int INTO_YARD = 151;
@@ -62,6 +64,9 @@ public class WaysideController {
     
     static TrackModel tm = TrackModel.getTrackModel();
     static WaysideUI gui = null;
+    static StaticTrack st = tm.getStaticTrack();
+    
+    static boolean[] occupancy = new boolean[TRACK_LEN];
 
     /**
      * Initiallizes the WaysideController.
@@ -108,7 +113,7 @@ public class WaysideController {
      */
     public static void initTest() {
         TRACK_LEN = 9;
-        NUM_SWITCHES = 2;
+        SWITCHES = new int[] {1};
         CROSSINGS = null;
         PATHS = new int[][] {
             new int[] {1,2,3,4,5,6,7},
@@ -141,7 +146,7 @@ public class WaysideController {
      * @return the occupancy of the block, true if it is occupied, false otherwise.
      */
     public static boolean isOccupied(int blockId) {
-        boolean o = tm.isOccupied(blockId);
+        boolean o = occupancy[blockId];
         if (gui != null)
             gui.setOccupancy(blockId, o);
         return o;
@@ -196,6 +201,7 @@ public class WaysideController {
     static boolean[] squash(Suggestion[] suggestion) {
         boolean[] authority = new boolean[TRACK_LEN];
         for (Suggestion s: suggestion) {
+            if (s.authority == null) continue;
             for (int block: s.authority) {
                 if (authority[block]) {
                     // TODO: make custom exception UnsafeSuggestion
@@ -230,11 +236,16 @@ public class WaysideController {
      */
     static boolean[] checkAndSetSwitches(boolean[] authority) {
         boolean[] pos = new boolean[TRACK_LEN];
-        for (int sw = 1; sw < NUM_SWITCHES; sw++) {
-            StaticSwitch ss = tm.getStaticSwitch(sw);
+        for (int sw: SWITCHES) {
+            StaticSwitch ss = st.getStaticSwitch(sw);
             int root = ss.getRoot().getId();
             int def = ss.getDefaultLeaf().getId();
             int active = ss.getActiveLeaf().getId();
+            // System.err.println("A Switch:");
+            // System.err.println("\troot: " + root);
+            // System.err.println("\tdef: " + def);
+            // System.err.println("\tactive: " + active);
+            
             if (authority[def] && authority[active]) {
                 // both default and active branch cannot have authority
                 throw new RuntimeException(String.format(
@@ -262,7 +273,8 @@ public class WaysideController {
         boolean unbrokenPath = false;
 
         for (int[] path: PATHS) {
-            for (int block: path) {
+            for (int i = 0; i < path.length-1; i++) {
+                int block = path[i];
                 if (unbrokenPath) {
                     if (occupied[block]) {
                         throw new RuntimeException(String.format(
@@ -272,7 +284,8 @@ public class WaysideController {
                     // This doesn't follow the 2-block rule.
                     unbrokenPath = authority[block];
                 } else {
-                    if (occupied[block]) {
+                    // Don't want to call a train stradling two blocks an authority violation.
+                    if (occupied[block] && !occupied[path[i+1]]) {
                         unbrokenPath = true;
                     }
                 }
@@ -282,13 +295,22 @@ public class WaysideController {
     }
 
     private static boolean[] buildOccupancy() {
-        boolean[] o = new boolean[TRACK_LEN];
+        occupancy = new boolean[TRACK_LEN];
         for (int block = 1; block < TRACK_LEN; block++) {
-            o[block] = tm.isOccupied(block);
+            occupancy[block] = tm.isOccupied(block);
         }
-        return o;
+        return occupancy;
     }
     
+    // DELETE THIS WHEN DONE DEBUGGING!
+    private static void print(boolean[] array) {
+        System.err.print("{");
+        for (boolean elem: array) {
+            System.err.print(elem + ", ");
+        }
+        System.out.println("}");
+    }
+
     /**
      * How CTC presents a suggestion of speed and authority for each train.
      * The form of this suggestion can be found in the {@link shared.Suggestion} class.
@@ -297,6 +319,8 @@ public class WaysideController {
      * @param suggestion an array of Suggestion objects, one for each train.
      */
     public static void suggest(Suggestion[] suggestion) {
+        System.err.println("WC: recieved suggestions");
+        
         boolean[] authority;
         int[] speed;
         boolean[] switchState;
@@ -307,15 +331,20 @@ public class WaysideController {
             switchState = checkAndSetSwitches(authority);
             crossings = checkStraightLine(authority, buildOccupancy());
         } catch (RuntimeException re) {
+            System.err.println("WC: Unsafe suggestion!");
+            re.printStackTrace();
             // write out default values.
             authority = new boolean[TRACK_LEN];
             speed = new int[TRACK_LEN];
             switchState = new boolean[TRACK_LEN];
             crossings = new boolean[TRACK_LEN];
+            re.printStackTrace();
         }
         for (int block = 1; block < TRACK_LEN; block++) {
             tm.setAuthority(block, authority[block]);
-            tm.setSwitch(block, switchState[block]);
+            if (contains(SWITCH_BLOCKS, block)) {
+                tm.setSwitch(block, switchState[block]);
+            }
             tm.setSpeed(block, speed[block]);
             tm.setCrossingState(block, crossings[block]);
 
@@ -324,6 +353,13 @@ public class WaysideController {
             gui.setSpeed(block, speed[block]);
             gui.setCrossing(block, crossings[block]);
         }
+    }
+
+    private static boolean contains(int[] array, int data) {
+        for (int elem: array) {
+            if (elem == data) return true;
+        }
+        return false;
     }
     
     /**

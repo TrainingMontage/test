@@ -59,13 +59,20 @@ public class TrackModel implements TrackModelInterface {
     protected Connection conn;
     protected int last_updated = 0;
     protected HashMap<Integer, ArrayList<StaticBlock>> trainOccupancy;
+    protected HashMap<Integer, StaticBlock> staticBlockCache;
+    protected HashMap<Integer, StaticSwitch> staticSwitchCache;
+    protected HashMap<Integer, Boolean> blockOccupancy;
+    protected HashMap<Integer, Boolean> blockAuthority;
+    protected HashMap<Integer, Double> blockSpeed;
+    protected HashMap<Integer, Boolean> switchState;
+    protected HashMap<Integer, Boolean> crossingState;
 
     /**
      * Constructs the Track Model (privately).
      *
      * constructs the database.
      */
-    private TrackModel() {
+    protected TrackModel() {
         try {
             // construct the database
             String sql_create_blocks =
@@ -109,6 +116,7 @@ public class TrackModel implements TrackModelInterface {
             Class.forName("org.sqlite.JDBC");
             this.conn = DriverManager.getConnection("jdbc:sqlite::memory:");
 
+
             // create tables
             Statement stmt = conn.createStatement();
             stmt.execute(sql_create_blocks);
@@ -116,6 +124,14 @@ public class TrackModel implements TrackModelInterface {
 
             // initalize train occupancy
             this.trainOccupancy = new HashMap<Integer, ArrayList<StaticBlock>>();
+            this.staticBlockCache = new HashMap<Integer, StaticBlock>();
+            this.staticSwitchCache = new HashMap<Integer, StaticSwitch>();
+            this.blockOccupancy = new HashMap<Integer, Boolean>();
+            this.blockAuthority = new HashMap<Integer, Boolean>();
+            this.blockSpeed = new HashMap<Integer, Double>();
+            this.switchState = new HashMap<Integer, Boolean>();
+            this.crossingState = new HashMap<Integer, Boolean>();
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -176,8 +192,7 @@ public class TrackModel implements TrackModelInterface {
 
         this.clearDB();
 
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement(sql_load);
+        try (PreparedStatement stmt = this.conn.prepareStatement(sql_load)) {
             br = new BufferedReader(new FileReader(file));
             String line;
             while ( (line = br.readLine()) != null) {
@@ -260,7 +275,7 @@ public class TrackModel implements TrackModelInterface {
      * @return     True if successful, False otherwise
      */
     public boolean exportTrack(File file) {
-        try {
+        try (Statement stmt = this.conn.createStatement()) {
             // create file if it doesn't exist
             if (!file.exists()) {
                 file.createNewFile();
@@ -268,7 +283,6 @@ public class TrackModel implements TrackModelInterface {
 
             // write output to file
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-            Statement stmt = this.conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT id,region,grade,elevation,length,station,switch_root,switch_leaf,rr_crossing,underground,line,next,bidirectional,speed_limit,beacon,heater FROM blocks");
 
             boolean first = true;
@@ -318,8 +332,7 @@ public class TrackModel implements TrackModelInterface {
      * Truncates all tables in database
      */
     protected void clearDB() {
-        try {
-            Statement stmt = this.conn.createStatement();
+        try (Statement stmt = this.conn.createStatement()) {
             stmt.execute("DELETE FROM blocks;");
             stmt.execute("DELETE FROM trains;");
         } catch (Exception e) {
@@ -338,32 +351,21 @@ public class TrackModel implements TrackModelInterface {
         this.update();
 
         switch (this.getStatus(blockId)) {
-            case BROKEN:
-            case IN_REPAIR:
-            case FORCE_OCCUPIED:
-            case TRACK_CIRCUIT_FAILURE:
-            case POWER_FAILURE:
-                return true;
-            case FORCE_UNOCCUPIED:
-                return false;
-            case OPERATIONAL:
-            default:
-                break;
+        case BROKEN:
+        case IN_REPAIR:
+        case FORCE_OCCUPIED:
+        case TRACK_CIRCUIT_FAILURE:
+        case POWER_FAILURE:
+            return true;
+        case FORCE_UNOCCUPIED:
+            return false;
+        case OPERATIONAL:
+        default:
+            break;
         }
 
-        Integer occupied = null;
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT occupied FROM blocks WHERE id = ?;");
-            stmt.setInt(1, blockId);
-            ResultSet rs = stmt.executeQuery();
-
-            rs.next();
-            occupied = (Integer) rs.getObject("occupied");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        return occupied != null && occupied > 0;
+        Boolean occupied = blockOccupancy.get(blockId);
+        return occupied == null ? false : occupied;
     }
 
     /**
@@ -375,19 +377,8 @@ public class TrackModel implements TrackModelInterface {
      * @return     the new value for occupied
      */
     protected boolean setOccupied(int blockId, boolean occupied) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET occupied = ? WHERE id = ?;");
-            if (occupied) {
-                stmt.setInt(1, 1);
-            } else {
-                stmt.setNull(1, java.sql.Types.INTEGER);
-            }
-            stmt.setInt(2, blockId);
-            stmt.execute();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return occupied;
+        blockOccupancy.put(blockId, occupied);
+        return blockOccupancy.get(blockId);
     }
 
     /**
@@ -398,8 +389,8 @@ public class TrackModel implements TrackModelInterface {
     public ArrayList<Integer> getBlockIds() {
         ArrayList<Integer> blocks = new ArrayList<Integer>();
 
-        try {
-            Statement stmt = this.conn.createStatement();
+        try (Statement stmt = this.conn.createStatement()) {
+
             ResultSet rs = stmt.executeQuery("SELECT id FROM blocks;");
 
             while (rs.next()) {
@@ -420,8 +411,8 @@ public class TrackModel implements TrackModelInterface {
     public ArrayList<Integer> getSwitchIds() {
         ArrayList<Integer> switches = new ArrayList<Integer>();
 
-        try {
-            Statement stmt = this.conn.createStatement();
+        try (Statement stmt = this.conn.createStatement()) {
+
             ResultSet rs = stmt.executeQuery("SELECT DISTINCT switch_root as id FROM blocks where switch_root is not NULL;");
 
             while (rs.next()) {
@@ -442,8 +433,7 @@ public class TrackModel implements TrackModelInterface {
     public ArrayList<Integer> getTrainIds() {
         ArrayList<Integer> trains = new ArrayList<Integer>();
 
-        try {
-            Statement stmt = this.conn.createStatement();
+        try (Statement stmt = this.conn.createStatement()) {
             ResultSet rs = stmt.executeQuery("SELECT id FROM trains;");
 
             while (rs.next()) {
@@ -464,7 +454,12 @@ public class TrackModel implements TrackModelInterface {
      * @return     The static block.
      */
     public StaticBlock getStaticBlock(int blockId) {
-        return getStaticBlock(blockId, null);
+        StaticBlock blk = staticBlockCache.get(blockId);
+        if (blk == null || blk.needsUpdate()) {
+            // update block
+            staticBlockCache.put(blockId, getStaticBlock(blockId, null));
+        }
+        return staticBlockCache.get(blockId);
     }
 
     /**
@@ -476,8 +471,7 @@ public class TrackModel implements TrackModelInterface {
      * @return     The static block.
      */
     protected StaticBlock getStaticBlock(int blockId, StaticSwitch staticSwitch) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT * FROM blocks WHERE id = ?");
+        try (PreparedStatement stmt = this.conn.prepareStatement("SELECT * FROM blocks WHERE id = ?")) {
             stmt.setInt(1, blockId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -522,11 +516,12 @@ public class TrackModel implements TrackModelInterface {
             block.setStaticSwitch(staticSwitch);
 
             // determine and set previous id
-            stmt = this.conn.prepareStatement("SELECT id FROM blocks WHERE next = ? AND next <> id");
-            stmt.setInt(1, blockId);
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-                block.setPreviousId(rs.getInt("id"));                
+            try (PreparedStatement sub_stmt = this.conn.prepareStatement("SELECT id FROM blocks WHERE next = ? AND next <> id")) {
+                sub_stmt.setInt(1, blockId);
+                rs = sub_stmt.executeQuery();
+                if (rs.next()) {
+                    block.setPreviousId(rs.getInt("id"));
+                }
             }
 
             return block;
@@ -544,15 +539,20 @@ public class TrackModel implements TrackModelInterface {
      * @return     The static switch.
      */
     public StaticSwitch getStaticSwitch(int switchId) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement(
-                                         "SELECT A.switch_root as switch_id, A.id as root_id, B.id as inactive_id, C.id as active_id " +
-                                         "FROM blocks A " +
-                                         "LEFT JOIN blocks B " +
-                                         "ON (A.switch_root = B.switch_leaf) " +
-                                         "LEFT JOIN blocks C " +
-                                         "ON (A.switch_root = C.switch_leaf)" +
-                                         "WHERE A.switch_root = ? AND ABS(A.id - B.id) = 1 AND B.id <> C.id");
+        StaticSwitch sw = staticSwitchCache.get(switchId);
+        if (sw != null) {
+            return sw;
+        }
+
+        String statement = "SELECT A.switch_root as switch_id, A.id as root_id, B.id as inactive_id, C.id as active_id " +
+                           "FROM blocks A " +
+                           "LEFT JOIN blocks B " +
+                           "ON (A.switch_root = B.switch_leaf) " +
+                           "LEFT JOIN blocks C " +
+                           "ON (A.switch_root = C.switch_leaf)" +
+                           "WHERE A.switch_root = ? AND ABS(A.id - B.id) = 1 AND B.id <> C.id";
+
+        try (PreparedStatement stmt = this.conn.prepareStatement(statement)) {
             stmt.setInt(1, switchId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -561,10 +561,11 @@ public class TrackModel implements TrackModelInterface {
             int inactive_id = rs.getInt("inactive_id");
             int active_id = rs.getInt("active_id");
 
-            StaticSwitch sw = new StaticSwitch(rs.getInt("switch_id"));
+            sw = new StaticSwitch(rs.getInt("switch_id"));
             sw.setRoot(getStaticBlock(root_id, sw));
             sw.setDefaultLeaf(getStaticBlock(inactive_id, sw));
             sw.setActiveLeaf(getStaticBlock(active_id, sw));
+            staticSwitchCache.put(switchId, sw);
             return sw;
 
         } catch (Exception e) {
@@ -581,11 +582,11 @@ public class TrackModel implements TrackModelInterface {
      * @return     true if successful, false otherwise
      */
     protected boolean setRegion(int blockId, String region) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET region = ? WHERE id = ?;");
+        try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET region = ? WHERE id = ?;")) {
             stmt.setString(1, region);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
             return true;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -601,11 +602,11 @@ public class TrackModel implements TrackModelInterface {
      * @return     true if successful, false otherwise
      */
     protected boolean setLength(int blockId, double length) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET length = ? WHERE id = ?;");
+        try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET length = ? WHERE id = ?;")) {
             stmt.setDouble(1, length);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
             return true;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -621,11 +622,11 @@ public class TrackModel implements TrackModelInterface {
      * @return     true if successful, false otherwise
      */
     protected boolean setSpeedLimit(int blockId, double speed_limit) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET speed_limit = ? WHERE id = ?;");
+        try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET speed_limit = ? WHERE id = ?;")) {
             stmt.setDouble(1, speed_limit);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
             return true;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -641,11 +642,11 @@ public class TrackModel implements TrackModelInterface {
      * @return     true if successful, false otherwise
      */
     protected boolean setElevation(int blockId, double elevation) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET elevation = ? WHERE id = ?;");
+        try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET elevation = ? WHERE id = ?;")) {
             stmt.setDouble(1, elevation);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
             return true;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -661,11 +662,11 @@ public class TrackModel implements TrackModelInterface {
      * @return     true if successful, false otherwise
      */
     protected boolean setGrade(int blockId, double grade) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET grade = ? WHERE id = ?;");
+        try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET grade = ? WHERE id = ?;")) {
             stmt.setDouble(1, grade);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
             return true;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -681,16 +682,11 @@ public class TrackModel implements TrackModelInterface {
      * @return     new value of the switch (active/inactive)
      */
     public boolean setSwitch(int blockId, boolean active) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET switch_active = ? WHERE id = ?;");
-            stmt.setInt(1, active ? 1 : 0);
-            stmt.setInt(2, blockId);
-            stmt.execute();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        StaticBlock blk = this.getStaticBlock(blockId);
+        int rootId = blk.getStaticSwitch().getRoot().getId();
 
-        return active;
+        this.switchState.put(blockId, active);
+        return this.switchState.get(blockId);
     }
 
     /**
@@ -701,17 +697,11 @@ public class TrackModel implements TrackModelInterface {
      * @return     The switch state. (True for engaged)
      */
     public boolean getSwitch(int blockId) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT switch_active FROM blocks WHERE id = ?");
-            stmt.setInt(1, blockId);
-            ResultSet rs = stmt.executeQuery();
-            rs.next();
+        StaticBlock blk = this.getStaticBlock(blockId);
+        int rootId = blk.getStaticSwitch().getRoot().getId();
 
-            return rs.getInt("switch_active") > 0 ? true : false;
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Boolean state = this.switchState.get(rootId);
+        return state == null ? false : state;
     }
 
     /**
@@ -722,17 +712,9 @@ public class TrackModel implements TrackModelInterface {
      *
      * @return     the new authority value
      */
-    public boolean setAuthority(int blockId, boolean authority) {        
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET authority = ? WHERE id = ?;");
-            stmt.setInt(1, authority ? 1 : 0);
-            stmt.setInt(2, blockId);
-            stmt.execute();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        return authority;
+    public boolean setAuthority(int blockId, boolean authority) {
+        blockAuthority.put(blockId, authority);
+        return blockAuthority.get(blockId);
     }
 
     /**
@@ -743,17 +725,8 @@ public class TrackModel implements TrackModelInterface {
      * @return     The authority
      */
     public boolean getAuthority(int blockId) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT authority FROM blocks WHERE id = ?");
-            stmt.setInt(1, blockId);
-            ResultSet rs = stmt.executeQuery();
-            rs.next();
-
-            return rs.getInt("authority") > 0 ? true : false;
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Boolean authority = blockAuthority.get(blockId);
+        return authority == null ? false : authority;
     }
 
     /**
@@ -764,17 +737,9 @@ public class TrackModel implements TrackModelInterface {
      *
      * @return     the new suggested speed
      */
-    public int setSpeed(int blockId, int speed) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET speed = ? WHERE id = ?;");
-            stmt.setInt(1, speed);
-            stmt.setInt(2, blockId);
-            stmt.execute();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        return speed;
+    public double setSpeed(int blockId, double speed) {
+        blockSpeed.put(blockId, speed);
+        return blockSpeed.get(blockId);
     }
 
     /**
@@ -785,16 +750,8 @@ public class TrackModel implements TrackModelInterface {
      * @return     The crossing state.
      */
     public boolean getCrossingState(int blockId) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT crossing_active FROM blocks WHERE id = ?");
-            stmt.setInt(1, blockId);
-            ResultSet rs = stmt.executeQuery();
-            rs.next();
-
-            return rs.getInt("crossing_active") > 0 ? true : false;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Boolean state = this.crossingState.get(blockId);
+        return state == null ? false : state;
     }
 
     /**
@@ -806,16 +763,8 @@ public class TrackModel implements TrackModelInterface {
      * @return     The new crossing state
      */
     public boolean setCrossingState(int blockId, boolean active) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET crossing_active = ? WHERE id = ?;");
-            stmt.setInt(1, active ? 1 : 0);
-            stmt.setInt(2, blockId);
-            stmt.execute();
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return active;
+        this.crossingState.put(blockId, active);
+        return this.crossingState.get(blockId);
     }
 
     /**
@@ -829,8 +778,7 @@ public class TrackModel implements TrackModelInterface {
      * wasn't right.
      */
     public boolean setSignal(int blockId, boolean active) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET signal = ? WHERE id = ?;");
+        try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET signal = ? WHERE id = ?;")) {
             stmt.setInt(1, active ? 1 : 0);
             stmt.setInt(2, blockId);
             stmt.execute();
@@ -851,8 +799,7 @@ public class TrackModel implements TrackModelInterface {
      * wasn't right.
      */
     public boolean getSignal(int blockId) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT signal FROM blocks WHERE id = ?");
+        try (PreparedStatement stmt = this.conn.prepareStatement("SELECT signal FROM blocks WHERE id = ?")) {
             stmt.setInt(1, blockId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -877,10 +824,9 @@ public class TrackModel implements TrackModelInterface {
     public boolean initializeTrain(int trainId, int starting_blockId) {
         String sql_load = "INSERT INTO trains " +
                           "(id,curr_block,position,direction,reported_change,reported_passengers,loaded_passengers) " +
-                          "VALUES (?, ?, ?, 0, 0, 0, 0);";
+                          "VALUES (?, ?, ?, 1, 0, 0, 0);";
 
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement(sql_load);
+        try (PreparedStatement stmt = this.conn.prepareStatement(sql_load)) {
 
             int i = 1;
             stmt.setInt(i++, trainId);  // train id
@@ -902,28 +848,20 @@ public class TrackModel implements TrackModelInterface {
      *
      * wasn't valid
      */
-    public boolean getTrainAuthority(int trainId){
+    public boolean getTrainAuthority(int trainId) {
         this.update();
 
-        switch (this.getStatus(this.getTrainBlock(trainId))) {
-            case COMM_FAILURE:
-                return false;
-            case OPERATIONAL:
-            default:
-                break;
+        Integer blkId = this.getTrainBlock(trainId);
+
+        switch (this.getStatus(blkId)) {
+        case COMM_FAILURE:
+            return false;
+        case OPERATIONAL:
+        default:
+            break;
         }
 
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT authority FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
-            stmt.setInt(1, trainId);
-            ResultSet rs = stmt.executeQuery();
-            rs.next();
-
-            Integer authority = (Integer) rs.getObject("authority");
-            return authority == null ? false : true;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return this.getAuthority(blkId);
     }
 
     /**
@@ -938,26 +876,17 @@ public class TrackModel implements TrackModelInterface {
     public double getTrainSpeed(int trainId) {
         this.update();
 
-        switch (this.getStatus(this.getTrainBlock(trainId))) {
-            case COMM_FAILURE:
-                return -1;
-            case OPERATIONAL:
-            default:
-                break;
+        int blkId = this.getTrainBlock(trainId);
+        switch (this.getStatus(blkId)) {
+        case COMM_FAILURE:
+            return -1;
+        case OPERATIONAL:
+        default:
+            break;
         }
 
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT speed FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
-            stmt.setInt(1, trainId);
-            ResultSet rs = stmt.executeQuery();
-            rs.next();
-
-            Double speed = (Double) rs.getObject("speed");
-            return speed == null ? 0 : speed;
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Double speed = this.blockSpeed.get(blkId);
+        return speed == null ? 0 : speed;
     }
 
     /**
@@ -974,8 +903,7 @@ public class TrackModel implements TrackModelInterface {
 
         // beacon is directly read by the train, not communicated by the track. COMM_FAILURE doesn't affect this.
 
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT beacon FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
+        try (PreparedStatement stmt = this.conn.prepareStatement("SELECT beacon FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?")) {
             stmt.setInt(1, trainId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -1003,13 +931,12 @@ public class TrackModel implements TrackModelInterface {
      */
     public boolean isIcyTrack(int trainId) {
         this.update();
-        
+
         if (Environment.temperature > FREEZING) {
             return false;
         }
 
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT heater FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
+        try (PreparedStatement stmt = this.conn.prepareStatement("SELECT heater FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?")) {
             stmt.setInt(1, trainId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -1032,9 +959,8 @@ public class TrackModel implements TrackModelInterface {
      */
     public double getGrade(int trainId) {
         this.update();
-        
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT grade FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?");
+
+        try (PreparedStatement stmt = this.conn.prepareStatement("SELECT grade FROM blocks bl left join trains tr on tr.curr_block = bl.id WHERE tr.id = ?")) {
             stmt.setInt(1, trainId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -1055,8 +981,7 @@ public class TrackModel implements TrackModelInterface {
      *
      */
     protected BlockStatus getStatus(int blockId) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT status FROM blocks WHERE id = ?");
+        try (PreparedStatement stmt = this.conn.prepareStatement("SELECT status FROM blocks WHERE id = ?")) {
             stmt.setInt(1, blockId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -1080,8 +1005,7 @@ public class TrackModel implements TrackModelInterface {
      * wasn't valid
      */
     protected BlockStatus setStatus(int blockId, BlockStatus status) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET status = ? WHERE id = ?;");
+        try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET status = ? WHERE id = ?;")) {
             stmt.setInt(1, status.ordinal());
             stmt.setInt(2, blockId);
             stmt.execute();
@@ -1135,7 +1059,7 @@ public class TrackModel implements TrackModelInterface {
      * @param      trainId  The train identifier
      */
     protected void updateTrain(int trainId) {
-        Train train = this.getTrainModelFromTrainTracker(trainId); 
+        Train train = this.getTrainModelFromTrainTracker(trainId);
         double displacement = train.getDisplacement();
         double train_length = train.getLength();
 
@@ -1174,13 +1098,16 @@ public class TrackModel implements TrackModelInterface {
         for (StaticBlock block : occupancyList) {
             sum += block.getLength();
         }
-        while (sum > train_length)  {
+        double overhang = sum - occupancyList.get(occupancyList.size() - 1).getLength() - train_length + this.getTrainPosition(trainId);
+        while (overhang > occupancyList.get(0).getLength())  {
+            System.err.println("Occupancy trail: " + sum + " > " + train_length + " - " + occupancyList.get(0));
             occupancyList.remove(0);
 
             sum = 0;
             for (StaticBlock block : occupancyList) {
                 sum += block.getLength();
             }
+            overhang = sum - occupancyList.get(occupancyList.size() - 1).getLength() - train_length + this.getTrainPosition(trainId);
         }
         this.trainOccupancy.put(trainId, occupancyList);
     }
@@ -1193,8 +1120,7 @@ public class TrackModel implements TrackModelInterface {
      * @return     The train's position within the block
      */
     protected double getTrainPosition(int trainId) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT position FROM trains WHERE id = ?");
+        try (PreparedStatement stmt = this.conn.prepareStatement("SELECT position FROM trains WHERE id = ?")) {
             stmt.setInt(1, trainId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -1217,8 +1143,8 @@ public class TrackModel implements TrackModelInterface {
      * wasn't valid
      */
     private double setTrainPosition(int trainId, double position) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET position = ? WHERE id = ?;");
+        System.err.println("Setting Train " + trainId + " to position " + position);
+        try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET position = ? WHERE id = ?;")) {
             stmt.setDouble(1, position);
             stmt.setInt(2, trainId);
             stmt.execute();
@@ -1239,8 +1165,7 @@ public class TrackModel implements TrackModelInterface {
      * wasn't valid
      */
     private boolean getTrainDirection(int trainId) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT direction FROM trains WHERE id = ?");
+        try (PreparedStatement stmt = this.conn.prepareStatement("SELECT direction FROM trains WHERE id = ?")) {
             stmt.setInt(1, trainId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -1261,8 +1186,7 @@ public class TrackModel implements TrackModelInterface {
      * @return     The train's direction within the block
      */
     private boolean setTrainDirection(int trainId, boolean direction) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET direction = ? WHERE id = ?;");
+        try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET direction = ? WHERE id = ?;")) {
             stmt.setInt(1, direction ? 1 : 0);
             stmt.setInt(2, trainId);
             stmt.execute();
@@ -1280,8 +1204,7 @@ public class TrackModel implements TrackModelInterface {
      * @return     The static block that train is on
      */
     protected int getTrainBlock(int trainId) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT curr_block FROM trains WHERE id = ?");
+        try (PreparedStatement stmt = this.conn.prepareStatement("SELECT curr_block FROM trains WHERE id = ?")) {
             stmt.setInt(1, trainId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -1304,8 +1227,7 @@ public class TrackModel implements TrackModelInterface {
      * wasn't valid
      */
     protected int setTrainBlock(int trainId, int block) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET curr_block = ? WHERE id = ?;");
+        try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET curr_block = ? WHERE id = ?;")) {
             stmt.setDouble(1, block);
             stmt.setInt(2, trainId);
             stmt.execute();
@@ -1324,22 +1246,25 @@ public class TrackModel implements TrackModelInterface {
      * @return     { description_of_the_return_value }
      */
     protected StaticBlock nextBlock(StaticBlock curr_block, boolean direction) {
+        System.err.println("Getting next block. Curr block: " + curr_block + " " + direction);
         StaticSwitch sw = curr_block.getStaticSwitch();
         StaticBlock next = this.getStaticBlock(curr_block.getNextId());
         if (sw != null && ((sw.contains(next) && direction) || (!sw.contains(next) && !direction))) {
             // moving towards a switch
 
             if (curr_block.equals(sw.getRoot())) { // current block is the root
-                return this.getSwitch(sw.getId()) ? sw.getActiveLeaf() : sw.getDefaultLeaf();
+                return this.getSwitch(curr_block.getId()) ? sw.getActiveLeaf() : sw.getDefaultLeaf();
             }
             if (curr_block.equals(sw.getActiveLeaf())) { // current block is the active leaf
-                if (this.getSwitch(sw.getId())) {
+                System.err.println(curr_block.getId());
+                System.err.println(this.getSwitch(curr_block.getId()));
+                if (this.getSwitch(curr_block.getId())) {
                     return sw.getRoot();
                 }
                 throw new CrashIntoSwitchException();
             }
             if (curr_block.equals(sw.getDefaultLeaf())) { // current block is the default leaf
-                if (!this.getSwitch(sw.getId())) {
+                if (!this.getSwitch(curr_block.getId())) {
                     return sw.getRoot();
                 }
                 throw new CrashIntoSwitchException();
@@ -1349,8 +1274,7 @@ public class TrackModel implements TrackModelInterface {
                 return this.getStaticBlock(curr_block.getNextId());
             } else {
                 // lookup and return previous block
-                try {
-                    PreparedStatement stmt = this.conn.prepareStatement("SELECT id FROM blocks WHERE next = ?");
+                try (PreparedStatement stmt = this.conn.prepareStatement("SELECT id FROM blocks WHERE next = ?")) {
                     stmt.setInt(1, curr_block.getId());
                     ResultSet rs = stmt.executeQuery();
                     rs.next();
@@ -1365,18 +1289,44 @@ public class TrackModel implements TrackModelInterface {
     }
 
     /**
-     * { function_description }
+     * determines a new direction based on current and next block
      *
      * @param      curr_block  The curr block
      * @param      next_block  The next block
      *
-     * @return     { description_of_the_return_value }
+     * @return     the direction relative to the next block
      */
     protected boolean nextDirection(StaticBlock curr_block, StaticBlock next_block) {
-        if (next_block.getNextId() == curr_block.getId() || (next_block.getStaticSwitch() != null && next_block.getStaticSwitch().getActiveLeaf().equals(curr_block))) {
-            return false;
+        System.err.print("Getting next direction: " + curr_block + " -> " + next_block + " : ");
+        StaticSwitch sw = curr_block.getStaticSwitch();
+        if (sw != null && sw.contains(next_block)) {
+            // going over a switch
+            if (sw.getRoot().equals(curr_block)) { // root node
+                if (next_block.getNextId() == curr_block.getId()) {
+                    System.err.println("false");
+                    return false;
+                } else {
+                    System.err.println("true");
+                    return true;
+                }
+            } else {
+                if (sw.getRoot().getNextId() == sw.getActiveLeaf().getId() || sw.getRoot().getNextId() == sw.getDefaultLeaf().getId()) {
+                    System.err.println("false");
+                    return false;
+                } else {
+                    System.err.println("true");
+                    return true;
+                }
+            }
         } else {
-            return true;
+            // linear
+            if (curr_block.getNextId() == next_block.getId() && next_block.getNextId() != curr_block.getId()) {
+                System.err.println("true");
+                return true;
+            } else {
+                System.err.println("false");
+                return false;
+            }
         }
     }
 
@@ -1386,8 +1336,9 @@ public class TrackModel implements TrackModelInterface {
     protected void updateOccupancies() {
         try {
             // destroy previous occupancy
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET occupied = 0;");
-            stmt.execute();
+            this.blockOccupancy = new HashMap<Integer, Boolean>();
+            // stmt = this.conn.prepareStatement("UPDATE blocks SET occupied = 0;");
+            // stmt.execute();
 
             for (Map.Entry<Integer, ArrayList<StaticBlock>> entry : this.trainOccupancy.entrySet()) {
                 Integer key = entry.getKey();
@@ -1414,8 +1365,7 @@ public class TrackModel implements TrackModelInterface {
      * @return     true if change has been reported, false otherwise
      */
     protected boolean getTrainReportedBlockChange(int trainId) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT reported_change FROM trains WHERE id = ?");
+        try (PreparedStatement stmt = this.conn.prepareStatement("SELECT reported_change FROM trains WHERE id = ?")) {
             stmt.setInt(1, trainId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -1435,8 +1385,7 @@ public class TrackModel implements TrackModelInterface {
      * @return     new reported_change value
      */
     protected boolean setTrainReportedBlockChange(int trainId, boolean reported_change) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET reported_change = ? WHERE id = ?;");
+        try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET reported_change = ? WHERE id = ?;")) {
             stmt.setDouble(1, reported_change ? 1 : 0);
             stmt.setInt(2, trainId);
             stmt.execute();
@@ -1457,7 +1406,7 @@ public class TrackModel implements TrackModelInterface {
         this.update();
 
         // This is detected directly by the train, it's not affected by a comms failure
-        
+
         if (!this.getTrainReportedBlockChange(trainId)) {
             this.setTrainReportedBlockChange(trainId, true);
             return true;
@@ -1473,8 +1422,7 @@ public class TrackModel implements TrackModelInterface {
      * @return     true if change has been reported, false otherwise
      */
     protected boolean getTrainReportedPassenger(int trainId) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT reported_passengers FROM trains WHERE id = ?");
+        try (PreparedStatement stmt = this.conn.prepareStatement("SELECT reported_passengers FROM trains WHERE id = ?")) {
             stmt.setInt(1, trainId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -1494,8 +1442,7 @@ public class TrackModel implements TrackModelInterface {
      * @return     new reported_passengers value
      */
     protected boolean setTrainReportedPassenger(int trainId, boolean reported_passengers) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET reported_passengers = ? WHERE id = ?;");
+        try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET reported_passengers = ? WHERE id = ?;")) {
             stmt.setDouble(1, reported_passengers ? 1 : 0);
             stmt.setInt(2, trainId);
             stmt.execute();
@@ -1513,8 +1460,7 @@ public class TrackModel implements TrackModelInterface {
      * @return     true if change has been loaded, false otherwise
      */
     protected boolean getTrainLoadedPassenger(int trainId) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("SELECT loaded_passengers FROM trains WHERE id = ?");
+        try (PreparedStatement stmt = this.conn.prepareStatement("SELECT loaded_passengers FROM trains WHERE id = ?")) {
             stmt.setInt(1, trainId);
             ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -1534,8 +1480,7 @@ public class TrackModel implements TrackModelInterface {
      * @return     new loaded_passengers value
      */
     protected boolean setTrainLoadedPassenger(int trainId, boolean loaded_passengers) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET loaded_passengers = ? WHERE id = ?;");
+        try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET loaded_passengers = ? WHERE id = ?;")) {
             stmt.setDouble(1, loaded_passengers ? 1 : 0);
             stmt.setInt(2, trainId);
             stmt.execute();
@@ -1554,8 +1499,8 @@ public class TrackModel implements TrackModelInterface {
      */
     public int getTrainPassengers(int trainId) {
         this.update();
-        
-        Train train = this.getTrainModelFromTrainTracker(trainId); 
+
+        Train train = this.getTrainModelFromTrainTracker(trainId);
 
         if (!this.getTrainReportedPassenger(trainId) && this.getStaticBlock(this.getTrainBlock(trainId)).getStation() != null) {
             this.setTrainReportedPassenger(trainId, true);
@@ -1581,11 +1526,12 @@ public class TrackModel implements TrackModelInterface {
      * @return     new value of the underground flag
      */
     protected boolean setUnderground(int blockId, boolean underground) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET underground = ? WHERE id = ?;");
+        try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET underground = ? WHERE id = ?;")) {
+
             stmt.setInt(1, underground ? 1 : 0);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -1602,11 +1548,11 @@ public class TrackModel implements TrackModelInterface {
      * @return     new value of the heater flag
      */
     protected boolean setHeater(int blockId, boolean heater) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET heater = ? WHERE id = ?;");
+        try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET heater = ? WHERE id = ?;")) {
             stmt.setInt(1, heater ? 1 : 0);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -1623,11 +1569,11 @@ public class TrackModel implements TrackModelInterface {
      * @return     new value of the rr_crossing flag
      */
     protected boolean setCrossing(int blockId, boolean rr_crossing) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET rr_crossing = ? WHERE id = ?;");
+        try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET rr_crossing = ? WHERE id = ?;")) {
             stmt.setInt(1, rr_crossing ? 1 : 0);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -1644,11 +1590,11 @@ public class TrackModel implements TrackModelInterface {
      * @return     new value of the bidirectional flag
      */
     protected boolean setBidirectional(int blockId, boolean bidirectional) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET bidirectional = ? WHERE id = ?;");
+        try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET bidirectional = ? WHERE id = ?;")) {
             stmt.setInt(1, bidirectional ? 1 : 0);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -1665,11 +1611,11 @@ public class TrackModel implements TrackModelInterface {
      * @return     new station name
      */
     protected String setStation(int blockId, String station) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET station = ? WHERE id = ?;");
+        try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET station = ? WHERE id = ?;")) {
             stmt.setString(1, station);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -1686,11 +1632,11 @@ public class TrackModel implements TrackModelInterface {
      * @return     new line name
      */
     protected String setLine(int blockId, String line) {
-        try {
-            PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET line = ? WHERE id = ?;");
+        try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE blocks SET line = ? WHERE id = ?;")) {
             stmt.setString(1, line);
             stmt.setInt(2, blockId);
             stmt.execute();
+            setStaticBlockUpdate(blockId);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -1717,6 +1663,14 @@ public class TrackModel implements TrackModelInterface {
             return true;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    public void setStaticBlockUpdate(int blockId) {
+        StaticBlock blk = staticBlockCache.get(blockId);
+        if (blk != null) {
+            blk.setNeedsUpdate(true);
+            staticBlockCache.put(blockId, blk);
         }
     }
 }

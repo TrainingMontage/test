@@ -9,11 +9,18 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.Mock;
 import shared.Environment;
 import traincontroller.TrainController;
+import trackmodel.TrackModel;
 
 
 public class TrainModelTest{
     double delta = 0.001;
-    Train testTrainObject = new Train(1, 0);
+    Train testTrainObject;
+
+    @Before
+    public void setup() {
+        TrackModel _tm = mock(TrackModel.class);
+        testTrainObject = new Train(1, 0, _tm);
+    }
 
     @Test
     public void testGetTrainId(){
