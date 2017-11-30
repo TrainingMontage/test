@@ -1306,6 +1306,8 @@ public class TrackModelTest {
 
         // database should now have csv data in it
         assertFalse(_tm.isOccupied(152));
+        assertNotNull(_tm.getStaticBlock(63));
+        assertNotNull(_tm.getStaticBlock(63).getNextId());
     }
 
     /**
@@ -1314,10 +1316,29 @@ public class TrackModelTest {
     @Test
     public void testGetStaticSwitchTestLineYard() throws IOException, SQLException {
         
-        TrackModel tm = TrackModel.initWithTestData();
-        StaticTrack _st = tm.getStaticTrack();
+        _tm.loadTestData();
+        StaticTrack _st = _tm.getStaticTrack();
 
         // database should now have csv data in it
         assertEquals(2, _st.getStaticSwitch(1).getRoot().getId());
+    }
+
+    /**
+     * Validate getstaticSwitch(151) on test line
+     */
+    @Test
+    public void testGetInformationTestGreenLine() throws IOException, SQLException {
+        
+        File file = new File(
+            this.getClass().getClassLoader().getResource("TrackModel/green.csv").getFile());
+
+        // function should return true
+        assertTrue(_tm.importTrack(file));
+
+        StaticTrack _st = _tm.getStaticTrack();
+
+        // database should now have csv data in it
+        assertNotNull(_st.getStaticBlock(152).getNextId());
+        assertNotNull(_st.getStaticBlock(63).getNextId());
     }
 }
