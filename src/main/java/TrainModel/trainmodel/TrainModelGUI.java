@@ -22,9 +22,7 @@ public class TrainModelGUI extends javax.swing.JFrame {
     public TrainModelGUI() {
         initComponents();
     }
-    /**
-     * Creates new form TrainModelGUI
-     */
+    
     public TrainModelGUI(Train train) {
         myTrain = train;
         initComponents();
