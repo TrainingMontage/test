@@ -25,6 +25,7 @@ public class MapTracker {
     protected Train theTrain;
     protected boolean startblock = true; // At start, this is the first block you are on.
     protected boolean onSwitch;
+    protected boolean noNext = false;
 //    protected double distanceTraveled;
 
     
@@ -83,7 +84,7 @@ public class MapTracker {
         // distance of that block.
         double distToStop = currentBlock.getLength();
         // Add the distance of the next block if we have authority
-        if(theTrain.getAuthority())
+        if(theTrain.getAuthority() && !noNext)
             distToStop += theTrack.getStaticBlock(currentBlock.getNextId()).getLength();
 //        updateDistTraveled();
         distToStop -= distanceTraveled;
@@ -102,25 +103,43 @@ public class MapTracker {
                 startblock = false;
             if(onSwitch)
                 onSwitch = false;
+            lastBlock = currentBlock;
             currentBlock = nextBlock;
+            System.out.println("block change detected");
             return true;
         }
         return false;
     }
     
     protected void getNextBlock() {
-        if(startblock)
-        {
-            nextBlock = theTrack.getStaticBlock(currentBlock.getNextId());
-        }
-        else if (currentBlock.getNextId() != lastBlock.getId())
-        {
-            nextBlock = theTrack.getStaticBlock(currentBlock.getNextId());
-        }
-        else if (currentBlock.getNextId() != lastBlock.getId())
-        {
-            nextBlock = theTrack.getStaticBlock(currentBlock.getPreviousId());
-        }
+        if(theTrack == null)
+            System.out.println("Null track");
+        if(currentBlock == null)
+            System.out.println("Null current block");
+        else
+            System.out.println("Current Block: " + currentBlock.getId());
+//        try {
+            if(startblock)
+            {
+                try{
+                nextBlock = theTrack.getStaticBlock(currentBlock.getNextId());
+                } catch(NullPointerException e) {
+                    System.out.println("Trying to get previous");
+                    nextBlock = theTrack.getStaticBlock(currentBlock.getPreviousId());
+                }
+            }
+            else if (currentBlock.getNextId() != lastBlock.getId())
+            {
+                nextBlock = theTrack.getStaticBlock(currentBlock.getNextId());
+            }
+            else if (currentBlock.getNextId() != lastBlock.getId())
+            {
+                nextBlock = theTrack.getStaticBlock(currentBlock.getPreviousId());
+            }
+//        } catch (NullPointerException e) {
+//            System.err.println("No next block found");
+//            noNext = true;
+//        }
     }
     
     protected String getStation(int stationID) {

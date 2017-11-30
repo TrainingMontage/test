@@ -132,6 +132,7 @@ public class TrainController implements TrainControllerInterface {
     public TrainController(Train newTrain, int trackID) {
         theTrain = newTrain;
         lastTime = Environment.clock;// seconds
+        System.err.println("lastTime = " + lastTime);
         // ultimate gain
         ku = 500;
     
@@ -196,6 +197,11 @@ public class TrainController implements TrainControllerInterface {
         UI = new TrainControllerUI();
         UI.initialize(this);
         UIexists = true;
+    }
+    
+    public static void show() {
+        if(numTrains != 0)
+            allTrainControllers[0].UI.setVisible(true);
     }
     
     protected void setTrack(StaticTrack newTrack) {
@@ -383,7 +389,7 @@ public class TrainController implements TrainControllerInterface {
     protected double computeSafeBrake(){
         if(!checkForTrain())
             return -1;
-        double distance = 2*theTrain.getCurrentVelocity()*theTrain.getCurrentVelocity();
+        double distance = Math.abs(2*theTrain.getCurrentVelocity()*theTrain.getCurrentVelocity());
 //        distance /= theTrain.getServiceBrakes();
         distance /= Math.abs(theTrain.getServiceBrakeRate());
         System.err.println("SAFEBRAKE: dist " + distance);
@@ -415,16 +421,20 @@ public class TrainController implements TrainControllerInterface {
             distLeft = theMap.distToAuthEnd(distanceTraveled);
         if(brakeDist > distLeft)
         {
+            System.out.println("SAFE SPEED ebrake");
             // Stop immediately using ebrake
             emergencyStop();
         }
         else
 //            velocity = Math.sqrt(2*distLeft*theTrain.getServiceBrakes());
             velocity = Math.sqrt(Math.abs(2*distLeft*theTrain.getServiceBrakeRate()));
-        System.err.println("SAFESPEED; Brakedist: " + computeSafeBrake());
+//        System.err.println("SAFESPEED; Brakedist: " + computeSafeBrake());
+        System.err.println("SAFESPEED; Brakedist: " + brakeDist);
         System.err.println("SAFESPEED; Velocity: " + velocity);
+        System.out.println("TrainSuggested: " + theTrain.getSuggestedSpeed());
         if(velocity > theTrain.getSuggestedSpeed())
             velocity = theTrain.getSuggestedSpeed();
+        System.out.println("Returning " + velocity);
         return velocity;
     }
     
@@ -449,6 +459,7 @@ public class TrainController implements TrainControllerInterface {
         }
         if(stop)
         {
+            System.out.println("POWER: Service Brakes");
             theTrain.setServiceBrakes(true);
             applyBrakes = true;
 //            Pcmd = 0 - theTrain.getBrakePower();
@@ -481,7 +492,10 @@ public class TrainController implements TrainControllerInterface {
         else
         {
             Kp = ku*0.45;
-            Ki = ku*1.2/t;
+            if(t == 0)
+                Ki = ku*1.2/0.01;
+            else
+                Ki = ku*1.2/t;
         }
         
         // Truncate speed
@@ -489,11 +503,16 @@ public class TrainController implements TrainControllerInterface {
         
         // Compute velocity error
         double e = SP - PV;
+        System.err.println("POWER e = " + e);
+        System.err.println("POWER Kp = " + Kp);
+        System.err.println("POWER Ki = " + Ki);
+        System.err.println("POWER u = " + u);
         Pcmd = Kp*e + Ki*u;
         
         // Get maximum train power
         double Pmax = theTrain.getMaxPower();
-        
+        System.err.println("POWER Pmax = " + Pmax);
+        System.err.println("POWER Pcmd = " + Pcmd);
         
 //        System.err.println("Init Pcmd:\t"+Pcmd);
         if(Pcmd < Pmax){
@@ -509,15 +528,17 @@ public class TrainController implements TrainControllerInterface {
         if(Pcmd < 0) // System is slowing down
 //            if(Pcmd <= theTrain.getBrakePower()*(-1))
 //            if(e < (0 - theTrain.getBrake()))
-            if(Pcmd < -1)
+            if(Pcmd < -10)
             {
+                System.out.println("Setting brakes");
                 applyBrakes = true;
 //                Pcmd = 0 - theTrain.getBrakePower();
                 Pcmd = 0;
-                theTrain.setServiceBrakes(true);
+//                theTrain.setServiceBrakes(true);
             }
             else
             {
+                System.out.println("Coasting");
                 coast = true;
 //                Pcmd = -1;
                 Pcmd = 0;
@@ -529,8 +550,9 @@ public class TrainController implements TrainControllerInterface {
         }
         else
         {
+//            System.out.println("Setting eBrakes");
             coast = false;
-            theTrain.setEmergencyBrakes(true);
+//            theTrain.setEmergencyBrakes(true);
         }
         System.err.println("Final Power:\t" + Pcmd);
         System.err.println("Final u:\t" + u);
