@@ -13,7 +13,13 @@ public class TestPlcImport {
     }
 
     @Test
-    public void trackLen() throws IOException {
+    public void trackLen() {
         Assert.assertEquals(153, plc.getTrackLen());
+    }
+
+    @Test
+    public void switchesFromFile() {
+        int[] expected = new int[] {1,2,10,11,12,13};
+        Assert.assertArrayEquals(expected, plc.getSwitches());
     }
 }
