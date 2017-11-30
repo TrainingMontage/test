@@ -196,7 +196,7 @@ public class WaysideController {
      * Transformation from what {@link CTCModel} gives to a linear list of authority.
      * @param suggestion list of suggestions, one per train.
      * @return linear representation of authority per block.
-     * @throws RuntimeException in case I can determine the given suggestion is unsafe.
+     * @throws UnsafeSuggestion in case I can determine the given suggestion is unsafe.
      */
     static boolean[] squash(Suggestion[] suggestion) {
         boolean[] authority = new boolean[TRACK_LEN];
@@ -205,7 +205,7 @@ public class WaysideController {
             for (int block: s.authority) {
                 if (authority[block]) {
                     // TODO: make custom exception UnsafeSuggestion
-                    throw new RuntimeException(String.format(
+                    throw new UnsafeSuggestion(String.format(
                         "Block %d was suggested twice", block
                     ));
                 }
@@ -232,7 +232,7 @@ public class WaysideController {
      * Given the linear authorty is safe around all switches.
      * @param authority the linear representation of authority.
      * @return the switch positions based on authority.
-     * @throws RuntimeException if authority is found to be unsafe around switches.
+     * @throws UnsafeSuggestion if authority is found to be unsafe around switches.
      */
     static boolean[] checkAndSetSwitches(boolean[] authority) {
         boolean[] pos = new boolean[TRACK_LEN];
@@ -248,7 +248,7 @@ public class WaysideController {
             
             if (authority[def] && authority[active]) {
                 // both default and active branch cannot have authority
-                throw new RuntimeException(String.format(
+                throw new UnsafeSuggestion(String.format(
                     "Both leaves of a switch cannot be given authority.  " +
                     "Blocks %d and %d were given suggested authority", def, active
                 ));
@@ -266,7 +266,7 @@ public class WaysideController {
      * @param authority the linear representation of authority.
      * @param occupied array which holds the current occupancy of the track.
      * @return the crossing state, given that this authority is safe.
-     * @throws RuntimeException if this suggestion is not found to be safe.
+     * @throws UnsafeSuggestion if this suggestion is not found to be safe.
      */
     static boolean[] checkStraightLine(boolean[] authority, boolean[] occupied) {
         // I need to see if I can find a path from one occupied block to another
@@ -277,7 +277,7 @@ public class WaysideController {
                 int block = path[i];
                 if (unbrokenPath) {
                     if (occupied[block]) {
-                        throw new RuntimeException(String.format(
+                        throw new UnsafeSuggestion(String.format(
                             "Found an unbroken path from some occupied block to %d", block
                         ));
                     }
@@ -330,7 +330,7 @@ public class WaysideController {
             speed = squashSpeed(suggestion);
             switchState = checkAndSetSwitches(authority);
             crossings = checkStraightLine(authority, buildOccupancy());
-        } catch (RuntimeException re) {
+        } catch (UnsafeSuggestion re) {
             System.err.println("WC: Unsafe suggestion!");
             re.printStackTrace();
             // write out default values.
@@ -338,7 +338,6 @@ public class WaysideController {
             speed = new int[TRACK_LEN];
             switchState = new boolean[TRACK_LEN];
             crossings = new boolean[TRACK_LEN];
-            re.printStackTrace();
         }
         for (int block = 1; block < TRACK_LEN; block++) {
             tm.setAuthority(block, authority[block]);
@@ -378,6 +377,12 @@ public class WaysideController {
             res += x;
         }
         return res;
+    }
+}
+
+class UnsafeSuggestion extends RuntimeException {
+    UnsafeSuggestion(String message) {
+        super(message);
     }
 }
 

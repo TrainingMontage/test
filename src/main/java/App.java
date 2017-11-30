@@ -92,7 +92,7 @@ public class App {
             Environment.clock += speedMultiplier;
             // System.err.println("All updates took: " + ((System.nanoTime() - startTime)/1000000) + "ms");
 
-            Thread.sleep(50);
+            Thread.sleep(Environment.sleepTime);
         }
     }
 }
