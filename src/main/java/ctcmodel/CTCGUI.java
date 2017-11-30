@@ -105,6 +105,7 @@ public class CTCGUI implements ViewerListener{
         "}" +
         "node.yard {" +
         "   text-color: red;" +
+        "   text-background-mode: plain;" +
         "   size: 4px;" +
         "	fill-color: red;" +
         "   text-size: 12;" +
@@ -112,7 +113,8 @@ public class CTCGUI implements ViewerListener{
         "}" +
         "edge {" +
         "	fill-color: darkgreen;" +
-        "   text-offset: -25, 8;" +
+        "   text-offset: -10, 8;" +
+        "   text-background-mode: plain;" +
         "   arrow-size: 4, 4;" +
         "}" +
         "edge.broken {" +

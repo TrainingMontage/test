@@ -84,13 +84,16 @@ public class CTCModel{
             return 2;
         }
         //authority test
-        try{
-            for(String blockID: authority.split(",")){
-                //TODO: add a stricter test? do those blockIDs exist? check for contiguous?
-                tempint = Integer.parseInt(blockID.trim());
+        if(authority.length() != 0){
+            //no authority (empty string) is valid
+            try{
+                for(String blockID: authority.split(",")){
+                    //TODO: add a stricter test? do those blockIDs exist? check for contiguous?
+                    tempint = Integer.parseInt(blockID.trim());
+                }
+            }catch(NumberFormatException ex){
+                return 3;
             }
-        }catch(NumberFormatException ex){
-            return 3;
         }
         //destination test
         try{
@@ -125,6 +128,7 @@ public class CTCModel{
     }
     public static void addSuggestion(int trainID, double suggestedSpeed, String suggestedAuthority){
         //there are no checks for input correctness here because checkTrainInputs must be called before using this function
+        System.out.println("((("+suggestedAuthority);
         int blockID = -1;
         for (CTCTrainData data: trainData){
             if(data.getTrainID() == trainID){
@@ -135,12 +139,19 @@ public class CTCModel{
             }
         }
         //parse auth into int[]
-        String[] authorityStrArr = suggestedAuthority.split(",");
-        int[] authorityIntArr = new int[authorityStrArr.length];
-        int i = 0;
-        for(String str: authorityStrArr){
-            authorityIntArr[i++] = Integer.parseInt(str.trim());
+        int[] authorityIntArr;
+        if(suggestedAuthority.length() == 0){
+            authorityIntArr = new int[0];
+        }else{
+            String[] authorityStrArr = suggestedAuthority.split(",");
+            authorityIntArr = new int[authorityStrArr.length];
+            int i = 0;
+            for(String str: authorityStrArr){
+                authorityIntArr[i++] = Integer.parseInt(str.trim());
+            }
         }
+        
+        //if a suggestion exists for this block already, remove it
         for(int j = 0; j < suggestions.size(); j++){
             if(suggestions.get(j).blockId == blockID){
                 suggestions.remove(j);
@@ -268,16 +279,21 @@ public class CTCModel{
                         //if 1 then update traindata and suggestion
                         //change blockid, change authority
                         int oldBlockId = data2.getBlockID();
-                        String[] authArr = data2.getAuthority().split(",");
                         String newAuth = "";
-                        for(int i = 0; i < authArr.length; i++){
-                            if(Integer.parseInt(authArr[i]) != oldBlockId){
-                                if(newAuth.length() != 0){
-                                    newAuth += ","+authArr[i];
+                        System.out.println(")))"+data2.getAuthority());
+                        if(data2.getAuthority().length() != 0){
+                            String[] authArr = data2.getAuthority().split(",");
+                            for(int i = 0; i < authArr.length; i++){
+                                if(Integer.parseInt(authArr[i]) != oldBlockId){
+                                    if(newAuth.length() != 0){
+                                        newAuth += ","+authArr[i];
+                                    }else{
+                                        newAuth = authArr[i];
+                                    }
                                 }
-                                newAuth = authArr[i];
                             }
                         }
+                        System.out.println(")))"+newAuth);
                         data2.setAuthority(newAuth);
                         addSuggestion(data2.getTrainID(),data2.getSpeed(),newAuth);
                         //ensure the suggestion block changes
