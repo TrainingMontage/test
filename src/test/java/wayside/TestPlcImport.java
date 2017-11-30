@@ -46,6 +46,14 @@ public class TestPlcImport {
     }
 
     @Test
+    public void crossings() {
+        Assert.assertArrayEquals(
+            new int[] {19},
+            plc.getCrossings()
+        );
+    }
+
+    @Test
     public void everything() {
         Assert.assertEquals(153, plc.getTrackLen());
         Assert.assertArrayEquals(
@@ -60,5 +68,6 @@ public class TestPlcImport {
             plc.getDefaultSwitches()
         );
         switchActive();
+        crossings();
     }
 }

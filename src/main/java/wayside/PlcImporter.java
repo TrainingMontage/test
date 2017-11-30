@@ -11,6 +11,7 @@ public class PlcImporter {
     private int[] switchBlocks;
     private int[] defaultSwitches;
     private int[] activeSwitches;
+    private int[] crossings;
 
     public PlcImporter(File file) throws IOException {
         Scanner in = new Scanner(file);
@@ -38,6 +39,9 @@ public class PlcImporter {
                     break;
                 case "SWITCH_ACTIVE":
                     activeSwitches = buildArray(rhs);
+                    break;
+                case "CROSSINGS":
+                    crossings = buildArray(rhs);
                     break;
             }
         }
@@ -70,5 +74,9 @@ public class PlcImporter {
 
     public int[] getActiveSwitches() {
         return activeSwitches;
+    }
+
+    public int[] getCrossings() {
+        return crossings;
     }
 }
