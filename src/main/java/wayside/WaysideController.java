@@ -16,6 +16,8 @@
 
 package wayside;
 
+import java.io.File;
+import java.io.IOException;
 import shared.BlockStatus;
 import shared.Suggestion;
 import trackmodel.TrackModel;
@@ -54,27 +56,28 @@ public class WaysideController {
      * embedding information about the track in this module.
      * Also, this is only the Green line.
      */
-    static int TRACK_LEN = 153;
-    static int[] SWITCHES = new int[] {1, 2, 10, 11, 12, 13};
-    static int[] SWITCH_BLOCKS = new int[] {13, 28, 57, 63, 77, 85};
-    static int[] CROSSINGS = {19};
-    static int[][] PATHS;
-    private static final int INTO_YARD = 151;
-    private static final int FROM_YARD = 152;
-    
+    static int TRACK_LEN = 9;
+    static int[] SWITCHES = new int[] {1};
+    static int[] SWITCH_BLOCKS = new int[] {2};
+    static int[] CROSSINGS = new int[] {};
+    static int[][] PATHS = new int[][] {
+        new int[] {1,2,3,4,5,6,7},
+        new int[] {3,4,5,6,7,2,1}
+    };
+
     static TrackModel tm = TrackModel.getTrackModel();
     static WaysideUI gui = null;
     static StaticTrack st = tm.getStaticTrack();
     
     static boolean[] occupancy = new boolean[TRACK_LEN];
 
-    /**
-     * Initiallizes the WaysideController.
-     * For now, just working on the green line,
-     * as though there's only one WC.
-     */
-    public static void init() {
-        gui = new WaysideUI();
+    static void parseFile() {
+        int INTO_YARD = 151;
+        int FROM_YARD = 152;
+        TRACK_LEN = 153;
+        SWITCHES = new int[] {1, 2, 10, 11, 12, 13};
+        SWITCH_BLOCKS = new int[] {13, 28, 57, 63, 77, 85};
+        CROSSINGS = new int[] {19};
         PATHS = new int[][] {
             // The long circuit around the entire track.
             new int[] {
@@ -105,6 +108,16 @@ public class WaysideController {
                 FROM_YARD, 63, 64, 65, 66, 67, 68
             }
         };
+        occupancy = new boolean[TRACK_LEN];
+    }
+
+    /**
+     * Initiallizes the WaysideController.
+     * For now, just working on the green line,
+     * as though there's only one WC.
+     */
+    public static void init() {
+        gui = new WaysideUI();
     }
 
     /**
@@ -112,13 +125,7 @@ public class WaysideController {
      * against "test_track.csv" instead of the real line.
      */
     public static void initTest() {
-        TRACK_LEN = 9;
-        SWITCHES = new int[] {1};
-        CROSSINGS = null;
-        PATHS = new int[][] {
-            new int[] {1,2,3,4,5,6,7},
-            new int[] {3,4,5,6,7,2,1}
-        };
+        // do nothing...
     }
 
     /**
