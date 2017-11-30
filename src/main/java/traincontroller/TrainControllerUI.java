@@ -46,26 +46,27 @@ public class TrainControllerUI extends javax.swing.JFrame {
         TC = newTC;
         if(TC.checkForTrain()) {
             System.err.println("INIT: there's a train");
-            authField.setText("" + TC.theTrain.getAuthority());
+//            authField.setText("" + TC.theTrain.getAuthority());
+//            authField.setText("" + TC.theMap.distToAuthEnd(TC.distanceTraveled));
             
             currentSpeedField.setText("" + truncDouble(TC.theTrain.getCurrentVelocity(), 4));
             
-            safeBrakeField.setText("" + truncDouble(TC.computeSafeBrake(), 4));
-            
-            if(TC.computeSafeSpeed() < TC.theTrain.getSuggestedSpeed())
-                setSpeedField.setText("" + truncDouble(TC.computeSafeSpeed(), 4));
-            else
-                setSpeedField.setText("" + truncDouble(TC.theTrain.getSuggestedSpeed(), 4));
-            
-            maxSafeField.setText("" + truncDouble(TC.computeSafeSpeed(), 4));
-            
-            safeBrakeField.setText("" + truncDouble(TC.computeSafeBrake(), 4));
-            
-            suggestedField.setText("" + truncDouble(TC.theTrain.getSuggestedSpeed(), 4));
+//            safeBrakeField.setText("" + truncDouble(TC.computeSafeBrake(), 4));
+//            
+//            if(TC.computeSafeSpeed() < TC.theTrain.getSuggestedSpeed())
+//                setSpeedField.setText("" + truncDouble(TC.computeSafeSpeed(), 4));
+//            else
+//                setSpeedField.setText("" + truncDouble(TC.theTrain.getSuggestedSpeed(), 4));
+//            
+//            maxSafeField.setText("" + truncDouble(TC.computeSafeSpeed(), 4));
+//            
+//            safeBrakeField.setText("" + truncDouble(TC.computeSafeBrake(), 4));
+//            
+//            suggestedField.setText("" + truncDouble(TC.theTrain.getSuggestedSpeed(), 4));
             
             manOFFButton.setSelected(true);
         }
-        else {
+        {//else {
             authField.setText("No Train");
             
             currentSpeedField.setText("No Train");

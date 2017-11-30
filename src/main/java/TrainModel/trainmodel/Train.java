@@ -90,9 +90,9 @@ public class Train {
         time = Environment.clock;
 
         //Create controller
-        // trainController = new TrainController(this, this.blockId);
-        trainController = mock(TrainController.class);
-        when(trainController.getPower()).thenReturn(50.0);
+        trainController = new TrainController(this, this.blockId);
+        // trainController = mock(TrainController.class);
+        // when(trainController.getPower()).thenReturn(50.0);
 
         // register with track
         tm.initializeTrain(this.trainId, this.blockId);
