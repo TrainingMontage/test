@@ -10,9 +10,9 @@ public class TrainTrackerTest{
     @Test
     public void testCreate(){
         tracker = new TrainTracker();
-        int test1 = tracker.getTrainTracker().createTrain(0);
-        int test2 = tracker.getTrainTracker().createTrain(0);
-        int test3 = tracker.getTrainTracker().createTrain(0);
+        int test1 = tracker.getTrainTracker().createTrainTest(0);
+        int test2 = tracker.getTrainTracker().createTrainTest(0);
+        int test3 = tracker.getTrainTracker().createTrainTest(0);
         int get1 = tracker.getTrainTracker().getTrain(test1).getTrainId();
         int get2 = tracker.getTrainTracker().getTrain(test2).getTrainId();
         int get3 = tracker.getTrainTracker().getTrain(test3).getTrainId();
@@ -23,6 +23,7 @@ public class TrainTrackerTest{
         assertEquals(0, get1);
         assertEquals(1, get2);
         assertEquals(2, get3);
+        
     }
 
 }
