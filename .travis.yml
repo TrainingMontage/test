@@ -6,6 +6,10 @@ before_install:
 - "sudo apt-get -qq update"
 - "sudo apt-get -qq install --no-install-recommends tree latexmk latexmk texlive-fonts-extra texlive-fonts-recommended texlive-latex-base texlive-latex-extra texlive-latex-recommended latex-xcolor"
 - "pip install --user mako click"
+- ant init-ivy
+- "export DISPLAY=:99.0"
+- "sh -e /etc/init.d/xvfb start"
+
 script:
   - ./gradlew build
   - mkdir -p build/pages
