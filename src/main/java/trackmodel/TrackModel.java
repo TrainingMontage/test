@@ -50,7 +50,7 @@ public class TrackModel implements TrackModelInterface {
 
     // singleton object
     private static TrackModel model;
-    private static StaticTrack staticTrack = null;
+    private StaticTrack staticTrack = null;
 
     // static
     protected static int FREEZING = 32;
@@ -172,7 +172,21 @@ public class TrackModel implements TrackModelInterface {
             TrackModel.class.getClassLoader().getResource("TrackModel/test_track.csv").getFile());
         tm.importTrack(testTrackFile);
 
-        return model;
+        return tm;
+    }
+
+    /**
+     * load test data.
+     *
+     * @return     the singleton instance of the track model
+     */
+    public TrackModel loadTestData() {
+        // import a test data track
+        File testTrackFile = new File(
+            TrackModel.class.getClassLoader().getResource("TrackModel/test_track.csv").getFile());
+        this.importTrack(testTrackFile);
+
+        return this;
     }
 
     /**
@@ -1017,19 +1031,18 @@ public class TrackModel implements TrackModelInterface {
     }
 
     /**
-     * Gets the static track.
+     * Generates and returns a static track.
      *
      * @return     The static track.
      */
     public StaticTrack getStaticTrack() {
-        if (this.staticTrack == null) {
-            this.staticTrack = new StaticTrack();
-            for (Integer blockId : this.getBlockIds()) {
-                this.staticTrack.putStaticBlock(this.getStaticBlock(blockId));
-            }
-            for (Integer switchId : this.getSwitchIds()) {
-                this.staticTrack.putStaticSwitch(this.getStaticSwitch(switchId));
-            }
+        this.staticTrack = new StaticTrack();
+        for (Integer blockId : this.getBlockIds()) {
+            System.err.println("adding blockId " + blockId);
+            this.staticTrack.putStaticBlock(this.getStaticBlock(blockId));
+        }
+        for (Integer switchId : this.getSwitchIds()) {
+            this.staticTrack.putStaticSwitch(this.getStaticSwitch(switchId));
         }
 
         return this.staticTrack;

@@ -16,6 +16,8 @@
 
 package wayside;
 
+import java.io.File;
+import java.io.IOException;
 import shared.BlockStatus;
 import shared.Suggestion;
 import trackmodel.TrackModel;
@@ -54,27 +56,32 @@ public class WaysideController {
      * embedding information about the track in this module.
      * Also, this is only the Green line.
      */
-    static int TRACK_LEN = 153;
-    static int[] SWITCHES = new int[] {1, 2, 10, 11, 12, 13};
-    static int[] SWITCH_BLOCKS = new int[] {13, 28, 57, 63, 77, 85};
-    static int[] CROSSINGS = {19};
-    static int[][] PATHS;
-    private static final int INTO_YARD = 151;
-    private static final int FROM_YARD = 152;
-    
+    static int TRACK_LEN = 9;
+    static int[] SWITCHES = new int[] {1};
+    static int[] SWITCH_BLOCKS = new int[] {2};
+    static int[] SWITCH_ACTIVE = new int[] {8};
+    static int[] SWITCH_DEFAULT = new int[] {3};
+    static int[] CROSSINGS = new int[] {};
+    static int[][] PATHS = new int[][] {
+        new int[] {1,2,3,4,5,6,7},
+        new int[] {3,4,5,6,7,2,1}
+    };
+
     static TrackModel tm = TrackModel.getTrackModel();
     static WaysideUI gui = null;
     static StaticTrack st = tm.getStaticTrack();
     
     static boolean[] occupancy = new boolean[TRACK_LEN];
 
-    /**
-     * Initiallizes the WaysideController.
-     * For now, just working on the green line,
-     * as though there's only one WC.
-     */
-    public static void init() {
-        gui = new WaysideUI();
+    static void parseFile() {
+        int INTO_YARD = 151;
+        int FROM_YARD = 152;
+        TRACK_LEN = 153;
+        SWITCHES = new int[] {1, 2, 10, 11, 12, 13};
+        SWITCH_BLOCKS  = new int[] {13,  28,  57,  63,  77,  85};
+        SWITCH_ACTIVE  = new int[] { 1, 150, 151, 152, 101, 100};
+        SWITCH_DEFAULT = new int[] {12,  29,  58,  62,  76,  86};
+        CROSSINGS = new int[] {19};
         PATHS = new int[][] {
             // The long circuit around the entire track.
             new int[] {
@@ -105,6 +112,17 @@ public class WaysideController {
                 FROM_YARD, 63, 64, 65, 66, 67, 68
             }
         };
+        occupancy = new boolean[TRACK_LEN];
+    }
+
+    /**
+     * Initiallizes the WaysideController.
+     * For now, just working on the green line,
+     * as though there's only one WC.
+     */
+    public static void init() {
+        gui = new WaysideUI();
+        parseFile();
     }
 
     /**
@@ -112,13 +130,7 @@ public class WaysideController {
      * against "test_track.csv" instead of the real line.
      */
     public static void initTest() {
-        TRACK_LEN = 9;
-        SWITCHES = new int[] {1};
-        CROSSINGS = null;
-        PATHS = new int[][] {
-            new int[] {1,2,3,4,5,6,7},
-            new int[] {3,4,5,6,7,2,1}
-        };
+        // do nothing...
     }
 
     /**
@@ -196,7 +208,7 @@ public class WaysideController {
      * Transformation from what {@link CTCModel} gives to a linear list of authority.
      * @param suggestion list of suggestions, one per train.
      * @return linear representation of authority per block.
-     * @throws RuntimeException in case I can determine the given suggestion is unsafe.
+     * @throws UnsafeSuggestion in case I can determine the given suggestion is unsafe.
      */
     static boolean[] squash(Suggestion[] suggestion) {
         boolean[] authority = new boolean[TRACK_LEN];
@@ -205,7 +217,7 @@ public class WaysideController {
             for (int block: s.authority) {
                 if (authority[block]) {
                     // TODO: make custom exception UnsafeSuggestion
-                    throw new RuntimeException(String.format(
+                    throw new UnsafeSuggestion(String.format(
                         "Block %d was suggested twice", block
                     ));
                 }
@@ -232,15 +244,18 @@ public class WaysideController {
      * Given the linear authorty is safe around all switches.
      * @param authority the linear representation of authority.
      * @return the switch positions based on authority.
-     * @throws RuntimeException if authority is found to be unsafe around switches.
+     * @throws UnsafeSuggestion if authority is found to be unsafe around switches.
      */
     static boolean[] checkAndSetSwitches(boolean[] authority) {
         boolean[] pos = new boolean[TRACK_LEN];
-        for (int sw: SWITCHES) {
-            StaticSwitch ss = st.getStaticSwitch(sw);
-            int root = ss.getRoot().getId();
-            int def = ss.getDefaultLeaf().getId();
-            int active = ss.getActiveLeaf().getId();
+        for (int sw = 0; sw < SWITCHES.length; sw++) {
+            int root = SWITCH_BLOCKS[sw];
+            int def = SWITCH_DEFAULT[sw];
+            int active = SWITCH_ACTIVE[sw];
+            // StaticSwitch ss = st.getStaticSwitch(sw);
+            // int root = ss.getRoot().getId();
+            // int def = ss.getDefaultLeaf().getId();
+            // int active = ss.getActiveLeaf().getId();
             // System.err.println("A Switch:");
             // System.err.println("\troot: " + root);
             // System.err.println("\tdef: " + def);
@@ -248,7 +263,7 @@ public class WaysideController {
             
             if (authority[def] && authority[active]) {
                 // both default and active branch cannot have authority
-                throw new RuntimeException(String.format(
+                throw new UnsafeSuggestion(String.format(
                     "Both leaves of a switch cannot be given authority.  " +
                     "Blocks %d and %d were given suggested authority", def, active
                 ));
@@ -266,7 +281,7 @@ public class WaysideController {
      * @param authority the linear representation of authority.
      * @param occupied array which holds the current occupancy of the track.
      * @return the crossing state, given that this authority is safe.
-     * @throws RuntimeException if this suggestion is not found to be safe.
+     * @throws UnsafeSuggestion if this suggestion is not found to be safe.
      */
     static boolean[] checkStraightLine(boolean[] authority, boolean[] occupied) {
         // I need to see if I can find a path from one occupied block to another
@@ -277,7 +292,7 @@ public class WaysideController {
                 int block = path[i];
                 if (unbrokenPath) {
                     if (occupied[block]) {
-                        throw new RuntimeException(String.format(
+                        throw new UnsafeSuggestion(String.format(
                             "Found an unbroken path from some occupied block to %d", block
                         ));
                     }
@@ -330,7 +345,7 @@ public class WaysideController {
             speed = squashSpeed(suggestion);
             switchState = checkAndSetSwitches(authority);
             crossings = checkStraightLine(authority, buildOccupancy());
-        } catch (RuntimeException re) {
+        } catch (UnsafeSuggestion re) {
             System.err.println("WC: Unsafe suggestion!");
             re.printStackTrace();
             // write out default values.
@@ -338,7 +353,6 @@ public class WaysideController {
             speed = new int[TRACK_LEN];
             switchState = new boolean[TRACK_LEN];
             crossings = new boolean[TRACK_LEN];
-            re.printStackTrace();
         }
         for (int block = 1; block < TRACK_LEN; block++) {
             tm.setAuthority(block, authority[block]);
@@ -378,6 +392,12 @@ public class WaysideController {
             res += x;
         }
         return res;
+    }
+}
+
+class UnsafeSuggestion extends RuntimeException {
+    UnsafeSuggestion(String message) {
+        super(message);
     }
 }
 

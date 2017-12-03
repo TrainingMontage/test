@@ -53,6 +53,12 @@ public class CTCModel{
     private static String TTAauthority;
     private static int TTAdestBlock;
     
+    //Train-To-Edit (TTE) data (to ensure trains aren't edited in the middle of an update)
+    private static int TTEtrainID;
+    private static double TTEspeed;
+    private static String TTEauthority;
+    private static int TTEdestBlock;
+    
     private CTCModel(){
         //trainTracker = atrainTracker;
         last_clock = 0;
@@ -105,7 +111,7 @@ public class CTCModel{
     }
     
     public static void createTrain(int startingBlockID, double suggestedSpeed,
-                                  String suggestedAuth, int destBlockID){
+                                   String suggestedAuth, int destBlockID){
         /*int trainID = TrainTracker.getTrainTracker().createTrain(startingBlockID);
         trainData.add(new CTCTrainData(trainID, startingBlockID, suggestedSpeed,
                                        suggestedAuth, startingBlockID, destBlockID));
@@ -117,6 +123,13 @@ public class CTCModel{
         TTAspeed = suggestedSpeed;
         TTAdestBlock = destBlockID;
     }
+    public static void editTrain(int trainID, double suggestedSpeed,
+                                 String suggestedAuth, int destBlockID){
+        TTEtrainID = trainID;
+        TTEauthority = suggestedAuth;
+        TTEspeed = suggestedSpeed;
+        TTEdestBlock = destBlockID;
+    }
     private static void addTrain(){
         if(TTAauthority != null){
             int trainID = TrainTracker.getTrainTracker().createTrain(TTAstartingBlock);
@@ -125,6 +138,22 @@ public class CTCModel{
             addSuggestion(trainID, TTAspeed, TTAauthority);
         }
         TTAauthority = null;
+    }
+    private static void editTrain(){
+        if(TTEauthority != null){
+            //edit ctc train data
+            for (CTCTrainData data: trainData){
+                if(data.getTrainID() == TTEtrainID){
+                    data.setSpeed(TTEspeed);
+                    data.setAuthority(TTEauthority);
+                    data.setDestination(TTEdestBlock);
+                    break;
+                }
+            }
+            //edit suggestion
+            addSuggestion(TTEtrainID, TTEspeed, TTEauthority);
+        }
+        TTEauthority = null;
     }
     public static void addSuggestion(int trainID, double suggestedSpeed, String suggestedAuthority){
         //there are no checks for input correctness here because checkTrainInputs must be called before using this function
@@ -176,6 +205,14 @@ public class CTCModel{
         }
         return null;
     }
+    public static CTCTrainData getTrainDataTrainId(int trainID){
+        for (CTCTrainData data: trainData){
+            if(data.getTrainID() == trainID){
+                return data;
+            }
+        }
+        return null;
+    }
     public static void update(){
         int current_time = Environment.clock;
         
@@ -184,6 +221,8 @@ public class CTCModel{
         
         //add a train if the user entered one during the last update
         addTrain();
+        //edit a train if the user changed one during the last update
+        editTrain();
         
         updateTrack();
         
