@@ -208,7 +208,14 @@ public class Train {
         else{
             numPassengers = passengers;
         }
-        gui.passengersDisplayLabel.setText(numPassengers+"");
+
+        if(gui != null){
+            gui.passengersDisplayLabel.setText(numPassengers+"");
+        }
+        return numPassengers;
+    }
+
+    public int getPassengers(){
         return numPassengers;
     }
     /*
@@ -331,9 +338,17 @@ public class Train {
     public void setEmergencyBrakes(boolean status){
         if(status == true){
             emergencyBrake = true;
+            if(gui != null){
+                gui.emergencyBrakeDisplayLabel.setText("ON");
+            }
+
         }
         else{
             emergencyBrake = false;
+            if(gui != null){
+                gui.emergencyBrakeDisplayLabel.setText("OFF");
+            }
+
         }
     }
 
