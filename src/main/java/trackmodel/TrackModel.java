@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.nio.ByteBuffer;
+import java.util.Random;
+
 import shared.Environment;
 import shared.TrainCrashException;
 import shared.CrashIntoSwitchException;
@@ -53,7 +55,8 @@ public class TrackModel implements TrackModelInterface {
     private StaticTrack staticTrack = null;
 
     // static
-    protected static int FREEZING = 32;
+    protected static final int FREEZING = 32;
+    protected static final double ACCUMULATION_RATE = .1;
 
     // class objects
     protected Connection conn;
@@ -66,6 +69,8 @@ public class TrackModel implements TrackModelInterface {
     protected HashMap<Integer, Double> blockSpeed;
     protected HashMap<Integer, Boolean> switchState;
     protected HashMap<Integer, Boolean> crossingState;
+    protected HashMap<Integer, Double> waitingPassengers;
+    protected Random random;
 
     /**
      * Constructs the Track Model (privately).
@@ -131,6 +136,10 @@ public class TrackModel implements TrackModelInterface {
             this.blockSpeed = new HashMap<Integer, Double>();
             this.switchState = new HashMap<Integer, Boolean>();
             this.crossingState = new HashMap<Integer, Boolean>();
+            this.waitingPassengers = new HashMap<Integer, Double>();
+
+            // initalize random
+            this.random = new Random();
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -187,6 +196,15 @@ public class TrackModel implements TrackModelInterface {
         this.importTrack(testTrackFile);
 
         return this;
+    }
+
+    /**
+     * This is useful for forcing random during testing
+     *
+     * @param      r     the new random object to set
+     */
+    protected void setRandom(Random r) {
+        this.random = r;
     }
 
     /**
@@ -1055,14 +1073,18 @@ public class TrackModel implements TrackModelInterface {
         if (this.last_updated == Environment.clock) {
             return;
         }
-        System.err.println("TrackModel updating...");
+        int diff = Environment.clock - this.last_updated;
         this.last_updated = Environment.clock;
 
+        // accumulate passengers
+        this.accumulateWaitingPassengers(this.ACCUMULATION_RATE, diff);
+
+        // update trains
         for (int trainId : this.getTrainIds()) {
-            System.err.println("TrackModel Updating train with id: " + trainId);
-            updateTrain(trainId);
+            this.updateTrain(trainId);
         }
 
+        // rebuild occupancies
         this.updateOccupancies();
     }
 
@@ -1499,7 +1521,8 @@ public class TrackModel implements TrackModelInterface {
     }
 
     /**
-     * Gets the train passengers.
+     * Gets the number of passengers disembarked on a train. Returns
+     * 0 if already called at a station, or if not at a station.
      *
      * @param      trainId  The train identifier
      *
@@ -1510,16 +1533,38 @@ public class TrackModel implements TrackModelInterface {
 
         Train train = this.getTrainModelFromTrainTracker(trainId);
 
+        // if passenger count hasn't been reported and it's a station
         if (!this.getTrainReportedPassenger(trainId) && this.getStaticBlock(this.getTrainBlock(trainId)).getStation() != null) {
             this.setTrainReportedPassenger(trainId, true);
 
-            if (this.getTrainLoadedPassenger(trainId)) {
-                return train.getMaxPassengers();
-            } else {
-                train.setPassengers(train.getMaxPassengers());
-                this.setTrainLoadedPassenger(trainId, true);
-                return 0;
+            // disembark current passengers
+            int disembarked = 0;
+            int trainPassengers = 50; // TODO replace this with train.getPassengers()
+            if (trainPassengers > 0) {
+                disembarked = this.random.nextInt((int) trainPassengers);
+                train.setPassengers(trainPassengers - disembarked);
             }
+
+            // load waiting passengers
+            Double passengers = this.waitingPassengers.get(this.getTrainBlock(trainId));
+            if (passengers != null) {
+                int loaded = this.random.nextInt(Math.min((int) passengers.doubleValue(), train.getMaxPassengers()));
+                passengers -= loaded;
+
+                this.waitingPassengers.put(this.getTrainBlock(trainId), passengers - loaded);
+                train.setPassengers(trainPassengers + loaded); // TODO replace with train.getPassengers()
+            }
+
+            return disembarked;
+
+            // // if train has passengers loaded onto it
+            // if (this.getTrainLoadedPassenger(trainId)) {
+            //     return train.getMaxPassengers();
+            // } else {
+            //     train.setPassengers(train.getMaxPassengers());
+            //     this.setTrainLoadedPassenger(trainId, true);
+            //     return 0;
+            // }
         }
 
         return 0;
@@ -1679,6 +1724,27 @@ public class TrackModel implements TrackModelInterface {
         if (blk != null) {
             blk.setNeedsUpdate(true);
             staticBlockCache.put(blockId, blk);
+        }
+    }
+
+    /**
+     * Accumulate passengers at all stations over time.
+     *
+     * @param      accumulationRate  The accumulation rate in # people/time unit
+     * @param      timeUnits         The time units since last update
+     */
+    protected void accumulateWaitingPassengers(double accumulationRate, int timeUnits) {
+        for (int id : this.getBlockIds()) {
+            String station = this.getStaticBlock(id).getStation();
+            if (station != null && station.length() > 0) {
+                Double p = this.waitingPassengers.get(id);
+                if (p == null) {
+                    p = 0.0;
+                }
+
+                p += accumulationRate * timeUnits;
+                this.waitingPassengers.put(id, p);
+            }
         }
     }
 }
