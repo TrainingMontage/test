@@ -9,11 +9,18 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.Mock;
 import shared.Environment;
 import traincontroller.TrainController;
+import trackmodel.TrackModel;
 
 
 public class TrainModelTest{
     double delta = 0.001;
-    Train testTrainObject = new Train(1, 0);
+    Train testTrainObject;
+
+    @Before
+    public void setup() {
+        TrackModel _tm = mock(TrackModel.class);
+        testTrainObject = new Train(1, 0, _tm, 1);
+    }
 
     @Test
     public void testGetTrainId(){
@@ -29,7 +36,7 @@ public class TrainModelTest{
     public void testGetCurrentVelocity(){
         assertEquals(testTrainObject.getCurrentVelocity(), 0.0, delta);
     }
-
+    /*
     @Test
     public void testGetVelocity(){
         testTrainObject.trainController = mock(TrainController.class);
@@ -39,7 +46,7 @@ public class TrainModelTest{
         testTrainObject.velocity = 10;
         assertEquals(testTrainObject.getVelocity(), testTrainObject.getCurrentVelocity(), delta);
     }
-
+    */
     @Test
     public void testSetPassengers(){
         //Too Many Passengers set
@@ -64,7 +71,7 @@ public class TrainModelTest{
     public void testGetMaxPower(){
         assertEquals(testTrainObject.getMaxPower(), 120000.0, delta);
     }
-
+    /*
     @Test
     public void testSetPower(){
         testTrainObject.setPower(100000);
@@ -77,10 +84,12 @@ public class TrainModelTest{
     }
     @Test
     public void testSetPowerTooLarge(){
+        TrackModel tm = mock(TrackModel.class);
+        when(tm.getGrade(testTrainObject.getTrainId())).thenReturn(0.5);
         testTrainObject.setPower(300000);
         assertEquals(testTrainObject.getPower(), 120000, delta);
     }
-
+    */
     @Test
     public void testSine(){
         assertEquals(testTrainObject.sine(.5), 0.004999, delta);
@@ -102,20 +111,30 @@ public class TrainModelTest{
     }
 
     @Test
-    public void testGetEmergancyBrakes(){
-        assertEquals(testTrainObject.getEmergancyBrakes(), false);
+    public void testGetEmergencyBrakes(){
+        assertEquals(testTrainObject.getEmergencyBrakes(), false);
     }
 
     @Test
-    public void testSetEmergancyBrakes(){
+    public void testSetEmergencyBrakes(){
         //turn on
-        testTrainObject.setEmergancyBrakes(true);
-        assertEquals(testTrainObject.getEmergancyBrakes(), true);
+        testTrainObject.setEmergencyBrakes(true);
+        assertEquals(testTrainObject.getEmergencyBrakes(), true);
         //turn off
-        testTrainObject.setEmergancyBrakes(false);
-        assertEquals(testTrainObject.getEmergancyBrakes(), false);
+        testTrainObject.setEmergencyBrakes(false);
+        assertEquals(testTrainObject.getEmergencyBrakes(), false);
     }
 
+    @Test
+    public void testGetEmergencyBrakeRate(){
+        assertEquals(-2.73, testTrainObject.getEmergencyBrakeRate(), delta);
+    }
+
+    @Test
+    public void testGetServiceBrakeRate(){
+        assertEquals(-1.2, testTrainObject.getServiceBrakeRate(), delta);
+    }
+    /*
     @Test
     public void testUpdateSpeed(){
         testTrainObject.velocity = 10.0;
@@ -126,7 +145,7 @@ public class TrainModelTest{
         assertEquals(10.2454971747, testTrainObject.getCurrentVelocity(), delta);
 
     }
-
+    */
     @Test
     public void testGetCurrentTemperature(){
         assertEquals(testTrainObject.getCurrentTemperature(), 72.0, delta);

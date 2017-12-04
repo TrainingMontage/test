@@ -32,17 +32,18 @@ public interface TrackModelInterface {
     public boolean isIcyTrack(int trainId);
     public double getGrade(int trainId);
 
-    // For the wayside controller
-    public boolean isOccupied(int blockId);
-    public BlockStatus getStatus(int blockId);
-    public boolean setSignal(int blockId, boolean value);
-    public boolean getSignal(int blockId);
-    public boolean setSwitch(int blockId, boolean value);
-    public boolean getSwitch(int blockId);
-    public boolean setCrossingState(int blockId, boolean active); // setCrossing -> setCrossingState
-    public boolean getCrossingState(int blockId); // getCrossing -> getCrossingState
-    public boolean setAuthority(int blockId, boolean authority);
-    public int setSpeed(int blockId, int speed);
+   // For the wayside controller
+   public boolean isOccupied(int blockId);
+   public boolean setRepair(int blockId);
+   public boolean setOperational(int blockId);
+   public boolean setSignal(int blockId, boolean value);
+   public boolean getSignal(int blockId);
+   public boolean setSwitch(int blockId, boolean value);
+   public boolean getSwitch(int blockId);
+   public boolean setCrossingState(int blockId, boolean active); // setCrossing -> setCrossingState
+   public boolean getCrossingState(int blockId); // getCrossing -> getCrossingState
+   public boolean setAuthority(int blockId, boolean authority);
+   public double setSpeed(int blockId, double speed);
 
     // for everybody
     public StaticSwitch getStaticSwitch(int switchID);

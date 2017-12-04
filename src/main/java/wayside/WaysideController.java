@@ -16,13 +16,16 @@
 
 package wayside;
 
+import java.io.File;
+import java.io.IOException;
 import shared.BlockStatus;
 import shared.Suggestion;
 import trackmodel.TrackModel;
 import trackmodel.TrackModelInterface;
 import trackmodel.StaticBlock;
 import trackmodel.StaticSwitch;
-import wayside.UILayer;
+import trackmodel.StaticTrack;
+import wayside.WaysideUI;
 
 import java.util.List;
 
@@ -54,23 +57,31 @@ public class WaysideController {
      * embedding information about the track in this module.
      * Also, this is only the Green line.
      */
-    public static int TRACK_LEN = 153;
-    static int[] SWITCHES = new int[] {1, 2, 10, 11, 12, 13};
-    static int[] SWITCH_BLOCKS = new int[] {13, 28, 57, 63, 77, 85};
-    static int[] CROSSINGS = {19};
-    static int[][] PATHS;
-    private static final int INTO_YARD = 151;
-    private static final int FROM_YARD = 152;
-    
-    static TrackModelInterface tm = TrackModel.getTrackModel();
-    static Decider decider;
+    public static int TRACK_LEN = 9;
+    static int[] SWITCHES = new int[] {1};
+    static int[] SWITCH_BLOCKS = new int[] {2};
+    static int[] SWITCH_ACTIVE = new int[] {8};
+    static int[] SWITCH_DEFAULT = new int[] {3};
+    static int[] CROSSINGS = new int[] {};
+    static int[][] PATHS = new int[][] {
+        new int[] {1,2,3,4,5,6,7},
+        new int[] {3,4,5,6,7,2,1}
+    };
 
-    /**
-     * Initiallizes the WaysideController.
-     * For now, just working on the green line,
-     * as though there's only one WC.
-     */
-    public static void init() {
+    static Decider decider;
+    static TrackModelInterface tm = TrackModel.getTrackModel();
+    static WaysideUI gui = null;
+    static boolean[] occupancy = new boolean[TRACK_LEN];
+
+    static void parseFile() {
+        int INTO_YARD = 151;
+        int FROM_YARD = 152;
+        TRACK_LEN = 153;
+        SWITCHES = new int[] {1, 2, 10, 11, 12, 13};
+        SWITCH_BLOCKS  = new int[] {13,  28,  57,  63,  77,  85};
+        SWITCH_ACTIVE  = new int[] { 1, 150, 151, 152, 101, 100};
+        SWITCH_DEFAULT = new int[] {12,  29,  58,  62,  76,  86};
+        CROSSINGS = new int[] {19};
         PATHS = new int[][] {
             // The long circuit around the entire track.
             new int[] {
@@ -101,6 +112,17 @@ public class WaysideController {
                 FROM_YARD, 63, 64, 65, 66, 67, 68
             }
         };
+        occupancy = new boolean[TRACK_LEN];
+    }
+
+    /**
+     * Initiallizes the WaysideController.
+     * For now, just working on the green line,
+     * as though there's only one WC.
+     */
+    public static void init() {
+        gui = new WaysideUI();
+        parseFile();
     }
 
     /**
@@ -108,14 +130,7 @@ public class WaysideController {
      * against "test_track.csv" instead of the real line.
      */
     public static void initTest() {
-        TRACK_LEN = 9;
-        SWITCHES = new int[] {1};
-        SWITCH_BLOCKS = new int[] {2};
-        CROSSINGS = null;
-        PATHS = new int[][] {
-            new int[] {1,2,3,4,5,6,7},
-            new int[] {3,4,5,6,7,2,1}
-        };
+        // do nothing...
     }
 
     public static void initTest(TrackModelInterface t) {
@@ -127,7 +142,7 @@ public class WaysideController {
      * Opens the WC UI.
      */
     public static void openWindow() {
-        UILayer.init();
+        gui.setVisible(true);
     }
 
 
@@ -148,7 +163,10 @@ public class WaysideController {
      * @return the occupancy of the block, true if it is occupied, false otherwise.
      */
     public static boolean isOccupied(int blockId) {
-        return tm.isOccupied(blockId);
+        boolean o = occupancy[blockId];
+        if (gui != null)
+            gui.setOccupancy(blockId, o);
+        return o;
     }
 
     /**
@@ -195,15 +213,16 @@ public class WaysideController {
      * Transformation from what {@link CTCModel} gives to a linear list of authority.
      * @param suggestion list of suggestions, one per train.
      * @return linear representation of authority per block.
-     * @throws RuntimeException in case I can determine the given suggestion is unsafe.
+     * @throws UnsafeSuggestion in case I can determine the given suggestion is unsafe.
      */
     static boolean[] squash(Suggestion[] suggestion) {
         boolean[] authority = new boolean[TRACK_LEN];
         for (Suggestion s: suggestion) {
+            if (s.authority == null) continue;
             for (int block: s.authority) {
                 if (authority[block]) {
                     // TODO: make custom exception UnsafeSuggestion
-                    throw new RuntimeException(String.format(
+                    throw new UnsafeSuggestion(String.format(
                         "Block %d was suggested twice", block
                     ));
                 }
@@ -262,6 +281,12 @@ public class WaysideController {
             res += x;
         }
         return res;
+    }
+}
+
+class UnsafeSuggestion extends RuntimeException {
+    UnsafeSuggestion(String message) {
+        super(message);
     }
 }
 

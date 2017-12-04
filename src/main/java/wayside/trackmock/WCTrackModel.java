@@ -32,14 +32,14 @@ public class WCTrackModel implements TrackModelInterface {
     
     private boolean[] authority;
     private boolean[] occupied;
-    private int[] speed;
+    private double[] speed;
     private WCStaticSwitch sw;
 
     public WCTrackModel() {
         int n = TRACK_LEN;
         authority = new boolean[n];
         occupied  = new boolean[n];
-        speed     = new int[n];
+        speed     = new double[n];
         sw = buildSwitch(1, 2, 3, 8);
         clear();
     }
@@ -110,7 +110,7 @@ public class WCTrackModel implements TrackModelInterface {
         return this.authority[blockId];
     }
 
-    public int setSpeed(int blockId, int speed) {
+    public double setSpeed(int blockId, double speed) {
         return this.speed[blockId];
     }
 
@@ -126,6 +126,14 @@ public class WCTrackModel implements TrackModelInterface {
     }
 
     /* TRAIN METHODS I DON'T CARE ABOUT */
+    public boolean setRepair(int blockId) {
+        return false;
+    }
+
+    public boolean setOperational(int blockId) {
+        return false;
+    }
+
     public double getTrainSpeed(int trainId) {
         return 0;
     }

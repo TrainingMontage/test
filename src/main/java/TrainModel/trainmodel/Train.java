@@ -23,10 +23,13 @@ import traincontroller.TrainController;
 import shared.Convert;
 import shared.Environment;
 
+import static org.mockito.Mockito.*;
+
+
 public class Train {
     int trainId;
     int blockId;
-    protected TrainController trainController = new TrainController();
+    protected TrainController trainController;
 
     protected int authority;
     protected double power; //W
@@ -63,10 +66,17 @@ public class Train {
     protected double height = 3.42; //meters
     protected double width = 2.56;  //meters
 
+    protected TrainModelGUI gui;
+
     protected NumberFormat formatter = new DecimalFormat("#0.00");
 
 
-    public Train(int newTrainId, int newblockId){
+    public Train(int newTrainId, int newblockId) {
+        this(newTrainId, newblockId, TrackModel.getTrackModel());
+    }
+
+    public Train(int newTrainId, int newblockId, TrackModel tm){
+        //trainController = new TrainController(this, trainId);
         trainId = newTrainId;
         blockId = newblockId;
         numPassengers = 0;
@@ -79,14 +89,94 @@ public class Train {
         lights = false;
         leftDoor = 0;
         rightDoor = 0;
-        time = 0;
-
-        //Create controller
-        //trainController = new TrainController(this, this.trainId, this.blockId);
+        emergencyBrake = false;
+        serviceBrake = false;
+        time = Environment.clock;
 
         boolean brakeFailure = false;
         boolean engineFailure = false;
         boolean signalFailure = false;
+
+        //Create controller
+        // trainController = new TrainController(this, this.blockId);
+        trainController = mock(TrainController.class);
+        when(trainController.getPower()).thenReturn(50.0);
+
+        // register with track
+        tm.initializeTrain(this.trainId, this.blockId);
+
+
+        //GUI
+        gui = new TrainModelGUI(this);
+        gui.setVisible(true);
+        gui.temperatureDisplayLabel.setText(String.format("%.1f", temperature) + "F");
+        gui.lengthDisplayLabel.setText(String.format("%.2f",length*3.28084) + "ft");
+        gui.widthDisplayLabel.setText(String.format("%.2f", width*3.28084) + "ft");
+        gui.heightDisplayLabel.setText(String.format("%.2f", height*3.28084) + "ft");
+        gui.massDisplayLabel.setText(String.format("%.2f", mass*2.20462) + "lb");
+        gui.crewDisplayLabel.setText("1");
+        gui.passengersDisplayLabel.setText(numPassengers+"");
+        gui.messageBoardDisplayLabel.setText("Nothing To Display Currently");
+        if(leftDoor == 0){
+            gui.leftDoorDisplayLabel.setText("Closed");
+        }
+        else{
+            gui.leftDoorDisplayLabel.setText("Open");
+        }
+
+        if(rightDoor == 0){
+            gui.rightDoorDisplayLabel.setText("Closed");
+        }
+        else{
+            gui.rightDoorDisplayLabel.setText("Open");
+        }
+
+        if(getLights()){
+            gui.lightsDisplayLabel.setText("ON");
+        }
+        else{
+            gui.lightsDisplayLabel.setText("OFF");
+        }
+        if(getEmergencyBrakes()){
+            gui.emergencyBrakeDisplayLabel.setText("ON");
+        }
+        else{
+            gui.emergencyBrakeDisplayLabel.setText("OFF");
+        }
+
+
+
+    }
+    public Train(int newTrainId, int newblockId, TrackModel tm, int test){
+        //Test Constructor
+        //trainController = new TrainController(this, trainId);
+        trainId = newTrainId;
+        blockId = newblockId;
+        numPassengers = 0;
+        power = 0.0;
+        totalMass = mass + (numPassengers*passengerWeight);
+        velocity = 0.0;
+        acceleration = 0.0;
+        grade = 0.0;
+        temperature = 72.0; // F
+        lights = false;
+        leftDoor = 0;
+        rightDoor = 0;
+        emergencyBrake = false;
+        serviceBrake = false;
+        time = Environment.clock;
+
+        boolean brakeFailure = false;
+        boolean engineFailure = false;
+        boolean signalFailure = false;
+
+        //Create controller
+        // trainController = new TrainController(this, this.blockId);
+        trainController = mock(TrainController.class);
+        when(trainController.getPower()).thenReturn(50.0);
+
+        // register with track
+        tm.initializeTrain(this.trainId, this.blockId);
 
     }
 
@@ -128,6 +218,7 @@ public class Train {
 
     public void setDisplay(String message){
         //send to GUI
+
     }
 
     public int getMaxPassengers(){
@@ -146,16 +237,24 @@ public class Train {
     }
 
     public boolean getAuthority(){
-        return TrackModel.getTrackModel().getTrainAuthority(trainId);
+        boolean authority = TrackModel.getTrackModel().getTrainAuthority(trainId);
+        if(gui != null){
+            gui.authorityDisplayLabel.setText(authority + "");
+        }
+        return authority;
     }
 
     public double getSuggestedSpeed(){
         return TrackModel.getTrackModel().getTrainSpeed(trainId);
     }
 
-    /*public int getBeacon(){
+    public int getBeacon(){
         return TrackModel.getTrackModel().getTrainBeacon(trainId);
-    }*/
+    }
+    public double getGrade(){
+        grade = TrackModel.getTrackModel().getGrade(trainId);
+        return grade;
+    }
 
     public void setPower(double powerInput){
         double forceApplied;
@@ -188,7 +287,9 @@ public class Train {
             power = powerInput;
             updateSpeed(forceApplied);
         }
-
+        if(gui != null){
+            gui.powerDisplayLabel.setText(String.format("%.2f", getPower()) + "W");
+        }
     }
 
     public double sine(double gradePercentage){
@@ -209,11 +310,11 @@ public class Train {
         }
     }
 
-    public boolean getEmergancyBrakes(){
+    public boolean getEmergencyBrakes(){
         return emergencyBrake;
     }
 
-    public void setEmergancyBrakes(boolean status){
+    public void setEmergencyBrakes(boolean status){
         if(status == true){
             emergencyBrake = true;
         }
@@ -222,16 +323,26 @@ public class Train {
         }
     }
 
+    public double getEmergencyBrakeRate(){
+        return emergencyBrakeRate;
+    }
+
+    public double getServiceBrakeRate(){
+        return serviceBrakeRate;
+    }
+
 
     public void updateSpeed(double forceApplied){
-        double nforce = totalMass*gravity*friction*sine(grade);
+        double nforce = totalMass*gravity*friction*sine(getGrade());
         totalForce = forceApplied - nforce;
         acceleration = totalForce/totalMass;
 
         if(acceleration >= maxAcceleration){
             acceleration = maxAcceleration;
         }
-
+        if(gui != null){
+            gui.accelerationDisplayLabel.setText(String.format("%.2f", acceleration) + "");
+        }
         velocity = velocity + acceleration;
         if(velocity < 0){
             velocity = 0.0;
@@ -303,6 +414,10 @@ public class Train {
         double displacement;
         displacement = (dVelocity * (currentTime - lastTime) + (.5*(acceleration)*Math.pow((currentTime-lastTime),2)));
         time = Environment.clock;
+        if(gui != null){
+            gui.currentTrainSpeedDisplayLabel.setText(String.format("%.2f", (getCurrentVelocity() * 2.23694)) + "mph");
+            gui.accelerationDisplayLabel.setText(String.format("%.4f", acceleration) + "");
+        }
         return displacement;
 
     }
