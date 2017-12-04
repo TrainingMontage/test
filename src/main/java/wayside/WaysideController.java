@@ -140,18 +140,6 @@ public class WaysideController {
         gui.setVisible(true);
     }
 
-
-    /**
-     * Constructs and returns the Strings representing each WC by the ranges of blocks which they control.
-     * Described in Issue #59.
-     * @return the list of these strings.
-     * @throws UnsupportedOperationException description
-     */
-    public static String[] getRanges() {
-        // TODO
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Checks the TrackModel to determine if a block is occupied.
      * @param blockId the line-specific number of the block in question.
@@ -258,16 +246,6 @@ public class WaysideController {
             tm.setSpeed(block, decider.getSpeed(block));
             tm.setCrossingState(block, decider.getCrossing(block));
         }
-    }
-    
-    /**
-     * Checks the TrackModel to determine the status of a block. NOT YET IMPLEMENTED!!
-     * @param blockId the line-specific number of the block in question.
-     * @return the status of the block, as represented by the BlockStatus enum defined elsewhere.
-     */
-    public static BlockStatus getStatus(int blockId) {
-        // TODO
-        return null;
     }
 
     private static int sum(int[] a) {
