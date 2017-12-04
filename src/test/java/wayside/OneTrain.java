@@ -25,7 +25,6 @@ import org.mockito.Mockito;
 
 import trackmodel.TrackModel;
 import trackmodel.TrackModelInterface;
-import wayside.trackmock.WCTrackModel;
 
 public class OneTrain {
 

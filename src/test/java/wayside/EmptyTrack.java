@@ -21,7 +21,6 @@ import org.junit.Test;
 
 import shared.Suggestion;
 import trackmodel.TrackModel;
-import wayside.trackmock.WCTrackModel;
 import wayside.WaysideController;
 
 import trackmodel.StaticTrack;
