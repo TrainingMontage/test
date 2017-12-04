@@ -163,7 +163,7 @@ public class WaysideController {
      * @return the occupancy of the block, true if it is occupied, false otherwise.
      */
     public static boolean isOccupied(int blockId) {
-        boolean o = occupancy[blockId];
+        boolean o = tm.isOccupied(blockId);
         if (gui != null)
             gui.setOccupancy(blockId, o);
         return o;
