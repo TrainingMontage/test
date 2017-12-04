@@ -47,11 +47,6 @@ import java.util.List;
  */
 public class WaysideController {
 
-    /** Stores the wayside controller objects, indexed by region number. */
-    private static WC[] controllers;
-    /** Maps the block ID to region number. */
-    private static int[] regions;
-
     /** 
      * A horrible hacky solution,
      * embedding information about the track in this module.
@@ -287,19 +282,5 @@ public class WaysideController {
 class UnsafeSuggestion extends RuntimeException {
     UnsafeSuggestion(String message) {
         super(message);
-    }
-}
-
-/**
- * The objects which represent the actual WCs on the track.
- * This could be wrapped up in the WaysideController class,
- * but for simplicity, this class contains only object code,
- * and the WaysideController class holds only static code.
- *
- * NOT YET IMPLEMENTED!
- */
-class WC {
-    WC() {
-        // TODO
     }
 }
