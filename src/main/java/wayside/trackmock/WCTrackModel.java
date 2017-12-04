@@ -33,34 +33,13 @@ public class WCTrackModel implements TrackModelInterface {
     private boolean[] authority;
     private boolean[] occupied;
     private double[] speed;
-    private WCStaticSwitch sw;
 
     public WCTrackModel() {
         int n = TRACK_LEN;
         authority = new boolean[n];
         occupied  = new boolean[n];
         speed     = new double[n];
-        sw = buildSwitch(1, 2, 3, 8);
         clear();
-    }
-
-    private WCStaticSwitch buildSwitch(int switchId, int rootId, int defaultId, int activeId) {
-        WCStaticSwitch s = new WCStaticSwitch(switchId);
-        WCStaticBlock root = new WCStaticBlock(rootId);
-        WCStaticBlock def = new WCStaticBlock(defaultId);
-        WCStaticBlock act = new WCStaticBlock(activeId);
-        s.rootSetter(root);
-        s.defaultLeafSetter(def);
-        s.activeLeafSetter(act);
-        root.switchSetter(s);
-        def.switchSetter(s);
-        act.switchSetter(s);
-        return s;
-    }
-
-    public boolean occupy(int blockId, boolean value) {
-        occupied[blockId] = value;
-        return value;
     }
 
     public void clear() {
@@ -70,18 +49,35 @@ public class WCTrackModel implements TrackModelInterface {
         }
     }
 
-    public boolean getTrainAuthority(int trainId) {
-        return authority[trainId];
+    public boolean occupy(int blockId, boolean value) {
+        occupied[blockId] = value;
+        return value;
     }
 
     public boolean isOccupied(int blockId) {
         return occupied[blockId];
     }
 
-    public BlockStatus getStatus(int blockId) {
-        return null;
+    public boolean setAuthority(int blockId, boolean authority) {
+        this.authority[blockId] = authority;
+        return authority;
     }
 
+    public boolean getTrainAuthority(int trainId) {
+        return authority[trainId];
+    }
+
+    public double setSpeed(int blockId, double speed) {
+        this.speed[blockId] = speed;
+        return speed;
+    }
+
+    public double getTrainSpeed(int trainId) {
+        return this.speed[trainId];
+    }
+
+
+    /* TRAIN METHODS I DON'T CARE ABOUT */
     public boolean setSignal(int blockId, boolean value) {
         return false;
     }
@@ -106,36 +102,19 @@ public class WCTrackModel implements TrackModelInterface {
         return false;
     }
 
-    public boolean setAuthority(int blockId, boolean authority) {
-        return this.authority[blockId];
-    }
-
-    public double setSpeed(int blockId, double speed) {
-        return this.speed[blockId];
-    }
-
     public StaticSwitch getStaticSwitch(int switchID) {
-        if (switchID == 1)
-            return sw;
-        else
-            return null;
+        return null;
     }
 
     public StaticBlock getStaticBlock(int blockId) {
         return null;
     }
-
-    /* TRAIN METHODS I DON'T CARE ABOUT */
     public boolean setRepair(int blockId) {
         return false;
     }
 
     public boolean setOperational(int blockId) {
         return false;
-    }
-
-    public double getTrainSpeed(int trainId) {
-        return 0;
     }
 
     public int getTrainBeacon(int trainId) {
