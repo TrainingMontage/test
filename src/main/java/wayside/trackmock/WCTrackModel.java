@@ -20,10 +20,6 @@ import shared.BlockStatus;
 import trackmodel.TrackModelInterface;
 import trackmodel.StaticBlock;
 import trackmodel.StaticSwitch;
-import wayside.trackmock.WCStaticBlock;
-import wayside.trackmock.WCStaticSwitch;
-
-import static wayside.WaysideController.TRACK_LEN;
 
 /**
  * A simple static track model aganist which to test WaysideController.
@@ -34,11 +30,10 @@ public class WCTrackModel implements TrackModelInterface {
     private boolean[] occupied;
     private double[] speed;
 
-    public WCTrackModel() {
-        int n = TRACK_LEN;
-        authority = new boolean[n];
-        occupied  = new boolean[n];
-        speed     = new double[n];
+    public WCTrackModel(int trackLen) {
+        authority = new boolean[trackLen];
+        occupied  = new boolean[trackLen];
+        speed     = new double[trackLen];
         clear();
     }
 

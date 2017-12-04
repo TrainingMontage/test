@@ -40,7 +40,7 @@ public class EmptyTrack {
     };
 
     public EmptyTrack() {
-        tm = new WCTrackModel();
+        tm = new WCTrackModel(WaysideController.TRACK_LEN);
         tm.occupy(2, true);
         decider = new Decider(occupancy, PATHS);
         WaysideController.initTest(tm);

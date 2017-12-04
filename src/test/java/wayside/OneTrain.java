@@ -42,7 +42,7 @@ public class OneTrain {
 
     public OneTrain() {
         // trains on 1 and 5, I think
-        tm = new WCTrackModel();
+        tm = new WCTrackModel(WaysideController.TRACK_LEN);
         tm.occupy(1, true);
         tm.occupy(5, true);
         decider = new Decider(occupancy, PATHS);
