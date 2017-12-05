@@ -19,6 +19,10 @@ package trainmodel;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import trackmodel.TrackModel;
+import traincontroller.TrainController;
+import shared.Convert;
+import shared.Environment;
 
 public class TrainTracker{
     private static TrainTracker tracker;
@@ -38,6 +42,16 @@ public class TrainTracker{
     public int createTrain(int blockId){
         int temp = trainId;
         Train newTrain = new Train(temp, blockId);
+        trainList.add(newTrain);
+        //trainList[temp] = newTrain;
+        trainId = trainId+1;
+        return temp;
+    }
+    public int createTrainTest(int blockId){
+        int temp = trainId;
+        TrackModel tm;
+        tm = TrackModel.getTrackModel();
+        Train newTrain = new Train(temp, blockId, tm,1);
         trainList.add(newTrain);
         //trainList[temp] = newTrain;
         trainId = trainId+1;
