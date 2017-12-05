@@ -123,10 +123,18 @@ public class WaysideController {
 
         for (int block = 0; block < st.trackLen(); block++) {
             tm.setAuthority(block, decider.getAuthority(block));
-            tm.setSwitch(block, decider.getSwitch(block));
-            tm.setSignal(block, decider.getSignal(block));
             tm.setSpeed(block, decider.getSpeed(block));
-            tm.setCrossingState(block, decider.getCrossing(block));
+        }
+
+        for (WCSwitch sw: st.getSwitches()) {
+            tm.setSwitch(sw.root, decider.getSwitch(sw.root));
+            tm.setSignal(sw.root, decider.getSignal(sw.root));
+            tm.setSignal(sw.def, decider.getSignal(sw.def));
+            tm.setSignal(sw.active, decider.getSignal(sw.active));
+        }
+
+        for (int cross: st.getCrossings()) {
+            tm.setCrossingState(cross, decider.getCrossing(cross));
         }
     }
 
