@@ -59,6 +59,8 @@ public class App {
      * Here we have the all-important entry point into our application.
      *
      * @param args Command-line arguments.
+     * @throws Exception Either we are unable to read in track model file,
+     *      or the main event loop was interrupted.
      */
     public static void main(String[] args) throws Exception {
         //init each module
