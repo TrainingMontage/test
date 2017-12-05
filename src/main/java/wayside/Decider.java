@@ -16,7 +16,7 @@
 
 package wayside;
 
-import java.util.Arrays;
+import trackmodel.TrackModelInterface;
 
 /** Also known as a virtual machine. */
 public class Decider {
@@ -32,42 +32,29 @@ public class Decider {
         private int speed;
     }
 
-    private boolean[] occupied;
     private int[] suggestedSpeed;
     private boolean[] suggestedAuthority;
     private TrackState[] track;
-    private int[][] paths;
-    private WCSwitch[] switches;
+    private TrackModelInterface tm;
+    private WCStaticTrack st;
 
     /**
      * Construct a machine which does the work of determining a safe suggestion.
-     * @param occupancy the current occupancy of the blocks under the control of this WC.
-     *      These will be numbered consecutively from 0;
-     *      {@link WaysideContoller} will be reponsible for resolving that numbering with blockIds.
-     * @param paths the paths through this WC's purview.
-     *      This will be a list of <b>local</b> block numbers.
-     *      The order of the numbers in each subarray will represent a valid path for a train.
-     * @param switches a listing of all switches on this track.
+     * @param trackModel used for dynamic information about the state of the track.
+     *      Used exclusively for <code>isOccupied()</code>.
+     * @param staticTrack used for static information about the track, such as 
+     *      number of blocks, paths through the track, switch information.
      */
-    public Decider(boolean[] occupancy, int[][] paths, WCSwitch[] switches) {
-        occupied = occupancy;
-        this.paths = paths; // could copy this.
-        track = new TrackState[occupancy.length];
-        for (int i = 0; i < occupancy.length; i++) {
+    public Decider(TrackModelInterface trackModel, WCStaticTrack staticTrack) {
+        assert trackModel != null;
+        assert staticTrack != null;
+
+        tm = trackModel;
+        st = staticTrack;
+        track = new TrackState[st.trackLen()];
+        for (int i = 0; i < st.trackLen(); i++) {
             track[i] = new TrackState();
         }
-        this.switches = switches;
-    }
-
-    /**
-     * A different constructor for testing.
-     * @param occupancy same as before.
-     * @param paths same as before.
-     */
-    public Decider(boolean[] occupancy, int[][] paths) {
-        this(occupancy, paths, new WCSwitch[] {
-            new WCSwitch(1, 2, 3, 8)
-        });
     }
 
     /**
@@ -106,16 +93,16 @@ public class Decider {
         // I need to see if I can find a path from one occupied block to another
         boolean unbrokenPath = false;
 
-        for (int[] path: paths) {
+        for (int[] path: st.getPaths()) {
             for (int block: path) {
                 if (unbrokenPath) {
-                    if (occupied[block]) {
+                    if (tm.isOccupied(block)) {
                         return false;
                     }
                     // This doesn't follow the 2-block rule.
                     unbrokenPath = suggestedAuthority[block];
                 } else {
-                    if (occupied[block]) {
+                    if (tm.isOccupied(block)) {
                         unbrokenPath = true;
                     }
                 }
@@ -130,7 +117,7 @@ public class Decider {
      */
     boolean checkSwitches() {
         // for all switches...
-        for (WCSwitch sw: switches) {
+        for (WCSwitch sw: st.getSwitches()) {
             int root = sw.root;
             int def = sw.def;
             int active = sw.active;
@@ -147,7 +134,7 @@ public class Decider {
     }
 
     boolean isOccupied(int blockId) {
-        return occupied[blockId];
+        return tm.isOccupied(blockId);
     }
 
     boolean getCrossing(int blockId) {

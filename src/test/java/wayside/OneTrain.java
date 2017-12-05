@@ -23,34 +23,18 @@ import org.junit.Test;
 
 import org.mockito.Mockito;
 
-import trackmodel.TrackModel;
 import trackmodel.TrackModelInterface;
 
 public class OneTrain {
 
-    WCTrackModel tm;
-    Decider decider;
+    WCStaticTrack st = new WCStaticTrack(false);
+    WCTrackModel tm = new WCTrackModel(st.trackLen());
+    Decider decider = new Decider(tm, st);
     final int[] speed = {0,1,2,3,4,5,6,7,8};
-    final boolean[] occupancy = {
-        false, false, true, false, false, true, false, false, false
-    };
-    final int[][] PATHS = new int[][] {
-        new int[] {1,2,3,4,5,6,7},
-        new int[] {3,4,5,6,7,2,1}
-    };
 
     public OneTrain() {
-        // trains on 1 and 5, I think
-        tm = new WCTrackModel(WaysideController.TRACK_LEN);
         tm.occupy(1, true);
         tm.occupy(5, true);
-        decider = new Decider(occupancy, PATHS);
-        WaysideController.initTest(tm);
-    }
-
-    @Before
-    public void clear() {
-        tm.clear();
     }
 
     @Test

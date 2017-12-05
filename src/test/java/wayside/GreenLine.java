@@ -23,16 +23,9 @@ import shared.Suggestion;
 
 public class GreenLine {
     
-    WCTrackModel tm = new WCTrackModel(WaysideController.TRACK_LEN);
-    
-    @BeforeClass
-    public static void setup() {
-        WaysideController.greenLine();
-    }
-
-    public GreenLine() {
-        WaysideController.initTest(tm);
-    }
+    WCStaticTrack st = new WCStaticTrack(true);
+    WCTrackModel tm = new WCTrackModel(st.trackLen());
+    Decider decider = new Decider(tm, st);
 
     @Test
     public void simpleOneTrainSafe() {
@@ -41,34 +34,18 @@ public class GreenLine {
             new Suggestion(64, 10, new int[] {64, 65, 66})
         };
 
-        boolean[] auth = WaysideController.squash(s);
-        boolean[] expected_auth = new boolean[WaysideController.TRACK_LEN];
-        expected_auth[64] = true;
-        expected_auth[65] = true;
-        expected_auth[66] = true;
-        assertArrayEquals(expected_auth, auth);
+        boolean[] auth = WaysideController.squash(s, st.trackLen());
+        int[] speed = WaysideController.squashSpeed(s, st.trackLen());
 
-        int[] speed = WaysideController.squashSpeed(s);
-        int[] expected_speed = new int[WaysideController.TRACK_LEN];
-        expected_speed[64] = 10;
-        assertArrayEquals(expected_speed, speed);
+        assertTrue(decider.suggest(auth, speed));
 
-        boolean[] occ = new boolean[WaysideController.TRACK_LEN];
-        occ[64] = true;
-
-        assertEquals(3, WaysideController.PATHS.length);
-        assertEquals(6, WaysideController.SWITCHES.length);
-
-        Decider d = new Decider(occ, WaysideController.PATHS, WaysideController.SWITCHES);
-        assertTrue(d.suggest(auth, speed));
-
-        for (WCSwitch sw: WaysideController.SWITCHES) {
-            assertFalse(d.getSwitch(sw.root));
+        for (WCSwitch sw: st.getSwitches()) {
+            assertFalse(decider.getSwitch(sw.root));
         }
 
-        assertTrue(d.getAuthority(64));
-        assertTrue(d.getAuthority(65));
-        assertTrue(d.getAuthority(66));
+        for (int i = 1; i < st.trackLen(); i++) {
+            assertEquals(auth[i], decider.getAuthority(i));
+        }
     }
 
 }

@@ -22,10 +22,6 @@ import shared.BlockStatus;
 import shared.Suggestion;
 import trackmodel.TrackModel;
 import trackmodel.TrackModelInterface;
-import trackmodel.StaticBlock;
-import trackmodel.StaticSwitch;
-import trackmodel.StaticTrack;
-import wayside.WaysideUI;
 
 import java.util.List;
 
@@ -47,100 +43,91 @@ import java.util.List;
  */
 public class WaysideController {
 
-    /** 
-     * A horrible hacky solution,
-     * embedding information about the track in this module.
-     * Also, this is only the Green line.
-     */
-    public static int TRACK_LEN = 9;
-    static WCSwitch[] SWITCHES = new WCSwitch[] {
-        new WCSwitch(1, 2, 3, 8)
-    };
-    static int[] CROSSINGS = new int[] {};
-    static int[][] PATHS = new int[][] {
-        new int[] {1,2,3,4,5,6,7,8},
-        new int[] {3,4,5,6,7,8,2,1}
-    };
-
     static Decider decider;
-    static TrackModelInterface tm = TrackModel.getTrackModel();
+    static TrackModelInterface tm = null;
     static WaysideUI gui = null;
-    static boolean[] occupancy = new boolean[TRACK_LEN];
-
-    static void greenLine() {
-        int INTO_YARD = 151;
-        int FROM_YARD = 152;
-        TRACK_LEN = 153;
-        SWITCHES = new WCSwitch[] {
-            new WCSwitch( 1, 13, 12,   1),
-            new WCSwitch( 2, 28, 29, 150),
-            new WCSwitch(10, 57, 58, 151),
-            new WCSwitch(11, 63, 62, 152),
-            new WCSwitch(12, 77, 76, 101),
-            new WCSwitch(13, 85, 86, 100)
-        };
-        CROSSINGS = new int[] {19};
-        PATHS = new int[][] {
-            // The long circuit around the entire track.
-            new int[] {
-                // high-C downto low-A,
-                12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1,
-                // low-D upto high-Q,
-                13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
-                29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44,
-                45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
-                61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76,
-                77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92,
-                93, 94, 95, 96, 97, 98, 99, 100,
-                // high-N downto low-N,
-                85, 84, 83, 82, 81, 80, 79, 78, 77,
-                // low-R upto high-Z
-                101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113,
-                114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126,
-                127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139,
-                140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150
-            },
-            // Leaving the yard, entering the track.
-            new int[] {
-                36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51,
-                52, 53, 54, 55, 56, 57, INTO_YARD
-            },
-            // Entering the yard from the track.
-            new int[] {
-                FROM_YARD, 63, 64, 65, 66, 67, 68
-            }
-        };
-        occupancy = new boolean[TRACK_LEN];
-    }
+    static WCStaticTrack st = null;
 
     /**
      * Initiallizes the WaysideController.
-     * For now, just working on the green line,
-     * as though there's only one WC.
+     * What is called for the application.
+     * Creates a GUI, gets a handle to the real TrackModel,
+     * and initializes my map to the Green Line.
      */
     public static void init() {
         gui = new WaysideUI();
-        greenLine();
+        tm = TrackModel.getTrackModel();
+        st = new WCStaticTrack(true);
+        decider = new Decider(tm, st);
     }
 
-    /**
-     * Initiallizes for JUnit testing, 
-     * against "test_track.csv" instead of the real line.
-     */
-    public static void initTest() {
-        // do nothing...
-    }
-
-    public static void initTest(TrackModelInterface t) {
-        initTest();
-        tm = t;
-    }
-
-    /**
-     * Opens the WC UI.
-     */
+    /** Displays the WC UI. */
     public static void openWindow() {
         gui.setVisible(true);
+    }
+
+    static void init(TrackModelInterface trackModel, WCStaticTrack staticTrack) {
+        tm = trackModel;
+        st = staticTrack;
+        decider = new Decider(tm, st);
+    }
+
+    /** 
+     * Transformation from what {@link CTCModel} gives to a linear list of authority.
+     * @param suggestion list of suggestions, one per train.
+     * @param numBlocks the number of blocks in this track.
+     * @return linear representation of authority per block.
+     * @throws UnsafeSuggestion in case I can determine the given suggestion is unsafe.
+     */
+    static boolean[] squash(Suggestion[] suggestion, int numBlocks) {
+        boolean[] authority = new boolean[numBlocks];
+        for (Suggestion s: suggestion) {
+            if (s.authority == null) continue;
+            for (int block: s.authority) {
+                if (authority[block]) {
+                    throw new UnsafeSuggestion(String.format(
+                        "Block %d was suggested twice", block
+                    ));
+                }
+                authority[block] = true;
+            }
+        }
+        return authority;
+    }
+
+    /**
+     * Converts suggestion from {@link CTCModel} to linear layout of speed.
+     * @param suggestion Suggestions per train.
+     * @param numBlocks the number of blocks on this track.
+     * @return linear representation of speeds.
+     */
+    static int[] squashSpeed(Suggestion[] suggestion, int numBlocks) {
+        int[] speed = new int[numBlocks];
+        for (Suggestion s: suggestion) {
+            speed[s.blockId] = s.speed;
+        }
+        return speed;
+    }
+
+    /**
+     * How CTC presents a suggestion of speed and authority for each train.
+     * The form of this suggestion can be found in the {@link shared.Suggestion} class.
+     * IMPLEMENTATION SUBJECT TO CHANGE.
+     * TODO: throw custom Exception if the WC does not does not have PLC uploaded.
+     * @param suggestion an array of Suggestion objects, one for each train.
+     */
+    public static void suggest(Suggestion[] suggestion) {
+        boolean[] authority = squash(suggestion, st.trackLen());
+        int[] speed = squashSpeed(suggestion, st.trackLen());
+        decider.suggest(authority, speed);
+
+        for (int block = 0; block < st.trackLen(); block++) {
+            tm.setAuthority(block, decider.getAuthority(block));
+            tm.setSwitch(block, decider.getSwitch(block));
+            tm.setSignal(block, decider.getSignal(block));
+            tm.setSpeed(block, decider.getSpeed(block));
+            tm.setCrossingState(block, decider.getCrossing(block));
+        }
     }
 
     /**
@@ -195,67 +182,6 @@ public class WaysideController {
         return (int) tm.getTrainSpeed(blockId);
     }
 
-    /** 
-     * Transformation from what {@link CTCModel} gives to a linear list of authority.
-     * @param suggestion list of suggestions, one per train.
-     * @return linear representation of authority per block.
-     * @throws UnsafeSuggestion in case I can determine the given suggestion is unsafe.
-     */
-    static boolean[] squash(Suggestion[] suggestion) {
-        boolean[] authority = new boolean[TRACK_LEN];
-        for (Suggestion s: suggestion) {
-            if (s.authority == null) continue;
-            for (int block: s.authority) {
-                if (authority[block]) {
-                    // TODO: make custom exception UnsafeSuggestion
-                    throw new UnsafeSuggestion(String.format(
-                        "Block %d was suggested twice", block
-                    ));
-                }
-                authority[block] = true;
-            }
-        }
-        return authority;
-    }
-
-    /**
-     * Converts suggestion from {@link CTCModel} to linear layout of speed.
-     * @param suggestion Suggestions per train.
-     * @return linear representation of speeds.
-     */
-    static int[] squashSpeed(Suggestion[] suggestion) {
-        int[] speed = new int[TRACK_LEN];
-        for (Suggestion s: suggestion) {
-            speed[s.blockId] = s.speed;
-        }
-        return speed;
-    }
-
-    /**
-     * How CTC presents a suggestion of speed and authority for each train.
-     * The form of this suggestion can be found in the {@link shared.Suggestion} class.
-     * IMPLEMENTATION SUBJECT TO CHANGE.
-     * TODO: throw custom Exception if the WC does not does not have PLC uploaded.
-     * @param suggestion an array of Suggestion objects, one for each train.
-     */
-    public static void suggest(Suggestion[] suggestion) {
-        boolean[] authority = squash(suggestion);
-        int[] speed = squashSpeed(suggestion);
-
-        for (int i = 0; i < TRACK_LEN; i++) {
-            occupancy[i] = tm.isOccupied(i);
-        }
-        decider = new Decider(occupancy, PATHS, SWITCHES);
-
-        decider.suggest(authority, speed);
-        for (int block = 0; block < TRACK_LEN; block++) {
-            tm.setAuthority(block, decider.getAuthority(block));
-            tm.setSwitch(block, decider.getSwitch(block));
-            tm.setSignal(block, decider.getSignal(block));
-            tm.setSpeed(block, decider.getSpeed(block));
-            tm.setCrossingState(block, decider.getCrossing(block));
-        }
-    }
 
     private static int sum(int[] a) {
         int res = 0;

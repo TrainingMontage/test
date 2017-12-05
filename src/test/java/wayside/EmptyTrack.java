@@ -28,24 +28,19 @@ public class EmptyTrack {
 
     WCTrackModel tm;
     Decider decider;
+    WCStaticTrack st;
     final int[] speed = {0,1,2,3,4,5,6,7,8};
-    final boolean[] occupancy = {
-        false, false, true, false, false, false, false, false, false
-    };
-    final int[][] PATHS = new int[][] {
-        new int[] {1,2,3,4,5,6,7,8},
-        new int[] {3,4,5,6,7,8,2,1}
-    };
 
     public EmptyTrack() {
-        tm = new WCTrackModel(WaysideController.TRACK_LEN);
+        st = new WCStaticTrack(false);
+        tm = new WCTrackModel(st.trackLen());
         tm.occupy(2, true);
-        decider = new Decider(occupancy, PATHS);
-        WaysideController.initTest(tm);
+        decider = new Decider(tm, st);
+        WaysideController.init(tm, st);
     }
 
     @Test
-    public void notOccupied() {
+    public void twoOccupied() {
         Assert.assertTrue(WaysideController.isOccupied(2));
     }
 
@@ -60,9 +55,9 @@ public class EmptyTrack {
             false, true, true, true,
             false, false, false, false, false
         };
-        decider.suggest(authority, speed);
-        boolean[] expected = new boolean[WaysideController.TRACK_LEN];
-        for (int i = 0; i < WaysideController.TRACK_LEN; i++) {
+        assertTrue(decider.suggest(authority, speed));
+        boolean[] expected = new boolean[st.trackLen()];
+        for (int i = 0; i < st.trackLen(); i++) {
             Assert.assertEquals(expected[i], decider.getSwitch(i));
         }
     }
@@ -73,10 +68,10 @@ public class EmptyTrack {
             false, false, false, false,
             true, true, true, false, false
         };
-        boolean[] expected = new boolean[WaysideController.TRACK_LEN];
+        boolean[] expected = new boolean[st.trackLen()];
         expected[2] = false;
         assertTrue(decider.suggest(authority, speed));
-        for (int i = 0; i < WaysideController.TRACK_LEN; i++) {
+        for (int i = 0; i < st.trackLen(); i++) {
             Assert.assertEquals(expected[i], decider.getSwitch(i));
         }
         assertFalse(decider.getAuthority(3));
@@ -91,10 +86,10 @@ public class EmptyTrack {
             false, true, true, false,
             false, false, false, false, true
         };
-        boolean[] expected = new boolean[WaysideController.TRACK_LEN];
+        boolean[] expected = new boolean[st.trackLen()];
         expected[2] = true;
-        decider.suggest(authority, speed);
-        for (int i = 0; i < WaysideController.TRACK_LEN; i++) {
+        assertTrue(decider.suggest(authority, speed));
+        for (int i = 0; i < st.trackLen(); i++) {
             Assert.assertEquals(expected[i], decider.getSwitch(i));
         }
     }
