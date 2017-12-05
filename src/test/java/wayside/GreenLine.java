@@ -93,4 +93,15 @@ public class GreenLine {
         assertFalse(decider.suggest(auth, speed));
     }
 
+    @Test
+    public void safeTrainOnTwoBlocks() {
+        tm.occupy(70, true);
+        tm.occupy(71, true);
+        squash(new Suggestion[] {
+            new Suggestion(71, 10, new int[] {71, 72, 73})
+        });
+
+        assertTrue(decider.suggest(auth, speed));
+    }
+
 }

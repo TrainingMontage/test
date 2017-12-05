@@ -94,16 +94,21 @@ public class Decider {
         boolean unbrokenPath = false;
 
         for (int[] path: st.getPaths()) {
-            for (int block: path) {
+            unbrokenPath = false;
+            for (int i = 1; i < path.length; i++) {
+                int block = path[i];
                 if (unbrokenPath) {
                     if (tm.isOccupied(block)) {
-                        return false;
+                        if (i == 0 || !tm.isOccupied(path[i-1]))
+                            return false;
                     }
                     // This doesn't follow the 2-block rule.
                     unbrokenPath = suggestedAuthority[block];
                 } else {
                     if (tm.isOccupied(block)) {
-                        unbrokenPath = true;
+                        // if (i == path.length-1 || !tm.isOccupied(path[i+1])) {
+                            unbrokenPath = true;
+                        // }
                     }
                 }
             }
