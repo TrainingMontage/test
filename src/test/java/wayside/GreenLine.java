@@ -48,4 +48,23 @@ public class GreenLine {
         }
     }
 
+    @Test
+    public void safeTwoTrainsAroundASwitch() {
+        tm.occupy(152, true);
+        tm.occupy(66, true);
+        Suggestion[] s = new Suggestion[] {
+            new Suggestion(152, 10, new int[] {152, 63}),
+            new Suggestion(66, 10, new int[] {66, 67, 68})
+        };
+
+        boolean[] auth = WaysideController.squash(s, st.trackLen());
+        int[] speed = WaysideController.squashSpeed(s, st.trackLen());
+
+        assertTrue(decider.suggest(auth, speed));
+        assertTrue(decider.getSwitch(63));
+        for (int i = 1; i < st.trackLen(); i++) {
+            assertEquals(auth[i], decider.getAuthority(i));
+        }
+    }
+
 }
