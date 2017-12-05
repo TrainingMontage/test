@@ -24,8 +24,6 @@ import shared.Suggestion;
 import trackmodel.TrackModel;
 import wayside.WaysideController;
 
-import trackmodel.StaticTrack;
-
 public class EmptyTrack {
 
     WCTrackModel tm;
@@ -44,12 +42,6 @@ public class EmptyTrack {
         tm.occupy(2, true);
         decider = new Decider(occupancy, PATHS);
         WaysideController.initTest(tm);
-    }
-
-    @Test
-    public void trackModelSwitchPositions() {
-        StaticTrack st = TrackModel.getTrackModel().getStaticTrack();
-        Assert.assertEquals(2, st.getStaticSwitch(1).getRoot().getId());
     }
 
     @Test

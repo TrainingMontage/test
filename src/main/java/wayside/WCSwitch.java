@@ -13,4 +13,15 @@ public class WCSwitch {
         this.def = def;
         this.active = active;
     }
+
+    public boolean equals(Object other) {
+        if (other instanceof WCSwitch) {
+            WCSwitch that = (WCSwitch) other;
+            return that.id == this.id &&
+                that.root == this.root &&
+                that.def == this.def &&
+                that.active == this.active;
+        }
+        return false;
+    }
 }
