@@ -37,7 +37,8 @@ public class Train {
     protected double temperature; //
     protected double velocity;
     protected double maxVelocity = 70.0; //km/h
-    protected double mass = 37103.86; //kg empty train 40.9 tons;
+    protected double mass = 37103.86 * 2; //kg empty train 40.9 tons 2 cars;
+    protected int numCrew = 1;
     protected int numPassengers;
     protected int maxPassengers = 222;
     protected double passengerWeight = 88.9; //kg average weight of male in America
@@ -62,7 +63,7 @@ public class Train {
     protected boolean engineFailure;
     protected boolean signalFailure;
     //Standard Train Data
-    protected double length = 32.2; //meters
+    protected double length = 32.2*2; //meters 2 cars
     protected double height = 3.42; //meters
     protected double width = 2.56;  //meters
 
@@ -114,7 +115,7 @@ public class Train {
         gui.widthDisplayLabel.setText(String.format("%.2f", width*3.28084) + "ft");
         gui.heightDisplayLabel.setText(String.format("%.2f", height*3.28084) + "ft");
         gui.massDisplayLabel.setText(String.format("%.2f", mass*2.20462) + "lb");
-        gui.crewDisplayLabel.setText("1");
+        gui.crewDisplayLabel.setText(numCrew + "");
         gui.passengersDisplayLabel.setText(numPassengers+"");
         gui.messageBoardDisplayLabel.setText("Nothing To Display Currently");
         if(leftDoor == 0){
@@ -207,6 +208,14 @@ public class Train {
         else{
             numPassengers = passengers;
         }
+
+        if(gui != null){
+            gui.passengersDisplayLabel.setText(numPassengers+"");
+        }
+        return numPassengers;
+    }
+
+    public int getPassengers(){
         return numPassengers;
     }
     /*
@@ -218,6 +227,8 @@ public class Train {
 
     public void setDisplay(String message){
         //send to GUI
+        gui.messageBoardDisplayLabel.setText(message);
+
 
     }
 
@@ -241,11 +252,21 @@ public class Train {
         if(gui != null){
             gui.authorityDisplayLabel.setText(authority + "");
         }
-        return authority;
+        if(signalFailure){
+            return false;
+        }
+        else{
+            return authority;
+        }
     }
 
     public double getSuggestedSpeed(){
-        return TrackModel.getTrackModel().getTrainSpeed(trainId);
+        if(signalFailure){
+            return 0.0;
+        }
+        else{
+            return TrackModel.getTrackModel().getTrainSpeed(trainId);
+        }
     }
 
     public int getBeacon(){
@@ -317,9 +338,17 @@ public class Train {
     public void setEmergencyBrakes(boolean status){
         if(status == true){
             emergencyBrake = true;
+            if(gui != null){
+                gui.emergencyBrakeDisplayLabel.setText("ON");
+            }
+
         }
         else{
             emergencyBrake = false;
+            if(gui != null){
+                gui.emergencyBrakeDisplayLabel.setText("OFF");
+            }
+
         }
     }
 
@@ -405,6 +434,18 @@ public class Train {
 
     public int getTime(){
         return time;
+    }
+
+    public void signalFailureMode(boolean status){
+        signalFailure = status;
+    }
+
+    public void brakeFailureMode(boolean status){
+        emergencyBrake = true;
+    }
+
+    public void engineFailureMode(boolean status){
+        emergencyBrake = true;
     }
 
     public double getDisplacement(){
