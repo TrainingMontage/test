@@ -29,13 +29,13 @@ public class EmptyTrack {
 
     WCTrackModel tm;
     Decider decider;
-    final int[] speed = {1,2,3,4,5,6,7,8};
+    final int[] speed = {0,1,2,3,4,5,6,7,8};
     final boolean[] occupancy = {
         false, false, true, false, false, false, false, false, false
     };
     final int[][] PATHS = new int[][] {
-        new int[] {1,2,3,4,5,6,7},
-        new int[] {3,4,5,6,7,2,1}
+        new int[] {1,2,3,4,5,6,7,8},
+        new int[] {3,4,5,6,7,8,2,1}
     };
 
     public EmptyTrack() {
@@ -81,6 +81,7 @@ public class EmptyTrack {
             true, true, true, false, false
         };
         boolean[] expected = new boolean[WaysideController.TRACK_LEN];
+        expected[2] = false;
         decider.suggest(authority, speed);
         for (int i = 0; i < WaysideController.TRACK_LEN; i++) {
             Assert.assertEquals(expected[i], decider.getSwitch(i));

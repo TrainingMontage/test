@@ -30,7 +30,7 @@ public class OneTrain {
 
     WCTrackModel tm;
     Decider decider;
-    final int[] speed = {1,2,3,4,5,6,7,8};
+    final int[] speed = {0,1,2,3,4,5,6,7,8};
     final boolean[] occupancy = {
         false, false, true, false, false, true, false, false, false
     };

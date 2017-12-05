@@ -53,14 +53,13 @@ public class WaysideController {
      * Also, this is only the Green line.
      */
     public static int TRACK_LEN = 9;
-    static int[] SWITCHES = new int[] {1};
-    static int[] SWITCH_BLOCKS = new int[] {2};
-    static int[] SWITCH_ACTIVE = new int[] {8};
-    static int[] SWITCH_DEFAULT = new int[] {3};
+    static WCSwitch[] SWITCHES = new WCSwitch[] {
+        new WCSwitch(1, 2, 3, 8)
+    };
     static int[] CROSSINGS = new int[] {};
     static int[][] PATHS = new int[][] {
-        new int[] {1,2,3,4,5,6,7},
-        new int[] {3,4,5,6,7,2,1}
+        new int[] {1,2,3,4,5,6,7,8},
+        new int[] {3,4,5,6,7,8,2,1}
     };
 
     static Decider decider;
@@ -68,14 +67,18 @@ public class WaysideController {
     static WaysideUI gui = null;
     static boolean[] occupancy = new boolean[TRACK_LEN];
 
-    static void parseFile() {
+    static void greenLine() {
         int INTO_YARD = 151;
         int FROM_YARD = 152;
         TRACK_LEN = 153;
-        SWITCHES = new int[] {1, 2, 10, 11, 12, 13};
-        SWITCH_BLOCKS  = new int[] {13,  28,  57,  63,  77,  85};
-        SWITCH_ACTIVE  = new int[] { 1, 150, 151, 152, 101, 100};
-        SWITCH_DEFAULT = new int[] {12,  29,  58,  62,  76,  86};
+        SWITCHES = new WCSwitch[] {
+            new WCSwitch( 1, 13, 12,   1),
+            new WCSwitch( 2, 28, 29, 150),
+            new WCSwitch(10, 57, 58, 151),
+            new WCSwitch(11, 63, 62, 152),
+            new WCSwitch(12, 77, 76, 101),
+            new WCSwitch(13, 85, 86, 100)
+        };
         CROSSINGS = new int[] {19};
         PATHS = new int[][] {
             // The long circuit around the entire track.
@@ -117,7 +120,7 @@ public class WaysideController {
      */
     public static void init() {
         gui = new WaysideUI();
-        parseFile();
+        greenLine();
     }
 
     /**
@@ -238,6 +241,12 @@ public class WaysideController {
     public static void suggest(Suggestion[] suggestion) {
         boolean[] authority = squash(suggestion);
         int[] speed = squashSpeed(suggestion);
+
+        for (int i = 0; i < TRACK_LEN; i++) {
+            occupancy[i] = tm.isOccupied(i);
+        }
+        decider = new Decider(occupancy, PATHS, SWITCHES);
+
         decider.suggest(authority, speed);
         for (int block = 0; block < TRACK_LEN; block++) {
             tm.setAuthority(block, decider.getAuthority(block));

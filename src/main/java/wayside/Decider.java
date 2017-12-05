@@ -37,6 +37,7 @@ public class Decider {
     private boolean[] suggestedAuthority;
     private TrackState[] track;
     private int[][] paths;
+    private WCSwitch[] switches;
 
     /**
      * Construct a machine which does the work of determining a safe suggestion.
@@ -46,14 +47,27 @@ public class Decider {
      * @param paths the paths through this WC's purview.
      *      This will be a list of <b>local</b> block numbers.
      *      The order of the numbers in each subarray will represent a valid path for a train.
+     * @param switches a listing of all switches on this track.
      */
-    public Decider(boolean[] occupancy, int[][] paths) {
+    public Decider(boolean[] occupancy, int[][] paths, WCSwitch[] switches) {
         occupied = occupancy;
         this.paths = paths; // could copy this.
         track = new TrackState[occupancy.length];
         for (int i = 0; i < occupancy.length; i++) {
             track[i] = new TrackState();
         }
+        this.switches = switches;
+    }
+
+    /**
+     * A different constructor for testing.
+     * @param occupancy same as before.
+     * @param paths same as before.
+     */
+    public Decider(boolean[] occupancy, int[][] paths) {
+        this(occupancy, paths, new WCSwitch[] {
+            new WCSwitch(1, 2, 3, 8)
+        });
     }
 
     /**
@@ -64,13 +78,21 @@ public class Decider {
      * @return is this suggestion safe?
      */
     public boolean suggest(boolean[] authority, int[] speed) {
+        assert (authority.length == speed.length);
+
         suggestedAuthority = authority;
         suggestedSpeed = speed;
-        if (checkSwitches() && checkStraightLine())
+        if (checkSwitches() && checkStraightLine()) {
+            for (int i = 0; i < track.length; i++) {
+                track[i].authority = suggestedAuthority[i];
+                track[i].speed = suggestedSpeed[i];
+            }
             return true; // All good.
+        }
         // assign the defaults.
         for (int i = 0; i < track.length; i++) {
             track[i] = new TrackState();
+            // crossings if train is already over them?
         }
         return false;
     }
@@ -108,16 +130,18 @@ public class Decider {
      */
     boolean checkSwitches() {
         // for all switches...
-        int root = 2;
-        int def = 3;
-        int active = 8;
-        if (suggestedAuthority[def] && suggestedAuthority[active]) {
-            // both default and active branch cannot have authority
-            return false;
-        }
-        // which way should the switch go?
-        if (suggestedAuthority[active]) {
-            track[root].switchState = true;
+        for (WCSwitch sw: switches) {
+            int root = sw.root;
+            int def = sw.def;
+            int active = sw.active;
+            if (suggestedAuthority[def] && suggestedAuthority[active]) {
+                // both default and active branch cannot have authority
+                return false;
+            }
+            // which way should the switch go?
+            if (suggestedAuthority[active]) {
+                track[root].switchState = true;
+            }
         }
         return true;
     }
