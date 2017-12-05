@@ -38,13 +38,9 @@ public class GreenLine {
         int[] speed = WaysideController.squashSpeed(s, st.trackLen());
 
         assertTrue(decider.suggest(auth, speed));
-
-        for (WCSwitch sw: st.getSwitches()) {
-            assertFalse(decider.getSwitch(sw.root));
-        }
-
         for (int i = 1; i < st.trackLen(); i++) {
             assertEquals(auth[i], decider.getAuthority(i));
+            assertEquals(speed[i], decider.getSpeed(i));
         }
     }
 
@@ -64,6 +60,26 @@ public class GreenLine {
         assertTrue(decider.getSwitch(63));
         for (int i = 1; i < st.trackLen(); i++) {
             assertEquals(auth[i], decider.getAuthority(i));
+            assertEquals(speed[i], decider.getSpeed(i));
+        }
+    }
+
+    @Test
+    public void unsafeTwoTrainsAroundASwitch() {
+        tm.occupy(152, true);
+        tm.occupy(65, true);
+        Suggestion[] s = new Suggestion[] {
+            new Suggestion(152, 10, new int[] {152, 63, 64}),
+            new Suggestion(65, 10, new int[] {65, 66, 67})
+        };
+
+        boolean[] auth = WaysideController.squash(s, st.trackLen());
+        int[] speed = WaysideController.squashSpeed(s, st.trackLen());
+
+        assertFalse(decider.suggest(auth, speed));
+        for (int i = 1; i < st.trackLen(); i++) {
+            assertFalse(decider.getAuthority(i));
+            assertEquals(0, decider.getSpeed(i));
         }
     }
 
