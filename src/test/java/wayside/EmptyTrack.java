@@ -18,6 +18,7 @@ package wayside;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 import shared.Suggestion;
 import trackmodel.TrackModel;
@@ -82,10 +83,14 @@ public class EmptyTrack {
         };
         boolean[] expected = new boolean[WaysideController.TRACK_LEN];
         expected[2] = false;
-        decider.suggest(authority, speed);
+        assertTrue(decider.suggest(authority, speed));
         for (int i = 0; i < WaysideController.TRACK_LEN; i++) {
             Assert.assertEquals(expected[i], decider.getSwitch(i));
         }
+        assertFalse(decider.getAuthority(3));
+        assertTrue(decider.getAuthority(4));
+        assertTrue(decider.getAuthority(6));
+        assertFalse(decider.getAuthority(7));
     }
 
     @Test
