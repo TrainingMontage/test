@@ -1928,8 +1928,11 @@ public class CTCGUI implements ViewerListener{
                 continue;//something invalid, don't move the train
             }
             Node start;
-            if(oneData.getLastVisited() == -1){
-                start = graph.getNode("Yard");
+            if(oneData.getLastVisited() == -1){//special exception if still on starting block
+                start = e1.getNode0();
+                if(start == graph.getNode("Yard")){
+                    start = e1.getNode1();
+                }
             }else{
                 Edge lastVisited = graph.getEdge(""+oneData.getLastVisited());
                 start = e1.getNode0();
@@ -1940,6 +1943,7 @@ public class CTCGUI implements ViewerListener{
             Node end = e2.getNode0();//pick an arbitrary node off of ending edge. we'll clean the path string after the fact
             //get path
             String newAuth = routeTrain(start, end, oneData);
+            newAuth = e1.getId()+","+newAuth;//you should also have auth on the block you are on
             
             if(!newAuth.equals("")){
                 //ensure only 1 node from end edge is in path (this way you get authority onto end edge but stop there)
