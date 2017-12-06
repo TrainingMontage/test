@@ -356,7 +356,7 @@ public class CTCGUI implements ViewerListener{
         if(sb2 != null){//if only green line this will be null
             ss2 = sb2.getStaticSwitch();
             Node gNodePrev = graph.getNode(ss2.getRoot().getId()+" "+ss2.getDefaultLeaf().getId()+" "+ss2.getActiveLeaf().getId());
-            Edge greenIn = graph.addEdge("151", gNodePrev, nodeYard, false);
+            Edge greenIn = graph.addEdge("151", gNodePrev, nodeYard, true);
             greenIn.addAttribute("layout.weight", new Double(sb2.getLength()));
             greenIn.addAttribute("track.time", new Double(sb2.getLength()/sb2.getSpeedLimit()));
             greenIn.addAttribute("track.occupied", new Boolean(false));
@@ -368,7 +368,7 @@ public class CTCGUI implements ViewerListener{
         if(sb2 != null){//if only red line this will be null
             ss2 = sb2.getStaticSwitch();
             Node gNodeNext = graph.getNode(ss2.getRoot().getId()+" "+ss2.getDefaultLeaf().getId()+" "+ss2.getActiveLeaf().getId());
-            Edge greenOut = graph.addEdge("152", nodeYard, gNodeNext, false);
+            Edge greenOut = graph.addEdge("152", nodeYard, gNodeNext, true);
             greenOut.addAttribute("layout.weight", new Double(sb2.getLength()));
             greenOut.addAttribute("track.time", new Double(sb2.getLength()/sb2.getSpeedLimit()));
             greenOut.addAttribute("track.occupied", new Boolean(false));
@@ -380,7 +380,7 @@ public class CTCGUI implements ViewerListener{
         if(sb2 != null){//if only green line this will be null
             ss2 = sb2.getStaticSwitch();
             Node rNodeNext = graph.getNode(ss2.getRoot().getId()+" "+ss2.getDefaultLeaf().getId()+" "+ss2.getActiveLeaf().getId());
-            Edge redOut = graph.addEdge("153", nodeYard, rNodeNext, true);
+            Edge redOut = graph.addEdge("153", nodeYard, rNodeNext, false);
             redOut.addAttribute("layout.weight", new Double(sb2.getLength()));
             redOut.addAttribute("track.time", new Double(sb2.getLength()/sb2.getSpeedLimit()));
             redOut.addAttribute("track.occupied", new Boolean(false));
