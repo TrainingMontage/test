@@ -79,6 +79,31 @@ public class GlobalGUI {
         c.gridy = 4;
         pane.add(button, c);
 
+        c.gridx = 0;
+        c.gridy = 5;
+        JComboBox<String> multplier = new JComboBox<String>();
+        multplier.setModel(new DefaultComboBoxModel<>(new String[] {
+            "1x", "5x", "10x", "20x"
+        }));
+        multplier.addItemListener(new ItemListener() {
+            private int getSleepTime(String selected) {
+                switch (selected) {
+                    case "1x": return 1000;
+                    case "5x": return 200;
+                    case "10x": return 100;
+                    case "20x": return 50;
+                }
+                return 1000;
+            }
+
+            public void itemStateChanged(ItemEvent evt) {
+                if (evt.getStateChange() == ItemEvent.SELECTED) {
+                    Environment.sleepTime = getSleepTime(evt.getItem().toString());
+                    // System.out.println("Option " + evt.getItem().toString() + " was selected");
+                }
+            }
+        });
+        pane.add(multplier, c);
     }
 
     /**

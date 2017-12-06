@@ -85,9 +85,12 @@ public class App {
 
         //the main update loop
         while (true) {
+            long startTime = System.nanoTime();
             CTCModel.update();
             Environment.clock += speedMultiplier;
-            Thread.sleep(1000);
+            System.err.println("All updates took: " + ((System.nanoTime() - startTime)/1000000) + "ms");
+
+            Thread.sleep(Environment.sleepTime);
         }
     }
 }

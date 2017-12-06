@@ -37,7 +37,7 @@ public class WaysideUI extends javax.swing.JFrame {
     }
 
     void setCrossing(int blockId, boolean value) {
-        jTable1.getModel().setValueAt(value, blockId-1, 3);
+        jTable1.getModel().setValueAt(value, blockId-1, 4);
     }
 
     void setSpeed(int blockId, int value) {
@@ -68,15 +68,16 @@ public class WaysideUI extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        Object[][] data = new Object[153][8];
-        for (int i = 0; i < 153; i++) {
+        final int numBlocks = 152;
+        Object[][] data = new Object[numBlocks][7];
+        for (int i = 0; i < numBlocks; i++) {
             data[i][0] = i+1;
         }
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             data,
             new String [] {
-                "Block ID", "Occupancy", "Switches", "Signals", "Crossing", "Status", "Speed", "Authority"
+                "Block ID", "Occupancy", "Switches", "Signals", "Crossing", "Speed", "Authority"
             }
         ) {
             Class[] types = new Class [] {
@@ -85,7 +86,6 @@ public class WaysideUI extends javax.swing.JFrame {
                 java.lang.Boolean.class,
                 java.lang.Boolean.class,
                 java.lang.Boolean.class,
-                java.lang.Object.class,
                 java.lang.Integer.class,
                 java.lang.Boolean.class
             };

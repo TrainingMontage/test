@@ -24,8 +24,9 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.lang.Math;
 import shared.Convert;
-//import shared.BlockStatus;
+import shared.Environment;
 import wayside.WaysideController;
 import trackmodel.TrackModel;
 import trackmodel.StaticBlock;
@@ -35,8 +36,12 @@ import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
 import org.graphstream.ui.swingViewer.ViewPanel;
 import org.graphstream.ui.view.Viewer;
+import org.graphstream.ui.view.ViewerListener;
+import org.graphstream.ui.view.ViewerPipe;
+import org.graphstream.ui.spriteManager.SpriteManager;
+import org.graphstream.ui.spriteManager.Sprite;
 
-public class CTCGUI {
+public class CTCGUI implements ViewerListener{
     // dummy modules that the GUI needs to interact with
     //private static TrackModel trackModel;
     //private static TrainModel trainModel;
@@ -48,8 +53,9 @@ public class CTCGUI {
     //private static String dataAuthority;
     //private static int dataOrigin;
     //private static int dataDestination;
-    private static JLabel trainLabel;
+    //private static JLabel trainLabel;
     // private env temperature
+    private static CTCGUI myself = null;
     private static double temperature;
     // constants for initializing GUI components
     final static boolean shouldFill = true;
@@ -64,12 +70,14 @@ public class CTCGUI {
     private static JButton autoButton;
     private static JButton newTrainButton;
     private static JButton launchTrainButton;
+    // global textArea handles
+    private static JTextArea temperatureText = null;
     // train textArea handles
     private static JTextArea trainIDText;
     private static JTextArea trainBlockText;
     private static JTextArea trainSpeedText;
     private static JTextArea trainAuthorityText;
-    private static JTextArea trainOriginText;
+    //private static JTextArea trainOriginText;
     private static JTextArea trainDestinationText;
     // track textArea handles
     private static JTextArea trackIDText;
@@ -86,19 +94,68 @@ public class CTCGUI {
     private static JTextArea trackStationText;
     private static JTextArea trackPassengersText;
     private static JTextArea trackCrossingText;
+    // line combobox
+    private static JComboBox<String> lineComboBox;
+    // textArea and button for select
+    private static JTextArea selectBlockText;
+    private static JButton selectBlockButton;
     
     private static Graph graph;
-    private static ViewPanel graphView;
-    private final String styleSheet =
+    //private static ViewPanel graphView;
+    private static Viewer viewer;
+    private static ViewerPipe fromViewer;
+    private static SpriteManager sm;
+    private static final String styleSheet =
         "node {" +
         "   size: 1px;" +
         "	fill-color: black;" +
+        "   text-offset: 15, 0;" +
+        "}" +
+        "node.yard {" +
+        "   text-color: red;" +
+        "   text-background-mode: plain;" +
+        "   size: 4px;" +
+        "	fill-color: red;" +
+        "   text-size: 12;" +
+        "   text-offset: -20, -7;" +
         "}" +
         "edge {" +
-        "	fill-color: black;" +
+        "	fill-color: darkgreen;" +
+        "   text-offset: 0, 8;" +
+        "   text-alignment: along;" +
+        "   text-background-mode: plain;" +
+        "   arrow-size: 4, 4;" +
+        //"   size: 2px;" +
         "}" +
-        "edge.marked {" +
-        "	fill-color: red;" +
+        "node:clicked {" +
+        "   fill-color: red;" +
+        "}" +
+        //"edge:clicked {" +
+        //"   fill-color: red;" +
+        //"}" +
+        "node:selected {" +
+        "   fill-color: red;" +
+        "}" +
+        //"sprite#occupied {" +
+        //"   fill-color: red;" +
+        //"   shape: flow;" +
+        //"   size: 30px;" +
+        //"}" +
+        //"sprite#unoccupied {" +
+        //"   fill-color: red;" +
+        //"   shape: flow;" +
+        //"   size: 30px;" +
+        //"}" +
+        //"edge:selected {" +
+        //"   fill-color: red;" +
+        //"}" +
+        "edge.broken {" +
+        "   fill-color: purple;" +
+        "}" +
+        "edge.occupied {" +
+        "	fill-color: green;" +
+        //"   text-color: green;" +
+        "   text-size: 12;" +
         "}";
 
 
@@ -113,14 +170,21 @@ public class CTCGUI {
     }
     
     public static void init(){
+        if(myself == null){
+            myself = new CTCGUI();
+        }
         System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
-        graph = new MultiGraph("Map");//allow directed graphs
-        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
-        graphView = viewer.addDefaultView(false);   // false indicates "no JFrame".
+        graph = new SingleGraph("Map");//allow directed graphs
+        //sm = new SpriteManager(graph);
+        //Sprite occ = sm.addSprite("occupied");
+        //Sprite unocc = sm.addSprite("unoccupied");
+        graph.addAttribute("ui.stylesheet",styleSheet);
         
         
         
         Node nodeYard = graph.addNode("Yard");
+        nodeYard.addAttribute("ui.label", "YARD");
+        nodeYard.addAttribute("ui.class", "yard");
         //read in from track
         StaticTrack t = TrackModel.getTrackModel().getStaticTrack();
         ArrayList<Integer> bIds = TrackModel.getTrackModel().getBlockIds();
@@ -139,7 +203,8 @@ public class CTCGUI {
                 //special exception for switches
                 n1 = graph.getNode(ss.getRoot().getId()+" "+ss.getDefaultLeaf().getId()+" "+ss.getActiveLeaf().getId());
                 if(n1 == null){
-                    graph.addNode(ss.getRoot().getId()+" "+ss.getDefaultLeaf().getId()+" "+ss.getActiveLeaf().getId());
+                    n1 = graph.addNode(ss.getRoot().getId()+" "+ss.getDefaultLeaf().getId()+" "+ss.getActiveLeaf().getId());
+                    //n1.addAttribute("ui.label", ss.getRoot().getId()+" "+ss.getDefaultLeaf().getId()+" "+ss.getActiveLeaf().getId());
                 }//else it already exists; do nothing
             }else{
                 int nextId = t.getStaticBlock(blockId).getNextId();
@@ -158,10 +223,12 @@ public class CTCGUI {
                 }
                 n2 = graph.getNode(prevStr);
                 if(n1 == null){
-                    graph.addNode(nextStr);
+                    n1 = graph.addNode(nextStr);
+                    //n1.addAttribute("ui.label", nextStr);
                 }
                 if(n2 == null){
-                    graph.addNode(prevStr);
+                    n2 = graph.addNode(prevStr);
+                    //n2.addAttribute("ui.label", prevStr);
                 }
             }
         }
@@ -201,13 +268,13 @@ public class CTCGUI {
                     n2 = graph.getNode(prevStr);
                 }
                 if(nextDirection && sb.isBidirectional()){
-                    e = graph.addEdge(""+blockId, n1, n2, true);
-                }else if(nextDirection && !sb.isBidirectional()){
                     e = graph.addEdge(""+blockId, n1, n2, false);
+                }else if(nextDirection && !sb.isBidirectional()){
+                    e = graph.addEdge(""+blockId, n1, n2, true);
                 }else if(!nextDirection && sb.isBidirectional()){
-                    e = graph.addEdge(""+blockId, n2, n1, true);
-                }else{
                     e = graph.addEdge(""+blockId, n2, n1, false);
+                }else{
+                    e = graph.addEdge(""+blockId, n2, n1, true);
                 }
                 //add switch specific edge properties
                 if(blockId == ss.getRoot().getId()){
@@ -234,14 +301,17 @@ public class CTCGUI {
                 }
                 n2 = graph.getNode(prevStr);
                 if(sb.isBidirectional()){
-                    e = graph.addEdge(""+blockId, n2, n1, true);
-                }else{
                     e = graph.addEdge(""+blockId, n2, n1, false);
+                }else{
+                    e = graph.addEdge(""+blockId, n2, n1, true);
                 }
                 //add non switch track properties
                 e.addAttribute("track.isSwitch", new Boolean(false));
             }
             //add edge properties
+            //e.addAttribute("ui.label",e.getId()+"");
+            e.addAttribute("ui.selected", new Boolean(true));
+            e.addAttribute("ui.clicked", new Boolean(true));
             e.addAttribute("layout.weight", new Double(sb.getLength()));
             e.addAttribute("track.time", new Double(sb.getLength()/sb.getSpeedLimit()));
             e.addAttribute("track.occupied", new Boolean(false));
@@ -251,6 +321,7 @@ public class CTCGUI {
             }else{
                 e.addAttribute("track.isCrossing", new Boolean(false));
             }
+            //unocc.attachToEdge(""+blockId);
         }
         //manually add the blocks connected to the yard
         //green line: 151 in, 152 out
@@ -263,6 +334,7 @@ public class CTCGUI {
         greenIn.addAttribute("track.occupied", new Boolean(false));
         greenIn.addAttribute("track.isCrossing", new Boolean(false));
         greenIn.addAttribute("track.isSwitch", new Boolean(false));
+        //greenIn.addAttribute("ui.label",greenIn.getId()+"");
         sb2 = t.getStaticBlock(152);
         ss2 = sb2.getStaticSwitch();
         Node nodeNext = graph.getNode(ss2.getRoot().getId()+" "+ss2.getDefaultLeaf().getId()+" "+ss2.getActiveLeaf().getId());
@@ -272,6 +344,189 @@ public class CTCGUI {
         greenOut.addAttribute("track.occupied", new Boolean(false));
         greenOut.addAttribute("track.isCrossing", new Boolean(false));
         greenOut.addAttribute("track.isSwitch", new Boolean(false));
+        //greenOut.addAttribute("ui.label",greenOut.getId()+"");
+        
+        //hardcode some positions to make the graph look better
+        //nodeYard.setAttribute("xyz", 9, 4, 0);
+        //graph.getNode("14 15").setAttribute("xyz", 7, 2, 0);
+        //graph.getNode("78 79").setAttribute("xyz", 3, 1, 0);
+        //graph.getNode("84 85").setAttribute("xyz", 0, 0, 0);
+        
+        ArrayList<Node> toBePos = new ArrayList<Node>();
+        ArrayList<Node> donePos = new ArrayList<Node>();
+        nodeYard.setAttribute("xyz", 0.0, 0.0, 0.0);
+        donePos.add(nodeYard);
+        Iterator<Edge> edgeIter = nodeYard.getEachEdge().iterator();
+        
+        while(edgeIter.hasNext()){
+            Edge toAdd = (Edge) edgeIter.next();
+            if(!donePos.contains(toAdd.getNode0()) && !toBePos.contains(toAdd.getNode0())){
+                toBePos.add(toAdd.getNode0());
+            }
+            if(!donePos.contains(toAdd.getNode1()) && !toBePos.contains(toAdd.getNode1())){
+                toBePos.add(toAdd.getNode1());
+            }
+        }//only add the nodes connected to the yard for now. this ensures that we start building off of the yard node
+        
+        while(toBePos.size() != 0){
+            Node nn = toBePos.get(0);
+            Iterator neighIter = nn.getNeighborNodeIterator();
+            int numPlacedNeigh = 0;
+            double avgx = 0;
+            double avgy = 0;
+            Node neigh;
+            boolean yardCpy = false;
+            Node lastNode = null;
+            while(neighIter.hasNext()){
+                neigh = (Node)neighIter.next();
+                if(neigh.equals(nodeYard)){
+                    yardCpy = true;
+                }
+                if(donePos.contains(neigh)){
+                    lastNode = neigh;
+                    numPlacedNeigh++;
+                    Object[] pos = neigh.getAttribute("xyz");
+                    avgx += ((Double) pos[0]);
+                    avgy += ((Double) pos[1]);
+                    //could do a weighted avg b/t edges
+                }
+            }
+            avgx = avgx/numPlacedNeigh;
+            avgy = avgy/numPlacedNeigh;
+            System.out.println("numPlacedNeigh: "+numPlacedNeigh);
+            System.out.println("yardCpy: "+yardCpy);
+            if(numPlacedNeigh == 3 || (numPlacedNeigh == 2 && nn.getDegree() != 3)){
+                //if 2 or 3 neighbors are placed
+                nn.setAttribute("xyz", avgx, avgy, 0.0);
+                toBePos.remove(nn);
+                donePos.add(nn);
+            }else{
+                //if 1 neighbor is placed
+                if(yardCpy){//this placed neighbor is the yard
+                    //place up or down
+                    if(donePos.size() == 1){
+                        //the yard is the only node placed
+                        avgx = 1.0;
+                        avgy = 1.0;
+                    }else{
+                        avgx = -1.0;
+                        avgy = -1.0;
+                    }
+                    nn.setAttribute("xyz", avgx, avgy, 0.0);
+                    toBePos.remove(nn);
+                    donePos.add(nn);
+                }else{
+                    //not next to the yard
+                    if(lastNode.getDegree() == 2){
+                        //previously placed node is not a switch, follow the last angle
+                        Node prevPrevNode = null;
+                        Iterator prevNeighIter = lastNode.getNeighborNodeIterator();
+                        while(prevNeighIter.hasNext()){
+                            prevPrevNode = (Node) prevNeighIter.next();
+                            if(!prevPrevNode.equals(nn)){
+                                break;//we found the last 2 nodes, now we can find the angle b/t them
+                            }
+                        }
+                        Object[] pos2 = prevPrevNode.getAttribute("xyz");
+                        avgx += avgx - ((Double) pos2[0]);
+                        avgy += avgy - ((Double) pos2[1]);
+                        nn.setAttribute("xyz", avgx, avgy, 0.0);
+                        toBePos.remove(nn);
+                        donePos.add(nn);
+                    }else{
+                        //previously placed node is a switch, make angles even
+                        Node prevPrevNode1 = null;
+                        Node prevPrevNode2 = null;
+                        Iterator prevNeighIter = lastNode.getNeighborNodeIterator();
+                        while(prevNeighIter.hasNext()){
+                            prevPrevNode1 = (Node) prevNeighIter.next();
+                            if(!prevPrevNode1.equals(nn)){
+                                if(prevPrevNode2 == null){
+                                    prevPrevNode2 = prevPrevNode1;
+                                }else{
+                                    break;//we found the last 2 nodes, now we can find the angle b/t them
+                                }
+                            }
+                        }
+                        //if other 2 from switch are placed
+                        if(donePos.contains(prevPrevNode1) && donePos.contains(prevPrevNode2)){
+                            //this is messy
+                            System.out.println("my mess");
+                            System.out.println(lastNode.getId());
+                            System.out.println(prevPrevNode1.getId());
+                            System.out.println(prevPrevNode2.getId());
+                            Object[] pos1 = lastNode.getAttribute("xyz");
+                            Object[] pos2 = prevPrevNode1.getAttribute("xyz");
+                            Object[] pos3 = prevPrevNode2.getAttribute("xyz");
+                            double x0 = (Double) pos1[0];
+                            double y0 = (Double) pos1[1];
+                            double x1 = (((Double) pos2[0]) + ((Double) pos3[0]))/2;
+                            double y1 = (((Double) pos2[1]) + ((Double) pos3[1]))/2;
+                            double m = (y1-y0)/(x1-x0);
+                            avgx = Math.sqrt(1/(1+m*m))+x0;
+                            double negavgx = -avgx;
+                            avgy = y0+m*(avgx-x0);
+                            double negavgy = y0+m*(negavgx-x0);
+                            if((avgx-x1)*(avgx-x1)+(avgy-y1)*(avgy-y1) > (negavgx-x1)*(negavgx-x1)+(negavgy-y1)*(negavgy-y1)){
+                                //oops we put the new line on the wrong side
+                                System.out.println("negative stuff");
+                                avgx = negavgx;
+                                avgy = negavgy;
+                            }
+                        }else{
+                            //only one of the switch nodes is placed
+                            if(donePos.contains(prevPrevNode2)){
+                                prevPrevNode1 = prevPrevNode2;
+                            }//now the already placed node is in prevPrevNode1. we no longer care about prevPrevNode2
+                            //find the point where prevPrevNode1 would be rotated 120 degrees around the switch center
+                            Object[] pos1 = lastNode.getAttribute("xyz");
+                            Object[] pos2 = prevPrevNode1.getAttribute("xyz");
+                            double x0 = (Double) pos1[0];//pivot point
+                            double y0 = (Double) pos1[1];
+                            double x1 = (Double) pos2[0];//point to rotate
+                            double y1 = (Double) pos2[1];
+                            double s = Math.sin(2*Math.PI/3);//-120 degrees in radians
+                            double c = Math.cos(2*Math.PI/3);
+                            
+                            //translate to origin
+                            x1 -= x0;
+                            y1 -= y0;
+                            
+                            //do rotation
+                            avgx = x1*c - y1*s;
+                            avgy = x1*s + y1*c;
+                            
+                            //translate back
+                            avgx += x0;
+                            avgy += y0;
+                        }
+                        
+                        
+                        nn.setAttribute("xyz", avgx, avgy, 0.0);
+                        toBePos.remove(nn);
+                        donePos.add(nn);
+                    }
+                }
+            }
+            System.out.println("added node "+nn.getId()+" at pos x="+avgx+" y="+avgy);
+            //find its edges and add those
+            edgeIter = nn.getEachEdge().iterator();
+            while(edgeIter.hasNext()){
+                Edge toAdd = (Edge) edgeIter.next();
+                if(!donePos.contains(toAdd.getNode0()) && !toBePos.contains(toAdd.getNode0())){
+                    toBePos.add(toAdd.getNode0());
+                }
+                if(!donePos.contains(toAdd.getNode1()) && !toBePos.contains(toAdd.getNode1())){
+                    toBePos.add(toAdd.getNode1());
+                }
+            }
+        }
+        
+        viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+        viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.HIDE_ONLY);
+        fromViewer = viewer.newViewerPipe();
+        fromViewer.addViewerListener(myself);
+        //fromViewer.addSink(graph);
     }
     
     public static void addComponentsToPane(Container pane){
@@ -310,6 +565,7 @@ public class CTCGUI {
         JPanel panelTrackInfo = new JPanel();
         JPanel panelSchedule = new JPanel();
         JPanel panelTrackGraph = new JPanel();
+        JPanel panelSelect = new JPanel();
         
         //new Dimension(width,height)
         panelCTCInfo.setPreferredSize(new Dimension(300,62));
@@ -317,6 +573,7 @@ public class CTCGUI {
         panelTrackInfo.setPreferredSize(new Dimension(300,310));
         panelSchedule.setPreferredSize(new Dimension(600,300));
         panelTrackGraph.setPreferredSize(new Dimension(700,643));
+        panelSelect.setPreferredSize(new Dimension(300,50));
         
         // -------------------- menu bar --------------------
         //menuCreateTrain.addActionListener(new ActionListener() {
@@ -358,15 +615,21 @@ public class CTCGUI {
                 //manualButton.setOpaque(true);
                 autoButton.setBackground(new JButton().getBackground());
                 newTrainButton.setEnabled(true);
+                trainSpeedText.setEnabled(true);
+                trainAuthorityText.setEnabled(true);
+                trainDestinationText.setEnabled(true);
+                launchTrainButton.setEnabled(true);
                 if(isNewTrain){
                     //enable the text boxes
-                    trainBlockText.setEnabled(true);
-                    trainSpeedText.setEnabled(true);
-                    trainAuthorityText.setEnabled(true);
-                    trainDestinationText.setEnabled(true);
+                    //trainBlockText.setEnabled(true);
+                    //trainSpeedText.setEnabled(true);
+                    //trainAuthorityText.setEnabled(true);
+                    //trainDestinationText.setEnabled(true);
+                    lineComboBox.setEnabled(true);
                     //enable the submit button
-                    launchTrainButton.setEnabled(true);
+                    //launchTrainButton.setText("Launch Train");
                 }
+                //viewer.disableAutoLayout();
             }
         });
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -385,15 +648,21 @@ public class CTCGUI {
                 //autoButton.setOpaque(true);
                 manualButton.setBackground(new JButton().getBackground());
                 newTrainButton.setEnabled(false);
+                trainSpeedText.setEnabled(false);
+                trainAuthorityText.setEnabled(false);
+                trainDestinationText.setEnabled(false);
+                launchTrainButton.setEnabled(false);
                 if(isNewTrain){
                     //disable the text boxes
-                    trainBlockText.setEnabled(false);
-                    trainSpeedText.setEnabled(false);
-                    trainAuthorityText.setEnabled(false);
-                    trainDestinationText.setEnabled(false);
+                    //trainBlockText.setEnabled(false);
+                    //trainSpeedText.setEnabled(false);
+                    //trainAuthorityText.setEnabled(false);
+                    //trainDestinationText.setEnabled(false);
                     //disable the submit button
-                    launchTrainButton.setEnabled(false);
+                    lineComboBox.setEnabled(false);
+                    //launchTrainButton.setText("Edit Train");
                 }
+                //viewer.enableAutoLayout();
             }
         });
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -423,15 +692,15 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelCTCInfo.add(label,c);
         
-        textArea = new JTextArea("70°F");
-        textArea.setEnabled(false);
-        textArea.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
+        temperatureText = new JTextArea("70°F");
+        temperatureText.setEnabled(false);
+        temperatureText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         c.gridx = 1;
         c.gridy = 0;
         //c.gridwidth = 1;
         //c.gridheight = 1;
-        panelCTCInfo.add(textArea,c);
+        panelCTCInfo.add(temperatureText,c);
         
         textArea = new JTextArea("5000 people");
         textArea.setEnabled(false);
@@ -486,7 +755,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrainInfo.add(label,c);
         
-        label = new JLabel("Origin");
+        label = new JLabel("Line");
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 0;
         c.gridy = 4;
@@ -502,7 +771,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrainInfo.add(label,c);
         
-        trainIDText = new JTextArea("10");
+        trainIDText = new JTextArea("");
         trainIDText.setEnabled(false);
         trainIDText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -512,7 +781,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrainInfo.add(trainIDText,c);
         
-        trainBlockText = new JTextArea("2");
+        trainBlockText = new JTextArea("");
         trainBlockText.setEnabled(false);
         trainBlockText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -522,8 +791,8 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrainInfo.add(trainBlockText,c);
         
-        trainSpeedText = new JTextArea("25 mph");
-        trainSpeedText.setEnabled(false);
+        trainSpeedText = new JTextArea("");
+        //trainSpeedText.setEnabled(false);
         trainSpeedText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 1;
@@ -532,8 +801,8 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrainInfo.add(trainSpeedText,c);
         
-        trainAuthorityText = new JTextArea("2");
-        trainAuthorityText.setEnabled(false);
+        trainAuthorityText = new JTextArea("");
+        //trainAuthorityText.setEnabled(false);
         trainAuthorityText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 1;
@@ -542,18 +811,24 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrainInfo.add(trainAuthorityText,c);
         
-        trainOriginText = new JTextArea("Shadyside");
-        trainOriginText.setEnabled(false);
-        trainOriginText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
+        lineComboBox = new JComboBox<>();
+        lineComboBox.addItem("Green");
+        lineComboBox.addItem("Red");
+        lineComboBox.setSelectedIndex(0);
+        lineComboBox.setEnabled(false);
+        lineComboBox.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
+        //trainOriginText = new JTextArea("Shadyside");
+        //trainOriginText.setEnabled(false);
+        //trainOriginText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 1;
         c.gridy = 4;
         //c.gridwidth = 1;
         //c.gridheight = 1;
-        panelTrainInfo.add(trainOriginText,c);
+        panelTrainInfo.add(lineComboBox,c);
         
-        trainDestinationText = new JTextArea("Edgebrook");
-        trainDestinationText.setEnabled(false);
+        trainDestinationText = new JTextArea("");
+        //trainDestinationText.setEnabled(false);
         trainDestinationText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 1;
@@ -570,15 +845,17 @@ public class CTCGUI {
                 trainBlockText.setText("");
                 trainSpeedText.setText("");
                 trainAuthorityText.setText("");
-                trainOriginText.setText("");
+                //trainOriginText.setText("");
                 trainDestinationText.setText("");
                 //enable the text boxes
-                trainBlockText.setEnabled(true);
-                trainSpeedText.setEnabled(true);
-                trainAuthorityText.setEnabled(true);
-                trainDestinationText.setEnabled(true);
+                //trainBlockText.setEnabled(true);
+                //trainSpeedText.setEnabled(true);
+                //trainAuthorityText.setEnabled(true);
+                //trainDestinationText.setEnabled(true);
+                lineComboBox.setEnabled(true);
                 //enable the submit button
-                launchTrainButton.setEnabled(true);
+                //launchTrainButton.setEnabled(true);
+                launchTrainButton.setText("Launch Train");
                 isNewTrain = true;
             }
         });
@@ -589,56 +866,99 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrainInfo.add(newTrainButton,c);
         
-        launchTrainButton = new JButton("Launch Train");
-        launchTrainButton.setEnabled(false);
+        launchTrainButton = new JButton("Edit Train");
+        //launchTrainButton.setEnabled(false);
         launchTrainButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 //reset all borders
                 Border border = new JTextArea("").getBorder();
-                trainBlockText.setBorder(border);
+                //trainBlockText.setBorder(border);
                 trainSpeedText.setBorder(border);
                 trainAuthorityText.setBorder(border);
                 trainDestinationText.setBorder(border);
+                int blockFromLine;
+                if(lineComboBox.getSelectedIndex() == 0){
+                    //green line
+                    blockFromLine = 152;
+                }else{
+                    //red line
+                    blockFromLine = -1;//FIXME: update when there is a red line
+                }
                 //check text
-                int error = CTCModel.checkTrainInputs(trainBlockText.getText(),
+                int error = CTCModel.checkTrainInputs(blockFromLine,
                                              trainSpeedText.getText(),
                                              trainAuthorityText.getText(),
                                              trainDestinationText.getText());
                 switch(error){
                 case 0:
-                    //input valid
-                    if(WaysideController.isOccupied(Integer.parseInt(trainBlockText.getText()))){
-                        //block is occupied, can't put a train there
-                        trainBlockText.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
-                        break;
+                    if(isNewTrain){
+                        //adding a new train
+                        
+                        //input valid
+                        if(WaysideController.isOccupied(blockFromLine)){
+                            //block is occupied, can't put a train there
+                            trainBlockText.setBorder(BorderFactory.createLineBorder(Color.ORANGE));
+                            break;
+                        }
+                        //disable text boxes
+                        //trainBlockText.setEnabled(false);
+                        trainSpeedText.setEnabled(false);
+                        trainAuthorityText.setEnabled(false);
+                        trainDestinationText.setEnabled(false);
+                        lineComboBox.setEnabled(false);
+                    
+                        //send to createTrain
+                        CTCModel.createTrain(blockFromLine,
+                                             Convert.MPHToMetersPerSecond(Double.parseDouble(trainSpeedText.getText())),
+                                             trainAuthorityText.getText(),
+                                             Integer.parseInt(trainDestinationText.getText()));
+                                             //don't send trainID get from return value
+                        //update own train data
+                        //dataValid = true;
+                        //dataTrainID = 1;
+                        //dataBlockID = Integer.parseInt(trainBlockText.getText());
+                        //dataSpeed = Integer.parseInt(trainSpeedText.getText());
+                        //dataAuthority = trainAuthorityText.getText();
+                        //dataOrigin = dataBlockID;
+                        //dataDestination = Integer.parseInt(trainDestinationText.getText());
+                        //trainLabel.setText("Train");
+                        //disable the submit button
+                        trainSpeedText.setEnabled(true);
+                        trainAuthorityText.setEnabled(true);
+                        trainDestinationText.setEnabled(true);
+                        //launchTrainButton.setEnabled(false);
+                        launchTrainButton.setText("Edit Train");
+                        isNewTrain = false;
+                        try{
+                            Thread.sleep(500);//sleep to give the track model time to register the new train
+                        }catch(InterruptedException ex){
+                        }
+                        fillTrackInfo(blockFromLine);
+                    }else{
+                        //editing existing train
+                        int tId = -1;
+                        try{
+                            tId = Integer.parseInt(trainIDText.getText());
+                        }catch(NumberFormatException nfe){}
+                        
+                        CTCTrainData data = CTCModel.getTrainDataTrainId(tId);
+                        if(data != null){
+                            //update train data
+                            CTCModel.editTrain(tId,
+                                               Convert.MPHToMetersPerSecond(Double.parseDouble(trainSpeedText.getText())),
+                                               trainAuthorityText.getText(),
+                                               Integer.parseInt(trainDestinationText.getText()));
+                            //update to data.block
+                            try{
+                                Thread.sleep(500);//sleep to give the track model time to register the new train
+                            }catch(InterruptedException ex){
+                            }
+                            fillTrackInfo(data.getBlockID());
+                        }
                     }
-                    //disable text boxes
-                    trainBlockText.setEnabled(false);
-                    trainSpeedText.setEnabled(false);
-                    trainAuthorityText.setEnabled(false);
-                    trainDestinationText.setEnabled(false);
-                    //send to createTrain
-                    CTCModel.createTrain(Integer.parseInt(trainBlockText.getText()),
-                                         Integer.parseInt(trainSpeedText.getText()),
-                                         trainAuthorityText.getText(),
-                                         Integer.parseInt(trainDestinationText.getText()));
-                                         //don't send trainID get from return value
-                    //update own train data
-                    //dataValid = true;
-                    //dataTrainID = 1;
-                    //dataBlockID = Integer.parseInt(trainBlockText.getText());
-                    //dataSpeed = Integer.parseInt(trainSpeedText.getText());
-                    //dataAuthority = trainAuthorityText.getText();
-                    //dataOrigin = dataBlockID;
-                    //dataDestination = Integer.parseInt(trainDestinationText.getText());
-                    trainLabel.setText("Train");
-                    //disable the submit button
-                    launchTrainButton.setEnabled(false);
-                    isNewTrain = false;
-                    fillTrackInfo(Integer.parseInt(trainBlockText.getText()));
                     break;
                 case 1:
-                    trainBlockText.setBorder(BorderFactory.createLineBorder(Color.RED));
+                    lineComboBox.setBorder(BorderFactory.createLineBorder(Color.RED));
                     break;
                 case 2:
                     trainSpeedText.setBorder(BorderFactory.createLineBorder(Color.RED));
@@ -669,6 +989,49 @@ public class CTCGUI {
         c.gridwidth = 2;
         c.gridheight = 1;
         pane.add(panelTrainInfo,c);
+        
+        // -------------------- Select panel --------------------
+        panelSelect.setLayout(new GridBagLayout());
+        
+        selectBlockText = new JTextArea("");
+        selectBlockText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
+        c.insets = new Insets(0,0,0,0);//top,left,bottom,right
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        panelSelect.add(selectBlockText,c);
+        
+        
+        
+        selectBlockButton = new JButton("Select Block");
+        selectBlockButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                //read textArea and check if it is edge id
+                String s = selectBlockText.getText();
+                Edge e = graph.getEdge(s);
+                //if yes call fill
+                if(e != null){
+                    fillTrackInfo(Integer.parseInt(s));
+                }
+            }
+        });
+        //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
+        c.gridx = 1;
+        //c.gridy = 0;
+        //c.gridwidth = 1;
+        //c.gridheight = 1;
+        panelSelect.add(selectBlockButton,c);
+        
+        
+        
+        panelSelect.setBorder(BorderFactory.createTitledBorder("Select Panel"));
+        c.insets = new Insets(2,2,2,2);//top,left,bottom,right
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth = 2;
+        c.gridheight = 1;
+        pane.add(panelSelect,c);
         
         // -------------------- Track panel --------------------
         panelTrackInfo.setLayout(new GridBagLayout());
@@ -785,7 +1148,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(label,c);
         
-        trackIDText = new JTextArea("9");
+        trackIDText = new JTextArea("");
         trackIDText.setEnabled(false);
         trackIDText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -795,7 +1158,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(trackIDText,c);
         
-        trackOccupiedText = new JTextArea("Occupied");
+        trackOccupiedText = new JTextArea("");
         trackOccupiedText.setEnabled(false);
         trackOccupiedText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -805,7 +1168,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(trackOccupiedText,c);
         
-        trackSpeedText = new JTextArea("5 mph");
+        trackSpeedText = new JTextArea("");
         trackSpeedText.setEnabled(false);
         trackSpeedText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -815,7 +1178,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(trackSpeedText,c);
         
-        trackLengthText = new JTextArea("1000 ft");
+        trackLengthText = new JTextArea("");
         trackLengthText.setEnabled(false);
         trackLengthText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -825,7 +1188,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(trackLengthText,c);
         
-        trackGradeText = new JTextArea("0.5%");
+        trackGradeText = new JTextArea("");
         trackGradeText.setEnabled(false);
         trackGradeText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -835,7 +1198,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(trackGradeText,c);
         
-        trackElevationText = new JTextArea("100 ft");
+        trackElevationText = new JTextArea("");
         trackElevationText.setEnabled(false);
         trackElevationText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -855,7 +1218,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(trackPassableText,c);*/
         
-        trackHeaterText = new JTextArea("No Heater");
+        trackHeaterText = new JTextArea("");
         trackHeaterText.setEnabled(false);
         trackHeaterText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -865,7 +1228,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(trackHeaterText,c);
         
-        trackUndergroundText = new JTextArea("Above Ground");
+        trackUndergroundText = new JTextArea("");
         trackUndergroundText.setEnabled(false);
         trackUndergroundText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -875,7 +1238,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(trackUndergroundText,c);
         
-        trackLightText = new JTextArea("No Lights");
+        trackLightText = new JTextArea("");
         trackLightText.setEnabled(false);
         trackLightText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -885,7 +1248,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(trackLightText,c);
         
-        trackSwitchText = new JTextArea("No Switch");
+        trackSwitchText = new JTextArea("");
         trackSwitchText.setEnabled(false);
         trackSwitchText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -895,7 +1258,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(trackSwitchText,c);
         
-        trackStationText = new JTextArea("Shadyside");
+        trackStationText = new JTextArea("");
         trackStationText.setEnabled(false);
         trackStationText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -905,7 +1268,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(trackStationText,c);
         
-        trackPassengersText = new JTextArea("50");
+        trackPassengersText = new JTextArea("");
         trackPassengersText.setEnabled(false);
         trackPassengersText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -915,7 +1278,7 @@ public class CTCGUI {
         //c.gridheight = 1;
         panelTrackInfo.add(trackPassengersText,c);
         
-        trackCrossingText = new JTextArea("No Crossing");
+        trackCrossingText = new JTextArea("");
         trackCrossingText.setEnabled(false);
         trackCrossingText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -930,7 +1293,7 @@ public class CTCGUI {
         c.gridx = 2;
         c.gridy = 1;
         c.gridwidth = 2;
-        c.gridheight = 2;
+        c.gridheight = 3;
         pane.add(panelTrackInfo,c);
         
         // -------------------- Schedule panel --------------------
@@ -939,7 +1302,7 @@ public class CTCGUI {
         panelSchedule.setBorder(BorderFactory.createTitledBorder("Schedule Panel"));
         c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         c.gridx = 0;
-        c.gridy = 3;
+        c.gridy = 4;
         c.gridwidth = 4;
         c.gridheight = 1;
         pane.add(panelSchedule,c);
@@ -1075,14 +1438,22 @@ public class CTCGUI {
         c.gridheight = 1;
         panelTrackGraph.add(label,c);
         */
-        panelTrackGraph.add(graphView);
+        viewer.disableAutoLayout();
+        ViewPanel graphView = viewer.addDefaultView(false);   // false indicates "no JFrame".
+        graphView.setPreferredSize(new Dimension(600,600));
+        c.insets = new Insets(0,0,0,0);//top,left,bottom,right
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        panelTrackGraph.add(graphView,c);
         
         panelTrackGraph.setBorder(BorderFactory.createTitledBorder("Map Panel"));
         c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         c.gridx = 4;
         c.gridy = 0;
         c.gridwidth = 1;
-        c.gridheight = 4;
+        c.gridheight = 5;
         pane.add(panelTrackGraph,c);
     }
     
@@ -1091,10 +1462,10 @@ public class CTCGUI {
         StaticBlock staticBlock = TrackModel.getTrackModel().getStaticBlock(blockID);
         StaticSwitch staticSwitch = staticBlock.getStaticSwitch();
         trackIDText.setText("" + staticBlock.getId());
-        trackSpeedText.setText("" + Convert.metersToFeet(staticBlock.getSpeedLimit())*3600.0/5280.0 + " mph");//convert units
-        trackLengthText.setText("" + staticBlock.getLength() + " ft");
+        trackSpeedText.setText("" + Convert.metersPerSecondToMPH(staticBlock.getSpeedLimit()) + " mph");
+        trackLengthText.setText("" + Convert.metersToFeet(staticBlock.getLength()) + " ft");
         trackGradeText.setText("" + staticBlock.getGrade() + "%");
-        trackElevationText.setText("" + staticBlock.getElevation() + " ft");
+        trackElevationText.setText("" + Convert.metersToFeet(staticBlock.getElevation()) + " ft");
         trackUndergroundText.setText("" + staticBlock.isUnderground());
         //boolean hasLight = staticBlock.hasLight();
         //boolean hasSwitch = staticBlock.hasSwitch();
@@ -1181,27 +1552,57 @@ public class CTCGUI {
         }
         
         //if there is a train there, fill train info
-        isNewTrain = false;
+        //but first disable the train data entering
+        if(isNewTrain){
+            //trainSpeedText.setEnabled(false);
+            //trainAuthorityText.setEnabled(false);
+            //trainDestinationText.setEnabled(false);
+            lineComboBox.setEnabled(false);
+            //launchTrainButton.setEnabled(false);
+            launchTrainButton.setText("Edit Train");
+            isNewTrain = false;
+        }
         CTCTrainData data = CTCModel.getTrainData(blockID);
         if(data != null){
             trainIDText.setText("" + data.getTrainID());
             trainBlockText.setText("" + data.getBlockID());
-            trainSpeedText.setText("" + Convert.metersToFeet(data.getSpeed())*3600.0/5280.0 + " mph");//convert m/s to mph
+            trainSpeedText.setText("" + Convert.metersPerSecondToMPH(data.getSpeed()));
             trainAuthorityText.setText(data.getAuthority());
-            trainOriginText.setText("" + data.getOrigin());
+            if(data.getOrigin() == 152){
+                lineComboBox.setSelectedIndex(0);
+            }else{
+                lineComboBox.setSelectedIndex(1);
+            }
             trainDestinationText.setText("" + data.getDestination());
         }else{
             //blank everything
-            if(!isNewTrain){
-                trainIDText.setText("");
-                trainBlockText.setText("");
-                trainSpeedText.setText("");
-                trainAuthorityText.setText("");
-                trainOriginText.setText("");
-                trainDestinationText.setText("");
-            }
+            trainIDText.setText("");
+            trainBlockText.setText("");
+            trainSpeedText.setText("");
+            trainAuthorityText.setText("");
+            //trainOriginText.setText("");
+            trainDestinationText.setText("");
         }
         
+    }
+    //these functions have to be public void so the ViewerPipe can find them
+    public void viewClosed(String id) {
+        ;//loop = false;
+    }
+
+    public void buttonPushed(String id) {
+        System.out.println("Button pushed on node "+id);
+    }
+
+    public void buttonReleased(String id) {
+        System.out.println("Button released on node "+id);
+    }
+    public static void handleGraphEvents(){
+        fromViewer.pump();
+        temperature = Environment.temperature;
+        if(temperatureText != null){
+            temperatureText.setText(temperature+"°F");
+        }
     }
     public static Graph getGraph(){
         return graph;

@@ -12,23 +12,34 @@
  *
  * @author Aric Hudson
  */
-
 package traincontroller;
 
+import shared.*;
+import trainmodel.Train;
+import trackmodel.TrackModel;
+import trackmodel.StaticBlock;
+import trackmodel.StaticSwitch;
+import trackmodel.StaticTrack;
 /**
- * This interface defines the inputs and outputs of the Train Controller module for the TMRC.
  *
- * @author Aric Hudson
+ * @author Didge
  */
-public interface TrainControllerInterface {
-    
+public class BadBeaconException extends Exception {
+
     /**
-     * Computes the necessary power at which to set the train, given an authority.
-     * 
-     * @return is the power to which the train should be set.  If negative,
-     * represents number of seconds brake should be applied.
-     * 
-     * NOTE: Could also simply return void and update the train.
+     * Creates a new instance of <code>BadBeaconException</code> without detail
+     * message.
      */
-    double getPower();
+    public BadBeaconException() {
+    }
+
+    /**
+     * Constructs an instance of <code>BadBeaconException</code> with the
+     * specified detail message.
+     *
+     * @param msg the detail message.
+     */
+    public BadBeaconException(String msg) {
+        super(msg);
+    }
 }
