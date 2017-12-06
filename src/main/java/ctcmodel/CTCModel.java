@@ -157,7 +157,7 @@ public class CTCModel{
     }
     public static void addSuggestion(int trainID, double suggestedSpeed, String suggestedAuthority){
         //there are no checks for input correctness here because checkTrainInputs must be called before using this function
-        System.out.println("((("+suggestedAuthority);
+        //System.out.println("((("+suggestedAuthority);
         int blockID = -1;
         for (CTCTrainData data: trainData){
             if(data.getTrainID() == trainID){
@@ -213,6 +213,9 @@ public class CTCModel{
         }
         return null;
     }
+    public static ArrayList<CTCTrainData> getAllTrainData(){
+        return trainData;
+    }
     public static void update(){
         int current_time = Environment.clock;
         
@@ -262,12 +265,12 @@ public class CTCModel{
                         break;
                     }
                 }
-                System.out.println("inHistory "+inHistory);
-                System.out.println("data null? "+(data==null));
+                //System.out.println("inHistory "+inHistory);
+                //System.out.println("data null? "+(data==null));
                 if(data == null && !inHistory){
                     //was unoccupied before, update traindata
                     //find neighbors
-                    System.out.println("here");
+                    //System.out.println("here");
                     //classSet = false;
                     ArrayList<Edge> neighList = new ArrayList<Edge>();
                     Edge e = CTCGUI.getGraph().getEdge(""+blockId);
@@ -276,7 +279,7 @@ public class CTCModel{
                         Edge ee = (Edge) edgeIter.next();
                         if(!ee.equals(e)){
                             neighList.add(ee);
-                            System.out.println("** "+ee.getId());
+                            //System.out.println("** "+ee.getId());
                         }
                     }
                     edgeIter = e.getNode1().getEdgeIterator();
@@ -284,7 +287,7 @@ public class CTCModel{
                         Edge ee = (Edge) edgeIter.next();
                         if(!ee.equals(e)){
                             neighList.add(ee);
-                            System.out.println("** "+ee.getId());
+                            //System.out.println("** "+ee.getId());
                         }
                     }
                     
@@ -295,7 +298,7 @@ public class CTCModel{
                     CTCTrainData dataTemp = null;
                     for(int i = 0; i < neighList.size(); i++){
                         for(int j = 0; j < trainData.size(); j++){
-                            System.out.println("^^"+neighList.get(i).getId()+" "+trainData.get(j).getBlockID());
+                            //System.out.println("^^"+neighList.get(i).getId()+" "+trainData.get(j).getBlockID());
                             if(Integer.parseInt(neighList.get(i).getId()) == trainData.get(j).getBlockID()){
                                 data2 = trainData.get(j);
                                 dataTemp = data2;
@@ -308,7 +311,7 @@ public class CTCModel{
                             dataTemp = null;
                         }
                     }
-                    System.out.println("-->numOccEdges"+numOccEdges);
+                    //System.out.println("-->numOccEdges"+numOccEdges);
                     if(numOccEdges > 1){
                         //if more than 1
                         throw new RuntimeException("Edges "+edgestr+
@@ -319,7 +322,7 @@ public class CTCModel{
                         //change blockid, change authority
                         int oldBlockId = data2.getBlockID();
                         String newAuth = "";
-                        System.out.println(")))"+data2.getAuthority());
+                        //System.out.println(")))"+data2.getAuthority());
                         if(data2.getAuthority().length() != 0){
                             String[] authArr = data2.getAuthority().split(",");
                             for(int i = 0; i < authArr.length; i++){
@@ -332,7 +335,7 @@ public class CTCModel{
                                 }
                             }
                         }
-                        System.out.println(")))"+newAuth);
+                        //System.out.println(")))"+newAuth);
                         data2.setAuthority(newAuth);
                         addSuggestion(data2.getTrainID(),data2.getSpeed(),newAuth);
                         //ensure the suggestion block changes
@@ -346,6 +349,7 @@ public class CTCModel{
                         }
                         data2.setBlockID(blockId);
                         data2.historyAdd(oldBlockId);
+                        data2.setLastVisited(oldBlockId);
                         allHistory.add(oldBlockId);
                     }else{
                         //else mark as broken
@@ -357,7 +361,7 @@ public class CTCModel{
                     element.setAttribute("ui.class", "occupied");
                     element.addAttribute("ui.label",element.getId()+"");
                 }
-                System.out.println("**CTC found block "+blockId+" occupied**");
+                //System.out.println("**CTC found block "+blockId+" occupied**");
             }else{
                 //returned unoccupied
                 if(allHistory.contains(blockId)){
