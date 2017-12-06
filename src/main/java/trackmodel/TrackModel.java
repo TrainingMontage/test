@@ -1038,7 +1038,6 @@ public class TrackModel implements TrackModelInterface {
     public StaticTrack getStaticTrack() {
         this.staticTrack = new StaticTrack();
         for (Integer blockId : this.getBlockIds()) {
-            System.err.println("adding blockId " + blockId);
             this.staticTrack.putStaticBlock(this.getStaticBlock(blockId));
         }
         for (Integer switchId : this.getSwitchIds()) {
@@ -1059,7 +1058,7 @@ public class TrackModel implements TrackModelInterface {
         this.last_updated = Environment.clock;
 
         for (int trainId : this.getTrainIds()) {
-            System.err.println("TrackModel Updating " + trainId);
+            System.err.println("TrackModel Updating train with id: " + trainId);
             updateTrain(trainId);
         }
 
@@ -1113,7 +1112,6 @@ public class TrackModel implements TrackModelInterface {
         }
         double overhang = sum - occupancyList.get(occupancyList.size() - 1).getLength() - train_length + this.getTrainPosition(trainId);
         while (overhang > occupancyList.get(0).getLength())  {
-            System.err.println("Occupancy trail: " + sum + " > " + train_length + " - " + occupancyList.get(0));
             occupancyList.remove(0);
 
             sum = 0;
@@ -1269,8 +1267,6 @@ public class TrackModel implements TrackModelInterface {
                 return this.getSwitch(curr_block.getId()) ? sw.getActiveLeaf() : sw.getDefaultLeaf();
             }
             if (curr_block.equals(sw.getActiveLeaf())) { // current block is the active leaf
-                System.err.println(curr_block.getId());
-                System.err.println(this.getSwitch(curr_block.getId()));
                 if (this.getSwitch(curr_block.getId())) {
                     return sw.getRoot();
                 }
