@@ -118,18 +118,16 @@ public class Decider {
      * @return Wether the suggested authority is safe for switches.
      */
     boolean checkSwitches() {
-        // for all switches...
         for (WCSwitch sw: st.getSwitches()) {
-            int root = sw.root;
-            int def = sw.def;
-            int active = sw.active;
-            if (suggestedAuthority[def] && suggestedAuthority[active]) {
+            if (suggestedAuthority[sw.def] && suggestedAuthority[sw.active]) {
                 // both default and active branch cannot have authority
                 return false;
             }
             // which way should the switch go?
-            if (suggestedAuthority[active]) {
-                track[root].switchState = true;
+            if (suggestedAuthority[sw.active]) {
+                track[sw.root].switchState = true;
+            } else if (suggestedAuthority[sw.root] || suggestedAuthority[sw.def]) {
+                track[sw.root].switchState = false;
             }
         }
         return true;
@@ -141,6 +139,11 @@ public class Decider {
 
     boolean getCrossing(int blockId) {
         return track[blockId].crossing;
+    }
+
+    boolean setSwitch(int blockId, boolean value) {
+        track[blockId].switchState = value;
+        return value;
     }
 
     boolean getSwitch(int blockId) {
