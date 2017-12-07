@@ -78,10 +78,10 @@ public class WaysideController {
     }
 
     static void checkSt() {
-        if (stTemp != null) {
-            st = stTemp;
-            stTemp = null;
-        }
+        if (stTemp == null) return;
+        st = stTemp;
+        stTemp = null;
+        decider.setStaticTrack(st);
     }
 
     /** 
@@ -131,6 +131,7 @@ public class WaysideController {
     public static void suggest(Suggestion[] suggestion) {
         boolean[] authority = squash(suggestion, st.trackLen());
         int[] speed = squashSpeed(suggestion, st.trackLen());
+        checkSt();
         decider.suggest(authority, speed);
 
         for (int block = 0; block < st.trackLen(); block++) {

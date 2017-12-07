@@ -198,4 +198,13 @@ public class GreenLine {
         assertTrue(decider.getSwitch(13));
         assertFalse(decider.getSwitch(63));
     }
+
+    @Test
+    public void changeStaticTrack() {
+        decider.setStaticTrack(new WCStaticTrack(false));
+        squash(new Suggestion[] {
+            new Suggestion(1, 10, new int[] {2,3,8})
+        });
+        assertFalse(decider.suggest(auth, speed));
+    }
 }
