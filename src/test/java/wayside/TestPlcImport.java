@@ -8,7 +8,7 @@ public class TestPlcImport {
 
     PlcImporter plc;
 
-    public TestPlcImport() throws IOException {
+    public TestPlcImport() throws IOException, FailedToReadPlc {
         plc = new PlcImporter(new File("src/main/resources/wayside/track.plc"));
     }
 

@@ -30,7 +30,7 @@ public class GreenLine {
     boolean[] auth;
     int[] speed;
 
-    public GreenLine() throws IOException {
+    public GreenLine() throws IOException, FailedToReadPlc {
         st = new WCStaticTrack(new File("src/main/resources/wayside/track.plc"));
         tm = new WCTrackModel(st.trackLen());
         decider = new Decider(tm, st);

@@ -105,7 +105,7 @@ public class WCStaticTrackTest {
     }
 
     @Test
-    public void uploadGreenLine() throws IOException {
+    public void uploadGreenLine() throws IOException, FailedToReadPlc {
         st = new WCStaticTrack(new File("src/main/resources/wayside/track.plc"));
 
         assertEquals(153, st.trackLen());

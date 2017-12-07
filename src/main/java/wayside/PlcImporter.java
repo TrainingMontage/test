@@ -16,7 +16,7 @@ public class PlcImporter {
     private int[] crossings;
     private List<int[]> paths;
 
-    public PlcImporter(File file) throws IOException {
+    public PlcImporter(File file) throws IOException, FailedToReadPlc {
         Scanner in = new Scanner(file);
         paths = new ArrayList<int[]>();
 
@@ -28,29 +28,33 @@ public class PlcImporter {
             if (line.length >= 2)
                 rhs = line[1].trim();
 
-            switch (lhs) {
-                case "END": break read_file;
-                case "TRACK_LEN":
-                    track_len = Integer.parseInt(rhs);
-                    break;
-                case "SWITCHES":
-                    switches = buildArray(rhs);
-                    break;
-                case "SWITCH_BLOCKS":
-                    switchBlocks = buildArray(rhs);
-                    break;
-                case "SWITCH_DEFAULT":
-                    defaultSwitches = buildArray(rhs);
-                    break;
-                case "SWITCH_ACTIVE":
-                    activeSwitches = buildArray(rhs);
-                    break;
-                case "CROSSINGS":
-                    crossings = buildArray(rhs);
-                    break;
-                case "PATHS":
-                    paths.add(buildArray(rhs));
-                    break;
+            try {
+                switch (lhs) {
+                    case "END": break read_file;
+                    case "TRACK_LEN":
+                        track_len = Integer.parseInt(rhs);
+                        break;
+                    case "SWITCHES":
+                        switches = buildArray(rhs);
+                        break;
+                    case "SWITCH_BLOCKS":
+                        switchBlocks = buildArray(rhs);
+                        break;
+                    case "SWITCH_DEFAULT":
+                        defaultSwitches = buildArray(rhs);
+                        break;
+                    case "SWITCH_ACTIVE":
+                        activeSwitches = buildArray(rhs);
+                        break;
+                    case "CROSSINGS":
+                        crossings = buildArray(rhs);
+                        break;
+                    case "PATHS":
+                        paths.add(buildArray(rhs));
+                        break;
+                }
+            } catch (Exception e) {
+                throw new FailedToReadPlc("At line: " + temp);
             }
         }
     }
@@ -94,5 +98,11 @@ public class PlcImporter {
             p[i] = (int[]) paths.get(i);
         }
         return p;
+    }
+}
+
+class FailedToReadPlc extends Exception {
+    public FailedToReadPlc(String msg) {
+        super(msg);
     }
 }

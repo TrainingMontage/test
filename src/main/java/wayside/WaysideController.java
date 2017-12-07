@@ -47,6 +47,7 @@ public class WaysideController {
     static TrackModelInterface tm = null;
     static WaysideUI gui = null;
     static WCStaticTrack st = null;
+    static WCStaticTrack stTemp = null;
 
     /**
      * Initiallizes the WaysideController.
@@ -70,6 +71,17 @@ public class WaysideController {
         tm = trackModel;
         st = staticTrack;
         decider = new Decider(tm, st);
+    }
+
+    static void setStaticTrack(WCStaticTrack st) {
+        stTemp = st;
+    }
+
+    static void checkSt() {
+        if (stTemp != null) {
+            st = stTemp;
+            stTemp = null;
+        }
     }
 
     /** 
