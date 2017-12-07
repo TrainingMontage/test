@@ -104,4 +104,91 @@ public class GreenLine {
         assertTrue(decider.suggest(auth, speed));
     }
 
+    @Test
+    public void twoSuggActiveThenDefaultSwitch() {
+        tm.occupy(152, true);
+        squash(new Suggestion[] {
+            new Suggestion(152, 10, new int[] {152, 63, 64})
+        });
+        assertTrue(decider.suggest(auth, speed));
+        assertTrue(decider.getSwitch(63));
+        tm.occupy(152, false);
+        tm.occupy(62, true);
+        squash(new Suggestion[] {
+            new Suggestion(62, 10, new int[] {62, 63, 64})
+        });
+        assertTrue(decider.suggest(auth, speed));
+        assertFalse(decider.getSwitch(63));
+    }
+
+
+    @Test
+    public void twoSuggDefaultThenActiveSwitch() {
+        // First we're using default branch
+        tm.occupy(62, true);
+        squash(new Suggestion[] {
+            new Suggestion(62, 10, new int[] {62, 63, 64})
+        });
+        assertTrue(decider.suggest(auth, speed));
+        assertFalse(decider.getSwitch(63));
+        // Then the active one.
+        tm.occupy(62, false);
+        tm.occupy(152, true);
+        squash(new Suggestion[] {
+            new Suggestion(152, 10, new int[] {152, 63, 64})
+        });
+        assertTrue(decider.suggest(auth, speed));
+        assertTrue(decider.getSwitch(63));
+    }
+
+    @Test
+    public void setSwitchNoOverlapingUse() {
+        decider.setSwitch(13, true);
+        tm.occupy(62, true);
+        squash(new Suggestion[] {
+            new Suggestion(62, 10, new int[] {62, 63})
+        });
+        assertTrue(decider.suggest(auth, speed));
+        assertTrue(decider.getSwitch(13));
+        assertFalse(decider.getSwitch(63));
+    }
+
+    @Test
+    public void setSwitchAuthorityAgrees() {
+        decider.setSwitch(63, true);
+        tm.occupy(152, true);
+        squash(new Suggestion[] {
+            new Suggestion(152, 10, new int[] {152, 63})
+        });
+        assertTrue(decider.suggest(auth, speed));
+        assertTrue(decider.getSwitch(63));
+    }
+
+    @Test
+    public void setSwitchAuthorityDisagrees() {
+        decider.setSwitch(63, true);
+        tm.occupy(62, true);
+        squash(new Suggestion[] {
+            new Suggestion(62, 10, new int[] {62, 63})
+        });
+        assertTrue(decider.suggest(auth, speed));
+        assertFalse(decider.getSwitch(63));
+    }
+
+    @Test
+    public void setSwitchChangeFromPreviousActive() {
+        tm.occupy(152, true);
+        squash(new Suggestion[] {
+            new Suggestion(152, 10, new int[] {152, 63, 64})
+        });
+        assertTrue(decider.suggest(auth, speed));
+        assertTrue(decider.getSwitch(63));
+        decider.setSwitch(63, false);
+        squash(new Suggestion[] {
+            new Suggestion(1, 10, new int[] {1, 13, 14})
+        });
+        assertTrue(decider.suggest(auth, speed));
+        assertTrue(decider.getSwitch(13));
+        assertFalse(decider.getSwitch(63));
+    }
 }
