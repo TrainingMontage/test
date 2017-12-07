@@ -141,6 +141,11 @@ public class Decider {
         return track[blockId].crossing;
     }
 
+    boolean setSwitch(int blockId, boolean value) {
+        track[blockId].switchState = value;
+        return value;
+    }
+
     boolean getSwitch(int blockId) {
         return track[blockId].switchState;
     }
