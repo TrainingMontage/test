@@ -158,6 +158,17 @@ public class WaysideController {
     public static boolean getSignal(int blockId) {
         return tm.getSignal(blockId);
     }
+
+    /**
+     * Accepts a switch position suggestion from CTC.
+     * Will only preserve this suggestion if authority is not requested over it.
+     * @param blockId the line-specific number of the block in question.
+     * @param value the position which is being requested.
+     * @return the given value.
+     */
+    public static boolean setSwitch(int blockId, boolean value) {
+        return decider.setSwitch(blockId, value);
+    }
     
     /**
      * Checks the TrackModel to determine if a switch is active.
