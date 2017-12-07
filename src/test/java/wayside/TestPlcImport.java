@@ -57,7 +57,7 @@ public class TestPlcImport {
     public void getFirstPath() {
         Assert.assertArrayEquals(
             new int[] {152, 63, 64, 65, 66, 67, 68},
-            plc.getPaths()[0]
+            plc.getPaths()[2]
         );
     }
 
@@ -85,7 +85,7 @@ public class TestPlcImport {
                 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137,
                 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150
             },
-            plc.getPaths()[2]
+            plc.getPaths()[0]
         );
     }
 

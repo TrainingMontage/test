@@ -16,6 +16,9 @@
 
 package wayside;
 
+import java.io.File;
+import java.io.IOException;
+
 public class WCStaticTrack {
 
     private int TRACK_LEN = 9;
@@ -27,6 +30,28 @@ public class WCStaticTrack {
         new int[] {1,2,3,4,5,6,7,8},
         new int[] {3,4,5,6,7,8,2,1}
     };
+
+    public WCStaticTrack(File file) throws IOException {
+        PlcImporter plc = new PlcImporter(file);
+        TRACK_LEN = plc.getTrackLen();
+        SWITCHES = buildSwitches(plc);
+        CROSSINGS = plc.getCrossings();
+        PATHS = plc.getPaths();
+    }
+
+    private WCSwitch[] buildSwitches(PlcImporter plc) {
+        int n = plc.getSwitches().length;
+        WCSwitch[] sws = new WCSwitch[n];
+        for (int i = 0; i < n; i++) {
+            sws[i] = new WCSwitch(
+                plc.getSwitches()[i],
+                plc.getSwitchBlocks()[i],
+                plc.getDefaultSwitches()[i],
+                plc.getActiveSwitches()[i]
+            );
+        }
+        return sws;
+    }
 
     public WCStaticTrack(boolean greenLine) {
         if (!greenLine) return;
