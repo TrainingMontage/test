@@ -23,6 +23,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Iterator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1649,10 +1650,21 @@ public class CTCGUI implements ViewerListener{
         ArrayList<Double> pathLengths = new ArrayList<Double>();
         ArrayList<ArrayList<String>> paths = new ArrayList<ArrayList<String>>();
         
+        System.out.println("currid "+currBlock.getId()+" destId "+destBlock.getId());
         if(currBlock == destBlock){
             return retVal;
         }
+        //Edge testSameBlock = currBlock.getEdgeBetween(destBlock);
+        //if(testSameBlock == null){
+        //    testSameBlock = destBlock.getEdgeBetween(currBlock);
+        //}
+        //if(testSameBlock != null){
+        //    //start and end are the two endpoints of the same edge
+        //    System.out.println("early return");
+        //    return retVal;
+        //}
         
+        Node yardNode = graph.getNode("Yard");
         reachedEnd.add(false);
         stopped.add(false);
         pathLengths.add(0.0);
@@ -1679,14 +1691,18 @@ public class CTCGUI implements ViewerListener{
                 while(iter.hasNext()){
                     between = (Edge) iter.next();
                     nextNode = between.getNode0();
-                    System.out.println("edge "+between.getId());
-                    System.out.println("blah node "+nextNode.getId());
+                    //System.out.println("edge "+between.getId());
+                    //System.out.println("blah node "+nextNode.getId());
                     if(nextNode == visiting){
                         nextNode = between.getNode1();
                     }
                 }
-                System.out.println(visiting.getId() + " asdf "+ nextNode.getId());
+                //System.out.println(visiting.getId() + " asdf "+ nextNode.getId());
                 //Edge between = visiting.getEdgeToward( nextNode );
+                if(nextNode == yardNode){
+                    //don't allow pathing through the yard
+                    continue;
+                }
                 if(between.getId().equals(tdata.getLastVisited()+"")){
                     //going to this block would mean the train is moving the way it came
                     //this path is bad
@@ -1707,10 +1723,10 @@ public class CTCGUI implements ViewerListener{
                     stopped.set(workingOnPath,true);
                     continue;
                 }
-                System.out.println("weight "+weight);
-                for(int k = 0; k < paths.get(0).size(); k++){
-                    System.out.println("before "+paths.get(0).get(k));
-                }
+                //System.out.println("weight "+weight);
+                //for(int k = 0; k < paths.get(0).size(); k++){
+                //    System.out.println("before "+paths.get(0).get(k));
+                //}
                 //everything checks out, add to path
                 pathLengths.set(workingOnPath,pathLengths.get(workingOnPath)+weight);
                 paths.get(workingOnPath).add(nextNode.getId());
@@ -1718,11 +1734,11 @@ public class CTCGUI implements ViewerListener{
                     reachedEnd.set(workingOnPath,true);
                     stopped.set(workingOnPath,true);
                 }
-                for(int k = 0; k < paths.get(0).size(); k++){
-                    System.out.println("after "+paths.get(0).get(k));
-                }
+                //for(int k = 0; k < paths.get(0).size(); k++){
+                //    System.out.println("after "+paths.get(0).get(k));
+                //}
                 visiting = nextNode;
-                System.out.println("here");
+                //System.out.println("here added "+nextNode.getId());
             }else{
                 //multiple ways to leave block (i.e. a switch or a bidirectional block)
                 iter = visiting.getLeavingEdgeIterator();
@@ -1736,8 +1752,12 @@ public class CTCGUI implements ViewerListener{
                         nextNode = between.getNode1();
                     }
                     //check all possible nexts; if they work, create a new path for them
+                    if(nextNode == yardNode){
+                        //don't allow pathing through the yard
+                        continue;
+                    }
                     //Edge between = visiting.getEdgeToward( nextNode );
-                    System.out.println(tdata.getLastVisited()+"");
+                    //System.out.println(tdata.getLastVisited()+"");
                     if(between.getId().equals(tdata.getLastVisited()+"")){
                         //going to this block would mean the train is moving the way it came
                         //this path is bad
@@ -1752,7 +1772,7 @@ public class CTCGUI implements ViewerListener{
                         continue;
                     }
                     weight = getPathWeight(visiting, nextNode, paths.get(workingOnPath).toArray(new String[paths.get(workingOnPath).size()]));
-                    System.out.println("weight "+weight);
+                    //System.out.println("weight "+weight);
                     if(weight == Double.MAX_VALUE){
                         //this block is occupied or would cause a leaf to leaf movement on a switch
                         //this path is bad
@@ -1778,10 +1798,10 @@ public class CTCGUI implements ViewerListener{
                         
                         //update the path data
                         pathLengths.set(workingOnPath+i,pathLengths.get(workingOnPath+i)+innerWeights.get(i));
-                        paths.get(workingOnPath).add(validNodes.get(i).getId());
+                        paths.get(workingOnPath+i).add(validNodes.get(i).getId());
                         if(destBlock == validNodes.get(i)){
-                            reachedEnd.set(workingOnPath,true);
-                            stopped.set(workingOnPath,true);
+                            reachedEnd.set(workingOnPath+i,true);
+                            stopped.set(workingOnPath+i,true);
                         }
                     }
                     //add validNodes(0) last because we are changing data that all the additions copying
@@ -1803,21 +1823,232 @@ public class CTCGUI implements ViewerListener{
             //once all paths have run to either the end or an occ block, stop
         }while(!allTrue(stopped));
         System.out.println("Finished Path calc. All false? "+allFalse(reachedEnd));
-        for(int j = 0; j < reachedEnd.size(); j++){
-            System.out.println(""+reachedEnd.get(j));
-        }
+        //for(int j = 0; j < reachedEnd.size(); j++){
+        //    System.out.println(""+reachedEnd.get(j));
+        //}
         for(int j = 0; j < paths.get(0).size(); j++){
             System.out.println(""+paths.get(0).get(j));
         }
-        System.out.println("start :"+currBlock);
-        System.out.println("end   :"+destBlock);
+        //System.out.println("start :"+currBlock);
+        //System.out.println("end   :"+destBlock);
         //check all paths that have reached the end; if one or more has, return the shortest
         if(allFalse(reachedEnd)){
             //no path reached the dest block
-            //if no paths reached the end, continue running them, allowing them to bypass occupancy and go on same block twice (but not in succession. if block(already in path), find its last entry and move backwards checking if the entries match the entries starting at the end going backwards. if they do, stop)
+            //restart paths
+            reachedEnd = new ArrayList<Boolean>();
+            workingOnPath = 0;
+            stopped = new ArrayList<Boolean>();//did the path dead end?
+            pathLengths = new ArrayList<Double>();
+            paths = new ArrayList<ArrayList<String>>();
+            reachedEnd.add(false);
+            stopped.add(false);
+            pathLengths.add(0.0);
+            paths.add(new ArrayList<String>());
+            paths.get(0).add(currBlock.getId());
+            visiting = currBlock;
+            nextNode = null;
+            
+            //second attempt to path with looser restrictions
+            do{
+                if(stopped.get(workingOnPath)){
+                    //this path is stopped, load up the next one
+                    //we know there is a next one because loop didn't end
+                    workingOnPath++;
+                    visiting = graph.getNode(paths.get(workingOnPath).get(paths.get(workingOnPath).size()-1));
+                }
+                //starting at currBlock, list the ways we can go (directed edges)
+                int pathsOut = visiting.getOutDegree();
+                if(pathsOut == 1){
+                    //yay only one way to leave this block, check history
+                    iter = visiting.getLeavingEdgeIterator();
+                    Edge between = null;
+                    while(iter.hasNext()){
+                        between = (Edge) iter.next();
+                        nextNode = between.getNode0();
+                        //System.out.println("2edge "+between.getId());
+                        //System.out.println("2blah node "+nextNode.getId());
+                        if(nextNode == visiting){
+                            nextNode = between.getNode1();
+                        }
+                    }
+                    if(nextNode == yardNode){
+                        //don't allow pathing through the yard
+                        continue;
+                    }
+                    //System.out.println(visiting.getId() + " 2asdf "+ nextNode.getId());
+                    //Edge between = visiting.getEdgeToward( nextNode );
+                    //we only can't immediately go backwards for this algorithm, we can visit that block again though
+                    if(paths.get(workingOnPath).size() == 1 && between.getId().equals(tdata.getLastVisited()+"")){
+                        //going to this block would mean the train is moving the way it came
+                        //this path is bad
+                        stopped.set(workingOnPath,true);
+                        continue;
+                    }
+                    //check that this block isn't in the path already
+                    if(willCausePathLoop(paths.get(workingOnPath))){
+                        //will create a loop
+                        //this path is bad
+                        stopped.set(workingOnPath,true);
+                        continue;
+                    }
+                    weight = getPathWeightIgnoreOcc(visiting, nextNode, paths.get(workingOnPath).toArray(new String[paths.get(workingOnPath).size()]));
+                    if(weight == Double.MAX_VALUE){
+                        //this block would cause a leaf to leaf movement on a switch
+                        //this path is bad
+                        stopped.set(workingOnPath,true);
+                        continue;
+                    }
+                    //System.out.println("2weight "+weight);
+                    //for(int k = 0; k < paths.get(0).size(); k++){
+                    //    System.out.println("2before "+paths.get(0).get(k));
+                    //}
+                    //everything checks out, add to path
+                    pathLengths.set(workingOnPath,pathLengths.get(workingOnPath)+weight);
+                    paths.get(workingOnPath).add(nextNode.getId());
+                    if(destBlock == nextNode){
+                        reachedEnd.set(workingOnPath,true);
+                        stopped.set(workingOnPath,true);
+                    }
+                    //for(int k = 0; k < paths.get(0).size(); k++){
+                    //    System.out.println("2after "+paths.get(0).get(k));
+                    //}
+                    visiting = nextNode;
+                    //System.out.println("2here added "+nextNode.getId());
+                }else{
+                    //multiple ways to leave block (i.e. a switch or a bidirectional block)
+                    iter = visiting.getLeavingEdgeIterator();
+                    ArrayList<Node> validNodes = new ArrayList<Node>();
+                    ArrayList<Double> innerWeights = new ArrayList<Double>();
+                    Edge between = null;
+                    while(iter.hasNext()){
+                        between = (Edge) iter.next();
+                        nextNode = between.getNode0();
+                        if(nextNode == visiting){
+                            nextNode = between.getNode1();
+                        }
+                        //check all possible nexts; if they work, create a new path for them
+                        //Edge between = visiting.getEdgeToward( nextNode );
+                        if(nextNode == yardNode){
+                            //don't allow pathing through the yard
+                            continue;
+                        }
+                        //System.out.println(tdata.getLastVisited()+"");
+                        //we only can't immediately go backwards for this algorithm, we can visit that block again though
+                        if(paths.get(workingOnPath).size() == 1 && between.getId().equals(tdata.getLastVisited()+"")){
+                            //going to this block would mean the train is moving the way it came
+                            //this path is bad
+                            //stopped.set(workingOnPath,true);
+                            continue;
+                        }
+                        //check that this block isn't in the path already
+                        if(willCausePathLoop(paths.get(workingOnPath))){
+                            //will create a loop
+                            //this path is bad
+                            //stopped.set(workingOnPath,true);
+                            continue;
+                        }
+                        weight = getPathWeightIgnoreOcc(visiting, nextNode, paths.get(workingOnPath).toArray(new String[paths.get(workingOnPath).size()]));
+                        //System.out.println("2weight "+weight);
+                        if(weight == Double.MAX_VALUE){
+                            //this block would cause a leaf to leaf movement on a switch
+                            //this path is bad
+                            //stopped.set(workingOnPath,true);
+                            continue;
+                        }
+                        //everything checks out, add to list to be added in a moment
+                        validNodes.add(nextNode);
+                        innerWeights.add(weight);
+                    }
+                    if(validNodes.size() != 0){
+                        for(int i = 1; i < validNodes.size(); i++){
+                            //everything checks out, add to path
+                        
+                            //create a new path entry
+                            reachedEnd.add(workingOnPath+i, false);
+                            stopped.add(workingOnPath+i, false);
+                            pathLengths.add(workingOnPath+i, pathLengths.get(workingOnPath));
+                        
+                            @SuppressWarnings("unchecked")
+                            ArrayList<String> tempAl = (ArrayList<String>)paths.get(workingOnPath).clone();//shallow copy is fine b/c strings are immutable
+                            paths.add(workingOnPath+i, tempAl);
+                        
+                            //update the path data
+                            pathLengths.set(workingOnPath+i,pathLengths.get(workingOnPath+i)+innerWeights.get(i));
+                            paths.get(workingOnPath+i).add(validNodes.get(i).getId());
+                            if(destBlock == validNodes.get(i)){
+                                reachedEnd.set(workingOnPath+i,true);
+                                stopped.set(workingOnPath+i,true);
+                            }
+                        }
+                        //add validNodes(0) last because we are changing data that all the additions copying
+                        pathLengths.set(workingOnPath,pathLengths.get(workingOnPath)+innerWeights.get(0));
+                        paths.get(workingOnPath).add(validNodes.get(0).getId());
+                        if(destBlock == validNodes.get(0)){
+                            reachedEnd.set(workingOnPath,true);
+                            stopped.set(workingOnPath,true);
+                        }
+                        visiting = validNodes.get(0);
+                    }else{
+                        //no options were valid
+                        //this path is bad
+                        stopped.set(workingOnPath,true);
+                        continue;
+                    }
+                }//end else
+            
+                //once all paths have run to either the end or an occ block, stop
+            }while(!allTrue(stopped));
+            //allow them to bypass occupancy and go on same block twice (but not in succession.
+            //if block(already in path), find its last entry and move backwards checking if the entries match the entries starting at the end going backwards. if they do, stop)
             //can also ignore history as long as it isn't the first block you go on
             //stop when they all hit the start or reach the end
             //then take the shortest one that reached the end and cut auth until good
+            if(!allFalse(reachedEnd)){
+                //yay we found a path
+                //take the shortest one that reached the end and cut auth until good
+                double bestLen = Double.MAX_VALUE;
+                ArrayList<String> bestPath = null;
+                for(int i = 0; i < reachedEnd.size(); i++){
+                    if(reachedEnd.get(i)){
+                        if(pathLengths.get(i) < bestLen){
+                            bestLen = pathLengths.get(i);
+                            bestPath = paths.get(i);
+                        }
+                    }
+                }
+                
+                //this path worked because there were no restrictions on occupancy or double visiting blocks
+                //we now need to trim back this path to make a valid auth suggestion
+                int pathEnd = 2;//we need at least 2 nodes to make a path
+                while(pathIsValid(bestPath.subList(0,pathEnd))){
+                    pathEnd++;
+                }
+                pathEnd--;//this endpoint made it fail, so go back one
+                bestPath = new ArrayList<String>(bestPath.subList(0,pathEnd));
+                
+                ArrayList<Edge> pathEdge = new ArrayList<Edge>();
+                for(int i = 0; i < bestPath.size()-1; i++){
+                    pathEdge.add(graph.getNode(bestPath.get(i)).getEdgeBetween(bestPath.get(i+1)));
+                }
+                if(pathEdge.size() != 0){
+                    while(pathEdge.get(pathEdge.size()-1).getNode0().getDegree() == 3 || pathEdge.get(pathEdge.size()-1).getNode1().getDegree() == 3){
+                        //don't end authority on a switch
+                        pathEdge.remove(pathEdge.size()-1);
+                    }
+                }
+                //make into comma separated string
+                for(int i = 0; i < pathEdge.size(); i++){
+                    if(retVal.equals("")){
+                        retVal = pathEdge.get(i).getId();
+                    }else{
+                        retVal = retVal + "," + pathEdge.get(i).getId();
+                    }
+                }
+                
+            }//else{
+            //    they are all false (i.e. none reached the end), there is no valid path.
+            //    return "";
+            //}
         }else{
             //at least 1 path found the end, find the shortest
             double bestLen = Double.MAX_VALUE;
@@ -1852,6 +2083,62 @@ public class CTCGUI implements ViewerListener{
         
         return retVal;//if no path was found
     }
+    private static boolean pathIsValid(List<String> path){
+        if(path.size() < 2){
+            //need at least 2 nodes to make a path, but a path that involves no moving is ok
+            return true;
+        }
+        //really only need to check most recent edge b/c this is called in a loop
+        //also only checking occupancy and repeated edges. we already checked for edge directionality and leaf to leaf movement
+        Node thisNode = graph.getNode(path.get(path.size()-1));
+        Node prevNode = graph.getNode(path.get(path.size()-2));
+        Edge addedEdge = thisNode.getEdgeBetween(prevNode);
+        if(addedEdge == null){//this check wouldn't be necessary if the graphstream api wasn't lying. i'm not mad or anything. nope. not at all...
+            addedEdge = prevNode.getEdgeBetween(thisNode);
+        }
+        if(addedEdge.getAttribute("track.occupied")){
+            return false;
+        }
+        Edge otherEdge;
+        for(int i = 1; i < path.size()-1; i++){
+            thisNode = graph.getNode(path.get(i));
+            prevNode = graph.getNode(path.get(i-1));
+            otherEdge = thisNode.getEdgeBetween(prevNode);
+            if(otherEdge == null){
+                otherEdge = prevNode.getEdgeBetween(thisNode);
+            }
+            if(otherEdge == addedEdge){
+                return false;
+            }
+        }
+        return true;
+    }
+    private static boolean willCausePathLoop(ArrayList<String> path){
+        //check if the most recently added node will cause an inf path loop
+        //don't have to check everything b/c we have been while building path
+        if(path.size() <= 2){
+            return false;//a path with 1 or 2 items can't be a loop
+        }
+        if( path.get(path.size()-1).equals(path.get(path.size()-3)) ){
+            //trying magically turn around on a bidirectional block
+            return true;
+        }
+        String mostRecentBlockId = path.get(path.size()-1);
+        int index = -1;
+        for(int i = path.size()-2; i >= 0; i--){
+            if(mostRecentBlockId.equals(path.get(i))){
+                index = i;
+                break;
+            }
+        }
+        //if same 2 nodes in a row, then traveling the same way on the same blocks -> loop
+        if(index > 0 && path.get(path.size()-2).equals(path.get(index-1))){
+            return true;
+        }
+        //no 2 duplicates in a row
+        return false;
+        
+    }
     private static boolean allTrue(ArrayList<Boolean> al){
         return !al.contains(false);
     }
@@ -1871,21 +2158,19 @@ public class CTCGUI implements ViewerListener{
             return Double.MAX_VALUE;
         }
         //is it going on a leaf to leaf path
-        for(int i = 0; i < currPath.length; i++){
-            System.out.println(currPath[i]);
-        }
+        //System.out.println("current path");
+        //for(int i = 0; i < currPath.length; i++){
+        //    System.out.println("   "+currPath[i]);
+        //}
         if(currPath.length > 1){
             String nodeAId = currPath[currPath.length-1];
             String nodeBId = currPath[currPath.length-2];
             Node nodeA = graph.getNode(nodeAId);
             Node nodeB = graph.getNode(nodeBId);
-            if(nodeA == null){
-                System.out.println("hi");
-            }
-            System.out.println("a_id "+nodeAId+" b_id "+nodeBId);
+            //System.out.println("a_id "+nodeAId+" b_id "+nodeBId);
             Edge e = nodeB.getEdgeBetween(nodeA);
             if(e == null){// THEIR API SAYS GETEDGEBETWEEN DOESN'T CARE ABOUT THE ORDER OF NODES. THE API LIES!!!!!
-                System.out.println("hi2");
+                //System.out.println("hi2");
                 e = nodeA.getEdgeBetween(nodeB);
             }
             boolean leaf2leaf = !((Boolean)choice.getAttribute("track.isSwitch")) && !((Boolean)e.getAttribute("track.isSwitch"));
@@ -1904,11 +2189,21 @@ public class CTCGUI implements ViewerListener{
             return Double.MAX_VALUE;
         }
         //is it going on a leaf to leaf path
+        //System.out.println("current path");
+        //for(int i = 0; i < currPath.length; i++){
+        //    System.out.println("   "+currPath[i]);
+        //}
         if(currPath.length > 1){
             String nodeAId = currPath[currPath.length-1];
             String nodeBId = currPath[currPath.length-2];
             Node nodeA = graph.getNode(nodeAId);
-            Edge e = nodeA.getEdgeBetween(nodeBId);
+            Node nodeB = graph.getNode(nodeBId);
+            //System.out.println("nodeAId "+nodeAId+" nodeBId "+nodeBId);
+            Edge e = nodeB.getEdgeBetween(nodeA);
+            if(e == null){// see comment above. yep. i'm not mad...
+                //System.out.println("hi2");
+                e = nodeA.getEdgeBetween(nodeB);
+            }
             boolean leaf2leaf = !((Boolean)choice.getAttribute("track.isSwitch")) && !((Boolean)e.getAttribute("track.isSwitch"));
             if(visiting.getDegree() == 3 && leaf2leaf) {
                 //this would take a leaf of a switch to another leaf
@@ -1928,52 +2223,65 @@ public class CTCGUI implements ViewerListener{
                 continue;//something invalid, don't move the train
             }
             Node start;
-            if(oneData.getLastVisited() == -1){//special exception if still on starting block
-                start = e1.getNode0();
-                if(start == graph.getNode("Yard")){
-                    start = e1.getNode1();
-                }
+            String newAuth;
+            if(e1 == e2){
+                newAuth = "";//you are already at your dest
             }else{
-                Edge lastVisited = graph.getEdge(""+oneData.getLastVisited());
-                start = e1.getNode0();
-                if(start == lastVisited.getNode0() || start == lastVisited.getNode1()){
-                    start = e1.getNode1();
-                }
-            }
-            Node end = e2.getNode0();//pick an arbitrary node off of ending edge. we'll clean the path string after the fact
-            //get path
-            String newAuth = routeTrain(start, end, oneData);
-            newAuth = e1.getId()+","+newAuth;//you should also have auth on the block you are on
-            
-            if(!newAuth.equals("")){
-                //ensure only 1 node from end edge is in path (this way you get authority onto end edge but stop there)
-                int lastComma = newAuth.lastIndexOf(',');
-                Edge lastEdge = graph.getEdge(newAuth.substring(lastComma+1));
-                if(lastEdge == e2){
-                    //auth is permission to go onto next block. don't give auth on end block
-                    if(lastComma == -1){
-                        newAuth = "";//one or zero blocks returned
-                    }else{
-                        newAuth = newAuth.substring(0,lastComma);
+                if(oneData.getLastVisited() == -1){//special exception if still on starting block
+                    start = e1.getNode0();
+                    if(start == graph.getNode("Yard")){
+                        start = e1.getNode1();
+                    }
+                }else{
+                    Edge lastVisited = graph.getEdge(""+oneData.getLastVisited());
+                    start = e1.getNode0();
+                    if(start == lastVisited.getNode0() || start == lastVisited.getNode1()){
+                        start = e1.getNode1();
                     }
                 }
-            }
-            if(!newAuth.equals("")){ 
-                //check that end edge is not at a switch
-                int lastComma = newAuth.lastIndexOf(',');
-                Edge lastEdge = graph.getEdge(newAuth.substring(lastComma+1));
-                if(lastEdge.getNode0().getDegree() == 3 || lastEdge.getNode1().getDegree() == 3){
-                    //don't end authority on a switch
-                    if(lastComma == -1){
-                        newAuth = "";//one or zero blocks returned
-                    }else{
-                        newAuth = newAuth.substring(0,lastComma);
+                Node end = e2.getNode0();//pick an arbitrary node off of ending edge. we'll clean the path string after the fact
+                //get path
+                newAuth = routeTrain(start, end, oneData);
+                if(!newAuth.equals("")){
+                    newAuth = e1.getId()+","+newAuth;//you should also have auth on the block you are on
+                }else{
+                    newAuth = e1.getId();
+                }
+            
+                if(!newAuth.equals("")){
+                    //ensure only 1 node from end edge is in path (this way you get authority onto end edge but stop there)
+                    int lastComma = newAuth.lastIndexOf(',');
+                    Edge lastEdge = graph.getEdge(newAuth.substring(lastComma+1));
+                    if(lastEdge == e2){
+                        //auth is permission to go onto next block. don't give auth on end block
+                        if(lastComma == -1){
+                            newAuth = "";//one or zero blocks returned
+                        }else{
+                            newAuth = newAuth.substring(0,lastComma);
+                        }
+                    }
+                }
+                if(!newAuth.equals("")){ 
+                    //check that end edge is not at a switch
+                    int lastComma = newAuth.lastIndexOf(',');
+                    Edge lastEdge = graph.getEdge(newAuth.substring(lastComma+1));
+                    System.out.println("auth str "+newAuth);
+                    //System.out.println("auth substr "+newAuth.substring(lastComma+1));
+                    if(lastEdge.getNode0().getDegree() == 3 || lastEdge.getNode1().getDegree() == 3){
+                        //don't end authority on a switch
+                        if(lastComma == -1){
+                            newAuth = "";//one or zero blocks returned
+                        }else{
+                            newAuth = newAuth.substring(0,lastComma);
+                        }
                     }
                 }
             }
             //call edit train
             CTCModel.editTrain(oneData.getTrainID(), t.getStaticBlock(Integer.parseInt(e1.getId())).getSpeedLimit(), newAuth, oneData.getDestination());
         }
+        //stop authorities short of occ blocks
+        //check for overlapping authorities
     }
     
     
