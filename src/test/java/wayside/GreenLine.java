@@ -19,15 +19,22 @@ package wayside;
 import org.junit.Test;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
+import java.io.*;
 import shared.Suggestion;
 
 public class GreenLine {
     
-    WCStaticTrack st = new WCStaticTrack(true);
-    WCTrackModel tm = new WCTrackModel(st.trackLen());
-    Decider decider = new Decider(tm, st);
+    WCStaticTrack st;
+    WCTrackModel tm;
+    Decider decider;
     boolean[] auth;
     int[] speed;
+
+    public GreenLine() throws IOException {
+        st = new WCStaticTrack(new File("src/main/resources/wayside/track.plc"));
+        tm = new WCTrackModel(st.trackLen());
+        decider = new Decider(tm, st);
+    }
 
     private void squash(Suggestion[] s) {
         auth = WaysideController.squash(s, st.trackLen());
