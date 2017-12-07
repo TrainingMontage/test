@@ -22,21 +22,18 @@ import org.junit.Test;
 import shared.Suggestion;
 import trackmodel.TrackModel;
 import wayside.WaysideController;
+import wayside.UnsafeSuggestion;
 
 public class NoTrack {
 
-    @BeforeClass
-    public static void init() {
-        TrackModel.initWithTestData();
-        WaysideController.initTest();
-    }
+    WCStaticTrack st = new WCStaticTrack(false);
 
     @Test
     public void squashAuth() {
         Suggestion[] s = new Suggestion[] {
             new Suggestion(2, 3, new int[] {2, 3})
         };
-        boolean[] authority = WaysideController.squash(s);
+        boolean[] authority = WaysideController.squash(s, st.trackLen());
         Assert.assertFalse(authority[1]);
         Assert.assertTrue(authority[2]);
         Assert.assertTrue(authority[3]);
@@ -50,9 +47,9 @@ public class NoTrack {
             new Suggestion(3, 4, new int[] {3, 4, 5})
         };
         try {
-            WaysideController.squash(s);
+            WaysideController.squash(s, st.trackLen());
             Assert.fail("Did not find unsafe suggestion unsafe");
-        } catch (Exception e) {
+        } catch (UnsafeSuggestion e) {
             Assert.assertTrue(true);
         }
     }
@@ -63,7 +60,7 @@ public class NoTrack {
             new Suggestion(2, 3, new int[] {2,3}),
             new Suggestion(5, 3, new int[] {5,6})
         };
-        boolean[] auth = WaysideController.squash(s);
+        boolean[] auth = WaysideController.squash(s, st.trackLen());
         boolean[] expected = new boolean[] {
             false, false, true, true,
             false, true, true, false, false
@@ -76,7 +73,7 @@ public class NoTrack {
         Suggestion[] s = new Suggestion[] {
             new Suggestion(2, 3, new int[] {2, 3})
         };
-        int[] speed = WaysideController.squashSpeed(s);
+        int[] speed = WaysideController.squashSpeed(s, st.trackLen());
         Assert.assertEquals(0, speed[1]);
         Assert.assertEquals(3, speed[2]);
         Assert.assertEquals(0, speed[3]);
@@ -87,7 +84,7 @@ public class NoTrack {
         Suggestion[] s = new Suggestion[] {
             new Suggestion(2, 3, null)
         };
-        boolean[] authority = WaysideController.squash(s);
-        Assert.assertArrayEquals(new boolean[WaysideController.TRACK_LEN], authority);
+        boolean[] authority = WaysideController.squash(s, st.trackLen());
+        Assert.assertArrayEquals(new boolean[st.trackLen()], authority);
     }
 }
