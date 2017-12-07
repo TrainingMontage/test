@@ -104,4 +104,21 @@ public class GreenLine {
         assertTrue(decider.suggest(auth, speed));
     }
 
+    @Test
+    public void twoSuggActiveThenDefaultSwitch() {
+        tm.occupy(152, true);
+        squash(new Suggestion[] {
+            new Suggestion(152, 10, new int[] {152, 63, 64})
+        });
+        assertTrue(decider.suggest(auth, speed));
+        assertTrue(decider.getSwitch(63));
+        tm.occupy(152, false);
+        tm.occupy(62, true);
+        squash(new Suggestion[] {
+            new Suggestion(62, 10, new int[] {62, 63, 64})
+        });
+        assertTrue(decider.suggest(auth, speed));
+        assertFalse(decider.getSwitch(63));
+    }
+
 }
