@@ -52,6 +52,8 @@ public class PlcImporter {
                     case "PATHS":
                         paths.add(buildArray(rhs));
                         break;
+                    default:
+                        throw new Exception("");
                 }
             } catch (Exception e) {
                 throw new FailedToReadPlc("At line: " + temp);

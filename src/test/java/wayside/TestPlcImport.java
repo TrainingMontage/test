@@ -13,6 +13,16 @@ public class TestPlcImport {
     }
 
     @Test
+    public void invalidPlc() throws IOException {
+        try {
+            plc = new PlcImporter(new File("src/main/resources/TrackModel/green.csv"));
+            Assert.fail("Did not find invalid PLC as such");
+        } catch (FailedToReadPlc e) {
+            Assert.assertTrue(true);
+        }
+    }
+
+    @Test
     public void trackLen() {
         Assert.assertEquals(153, plc.getTrackLen());
     }
