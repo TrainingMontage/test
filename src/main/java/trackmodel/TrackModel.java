@@ -1196,7 +1196,7 @@ public class TrackModel implements TrackModelInterface {
      *
      * @return     The train's direction within the block
      */
-    private boolean setTrainDirection(int trainId, boolean direction) {
+    protected boolean setTrainDirection(int trainId, boolean direction) {
         try (PreparedStatement stmt = this.conn.prepareStatement("UPDATE trains SET direction = ? WHERE id = ?;")) {
             stmt.setInt(1, direction ? 1 : 0);
             stmt.setInt(2, trainId);
@@ -1340,14 +1340,12 @@ public class TrackModel implements TrackModelInterface {
     }
 
     /**
-     * { function_description }
+     * update the occupancy status of each block on the track
      */
     protected void updateOccupancies() {
         try {
             // destroy previous occupancy
             this.blockOccupancy = new HashMap<Integer, Boolean>();
-            // stmt = this.conn.prepareStatement("UPDATE blocks SET occupied = 0;");
-            // stmt.execute();
 
             for (Map.Entry<Integer, ArrayList<StaticBlock>> entry : this.trainOccupancy.entrySet()) {
                 Integer key = entry.getKey();
