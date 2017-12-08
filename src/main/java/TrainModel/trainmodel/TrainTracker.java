@@ -30,6 +30,9 @@ public class TrainTracker{
     //private static Train[] trainList;
     private static int trainId;
 
+    /**
+     * Train Tracker singalton
+     */
     public static TrainTracker getTrainTracker(){
         if(tracker == null){
             tracker = new TrainTracker();
@@ -39,6 +42,11 @@ public class TrainTracker{
         return tracker;
     }
 
+    /**
+     * CTC creates a new train
+     * @param  int blockId       Starting block id
+     * @return int    Train id
+     */
     public int createTrain(int blockId){
         int temp = trainId;
         Train newTrain = new Train(temp, blockId);
@@ -47,6 +55,12 @@ public class TrainTracker{
         trainId = trainId+1;
         return temp;
     }
+
+    /**
+     * JUnit testing method for createTrain
+     * @param  int blockId       Starting block id
+     * @return int    Train id
+     */
     public int createTrainTest(int blockId){
         int temp = trainId;
         TrackModel tm;
@@ -57,6 +71,12 @@ public class TrainTracker{
         trainId = trainId+1;
         return temp;
     }
+
+    /**
+     * Gets the train object specified
+     * @param  int retrieveTrain train id of the train to get
+     * @return Train returns a train model object
+     */
     public Train getTrain(int retrieveTrain){
         //Train trainModel = trainList[retrieveTrain];
         Train trainModel = trainList.get(retrieveTrain);
@@ -68,6 +88,10 @@ public class TrainTracker{
         trainList.remove(removeTrainId);
     }*/
 
+    /**
+     * Size of the arrayList of Trains
+     * @return int returns the size of the train arrayList
+     */
     public int getSize(){
         return trainList.size();
     }
