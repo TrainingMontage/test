@@ -23,7 +23,18 @@ public class TrainTrackerTest{
         assertEquals(0, get1);
         assertEquals(1, get2);
         assertEquals(2, get3);
-        
+        /*
+        tracker.getTrainTracker().removeTrain(1);
+        int check = tracker.getTrainTracker().getSize();
+        assertEquals(2, check);
+        tracker.getTrainTracker().removeTrain(2);
+        check = tracker.getTrainTracker().getSize();
+        assertEquals(1, check);
+        tracker.getTrainTracker().removeTrain(3);
+        check = tracker.getTrainTracker().getSize();
+        assertEquals(0, check);
+        */
+
     }
 
 }

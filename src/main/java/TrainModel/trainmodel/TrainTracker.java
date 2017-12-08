@@ -62,6 +62,16 @@ public class TrainTracker{
         Train trainModel = trainList.get(retrieveTrain);
         return trainModel;
     }
+    /*
+    public void removeTrain(int removeTrainId){
+        removeTrainId = removeTrainId - 1;
+        trainList.remove(removeTrainId);
+    }*/
+
+    public int getSize(){
+        return trainList.size();
+    }
+
     public static void main(String args[]){
         TrainModelGUI gui = new TrainModelGUI();
         gui.setVisible(true);
