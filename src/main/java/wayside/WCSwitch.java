@@ -39,4 +39,11 @@ public class WCSwitch {
         }
         return false;
     }
+
+    public String toString() {
+        return String.format(
+            "id: %d, root: %d, def: %d, active: %d",
+            id, root, def, active
+        );
+    }
 }

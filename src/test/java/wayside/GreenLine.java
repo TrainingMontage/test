@@ -19,15 +19,22 @@ package wayside;
 import org.junit.Test;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
+import java.io.*;
 import shared.Suggestion;
 
 public class GreenLine {
     
-    WCStaticTrack st = new WCStaticTrack(true);
-    WCTrackModel tm = new WCTrackModel(st.trackLen());
-    Decider decider = new Decider(tm, st);
+    WCStaticTrack st;
+    WCTrackModel tm;
+    Decider decider;
     boolean[] auth;
     int[] speed;
+
+    public GreenLine() throws IOException, FailedToReadPlc {
+        st = new WCStaticTrack(new File("src/main/resources/wayside/track.plc"));
+        tm = new WCTrackModel(st.trackLen());
+        decider = new Decider(tm, st);
+    }
 
     private void squash(Suggestion[] s) {
         auth = WaysideController.squash(s, st.trackLen());
@@ -190,5 +197,14 @@ public class GreenLine {
         assertTrue(decider.suggest(auth, speed));
         assertTrue(decider.getSwitch(13));
         assertFalse(decider.getSwitch(63));
+    }
+
+    @Test
+    public void changeStaticTrack() {
+        decider.setStaticTrack(new WCStaticTrack(false));
+        squash(new Suggestion[] {
+            new Suggestion(1, 10, new int[] {2,3,8})
+        });
+        assertFalse(decider.suggest(auth, speed));
     }
 }
