@@ -22,6 +22,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
@@ -105,6 +106,8 @@ public class CTCGUI implements ViewerListener{
     
     private static StaticTrack t;
     
+    private static ArrayList<Edge> allRoots;
+    
     private static Graph graph;
     //private static ViewPanel graphView;
     private static Viewer viewer;
@@ -179,6 +182,7 @@ public class CTCGUI implements ViewerListener{
         if(myself == null){
             myself = new CTCGUI();
         }
+        allRoots = new ArrayList<Edge>();
         System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         graph = new SingleGraph("Map");//allow directed graphs
         //sm = new SpriteManager(graph);
@@ -284,6 +288,7 @@ public class CTCGUI implements ViewerListener{
                 }
                 //add switch specific edge properties
                 if(blockId == ss.getRoot().getId()){
+                    allRoots.add(e);
                     e.addAttribute("track.isSwitch", new Boolean(true));
                     e.addAttribute("track.switch", new Boolean(false));
                 }else{
@@ -1716,7 +1721,7 @@ public class CTCGUI implements ViewerListener{
                     stopped.set(workingOnPath,true);
                     continue;
                 }
-                weight = getPathWeight(visiting, nextNode, paths.get(workingOnPath).toArray(new String[paths.get(workingOnPath).size()]));
+                weight = getPathWeight(visiting, nextNode, paths.get(workingOnPath).toArray(new String[paths.get(workingOnPath).size()]), tdata.getLastVisited());
                 if(weight == Double.MAX_VALUE){
                     //this block is occupied or would cause a leaf to leaf movement on a switch
                     //this path is bad
@@ -1741,6 +1746,7 @@ public class CTCGUI implements ViewerListener{
                 //System.out.println("here added "+nextNode.getId());
             }else{
                 //multiple ways to leave block (i.e. a switch or a bidirectional block)
+                //System.out.println("in else");
                 iter = visiting.getLeavingEdgeIterator();
                 ArrayList<Node> validNodes = new ArrayList<Node>();
                 ArrayList<Double> innerWeights = new ArrayList<Double>();
@@ -1751,9 +1757,11 @@ public class CTCGUI implements ViewerListener{
                     if(nextNode == visiting){
                         nextNode = between.getNode1();
                     }
+                    //System.out.println("potential next : "+nextNode.getId());
                     //check all possible nexts; if they work, create a new path for them
                     if(nextNode == yardNode){
                         //don't allow pathing through the yard
+                        //System.out.println("yard next out : "+nextNode.getId());
                         continue;
                     }
                     //Edge between = visiting.getEdgeToward( nextNode );
@@ -1762,6 +1770,7 @@ public class CTCGUI implements ViewerListener{
                         //going to this block would mean the train is moving the way it came
                         //this path is bad
                         //stopped.set(workingOnPath,true);
+                        //System.out.println("lastVisit next out : "+nextNode.getId());
                         continue;
                     }
                     //check that this block isn't in the path already
@@ -1769,17 +1778,20 @@ public class CTCGUI implements ViewerListener{
                         //already in the path
                         //this path is bad
                         //stopped.set(workingOnPath,true);
+                        //System.out.println("onpath next out : "+nextNode.getId());
                         continue;
                     }
-                    weight = getPathWeight(visiting, nextNode, paths.get(workingOnPath).toArray(new String[paths.get(workingOnPath).size()]));
+                    weight = getPathWeight(visiting, nextNode, paths.get(workingOnPath).toArray(new String[paths.get(workingOnPath).size()]), tdata.getLastVisited());
                     //System.out.println("weight "+weight);
                     if(weight == Double.MAX_VALUE){
                         //this block is occupied or would cause a leaf to leaf movement on a switch
                         //this path is bad
                         //stopped.set(workingOnPath,true);
+                        //System.out.println("pathweight next out : "+nextNode.getId());
                         continue;
                     }
                     //everything checks out, add to list to be added in a moment
+                    //System.out.println("adding next : "+nextNode.getId());
                     validNodes.add(nextNode);
                     innerWeights.add(weight);
                 }
@@ -1822,13 +1834,16 @@ public class CTCGUI implements ViewerListener{
             
             //once all paths have run to either the end or an occ block, stop
         }while(!allTrue(stopped));
-        System.out.println("Finished Path calc. All false? "+allFalse(reachedEnd));
+        //System.out.println("Finished Path calc. All false? "+allFalse(reachedEnd));
         //for(int j = 0; j < reachedEnd.size(); j++){
         //    System.out.println(""+reachedEnd.get(j));
         //}
-        for(int j = 0; j < paths.get(0).size(); j++){
-            System.out.println(""+paths.get(0).get(j));
-        }
+        //for(int i = 0; i < paths.size(); i++){
+        //    System.out.println("path "+i);
+        //    for(int j = 0; j < paths.get(i).size(); j++){
+        //        System.out.println(""+paths.get(i).get(j));
+        //    }
+        //}
         //System.out.println("start :"+currBlock);
         //System.out.println("end   :"+destBlock);
         //check all paths that have reached the end; if one or more has, return the shortest
@@ -1875,10 +1890,30 @@ public class CTCGUI implements ViewerListener{
                         //don't allow pathing through the yard
                         continue;
                     }
+                    boolean wrongWay = false;
+                    Edge lastVisitedEdge = graph.getEdge(tdata.getLastVisited()+"");
+                    if(lastVisitedEdge != null){
+                        Node lvn0 = lastVisitedEdge.getNode0();
+                        Node btn0 = between.getNode0();
+                        if(lvn0 != btn0){
+                            btn0 = between.getNode1();
+                        }
+                        if(lvn0 != btn0){
+                            lvn0 = lastVisitedEdge.getNode1();
+                        }
+                        if(lvn0 != btn0){
+                            btn0 = between.getNode0();
+                        }
+                        if(lvn0 == btn0){
+                            if(lvn0 == nextNode){
+                                wrongWay = true;
+                            }
+                        }
+                    }
                     //System.out.println(visiting.getId() + " 2asdf "+ nextNode.getId());
                     //Edge between = visiting.getEdgeToward( nextNode );
                     //we only can't immediately go backwards for this algorithm, we can visit that block again though
-                    if(paths.get(workingOnPath).size() == 1 && between.getId().equals(tdata.getLastVisited()+"")){
+                    if(paths.get(workingOnPath).size() == 1 && wrongWay){
                         //going to this block would mean the train is moving the way it came
                         //this path is bad
                         stopped.set(workingOnPath,true);
@@ -1891,7 +1926,7 @@ public class CTCGUI implements ViewerListener{
                         stopped.set(workingOnPath,true);
                         continue;
                     }
-                    weight = getPathWeightIgnoreOcc(visiting, nextNode, paths.get(workingOnPath).toArray(new String[paths.get(workingOnPath).size()]));
+                    weight = getPathWeightIgnoreOcc(visiting, nextNode, paths.get(workingOnPath).toArray(new String[paths.get(workingOnPath).size()]), tdata.getLastVisited());
                     if(weight == Double.MAX_VALUE){
                         //this block would cause a leaf to leaf movement on a switch
                         //this path is bad
@@ -1932,9 +1967,29 @@ public class CTCGUI implements ViewerListener{
                             //don't allow pathing through the yard
                             continue;
                         }
+                        boolean wrongWay = false;
+                        Edge lastVisitedEdge = graph.getEdge(tdata.getLastVisited()+"");
+                        if(lastVisitedEdge != null){
+                            Node lvn0 = lastVisitedEdge.getNode0();
+                            Node btn0 = between.getNode0();
+                            if(lvn0 != btn0){
+                                btn0 = between.getNode1();
+                            }
+                            if(lvn0 != btn0){
+                                lvn0 = lastVisitedEdge.getNode1();
+                            }
+                            if(lvn0 != btn0){
+                                btn0 = between.getNode0();
+                            }
+                            if(lvn0 == btn0){
+                                if(lvn0 == nextNode){
+                                    wrongWay = true;
+                                }
+                            }
+                        }
                         //System.out.println(tdata.getLastVisited()+"");
                         //we only can't immediately go backwards for this algorithm, we can visit that block again though
-                        if(paths.get(workingOnPath).size() == 1 && between.getId().equals(tdata.getLastVisited()+"")){
+                        if(paths.get(workingOnPath).size() == 1 && wrongWay){
                             //going to this block would mean the train is moving the way it came
                             //this path is bad
                             //stopped.set(workingOnPath,true);
@@ -1947,7 +2002,7 @@ public class CTCGUI implements ViewerListener{
                             //stopped.set(workingOnPath,true);
                             continue;
                         }
-                        weight = getPathWeightIgnoreOcc(visiting, nextNode, paths.get(workingOnPath).toArray(new String[paths.get(workingOnPath).size()]));
+                        weight = getPathWeightIgnoreOcc(visiting, nextNode, paths.get(workingOnPath).toArray(new String[paths.get(workingOnPath).size()]), tdata.getLastVisited());
                         //System.out.println("2weight "+weight);
                         if(weight == Double.MAX_VALUE){
                             //this block would cause a leaf to leaf movement on a switch
@@ -2016,26 +2071,31 @@ public class CTCGUI implements ViewerListener{
                         }
                     }
                 }
+                //for(int i = 0; i < bestPath.size(); i++){
+                //    System.out.println(i+" bestpath "+bestPath.get(i));
+                //}
                 
                 //this path worked because there were no restrictions on occupancy or double visiting blocks
                 //we now need to trim back this path to make a valid auth suggestion
                 int pathEnd = 2;//we need at least 2 nodes to make a path
-                while(pathIsValid(bestPath.subList(0,pathEnd))){
+                while(pathEnd < bestPath.size() && pathIsValid(bestPath.subList(0,pathEnd))){
                     pathEnd++;
                 }
-                pathEnd--;//this endpoint made it fail, so go back one
+                if(!pathIsValid(bestPath.subList(0,pathEnd))){
+                    pathEnd--;//this endpoint made it fail, so go back one
+                }
                 bestPath = new ArrayList<String>(bestPath.subList(0,pathEnd));
                 
                 ArrayList<Edge> pathEdge = new ArrayList<Edge>();
                 for(int i = 0; i < bestPath.size()-1; i++){
                     pathEdge.add(graph.getNode(bestPath.get(i)).getEdgeBetween(bestPath.get(i+1)));
                 }
-                if(pathEdge.size() != 0){
-                    while(pathEdge.get(pathEdge.size()-1).getNode0().getDegree() == 3 || pathEdge.get(pathEdge.size()-1).getNode1().getDegree() == 3){
-                        //don't end authority on a switch
-                        pathEdge.remove(pathEdge.size()-1);
-                    }
-                }
+                //if(pathEdge.size() != 0){
+                //    while(pathEdge.get(pathEdge.size()-1).getNode0().getDegree() == 3 || pathEdge.get(pathEdge.size()-1).getNode1().getDegree() == 3){
+                //        //don't end authority on a switch
+                //        pathEdge.remove(pathEdge.size()-1);
+                //    }
+                //}
                 //make into comma separated string
                 for(int i = 0; i < pathEdge.size(); i++){
                     if(retVal.equals("")){
@@ -2065,10 +2125,10 @@ public class CTCGUI implements ViewerListener{
             for(int i = 0; i < bestPath.size()-1; i++){
                 pathEdge.add(graph.getNode(bestPath.get(i)).getEdgeBetween(bestPath.get(i+1)));
             }
-            while(pathEdge.get(pathEdge.size()-1).getNode0().getDegree() == 3 || pathEdge.get(pathEdge.size()-1).getNode1().getDegree() == 3){
-                //don't end authority on a switch
-                pathEdge.remove(pathEdge.size()-1);
-            }
+            //while(pathEdge.get(pathEdge.size()-1).getNode0().getDegree() == 3 || pathEdge.get(pathEdge.size()-1).getNode1().getDegree() == 3){
+            //    //don't end authority on a switch
+            //    pathEdge.remove(pathEdge.size()-1);
+            //}
             //make into comma separated string
             for(int i = 0; i < pathEdge.size(); i++){
                 if(retVal.equals("")){
@@ -2145,7 +2205,7 @@ public class CTCGUI implements ViewerListener{
     private static boolean allFalse(ArrayList<Boolean> al){
         return !al.contains(true);
     }
-    private static double getPathWeight(Node visiting, Node neigh, String[] currPath){
+    private static double getPathWeight(Node visiting, Node neigh, String[] currPath, int lastVisited){
         Edge choice = visiting.getEdgeToward( neigh );
         //is it directed
         if(choice == null){
@@ -2173,7 +2233,27 @@ public class CTCGUI implements ViewerListener{
                 //System.out.println("hi2");
                 e = nodeA.getEdgeBetween(nodeB);
             }
-            boolean leaf2leaf = !((Boolean)choice.getAttribute("track.isSwitch")) && !((Boolean)e.getAttribute("track.isSwitch"));
+            boolean leaf2leaf = (!((Boolean)choice.getAttribute("track.isSwitch"))) && (!((Boolean)e.getAttribute("track.isSwitch")));
+            if(visiting.getDegree() == 3 && leaf2leaf) {
+                //this would take a leaf of a switch to another leaf
+                return Double.MAX_VALUE;
+            }
+        }else if(lastVisited != -1){
+            //path starts at the center of a switch that isn't immediately after spawning
+            Edge e = graph.getEdge(""+lastVisited);
+            Node nodeA = e.getNode0();
+            Edge e2 = visiting.getEdgeBetween(nodeA);
+            if(e2 == null){
+                e2 = nodeA.getEdgeBetween(visiting);
+            }
+            if(e2 == null){
+                nodeA = e.getNode1();
+                e2 = visiting.getEdgeBetween(nodeA);
+            }
+            if(e2 == null){
+                e2 = nodeA.getEdgeBetween(visiting);
+            }
+            boolean leaf2leaf = (!((Boolean)choice.getAttribute("track.isSwitch"))) && (!((Boolean)e2.getAttribute("track.isSwitch")));
             if(visiting.getDegree() == 3 && leaf2leaf) {
                 //this would take a leaf of a switch to another leaf
                 return Double.MAX_VALUE;
@@ -2181,7 +2261,7 @@ public class CTCGUI implements ViewerListener{
         }
         return choice.getAttribute("track.time");
     }
-    private static double getPathWeightIgnoreOcc(Node visiting, Node neigh, String[] currPath){
+    private static double getPathWeightIgnoreOcc(Node visiting, Node neigh, String[] currPath, int lastVisited){
         Edge choice = visiting.getEdgeToward( neigh );
         //is it directed
         if(choice == null){
@@ -2204,7 +2284,27 @@ public class CTCGUI implements ViewerListener{
                 //System.out.println("hi2");
                 e = nodeA.getEdgeBetween(nodeB);
             }
-            boolean leaf2leaf = !((Boolean)choice.getAttribute("track.isSwitch")) && !((Boolean)e.getAttribute("track.isSwitch"));
+            boolean leaf2leaf = (!((Boolean)choice.getAttribute("track.isSwitch"))) && (!((Boolean)e.getAttribute("track.isSwitch")));
+            if(visiting.getDegree() == 3 && leaf2leaf) {
+                //this would take a leaf of a switch to another leaf
+                return Double.MAX_VALUE;
+            }
+        }else if(lastVisited != -1){
+            //path starts at the center of a switch that isn't immediately after spawning
+            Edge e = graph.getEdge(""+lastVisited);
+            Node nodeA = e.getNode0();
+            Edge e2 = visiting.getEdgeBetween(nodeA);
+            if(e2 == null){
+                e2 = nodeA.getEdgeBetween(visiting);
+            }
+            if(e2 == null){
+                nodeA = e.getNode1();
+                e2 = visiting.getEdgeBetween(nodeA);
+            }
+            if(e2 == null){
+                e2 = nodeA.getEdgeBetween(visiting);
+            }
+            boolean leaf2leaf = (!((Boolean)choice.getAttribute("track.isSwitch"))) && (!((Boolean)e2.getAttribute("track.isSwitch")));
             if(visiting.getDegree() == 3 && leaf2leaf) {
                 //this would take a leaf of a switch to another leaf
                 return Double.MAX_VALUE;
@@ -2242,6 +2342,7 @@ public class CTCGUI implements ViewerListener{
                 Node end = e2.getNode0();//pick an arbitrary node off of ending edge. we'll clean the path string after the fact
                 //get path
                 newAuth = routeTrain(start, end, oneData);
+                System.out.println("pre auth str "+newAuth);
                 if(!newAuth.equals("")){
                     newAuth = e1.getId()+","+newAuth;//you should also have auth on the block you are on
                 }else{
@@ -2261,11 +2362,76 @@ public class CTCGUI implements ViewerListener{
                         }
                     }
                 }
+                if(!newAuth.equals("")){
+                    //stop authorities short of occ blocks (have to have 1 block gap b/t auth and occ)
+                    int lastComma = newAuth.lastIndexOf(',');
+                    if(lastComma != -1){
+                        String temp = newAuth.substring(0,lastComma);
+                        int secondLastComma = temp.lastIndexOf(',');
+                        Edge ee1 = graph.getEdge(newAuth.substring(lastComma+1));
+                        Edge ee2 = graph.getEdge(newAuth.substring(secondLastComma+1,lastComma));
+                        Node nn = ee1.getNode0();
+                        if(nn == ee2.getNode0() || nn == ee2.getNode1()){
+                            //it is the shared node
+                            nn = ee1.getNode1();
+                        }
+                        //now nn is the last node in the path
+                        Iterator it = nn.getEdgeIterator();
+                        while(it.hasNext()){
+                            Edge eNext = (Edge) it.next();
+                            if(eNext == ee1){
+                                continue;
+                            }
+                            if(eNext.getAttribute("track.occupied")){
+                                //the next block is occupied. make a buffer by cutting auth
+                                newAuth = newAuth.substring(0,lastComma);
+                                break;
+                            }
+                        }
+                    }
+                }
+                //maybe just check for ending block not causing invalid switch stuff, idk
+                //will have to do this b/c there are stations on switches
+                if(!newAuth.equals("")){ 
+                    //check that end edge is not at a switch
+                    String[] newAuthArr = newAuth.split(",");
+                    int lastComma = newAuth.lastIndexOf(',');
+                    String endBlockId = newAuthArr[newAuthArr.length-1];
+                    String startBlockId = newAuthArr[0];
+                    StaticSwitch statSwitEnd = t.getStaticBlock(Integer.parseInt(endBlockId)).getStaticSwitch();
+                    StaticSwitch statSwitStart = t.getStaticBlock(Integer.parseInt(startBlockId)).getStaticSwitch();
+                    //Edge lastEdge = graph.getEdge(newAuth.substring(lastComma+1));
+                    if(statSwitEnd != null && (endBlockId.equals(statSwitEnd.getDefaultLeaf().getId()+"") || endBlockId.equals(statSwitEnd.getActiveLeaf().getId()+""))){
+                        //path ends on switch, ensure that not both leaves are set
+                        for(int i = 0; i < newAuthArr.length-1; i++){
+                            if(newAuthArr[i].equals(statSwitEnd.getDefaultLeaf().getId()+"") || newAuthArr[i].equals(statSwitEnd.getActiveLeaf().getId()+"")){
+                                //remove the last block in authority
+                                newAuth = newAuth.substring(0,lastComma);
+                                break;
+                            }
+                        }
+                        
+                        newAuthArr = newAuth.split(",");
+                    }
+                    if(statSwitStart != null && (startBlockId.equals(statSwitStart.getDefaultLeaf().getId()+"") || startBlockId.equals(statSwitStart.getActiveLeaf().getId()+""))){
+                        //path starts on a switch. may have to cut it short
+                        newAuth = newAuthArr[0];
+                        for(int i = 1; i < newAuthArr.length; i++){
+                            if(newAuthArr[i].equals(statSwitStart.getDefaultLeaf().getId()+"") || newAuthArr[i].equals(statSwitStart.getActiveLeaf().getId()+"")){
+                                //ignore any blocks after this
+                                break;
+                            }
+                            newAuth = newAuth + "," + newAuthArr[i];
+                        }
+                    }
+                }
+                
+                
+                /*
                 if(!newAuth.equals("")){ 
                     //check that end edge is not at a switch
                     int lastComma = newAuth.lastIndexOf(',');
                     Edge lastEdge = graph.getEdge(newAuth.substring(lastComma+1));
-                    System.out.println("auth str "+newAuth);
                     //System.out.println("auth substr "+newAuth.substring(lastComma+1));
                     if(lastEdge.getNode0().getDegree() == 3 || lastEdge.getNode1().getDegree() == 3){
                         //don't end authority on a switch
@@ -2276,14 +2442,532 @@ public class CTCGUI implements ViewerListener{
                         }
                     }
                 }
+                if(!newAuth.equals("")){ 
+                    //check that end edge is not at a switch (could be on root and leaf, hence the same check twice)
+                    int lastComma = newAuth.lastIndexOf(',');
+                    Edge lastEdge = graph.getEdge(newAuth.substring(lastComma+1));
+                    //System.out.println("auth substr "+newAuth.substring(lastComma+1));
+                    if(lastEdge.getNode0().getDegree() == 3 || lastEdge.getNode1().getDegree() == 3){
+                        //don't end authority on a switch
+                        if(lastComma == -1){
+                            newAuth = "";//one or zero blocks returned
+                        }else{
+                            newAuth = newAuth.substring(0,lastComma);
+                        }
+                    }
+                }*/
+                System.out.println("post auth str "+newAuth);
             }
             //call edit train
             CTCModel.editTrain(oneData.getTrainID(), t.getStaticBlock(Integer.parseInt(e1.getId())).getSpeedLimit(), newAuth, oneData.getDestination());
         }
-        //stop authorities short of occ blocks
+        //apply any edit trains
+        System.out.println("------------------------ edit Train2 ------------------------");
+        CTCModel.editTrain();
         //check for overlapping authorities
+        checkCrossingAuth();
+    }
+    private static void checkCrossingAuth(){
+        System.out.println("checking for crossing authority paths");
+        //check for trains having crossing authorities (and modify to make safe suggestion)
+        ArrayList<CTCTrainData> allData = CTCModel.getAllTrainData();
+        ArrayList<String> conflictPath = new ArrayList<String>();
+        String[] auth1,auth2;
+        for(int i = 0; i < allData.size(); i++){
+            for(int j = i+1; j < allData.size(); j++){
+                conflictPath.clear();//start fresh
+                auth1 = allData.get(i).getAuthority().split(",");
+                auth2 = allData.get(j).getAuthority().split(",");
+                for(int k = 0; k < auth1.length; k++){
+                    for(int m = 0; m < auth2.length; m++){
+                        if(auth1[k].equals(auth2[m]) && !auth1[k].equals("")){
+                            //overlapping auth
+                            conflictPath.add(auth1[k]);
+                        }
+                    }
+                }
+                if(conflictPath.size() != 0){
+                    //resolve conflict
+                    //if one end is a root, resolve as a switch problem, otherwise as linear head on problem
+                    //switch problem priority (high to low): 
+                    //          1. train on switch
+                    //          2. train coming from root direction
+                    //          3. train coming from default leaf
+                    //          4. train coming from active leaf
+                    //linear head on resolution: pick midpoint and give neither train authority there. adjust paths
+                    String newAuth1 = "";
+                    String newAuth2 = "";
+                    Edge endpoint1 = graph.getEdge(conflictPath.get(0));
+                    Edge endpoint2 = graph.getEdge(conflictPath.get(conflictPath.size()-1));
+                    StaticSwitch ss1 = t.getStaticBlock(Integer.parseInt(conflictPath.get(0))).getStaticSwitch();
+                    StaticSwitch ss2 = t.getStaticBlock(Integer.parseInt(conflictPath.get(conflictPath.size()-1))).getStaticSwitch();
+                    Edge train1Loc = graph.getEdge(allData.get(i).getBlockID()+"");
+                    Edge train2Loc = graph.getEdge(allData.get(j).getBlockID()+"");
+                    boolean switchProblem = false;
+                    boolean ep1IsSwitch = (endpoint1 != null && (Boolean) endpoint1.getAttribute("track.isSwitch"));
+                    boolean ep2IsSwitch = (endpoint2 != null && (Boolean) endpoint2.getAttribute("track.isSwitch"));
+                    boolean t1IsOnSwitch, t2IsOnSwitch;
+                    if(endpoint1 == endpoint2){
+                        endpoint2 = null;
+                    }
+                    
+                    if(ep1IsSwitch && ep2IsSwitch){
+                        //if both on switches they need auth around their own switch
+                        //if only 1 on switch treat like below
+                        boolean t1IsOnSwitch1 = train1Loc == endpoint1 || 
+                                                train1Loc == graph.getEdge(ss1.getDefaultLeaf().getId()+"") ||
+                                                train1Loc == graph.getEdge(ss1.getActiveLeaf().getId()+"");
+                        boolean t1IsOnSwitch2 = train1Loc == endpoint2 || 
+                                                train1Loc == graph.getEdge(ss2.getDefaultLeaf().getId()+"") ||
+                                                train1Loc == graph.getEdge(ss2.getActiveLeaf().getId()+"");
+                        boolean t2IsOnSwitch1 = train2Loc == endpoint1 || 
+                                                train2Loc == graph.getEdge(ss1.getDefaultLeaf().getId()+"") ||
+                                                train2Loc == graph.getEdge(ss1.getActiveLeaf().getId()+"");
+                        boolean t2IsOnSwitch2 = train2Loc == endpoint2 || 
+                                                train2Loc == graph.getEdge(ss2.getDefaultLeaf().getId()+"") ||
+                                                train2Loc == graph.getEdge(ss2.getActiveLeaf().getId()+"");
+                        
+                        
+                        if((t1IsOnSwitch1 && t2IsOnSwitch2) || (t1IsOnSwitch2 && t2IsOnSwitch1)){
+                            //give each train preference around its switch
+                            //basically head on, but find midpoint of switches not trains
+                            int midpoint = conflictPath.size()/2;
+                            String midpointId = conflictPath.get(midpoint);
+                            //remove midpoint and later in both lists
+                            for(int k = 0; k < auth1.length; k++){
+                                if(auth1[k].equals(midpointId)){
+                                    break;
+                                }
+                                if(newAuth1.equals("")){
+                                    newAuth1 = auth1[k];
+                                }else{
+                                    newAuth1 = newAuth1 +","+ auth1[k];
+                                }
+                            }
+                            for(int m = 0; m < auth2.length; m++){
+                                if(auth2[m].equals(midpointId)){
+                                    break;
+                                }
+                                if(newAuth2.equals("")){
+                                    newAuth2 = auth2[m];
+                                }else{
+                                    newAuth2 = newAuth2 +","+ auth2[m];
+                                }
+                            }
+                            System.out.println("split");
+                        }else if(t1IsOnSwitch1 || t1IsOnSwitch2){
+                            //give t1 preference
+                            newAuth1 = allData.get(i).getAuthority();//keep t1 auth the same
+                            for(int m = 0; m < auth2.length; m++){
+                                if(auth2[m].equals(conflictPath.get(0)) || auth2[m].equals(conflictPath.get(conflictPath.size()-1))){
+                                    break;
+                                }
+                                if(newAuth2.equals("")){
+                                    newAuth2 = auth2[m];
+                                }else{
+                                    newAuth2 = newAuth2 +","+ auth2[m];
+                                }
+                            }
+                            System.out.println("t1 "+ allData.get(i).getTrainID());
+                        }else if(t2IsOnSwitch1 || t2IsOnSwitch2){
+                            //give t2 preference
+                            newAuth2 = allData.get(j).getAuthority();//keep t2 auth the same
+                            for(int k = 0; k < auth1.length; k++){
+                                if(auth1[k].equals(conflictPath.get(0)) || auth1[k].equals(conflictPath.get(conflictPath.size()-1))){
+                                    break;
+                                }
+                                if(newAuth1.equals("")){
+                                    newAuth1 = auth1[k];
+                                }else{
+                                    newAuth1 = newAuth1 +","+ auth1[k];
+                                }
+                            }
+                            System.out.println("t2 "+ allData.get(j).getTrainID());
+                        }else{
+                            //neither train is on the switch
+                            //assign arbitrarily. in later updates we will get fall into a different case
+                            //arbitrarily give t1 preference
+                            newAuth1 = allData.get(i).getAuthority();//keep t1 auth the same
+                            for(int m = 0; m < auth2.length; m++){
+                                if(auth2[m].equals(conflictPath.get(0)) || auth2[m].equals(conflictPath.get(conflictPath.size()-1))){
+                                    break;
+                                }
+                                if(newAuth2.equals("")){
+                                    newAuth2 = auth2[m];
+                                }else{
+                                    newAuth2 = newAuth2 +","+ auth2[m];
+                                }
+                            }
+                            System.out.println("arb t1 "+ allData.get(i).getTrainID());
+                        }
+                        
+                    }else if(ep1IsSwitch || ep2IsSwitch){
+                        //give preference to train entering switch from root
+                        //if both enter from leaves, assign arbitrarily
+                        Edge switchEndpoint = endpoint1;
+                        if(ep2IsSwitch){
+                            switchEndpoint = endpoint2;
+                        }
+                        boolean giveTrain2Pref = true;
+                        String switchBId = ""+switchEndpoint.getId();
+                        StaticSwitch ss = t.getStaticBlock(Integer.parseInt(switchBId)).getStaticSwitch();
+                        String leaf1BId = ""+ss.getDefaultLeaf().getId();
+                        String leaf2BId = ""+ss.getActiveLeaf().getId();
+                        //look if train1 
+                        for(int k = 0; k < auth1.length; k++){
+                            if(auth1[k].equals(switchBId)){
+                                //give train1 pref
+                                giveTrain2Pref = false;
+                                break;
+                            }
+                            if(auth1[k].equals(leaf1BId) || auth1[k].equals(leaf2BId)){
+                                break;
+                            }
+                        }
+                        if(giveTrain2Pref){
+                            newAuth2 = allData.get(j).getAuthority();//keep t2 auth the same
+                            for(int k = 0; k < auth1.length; k++){
+                                if(auth1[k].equals(conflictPath.get(0)) || auth1[k].equals(conflictPath.get(conflictPath.size()-1))){
+                                    break;
+                                }
+                                if(newAuth1.equals("")){
+                                    newAuth1 = auth1[k];
+                                }else{
+                                    newAuth1 = newAuth1 +","+ auth1[k];
+                                }
+                            }
+                            System.out.println("root t2 "+ allData.get(j).getTrainID());
+                        }else{
+                            newAuth1 = allData.get(i).getAuthority();//keep t1 auth the same
+                            for(int m = 0; m < auth2.length; m++){
+                                if(auth2[m].equals(conflictPath.get(0)) || auth2[m].equals(conflictPath.get(conflictPath.size()-1))){
+                                    break;
+                                }
+                                if(newAuth2.equals("")){
+                                    newAuth2 = auth2[m];
+                                }else{
+                                    newAuth2 = newAuth2 +","+ auth2[m];
+                                }
+                            }
+                            System.out.println("root t1 "+ allData.get(i).getTrainID());
+                        }
+                    }else{
+                        //head on problem
+                        int midpoint = conflictPath.size()/2;
+                        String midpointId = conflictPath.get(midpoint);
+                        //remove midpoint and later in both lists
+                        for(int k = 0; k < auth1.length; k++){
+                            if(auth1[k].equals(midpointId)){
+                                break;
+                            }
+                            if(newAuth1.equals("")){
+                                newAuth1 = auth1[k];
+                            }else{
+                                newAuth1 = newAuth1 +","+ auth1[k];
+                            }
+                        }
+                        for(int m = 0; m < auth2.length; m++){
+                            if(auth2[m].equals(midpointId)){
+                                break;
+                            }
+                            if(newAuth2.equals("")){
+                                newAuth2 = auth2[m];
+                            }else{
+                                newAuth2 = newAuth2 +","+ auth2[m];
+                            }
+                        }
+                        System.out.println("split headon");
+                    }
+                    //call editTrain for both trains
+                    System.out.println("Train"+allData.get(i).getTrainID()+" newAuth: "+newAuth1);
+                    System.out.println("Train"+allData.get(j).getTrainID()+" newAuth: "+newAuth2);
+                    CTCModel.editTrain(allData.get(i).getTrainID(), allData.get(i).getSpeed(),
+                                        newAuth1, allData.get(i).getDestination());
+                    CTCModel.editTrain(allData.get(j).getTrainID(), allData.get(j).getSpeed(),
+                                        newAuth2, allData.get(j).getDestination());
+                }//end conflictPath size
+            }
+        }
+        System.out.println("------------------------ edit Train2 ------------------------");
+        CTCModel.editTrain();
+        //call function to check if switches have both leaves set
+        newCheckSwitchLeaf2Leaf();
     }
     
+    public static void newCheckSwitchLeaf2Leaf(){
+        //
+        HashMap<Edge,ArrayList<Integer>> authMap = new HashMap<Edge,ArrayList<Integer>>();
+        for(Edge aRoot : allRoots){
+            StaticSwitch ss = t.getStaticBlock(Integer.parseInt(aRoot.getId())).getStaticSwitch();
+            authMap.put(aRoot,new ArrayList<Integer>());
+            authMap.put(graph.getEdge(""+ss.getDefaultLeaf().getId()),new ArrayList<Integer>());
+            authMap.put(graph.getEdge(""+ss.getActiveLeaf().getId()),new ArrayList<Integer>());
+        }
+        ArrayList<CTCTrainData> allData = CTCModel.getAllTrainData();
+        String[] authStrArr;
+        ArrayList<String> authList;
+        for(CTCTrainData data : allData){
+            authStrArr = data.getAuthority().split(",");
+            authList = new ArrayList<String>();
+            authList.addAll(Arrays.asList(authStrArr));
+            for(String blockStr : authList){
+                //blockStr is a block that this train has auth on
+                Edge e = graph.getEdge(blockStr);
+                if(authMap.containsKey(e)){
+                    authMap.get(e).add(data.getTrainID());
+                }
+            }
+        }
+        //now find where both leaves have auth
+        for(Edge aRoot : allRoots){
+            StaticSwitch ss = t.getStaticBlock(Integer.parseInt(aRoot.getId())).getStaticSwitch();
+            Edge defaultEdge = graph.getEdge(""+ss.getDefaultLeaf().getId());
+            Edge activeEdge = graph.getEdge(""+ss.getActiveLeaf().getId());
+            if(authMap.get(defaultEdge).size() != 0 && authMap.get(activeEdge).size() != 0){
+                //this is a conflict
+                int trainAId = authMap.get(defaultEdge).get(0);
+                int trainBId = authMap.get(activeEdge).get(0);
+                int blockAId = CTCModel.getTrainDataTrainId(trainAId).getBlockID();
+                int blockBId = CTCModel.getTrainDataTrainId(trainBId).getBlockID();
+                System.out.println("tAid = "+trainAId+" tBid = "+trainBId);
+                CTCTrainData data;
+                if(aRoot.getId().equals(""+blockAId) || defaultEdge.getId().equals(""+blockAId) || activeEdge.getId().equals(""+blockAId)){
+                    //train A is on the switch and gets priority
+                    //don't mess with A auth
+                    System.out.println("case1");
+                    data = CTCModel.getTrainDataTrainId(trainBId);
+                    authStrArr = data.getAuthority().split(",");
+                    authList = new ArrayList<String>();
+                    authList.addAll(Arrays.asList(authStrArr));
+                    String lastAuth = authList.get(authList.size()-1);
+                    if((authList.contains(aRoot.getId()) && authList.contains(defaultEdge.getId())) || (authList.contains(aRoot.getId()) && authList.contains(activeEdge.getId())) ){
+                        //has auth on root and one leaf
+                        //remove 3 blocks of auth so it doesn't move onto switch
+                        if(authList.size() >= 3){
+                            authList.remove(authList.size()-1);
+                            authList.remove(authList.size()-1);
+                            authList.remove(authList.size()-1);
+                        }else{
+                            //cut all auth, too close to occupied switch
+                            authList.remove(authList.size()-1);
+                            authList.remove(authList.size()-1);
+                        }
+                        if(authList.size() != 0){
+                            lastAuth = authList.get(authList.size()-1);
+                        }else{
+                            lastAuth = null;
+                        }
+                    }else{
+                        if(lastAuth != null && (lastAuth.equals(aRoot.getId()) || lastAuth.equals(defaultEdge.getId()) || lastAuth.equals(activeEdge.getId()))){
+                            authList.remove(authList.size()-1);
+                        }
+                        //need this second check to see if A occupied a leaf but B had auth through root and other leaf
+                        if(authList.size() != 0){
+                            lastAuth = authList.get(authList.size()-1);
+                        }else{
+                            lastAuth = null;
+                        }
+                        if(lastAuth != null && (lastAuth.equals(aRoot.getId()) || lastAuth.equals(defaultEdge.getId()) || lastAuth.equals(activeEdge.getId()))){
+                            authList.remove(authList.size()-1);
+                        }
+                    }
+                }else if(aRoot.getId().equals(""+blockBId) || defaultEdge.getId().equals(""+blockBId) || activeEdge.getId().equals(""+blockBId)){
+                    //train B is on the switch and gets priority
+                    //don't mess with B auth
+                    System.out.println("case2");
+                    data = CTCModel.getTrainDataTrainId(trainAId);
+                    authStrArr = data.getAuthority().split(",");
+                    authList = new ArrayList<String>();
+                    authList.addAll(Arrays.asList(authStrArr));
+                    String lastAuth = authList.get(authList.size()-1);
+                    if((authList.contains(aRoot.getId()) && authList.contains(defaultEdge.getId())) || (authList.contains(aRoot.getId()) && authList.contains(activeEdge.getId())) ){
+                        //has auth on root and one leaf
+                        //remove 3 blocks of auth so it doesn't move onto switch
+                        if(authList.size() >= 3){
+                            authList.remove(authList.size()-1);
+                            authList.remove(authList.size()-1);
+                            authList.remove(authList.size()-1);
+                        }else{
+                            //cut all auth, too close to occupied switch
+                            authList.remove(authList.size()-1);
+                            authList.remove(authList.size()-1);
+                        }
+                        if(authList.size() != 0){
+                            lastAuth = authList.get(authList.size()-1);
+                        }else{
+                            lastAuth = null;
+                        }
+                    }else{
+                        if(lastAuth != null && (lastAuth.equals(aRoot.getId()) || lastAuth.equals(defaultEdge.getId()) || lastAuth.equals(activeEdge.getId()))){
+                            authList.remove(authList.size()-1);
+                        }
+                        //need this second check to see if A occupied a leaf but B had auth through root and other leaf
+                        if(authList.size() != 0){
+                            lastAuth = authList.get(authList.size()-1);
+                        }else{
+                            lastAuth = null;
+                        }
+                        if(lastAuth != null && (lastAuth.equals(aRoot.getId()) || lastAuth.equals(defaultEdge.getId()) || lastAuth.equals(activeEdge.getId()))){
+                            authList.remove(authList.size()-1);
+                        }
+                    }
+                }else if(authMap.get(aRoot).size() != 0 && authMap.get(aRoot).get(0) == trainAId){
+                    //train A has auth on the root and gets priority
+                    //don't mess with A auth
+                    System.out.println("case3");
+                    data = CTCModel.getTrainDataTrainId(trainBId);
+                    authStrArr = data.getAuthority().split(",");
+                    authList = new ArrayList<String>();
+                    authList.addAll(Arrays.asList(authStrArr));
+                    String lastAuth = authList.get(authList.size()-1);
+                    //System.out.println("lastAuth "+lastAuth+" Rootid "+aRoot.getId()+" 
+                    if(lastAuth.equals(aRoot.getId()) || lastAuth.equals(defaultEdge.getId()) || lastAuth.equals(activeEdge.getId())){
+                        //remove 2 blocks of auth so it doesn't move onto switch
+                        if(authList.size() >= 2){
+                            authList.remove(authList.size()-1);
+                            authList.remove(authList.size()-1);
+                        }else{
+                            authList.remove(authList.size()-1);
+                        }
+                    }
+                }else if(authMap.get(aRoot).size() != 0 && authMap.get(aRoot).get(0) == trainBId){
+                    //train B has auth on the root and gets priority
+                    //don't mess with B auth
+                    System.out.println("case4");
+                    data = CTCModel.getTrainDataTrainId(trainAId);
+                    System.out.println("input auth: "+data.getAuthority());
+                    authStrArr = data.getAuthority().split(",");
+                    authList = new ArrayList<String>();
+                    authList.addAll(Arrays.asList(authStrArr));
+                    String lastAuth = authList.get(authList.size()-1);
+                    if(lastAuth.equals(aRoot.getId()) || lastAuth.equals(defaultEdge.getId()) || lastAuth.equals(activeEdge.getId())){
+                        //remove 2 blocks of auth so it doesn't move onto switch
+                        if(authList.size() >= 2){
+                            authList.remove(authList.size()-1);
+                            authList.remove(authList.size()-1);
+                        }else{
+                            authList.remove(authList.size()-1);
+                        }
+                    }
+                }else{
+                    //each path ends on the leaf and neither is on the root, just give A pref
+                    //don't mess with A auth
+                    System.out.println("case5");
+                    data = CTCModel.getTrainDataTrainId(trainBId);
+                    authStrArr = data.getAuthority().split(",");
+                    authList = new ArrayList<String>();
+                    authList.addAll(Arrays.asList(authStrArr));
+                    String lastAuth = authList.get(authList.size()-1);
+                    if(lastAuth.equals(aRoot.getId()) || lastAuth.equals(defaultEdge.getId()) || lastAuth.equals(activeEdge.getId())){
+                        //remove 2 blocks of auth so it doesn't move onto switch
+                        if(authList.size() >= 2){
+                            authList.remove(authList.size()-1);
+                            authList.remove(authList.size()-1);
+                        }else{
+                            authList.remove(authList.size()-1);
+                        }
+                    }
+                }
+                //build auth string and call editTrain
+                String finalAuth = "";
+                for(String oneBlock : authList){
+                    if(finalAuth.equals("")){
+                        finalAuth = oneBlock;
+                    }else{
+                        finalAuth = finalAuth + "," + oneBlock;
+                    }
+                }
+                System.out.println("switch trimming auth : "+finalAuth);
+                CTCModel.editTrain(data.getTrainID(), data.getSpeed(), finalAuth, data.getDestination());
+            }
+        }
+    }
+    
+    //this function is garbage. it was way too convoluted so I just started again from scratch
+    /*
+    public static void checkSwitchLeaf2Leaf(){
+        int defaultAuth,activeAuth;
+        String newAuth;
+        for(Edge aRoot : allRoots){
+            StaticSwitch ss = t.getStaticBlock(Integer.parseInt(aRoot.getId())).getStaticSwitch();
+            Edge defaultEdge = graph.getEdge(""+ss.getDefaultLeaf().getId());
+            Edge activeEdge = graph.getEdge(""+ss.getActiveLeaf().getId());
+            defaultAuth = 0;
+            if(defaultEdge.getAttribute("track.occupied")){
+                defaultAuth = -1;
+            }
+            activeAuth = 0;
+            if(activeEdge.getAttribute("track.occupied")){
+                activeAuth = -1;
+            }
+            if(activeAuth == -1 && defaultAuth == -1){
+                //assume that not both of the leaves are occupied. that is an exception no matter what authority is used
+                return;
+            }
+            //also assume that no trains have authority on the same block. we already checked for this
+            ArrayList<CTCTrainData> allData = CTCModel.getAllTrainData();
+            String[] auth1,auth2;
+            for(int i = 0; i < allData.size(); i++){
+                auth1 = allData.get(i).getAuthority().split(",");
+                ArrayList<String> authList = new ArrayList<String>();
+                authList.addAll(Arrays.asList(auth1));
+                for(int j = 0; j < auth1.length; j++){
+                    if(auth1[j].equals(defaultEdge.getId()) || auth1[j].equals(activeEdge.getId())){
+                        //trainData index i has authority on a leaf
+                        if(auth1[j].equals(defaultEdge.getId()) && defaultAuth == 0){
+                            defaultAuth = i;
+                        }else if(auth1[j].equals(activeEdge.getId()) && activeAuth == 0){
+                            activeAuth = i;
+                        }
+                        if(defaultAuth != 0 && activeAuth != 0){
+                            //we have a conflict
+                            //try to resolve based on occupancy
+                            if(defaultAuth == -1){
+                                //find the train that is on default leaf. it gets priority
+                                throw new RuntimeException("asdf");
+                                //continue;
+                            }
+                            if(activeAuth == -1){
+                                //find the train that is on active leaf. it gets priority
+                                throw new RuntimeException("asdf2");
+                                //continue;
+                            }
+                            //resolve it based on who has auth on root (if neither then pick one)
+                            if(authList.contains(aRoot.getId())){
+                                //trainData index i has authority on the root and is given priority
+                                int indexToRemove = defaultAuth;
+                                if(indexToRemove == i){
+                                    indexToRemove = activeAuth;
+                                }
+                                newAuth = allData.get(indexToRemove).getAuthority();
+                                int lastComma = newAuth.lastIndexOf(',');
+                                newAuth = newAuth.substring(0,lastComma);
+                                CTCModel.editTrain(allData.get(indexToRemove).getTrainID(), allData.get(indexToRemove).getSpeed(), newAuth, allData.get(indexToRemove).getDestination());
+                                continue;
+                            }else{
+                                //give up authority on your block
+                                if(defaultAuth == i){
+                                    defaultAuth = 0;
+                                    //remove from your path
+                                }else{
+                                    activeAuth = 0;
+                                    //remove from your path
+                                }
+                                newAuth = allData.get(i).getAuthority();
+                                int lastComma = newAuth.lastIndexOf(',');
+                                newAuth = newAuth.substring(0,lastComma);
+                                CTCModel.editTrain(allData.get(i).getTrainID(), allData.get(i).getSpeed(), newAuth, allData.get(i).getDestination());
+                                continue;
+                            }
+                            //don't forget to set default/active Auth back to 0 and call edit train
+                        }
+                        
+                        
+                    }
+                }
+            }
+        }
+    }*/
     
     //these functions have to be public void so the ViewerPipe can find them
     public void viewClosed(String id) {
@@ -2305,7 +2989,9 @@ public class CTCGUI implements ViewerListener{
         }
         //if automatic mode, run routing
         if(isAutomatic){
+            System.out.println("starting routing");
             route();
+            System.out.println("done routing");
         }
     }
     public static Graph getGraph(){
