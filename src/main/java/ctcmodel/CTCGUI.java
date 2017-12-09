@@ -2388,6 +2388,31 @@ public class CTCGUI implements ViewerListener{
                                 break;
                             }
                         }
+                    }else{
+                        //the only auth given right now is the block the train is on
+                        //check that the next block is not occupied
+                        if(oneData.getLastVisited() == -1){//special exception if still on starting block
+                            start = e1.getNode0();
+                            if(start == graph.getNode("Yard")){
+                                start = e1.getNode1();
+                            }
+                        }else{
+                            Edge lastVisited = graph.getEdge(""+oneData.getLastVisited());
+                            start = e1.getNode0();
+                            if(start == lastVisited.getNode0() || start == lastVisited.getNode1()){
+                                start = e1.getNode1();
+                            }
+                        }
+                        Iterator edgItr = start.getEdgeIterator();
+                        while(edgItr.hasNext()){
+                            Edge potentialNext = (Edge) edgItr.next();
+                            if(potentialNext != e1){
+                                if(potentialNext.getAttribute("track.occupied")){
+                                    newAuth = "";
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
                 //maybe just check for ending block not causing invalid switch stuff, idk
