@@ -24,13 +24,13 @@ import shared.BlockStatus;
 
 
 public interface TrackModelInterface {
-   // For the train model
-   public boolean getTrainAuthority(int trainId);
-   public double getTrainSpeed(int trainId);
-   public int getTrainBeacon(int trainId);
-   public int getTrainPassengers(int trainId);
-   public boolean isIcyTrack(int trainId);
-   public double getGrade(int trainId);
+    // For the train model
+    public boolean getTrainAuthority(int trainId);
+    public double getTrainSpeed(int trainId);
+    public int getTrainBeacon(int trainId);
+    public int getTrainPassengers(int trainId);
+    public boolean isIcyTrack(int trainId);
+    public double getGrade(int trainId);
 
    // For the wayside controller
    public boolean isOccupied(int blockId);
@@ -45,7 +45,7 @@ public interface TrackModelInterface {
    public boolean setAuthority(int blockId, boolean authority);
    public double setSpeed(int blockId, double speed);
 
-   // for everybody
-   public StaticSwitch getStaticSwitch(int switchID);
-   public StaticBlock getStaticBlock(int blockId);
+    // for everybody
+    public StaticSwitch getStaticSwitch(int switchID);
+    public StaticBlock getStaticBlock(int blockId);
 }

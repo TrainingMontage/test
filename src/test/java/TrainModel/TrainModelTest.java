@@ -64,7 +64,7 @@ public class TrainModelTest{
 
     @Test
     public void testGetLength(){
-        assertEquals(testTrainObject.getLength(), 32.2, delta);
+        assertEquals(testTrainObject.getLength(), 64.4, delta);
     }
 
     @Test

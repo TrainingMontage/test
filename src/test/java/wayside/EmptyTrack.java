@@ -18,34 +18,30 @@ package wayside;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 import shared.Suggestion;
-import wayside.WaysideController;
 import trackmodel.TrackModel;
-import trackmodel.StaticTrack;
+import wayside.WaysideController;
 
 public class EmptyTrack {
-    
-    final boolean[] OCC = new boolean[] {
-        false, false, true, false,
-        false, false, false, false, false
-    };
 
-    @BeforeClass
-    public static void init() {
-        TrackModel.initWithTestData();
-        WaysideController.initTest();
+    WCTrackModel tm;
+    Decider decider;
+    WCStaticTrack st;
+    final int[] speed = {0,1,2,3,4,5,6,7,8};
+
+    public EmptyTrack() {
+        st = new WCStaticTrack(false);
+        tm = new WCTrackModel(st.trackLen());
+        tm.occupy(2, true);
+        decider = new Decider(tm, st);
+        WaysideController.init(tm, st);
     }
 
     @Test
-    public void trackModelSwitchPositions() {
-        StaticTrack st = TrackModel.getTrackModel().getStaticTrack();
-        Assert.assertEquals(2, st.getStaticSwitch(1).getRoot().getId());
-    }
-
-    @Test
-    public void notOccupied() {
-        Assert.assertFalse(WaysideController.isOccupied(2));
+    public void twoOccupied() {
+        Assert.assertTrue(WaysideController.isOccupied(2));
     }
 
     @Test
@@ -59,9 +55,11 @@ public class EmptyTrack {
             false, true, true, true,
             false, false, false, false, false
         };
-        boolean[] switchPos = WaysideController.checkAndSetSwitches(authority);
-        boolean[] expected = new boolean[WaysideController.TRACK_LEN];
-        Assert.assertArrayEquals(expected, switchPos);
+        assertTrue(decider.suggest(authority, speed));
+        boolean[] expected = new boolean[st.trackLen()];
+        for (int i = 0; i < st.trackLen(); i++) {
+            Assert.assertEquals(expected[i], decider.getSwitch(i));
+        }
     }
 
     @Test
@@ -70,9 +68,16 @@ public class EmptyTrack {
             false, false, false, false,
             true, true, true, false, false
         };
-        boolean[] switchPos = WaysideController.checkAndSetSwitches(authority);
-        boolean[] expected = new boolean[WaysideController.TRACK_LEN];
-        Assert.assertArrayEquals(expected, switchPos);
+        boolean[] expected = new boolean[st.trackLen()];
+        expected[2] = false;
+        assertTrue(decider.suggest(authority, speed));
+        for (int i = 0; i < st.trackLen(); i++) {
+            Assert.assertEquals(expected[i], decider.getSwitch(i));
+        }
+        assertFalse(decider.getAuthority(3));
+        assertTrue(decider.getAuthority(4));
+        assertTrue(decider.getAuthority(6));
+        assertFalse(decider.getAuthority(7));
     }
 
     @Test
@@ -81,10 +86,12 @@ public class EmptyTrack {
             false, true, true, false,
             false, false, false, false, true
         };
-        boolean[] expected = new boolean[WaysideController.TRACK_LEN];
+        boolean[] expected = new boolean[st.trackLen()];
         expected[2] = true;
-        boolean[] switchPos = WaysideController.checkAndSetSwitches(authority);
-        Assert.assertArrayEquals(expected, switchPos);
+        assertTrue(decider.suggest(authority, speed));
+        for (int i = 0; i < st.trackLen(); i++) {
+            Assert.assertEquals(expected[i], decider.getSwitch(i));
+        }
     }
 
     @Test
@@ -93,12 +100,7 @@ public class EmptyTrack {
             false, false, false, true,
             false, false, false, false, true
         };
-        try {
-            WaysideController.checkAndSetSwitches(authority);
-            Assert.fail("Did not find unsafe authority unsafe around switch 1");
-        } catch (Exception e) {
-            Assert.assertTrue(true);
-        }
+        Assert.assertFalse(decider.suggest(authority, speed));
     }
 
     @Test
@@ -107,8 +109,7 @@ public class EmptyTrack {
             false, true, true, false,
             false, false, false, false, true
         };
-        WaysideController.checkStraightLine(authority, OCC);
-        Assert.assertTrue(true);
+        Assert.assertTrue(decider.suggest(authority, speed));
     }
 
     @Test
@@ -117,12 +118,7 @@ public class EmptyTrack {
             false, false, true, false,
             true, true, false, true, true
         };
-        try {
-            WaysideController.checkStraightLine(authority, OCC);
-            Assert.assertTrue(true);
-        } catch (Exception e) {
-            Assert.fail(e.getMessage());
-        }
+        Assert.assertTrue(decider.suggest(authority, speed));
     }
 
     @Test
@@ -132,11 +128,6 @@ public class EmptyTrack {
             false, false, true, true,
             true, true, true, true, true
         };
-        try {
-            WaysideController.checkStraightLine(authority, OCC);
-            Assert.fail("Failed to find unsafe self loop unsafe.");
-        } catch (Exception e) {
-            Assert.assertTrue(true);
-        }
+        Assert.assertFalse(decider.suggest(authority, speed));
     }
 }
