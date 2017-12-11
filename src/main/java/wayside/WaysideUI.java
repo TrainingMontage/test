@@ -64,7 +64,7 @@ public class WaysideUI extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        final int numBlocks = 152;
+        final int numBlocks = 230;
         Object[][] data = new Object[numBlocks][7];
         for (int i = 0; i < numBlocks; i++) {
             data[i][0] = i+1;

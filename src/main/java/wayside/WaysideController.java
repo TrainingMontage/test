@@ -24,6 +24,7 @@ import trackmodel.TrackModel;
 import trackmodel.TrackModelInterface;
 
 import java.util.List;
+import java.io.File;
 
 /**
  * The public interface of all wayside controllers.
@@ -58,7 +59,11 @@ public class WaysideController {
     public static void init() {
         gui = new WaysideUI();
         tm = TrackModel.getTrackModel();
-        st = new WCStaticTrack(true);
+        try {
+            st = new WCStaticTrack(new File(WCStaticTrack.WHOLE_TRACK));
+        } catch (Exception ioe) {
+            throw new RuntimeException("failed to read main file: " + WCStaticTrack.WHOLE_TRACK);
+        }
         decider = new Decider(tm, st);
     }
 
