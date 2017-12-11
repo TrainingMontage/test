@@ -90,21 +90,24 @@ public class MapTracker {
         {
             if(onSwitch)
             {
-                distToStop += switchDist;
+                System.out.println("MAPTRACKER SWITCHDIST: " + switchDist);
+                distToStop += Math.abs(switchDist);
             }
             else
             {
 //                distToStop += theTrack.getStaticBlock(currentBlock.getNextId()).getLength();
-                distToStop += nextBlock.getLength();
+                System.out.println("MAPTRACKER NEXTBLOCK: " + nextBlock.getLength());
+                distToStop += Math.abs(nextBlock.getLength());
             }
         }
 //        updateDistTraveled();
+        System.out.println("MAPTRACKER SWITCHDIST: " + distanceTraveled);
         distToStop -= distanceTraveled;
         return distToStop;
     }
     
     /**
-     * Checks to see if we've changed blocks, resets distanceTraveled.
+     * Checks to see if we've changed blocks.
      * 
      * @return returns true if we've changed block, false if not.
      */
