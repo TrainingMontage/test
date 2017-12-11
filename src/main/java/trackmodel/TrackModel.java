@@ -839,7 +839,7 @@ public class TrackModel implements TrackModelInterface {
     public boolean initializeTrain(int trainId, int starting_blockId) {
         String sql_load = "INSERT INTO trains " +
                           "(id,curr_block,position,direction,reported_change,reported_passengers,loaded_passengers) " +
-                          "VALUES (?, ?, ?, 1, 0, 0, 0);";
+                          "VALUES (?, ?, ?, 1, 1, 0, 0);";
 
         try (PreparedStatement stmt = this.conn.prepareStatement(sql_load)) {
 
