@@ -18,6 +18,11 @@ package CTCModel;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.HashMap;
+import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.File;
+import javax.swing.JOptionPane;
 import shared.BlockStatus;
 import shared.Suggestion;
 import shared.Environment;
@@ -35,8 +40,16 @@ public class CTCModel{
     private static ArrayList<Suggestion> suggestions;
     private static ArrayList<CTCTrainData> trainData;
     private static int last_clock;
+    private static int current_time;
     private static StaticTrack track;
     private static ArrayList<Integer> bIds;
+    private static HashMap<String,Integer> sch2TIdMap;
+    private static HashMap<String,Integer> schDestNum;
+    private static HashMap<String,String> schLines;
+    private static HashMap<String,ArrayList<Integer>> schTimes;
+    private static HashMap<String,ArrayList<Integer>> schDests;
+    private static File schFile;
+    private static String fullFile;
     
     //Train-To-Add (TTA) data (to ensure trains aren't added in the middle of an update)
     private static ArrayList<Integer> TTAstartingBlock;
@@ -63,6 +76,13 @@ public class CTCModel{
         TTEspeed = new ArrayList<Double>();
         TTEauthority = new ArrayList<String>();
         TTEdestBlock = new ArrayList<Integer>();
+        sch2TIdMap = new HashMap<String,Integer>();
+        schDestNum = new HashMap<String,Integer>();
+        schLines = new HashMap<String,String>();
+        schTimes = new HashMap<String,ArrayList<Integer>>();
+        schDests = new HashMap<String,ArrayList<Integer>>();
+        schFile = null;
+        fullFile = null;
     }
     
     public static void init(){
@@ -213,8 +233,170 @@ public class CTCModel{
     public static ArrayList<CTCTrainData> getAllTrainData(){
         return trainData;
     }
+    public static void readSchedule(File file){
+        schFile = file;
+    }
+    public static void readSchedule(){
+        //each line is expected to be the following:
+        //    <unique train identifier>,<line ("RED" or "GREEN")>,<departure time (minutes after 8:00)>,<destination block id>
+        if(schFile != null){
+            fullFile = "";
+            sch2TIdMap.clear();
+            schDestNum.clear();
+            schTimes.clear();
+            schDests.clear();
+            schLines.clear();
+            try{
+                BufferedReader br = new BufferedReader(new FileReader(schFile));
+                String line;
+                int linenum = 1;
+                int blockId;
+                while ( (line = br.readLine()) != null) {
+                    fullFile = fullFile+line+"\n";
+                    String[] values = line.split(",");
+                    if(values.length != 4){
+                        JOptionPane.showMessageDialog(null, "Wrong number of fields in schedule file on line "+linenum, "Error reading schedule", JOptionPane.ERROR_MESSAGE);
+                        sch2TIdMap.clear();
+                        schDestNum.clear();
+                        schTimes.clear();
+                        schDests.clear();
+                        schLines.clear();
+                        br.close();
+                        schFile = null;
+                        return;
+                        //throw new Exception("Wrong number of fields in schedule file on line "+linenum);
+                    }
+                    for(int i = 0; i < values.length; i++){
+                        values[i] = values[i].trim();
+                    }
+                    if(!sch2TIdMap.containsKey(values[0])){
+                        sch2TIdMap.put(values[0],null);
+                        schTimes.put(values[0],new ArrayList<Integer>());
+                        schDests.put(values[0],new ArrayList<Integer>());
+                        schDestNum.put(values[0],-1);
+                        if(!values[1].equals("GREEN") && !values[1].equals("RED")){
+                            JOptionPane.showMessageDialog(null, "Invalid line color in schedule file on line "+linenum, "Error reading schedule", JOptionPane.ERROR_MESSAGE);
+                            sch2TIdMap.clear();
+                            schDestNum.clear();
+                            schTimes.clear();
+                            schDests.clear();
+                            schLines.clear();
+                            br.close();
+                            schFile = null;
+                            return;
+                            //throw new Exception("Invalid line color in schedule file on line "+linenum);
+                        }
+                        schLines.put(values[0],values[1]);
+                    }
+                    schTimes.get(values[0]).add(Integer.parseInt(values[2]));
+                    blockId = Integer.parseInt(values[3]);
+                    if(!track.getStaticBlock(blockId).getLine().equals(schLines.get(values[0]))){
+                        JOptionPane.showMessageDialog(null, "Block Id on line "+linenum+" does not exist on line "+schLines.get(values[0]), "Error reading schedule", JOptionPane.ERROR_MESSAGE);
+                        sch2TIdMap.clear();
+                        schDestNum.clear();
+                        schTimes.clear();
+                        schDests.clear();
+                        schLines.clear();
+                        br.close();
+                        schFile = null;
+                        return;
+                        //throw new Exception("Block Id on line "+linenum+" does not exist on line "+schLines.get(values[0]));
+                    }
+                    schDests.get(values[0]).add(blockId);
+                    
+                    linenum++;
+                }
+                CTCGUI.setScheduleText(fullFile);
+                //System.out.println("after read");
+                //System.out.println(fullFile);
+                br.close();
+            }catch(Exception e){
+                throw new RuntimeException(e);
+            }
+            schFile = null;
+        }
+    }
+    private static void scheduleTrains(){
+        //check if the any train wants to depart at this time
+        //for each found
+        //check that it is at its prev destination
+        //if yes, change dest
+        //if no, do nothing
+        
+        //check index = schDestNum+1
+        
+        int stopNumber;
+        boolean createdTrainThisUpdateGreen = false;//ensure you don't spawn a train twice on the same block
+        boolean createdTrainThisUpdateRed = false;
+        boolean trainSpawnedThisUpdate = false;
+        //for each scheduled train
+        for(String schId : sch2TIdMap.keySet()){
+            CTCTrainData data;
+            if(sch2TIdMap.get(schId) == null){
+                data = null;
+            }else{
+                data = getTrainDataTrainId(sch2TIdMap.get(schId));
+            }
+            //check if this train wants to depart
+            stopNumber = schDestNum.get(schId)+1;
+            if(stopNumber >= schTimes.get(schId).size()){
+                //the current destination is the last scheduled stop
+                continue;
+            }
+            if(schTimes.get(schId).get(stopNumber)*60 < current_time){
+                //if data==null then this train hasn't been created
+                if(data == null){
+                    //if block is unoccupied
+                    int startBlock;
+                    if(schLines.get(schId).equals("GREEN")){
+                        startBlock = 152;
+                        trainSpawnedThisUpdate = createdTrainThisUpdateGreen;
+                    }else if(schLines.get(schId).equals("RED")){
+                        startBlock = 153;
+                        trainSpawnedThisUpdate = createdTrainThisUpdateRed;
+                    }else{
+                        startBlock = -1;
+                    }
+                    Edge e = CTCGUI.getGraph().getEdge(""+startBlock);
+                    if(!((Boolean)e.getAttribute("track.occupied")) && !trainSpawnedThisUpdate){
+                        if(startBlock == 152){
+                            createdTrainThisUpdateGreen = true;
+                        }else if(startBlock == 153){
+                            createdTrainThisUpdateRed = true;
+                        }
+                        //update destNum
+                        schDestNum.put(schId,schDestNum.get(schId)+1);
+                        //call createTrain
+                        //int tId = createTrain(startBlock, 0, "", schDests.get(schId).get(schDestNum.get(schId)));
+                        int trainID = TrainTracker.getTrainTracker().createTrain(startBlock);
+                        trainData.add(new CTCTrainData(trainID, startBlock, 0, "", startBlock, schDests.get(schId).get(schDestNum.get(schId))));//let routing fill in speed and auth
+                        addSuggestion(trainID, 0, "");
+                        sch2TIdMap.put(schId,trainID);
+                    }
+                }else{
+                    //check if this train is at its destination
+                    if(data.getBlockID() == data.getDestination()){
+                        //good to go to next stop
+                        //update destNum
+                        schDestNum.put(schId,schDestNum.get(schId)+1);
+                        //call editTrain
+                        editTrain(data.getTrainID(), data.getSpeed(), data.getAuthority(), schDests.get(schId).get(schDestNum.get(schId)));
+                    }
+                }
+            }
+        }
+    }
     public static void update(){
-        int current_time = Environment.clock;
+        current_time = Environment.clock;
+        
+        if(fullFile != null){
+            CTCGUI.setScheduleText(fullFile);
+        }
+        
+        //if there is a new schedule file, read it
+        readSchedule();
+        scheduleTrains();
+        
         //add a train if the user entered one during the last update
         addTrain();
         //edit a train if the user changed one during the last update
