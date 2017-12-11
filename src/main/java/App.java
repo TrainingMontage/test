@@ -80,7 +80,7 @@ public class App {
         WaysideController.init();
         CTCModel.init();
         TrainTracker.getTrainTracker();
-        TrainController.initUI();
+        // TrainController.initUI();
 
         //open the main gui
         run();
@@ -90,7 +90,7 @@ public class App {
             long startTime = System.nanoTime();
             CTCModel.update();
             Environment.clock += speedMultiplier;
-            System.err.println("All updates took: " + ((System.nanoTime() - startTime)/1000000) + "ms");
+            // System.err.println("All updates took: " + ((System.nanoTime() - startTime)/1000000) + "ms");
 
             Thread.sleep(Environment.sleepTime);
         }

@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.sql.SQLException;
 import shared.*;
 import trainmodel.Train;
-//import trainmodel.trainmodel.Train;
 import trackmodel.TrackModel;
 import trackmodel.StaticBlock;
 import trackmodel.StaticSwitch;
@@ -33,15 +32,13 @@ public class TrainController implements TrainControllerInterface {
     static boolean UIexists = false;
     static int numTrains = 0;
     static TrainController[] allTrainControllers = new TrainController[100];
-    static StaticTrack theTrack;
+//    static StaticTrack theTrack;
+    static protected MapTracker theMap;
     
     protected Train theTrain;
-    protected StaticBlock currentBlock;
-    protected StaticBlock lastBlock;
-    protected StaticBlock nextBlock;
-    protected boolean startblock = true; // At start, this is the first block you are on.
+
     protected boolean onSwitch = false;
-    private double t; // delta time, in seconds
+    protected double t; // delta time, in seconds
     private double lastTime;
     // ultimate gain
     private double ku;
@@ -74,7 +71,7 @@ public class TrainController implements TrainControllerInterface {
     protected boolean coast = false;
     protected String station = "";
     private int ID;
-    private int index;
+//    private int index;
     private boolean t_override = false;
     
     public static void initUI() {
@@ -83,140 +80,13 @@ public class TrainController implements TrainControllerInterface {
     }
     
     /**
-     * Main simply tests basic functionality.
+     * Main does nothing.
      * 
      * @param args the command line arguments
-     * @throws InterruptedException if the thread.sleep fails.
      */
-    public static void main(String[] args) throws InterruptedException {        
-        System.err.println("Running Unit Test");
-        
-        System.err.println("Testing ultimate gains.");
-//        double power;
-//        Train testTrain = new Train();
-//        TrainController TC = new TrainController(testTrain, 1);
-//        TrainControllerUI UI = new TrainControllerUI();
-//        UI.initialize(TC);
-//        UI.updateLights();
-//        UI.setVisible(true);
-        
-//        runTest(4);
-        System.err.println();
-////        for(int j = 1; j < 11; j++) {
-////            TC.setKu((double)j);
-//            TC.setKu(250);
-//            System.err.println("Ku is " + TC.ku);
-//            System.err.println("Starting Speed: " + testTrain.getCurrentVelocity());
-//            System.err.println("Suggested Speed: " + testTrain.getSuggestedSpeed());
-//            System.err.println("Authority: " + testTrain.getAuthority());
-//            for(int i = 0; i < 75; i++) {
-//                power = TC.getPower();
-//                System.err.println("Power Set to: " + power + "W");
-//                testTrain.setPower(power);
-//                System.err.println("Velocity now: " + testTrain.getCurrentVelocity());
-//                System.err.println();
-//            }
-//            System.err.println("-------- REVERSE ---------");
-//            testTrain.reverse();
-//            System.err.println("Starting Speed: " + testTrain.getCurrentVelocity());
-//            System.err.println("Suggested Speed: " + testTrain.getSuggestedSpeed());
-//            System.err.println("Authority: " + testTrain.getAuthority());
-//            for(int i = 0; i < 75; i++) {
-//                power = TC.getPower();
-//                System.err.println("Power Set to: " + power + "W");
-//                testTrain.setPower(power);
-//                System.err.println("Velocity now: " + testTrain.getCurrentVelocity());
-//                System.err.println();
-//            }
-////            System.err.println("-------- END LOOP " + j + " ---------");
-//            testTrain.reset();
-//        }
-        
+    public static void main(String[] args) {        
         
     }
-    
-    /**
-     * Runs a unit test on the system.  The train should start at 0, get to
-     * speed, stop at a station, and start the process over, until told to stop.
-     * 
-     * Will time out after 360 iterations (five minutes)
-     * 
-     * Minute one: get to speed
-     * Minute two: slow to station
-     * Thirty seconds: wait at station
-     * 
-//     * @param period is the number of iterations per second
-//     * @throws InterruptedException if the thread.sleep fails.
-     */
-//    public static void runTest(int period) throws InterruptedException {
-//        int[] stations = {1,2,3,4};
-//        int station = 0;
-//        int timer = 1; // counts
-//        int iterations = 0;
-//        boolean testing = true;
-//        double power;
-//        Train testTrain = new Train(0);
-//        TrainController TC = new TrainController(testTrain, 1);
-//        TrainControllerUI UI = new TrainControllerUI();
-//        UI.initialize(TC);
-////        UI.setVisible(true);
-////        testTrain.setSuggested(20);
-//        TC.setKu(500);
-//        while(testing) {
-//            UI.updateAll();
-////            UI.updateDoors();
-//            // Get up to speed
-//            System.err.println("SPEED:\t"+testTrain.getCurrentVelocity());
-//            power = TC.getPower();
-//            System.err.println("Power:\t" + power);
-//            testTrain.setPower(power);
-//            
-//            // For when the station is being shown
-//            if(timer - 30 == 0)
-//                TC.displayStation("");
-//            
-//            // Start braking
-//            if(timer - 90 == 0)
-//            {
-//                testTrain.setSuggested(1);
-//                TC.displayStation("APPROACHING STATION " + stations[station]);
-//                System.err.println("APPROACHING STATION " + stations[station]);
-//                UI.updateStation("APPROACHING STATION " + stations[station]);
-//            }
-//            
-//            // Just stop
-//            if(timer - 120 == 0)
-//            {
-//                TC.displayStation("STATION " + stations[station]);
-//                System.err.println("STATION " + stations[station]);
-//                TC.setDoors(true, true);
-//                TC.justStop();
-//                station++;
-//            }
-//            
-//            // Wait
-//            if(timer - 180 == 0)
-//            {
-//                TC.displayStation("LEAVING STATION");
-//                System.err.println("LEAVING STATION");
-//                TC.setLights(!TC.lightsShouldBeOn);
-//                TC.setDoors(false, false);
-//                timer = 0;
-//                iterations++;
-//                TC.youCanGoNow();
-////                testTrain.setSuggested(20);
-//                testTrain.randSuggested();
-//            }
-//            Thread.sleep(1000/period);
-//            timer++;
-//            
-//            if(iterations >= 3)
-//                testing = false;
-//                
-//        }
-//        System.err.println("TEST COMPLETE");
-//        
-//    }
     
     public TrainController() {
 //        theTrain = new Train();
@@ -232,12 +102,7 @@ public class TrainController implements TrainControllerInterface {
         Pcmd = 0;
         ID = 0;
         addTrainController(this);
-        theTrack = TrackModel.getTrackModel().getStaticTrack();
-//        try {
-//            theTrack = TrackModel.getTrackModel().getStaticTrack();
-//        } catch(SQLException | ClassNotFoundException e) {
-//            System.err.println("You done effed up.");
-//        }
+        theMap = new MapTracker(theTrain);
         UI = new TrainControllerUI();
         UI.initialize(this);
         UIexists = true;
@@ -257,7 +122,30 @@ public class TrainController implements TrainControllerInterface {
         Pcmd = 0;
         ID = trainID;
         addTrainController(this);
-        theTrack = TrackModel.getTrackModel().getStaticTrack();
+        theMap = new MapTracker(theTrain);
+        
+        UI = new TrainControllerUI();
+        UI.initialize(this);
+        UIexists = true;
+    }
+    
+    public TrainController(Train newTrain, int trackID) {
+        theTrain = newTrain;
+        lastTime = Environment.clock;// seconds
+        System.err.println("lastTime = " + lastTime);
+        // ultimate gain
+        ku = 500;
+    
+        // Set initial last values to 0
+        lastE = 0;
+        lastU = 0;
+        // Set initial power to 0
+        Pcmd = 0;
+//        ID = trainID;
+        ID = newTrain.getTrainId();
+        addTrainController(this);
+        theMap = new MapTracker(theTrain, trackID);
+//        theTrack = TrackModel.getTrackModel().getStaticTrack();
 //        try {
 //            theTrack = TrackModel.getTrackModel().getStaticTrack();
 //        } catch(SQLException | ClassNotFoundException e) {
@@ -268,12 +156,12 @@ public class TrainController implements TrainControllerInterface {
         UIexists = true;
     }
     
-    public TrainController(Train newTrain, int trainID) {
+    public TrainController(boolean showUI, Train newTrain, int trainID) {
         theTrain = newTrain;
         lastTime = Environment.clock;// seconds
         // ultimate gain
         ku = 0;
-    
+
         // Set initial last values to 0
         lastE = 0;
         lastU = 0;
@@ -281,38 +169,7 @@ public class TrainController implements TrainControllerInterface {
         Pcmd = 0;
         ID = trainID;
         addTrainController(this);
-        currentBlock = null;
-        theTrack = TrackModel.getTrackModel().getStaticTrack();
-//        try {
-//            theTrack = TrackModel.getTrackModel().getStaticTrack();
-//        } catch(SQLException | ClassNotFoundException e) {
-//            System.err.println("You done effed up.");
-//        }
-        UI = new TrainControllerUI();
-        UI.initialize(this);
-        UIexists = true;
-    }
-    
-        public TrainController(boolean showUI, Train newTrain, int trainID) {
-        theTrain = newTrain;
-        lastTime = Environment.clock;// seconds
-        // ultimate gain
-        ku = 0;
-    
-        // Set initial last values to 0
-        lastE = 0;
-        lastU = 0;
-        // Set initial power to 0
-        Pcmd = 0;
-        ID = trainID;
-        addTrainController(this);
-        currentBlock = null;
-        theTrack = TrackModel.getTrackModel().getStaticTrack();
-//        try {
-//            theTrack = TrackModel.getTrackModel().getStaticTrack();
-//        } catch(SQLException | ClassNotFoundException e) {
-//            System.err.println("You done effed up.");
-//        }
+        theMap = new MapTracker(theTrain);
         if(showUI)
         {
             UI = new TrainControllerUI();
@@ -321,31 +178,6 @@ public class TrainController implements TrainControllerInterface {
         }
         else
             UIexists = false;
-    }
-    
-    public TrainController(Train newTrain, int trainID, StaticBlock startBlock) {
-    theTrain = newTrain;
-    lastTime = Environment.clock;// seconds
-    // ultimate gain
-    ku = 0;
-
-    // Set initial last values to 0
-    lastE = 0;
-    lastU = 0;
-    // Set initial power to 0
-    Pcmd = 0;
-    ID = trainID;
-    addTrainController(this);
-    currentBlock = startBlock;
-    theTrack = TrackModel.getTrackModel().getStaticTrack();
-//    try {
-//        theTrack = TrackModel.getTrackModel().getStaticTrack();
-//    } catch(SQLException | ClassNotFoundException e) {
-//        System.err.println("You done effed up.");
-//    }
-    UI = new TrainControllerUI();
-    UI.initialize(this);
-    UIexists = true;
     }
     
     public TrainController(Train newTrain, int trainID, StaticTrack track, StaticBlock startBlock) {
@@ -361,59 +193,35 @@ public class TrainController implements TrainControllerInterface {
         Pcmd = 0;
         ID = trainID;
         addTrainController(this);
-        theTrack = track;
-        currentBlock = startBlock;
+        theMap = new MapTracker(track, startBlock, theTrain);
         UI = new TrainControllerUI();
         UI.initialize(this);
         UIexists = true;
     }
     
-//    public TrainController(boolean test, int trainID) {
-//        if(test)
-//        {
-//            theTrain = new Train(true);
-//        }
-//        else
-//        {
-//            theTrain = new Train();
-//        }
-//        lastTime = Environment.clock;// seconds
-//        // ultimate gain
-//        if(test)
-//            ku = 500;
-//        else
-//            ku = 0;
-//    
-//        // Set initial last values to 0
-//        lastE = 0;
-//        lastU = 0;
-//        // Set initial power to 0
-//        Pcmd = 0;
-//        ID = trainID;
-//        addTrainController(this);
-//        if(!test)
-//        {
-//            UI = new TrainControllerUI();
-//            UI.initialize(this);
-//            UIexists = true;
-//        }
-//    }
+    public static void show() {
+        if(numTrains != 0)
+            allTrainControllers[0].UI.setVisible(true);
+    }
     
     protected void setTrack(StaticTrack newTrack) {
-        theTrack = newTrack;
+        theMap.setTrack(newTrack);
     }
     
     protected void doAllUpdates() {
+        System.out.println("Doing Updates");
         // Update Time
         updateTime();
-        // Check to see if we've changed blocks
-        if(blockChange())
+        // Update map
+        if(theMap.blockChange())
         {
-            // If so, figure out the next block we move to.
-            updateNextBlock();
+            distanceTraveled = 0;
+            // Check for a beacon (overrides next block if it signifies a switch)
+            if(!checkBeacon()) // If we aren't on a switch, update next block normally
+            {
+                theMap.getNextBlock();
+            }
         }
-        // Check for a beacon (overrides next block if it signifies a switch)
-        checkBeacon();
         
         // If a station is upcoming, update that information
         updateStation();
@@ -424,6 +232,7 @@ public class TrainController implements TrainControllerInterface {
             UI.updateAll();
     }
     
+    /*
     protected void updateNextBlock() {
         if(!onSwitch)
         {
@@ -441,13 +250,15 @@ public class TrainController implements TrainControllerInterface {
             }
         }
     }
+    */
     
-    /**
-     * Computes the remaining distance the train can go before reaching the
-     * end of its authority.
-     * 
-     * @return the distance to the end of authority
-     */
+//    /**
+//     * Computes the remaining distance the train can go before reaching the
+//     * end of its authority.
+//     * 
+//     * @return the distance to the end of authority
+//     */
+    /*
     protected double distToAuthEnd() { 
         // I need the length of the block I'm on, my estimated distance traveled on
         // that block, whether or not I have authority for the next block, and the
@@ -460,6 +271,7 @@ public class TrainController implements TrainControllerInterface {
         distToStop -= distanceTraveled;
         return distToStop;
     }
+    */
     
     protected void updateDistTraveled() {
         // get the velocity and the time elapsed
@@ -480,6 +292,7 @@ public class TrainController implements TrainControllerInterface {
      * 
      * @return returns true if we've changed block, false if not.
      */
+    /*
     protected boolean blockChange() {
         if(theTrain.blockChange())
         {
@@ -493,21 +306,22 @@ public class TrainController implements TrainControllerInterface {
         }
         return false;
     }
+    */
     
-    protected void checkBeacon() {
+    protected boolean checkBeacon() {
         TrainBeacon beacon;
         try{
             int beaconID = theTrain.getBeacon();
-//            if(beaconID == -1) // no beacon
-//                return;
-//            else
+            if(beaconID == -1) // no beacon
+                return false;
+            else
             if(beaconID != -1)
             {
                beacon = new TrainBeacon(beaconID);
                if(beacon.getType())
                {
                    // It's a switch, handle appropriately
-                   nextBlock = theTrack.getStaticSwitch(beacon.getSwitchID()).getActiveLeaf();
+                   theMap.doSwitchBlock(beacon.getSwitchID());
                    onSwitch = true;
                }
                else if(!beacon.getType())
@@ -517,12 +331,15 @@ public class TrainController implements TrainControllerInterface {
                    distToStation = beacon.getStationDist();
                    stationID = beacon.getStationID();
                    doorstatus = beacon.getDoors();
-                   station = theTrack.getStaticBlock(stationID).getStation();
+                   station = theMap.getStation(stationID);
+                   theMap.getNextBlock(); // Since this checked on block change, we update block.
                }
+               return true;
             }
         } catch (BadBeaconException e) {
-            System.err.println("Poorly formatted beacon; returning null");
+            System.err.println("Poorly formatted beacon; returning false");
         }
+        return false;
     }
     
     protected void updateStation() {
@@ -572,7 +389,7 @@ public class TrainController implements TrainControllerInterface {
     protected double computeSafeBrake(){
         if(!checkForTrain())
             return -1;
-        double distance = 2*theTrain.getCurrentVelocity()*theTrain.getCurrentVelocity();
+        double distance = Math.abs(2*theTrain.getCurrentVelocity()*theTrain.getCurrentVelocity());
 //        distance /= theTrain.getServiceBrakes();
         distance /= Math.abs(theTrain.getServiceBrakeRate());
         System.err.println("SAFEBRAKE: dist " + distance);
@@ -601,19 +418,23 @@ public class TrainController implements TrainControllerInterface {
         if(stationUpcoming)
             distLeft = distToStation;
         else
-            distLeft = distToAuthEnd();
+            distLeft = theMap.distToAuthEnd(distanceTraveled);
         if(brakeDist > distLeft)
         {
+            System.out.println("SAFE SPEED ebrake");
             // Stop immediately using ebrake
             emergencyStop();
         }
         else
 //            velocity = Math.sqrt(2*distLeft*theTrain.getServiceBrakes());
             velocity = Math.sqrt(Math.abs(2*distLeft*theTrain.getServiceBrakeRate()));
-        System.err.println("SAFESPEED; Brakedist: " + computeSafeBrake());
+//        System.err.println("SAFESPEED; Brakedist: " + computeSafeBrake());
+        System.err.println("SAFESPEED; Brakedist: " + brakeDist);
         System.err.println("SAFESPEED; Velocity: " + velocity);
+        System.out.println("TrainSuggested: " + theTrain.getSuggestedSpeed());
         if(velocity > theTrain.getSuggestedSpeed())
             velocity = theTrain.getSuggestedSpeed();
+        System.out.println("Returning " + velocity);
         return velocity;
     }
     
@@ -628,6 +449,7 @@ public class TrainController implements TrainControllerInterface {
      @Override
      public double getPower(){
         doAllUpdates();
+        System.out.println("Getting Power");
         if(estop)
         {
             applyEBrakes = true;
@@ -637,6 +459,7 @@ public class TrainController implements TrainControllerInterface {
         }
         if(stop)
         {
+            System.out.println("POWER: Service Brakes");
             theTrain.setServiceBrakes(true);
             applyBrakes = true;
 //            Pcmd = 0 - theTrain.getBrakePower();
@@ -669,7 +492,10 @@ public class TrainController implements TrainControllerInterface {
         else
         {
             Kp = ku*0.45;
-            Ki = ku*1.2/t;
+            if(t == 0)
+                Ki = ku*1.2/0.01;
+            else
+                Ki = ku*1.2/t;
         }
         
         // Truncate speed
@@ -677,11 +503,16 @@ public class TrainController implements TrainControllerInterface {
         
         // Compute velocity error
         double e = SP - PV;
+        System.err.println("POWER e = " + e);
+        System.err.println("POWER Kp = " + Kp);
+        System.err.println("POWER Ki = " + Ki);
+        System.err.println("POWER u = " + u);
         Pcmd = Kp*e + Ki*u;
         
         // Get maximum train power
         double Pmax = theTrain.getMaxPower();
-        
+        System.err.println("POWER Pmax = " + Pmax);
+        System.err.println("POWER Pcmd = " + Pcmd);
         
 //        System.err.println("Init Pcmd:\t"+Pcmd);
         if(Pcmd < Pmax){
@@ -697,15 +528,17 @@ public class TrainController implements TrainControllerInterface {
         if(Pcmd < 0) // System is slowing down
 //            if(Pcmd <= theTrain.getBrakePower()*(-1))
 //            if(e < (0 - theTrain.getBrake()))
-            if(Pcmd < -1)
+            if(Pcmd < -10)
             {
+                System.out.println("Setting brakes");
                 applyBrakes = true;
 //                Pcmd = 0 - theTrain.getBrakePower();
                 Pcmd = 0;
-                theTrain.setServiceBrakes(true);
+//                theTrain.setServiceBrakes(true);
             }
             else
             {
+                System.out.println("Coasting");
                 coast = true;
 //                Pcmd = -1;
                 Pcmd = 0;
@@ -717,14 +550,17 @@ public class TrainController implements TrainControllerInterface {
         }
         else
         {
+//            System.out.println("Setting eBrakes");
             coast = false;
-            theTrain.setEmergencyBrakes(true);
+//            theTrain.setEmergencyBrakes(true);
         }
         System.err.println("Final Power:\t" + Pcmd);
         System.err.println("Final u:\t" + u);
         System.err.println("Final e:\t" + e);
         lastU = u;
         lastE = e;
+        
+        System.out.println("Returning " + Pcmd + " Watts");
         return Pcmd;
     }
     
@@ -870,10 +706,6 @@ public class TrainController implements TrainControllerInterface {
         return ID;
     }
     
-    protected void updateIndex(int index) {
-        this.index = index;
-    }
-    
     protected double setTemp(double temperature) {
         theTrain.setTemperature(temperature);
         return theTrain.getCurrentTemperature();
@@ -905,14 +737,6 @@ public class TrainController implements TrainControllerInterface {
             return true;
         }
         
-    }
-//    
-//    protected StaticTrack defaultTrack() {
-//        
-//    }
-    
-    protected void setStaticBlock(StaticBlock block) {
-        currentBlock = block;
     }
     
     protected void setT(double newT) {

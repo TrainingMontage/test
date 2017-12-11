@@ -46,42 +46,43 @@ public class TrainControllerUI extends javax.swing.JFrame {
         TC = newTC;
         if(TC.checkForTrain()) {
             System.err.println("INIT: there's a train");
-            authField.setText("" + TC.theTrain.getAuthority());
+//            authField.setText("" + TC.theTrain.getAuthority());
+//            authField.setText("" + TC.theMap.distToAuthEnd(TC.distanceTraveled));
             
-            currentSpeedField.setText("" + truncDouble(TC.theTrain.getCurrentVelocity(), 4));
+            currentSpeedField.setText("" + truncDouble(Convert.metersPerSecondToMPH(TC.theTrain.getCurrentVelocity()), 3));
             
-            safeBrakeField.setText("" + truncDouble(TC.computeSafeBrake(), 4));
-            
-            if(TC.computeSafeSpeed() < TC.theTrain.getSuggestedSpeed())
-                setSpeedField.setText("" + truncDouble(TC.computeSafeSpeed(), 4));
-            else
-                setSpeedField.setText("" + truncDouble(TC.theTrain.getSuggestedSpeed(), 4));
-            
-            maxSafeField.setText("" + truncDouble(TC.computeSafeSpeed(), 4));
-            
-            safeBrakeField.setText("" + truncDouble(TC.computeSafeBrake(), 4));
-            
-            suggestedField.setText("" + truncDouble(TC.theTrain.getSuggestedSpeed(), 4));
+//            safeBrakeField.setText("" + truncDouble(TC.computeSafeBrake(), 4));
+//            
+//            if(TC.computeSafeSpeed() < TC.theTrain.getSuggestedSpeed())
+//                setSpeedField.setText("" + truncDouble(TC.computeSafeSpeed(), 4));
+//            else
+//                setSpeedField.setText("" + truncDouble(TC.theTrain.getSuggestedSpeed(), 4));
+//            
+//            maxSafeField.setText("" + truncDouble(TC.computeSafeSpeed(), 4));
+//            
+//            safeBrakeField.setText("" + truncDouble(TC.computeSafeBrake(), 4));
+//            
+//            suggestedField.setText("" + truncDouble(TC.theTrain.getSuggestedSpeed(), 4));
             
             manOFFButton.setSelected(true);
         }
         else {
-            authField.setText("No Train");
-            
             currentSpeedField.setText("No Train");
-            
-            safeBrakeField.setText("No Train");
-            
-            setSpeedField.setText("No Train");
-            
-            maxSafeField.setText("No Train");
-            
-            safeBrakeField.setText("No Train");
-            
-            suggestedField.setText("No Train");
         }
         
-        calcPowerField.setText("" + truncDouble(TC.Pcmd, 4));
+        authField.setText("Not initialized");
+            
+        safeBrakeField.setText("Not initialized");
+
+        setSpeedField.setText("Not initialized");
+
+        maxSafeField.setText("Not initialized");
+
+        safeBrakeField.setText("Not initialized");
+ 
+        suggestedField.setText("Not initialized");
+        
+        calcPowerField.setText("" + truncDouble(TC.Pcmd, 3));
             
         currentPowerField.setText("" + truncDouble(TC.Pcmd, 4));
         
@@ -100,8 +101,17 @@ public class TrainControllerUI extends javax.swing.JFrame {
         safeBrakeField.setEditable(false);
         suggestedField.setEditable(false);
         
+        AskForKiKp dialog = new AskForKiKp(new javax.swing.JFrame(), true, TC);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+        
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setVisible(true);
+//        setVisible(true);
     }
     
     public Double truncDouble(double toTrunc, int precision) {
@@ -115,15 +125,16 @@ public class TrainControllerUI extends javax.swing.JFrame {
     
     public void updateSpeeds() {
         if(TC.computeSafeSpeed() < TC.theTrain.getSuggestedSpeed())
-            setSpeedField.setText("" + TC.computeSafeSpeed());
+            setSpeedField.setText("" + truncDouble(Convert.metersPerSecondToMPH(TC.computeSafeSpeed()), 3));
         else
-            setSpeedField.setText("" + TC.theTrain.getSuggestedSpeed());
+            setSpeedField.setText("" + truncDouble(Convert.metersPerSecondToMPH(TC.theTrain.getSuggestedSpeed()), 3));
         
-        currentSpeedField.setText("" + TC.theTrain.getCurrentVelocity());
+        currentSpeedField.setText("" + truncDouble(Convert.metersPerSecondToMPH(TC.theTrain.getCurrentVelocity()), 3));
         System.err.println("UPDATESPEED: current speed is " + TC.theTrain.getCurrentVelocity());
-        maxSafeField.setText("" + TC.computeSafeSpeed());
-        safeBrakeField.setText("" + TC.computeSafeBrake());
-        suggestedField.setText("" + TC.theTrain.getSuggestedSpeed());
+        maxSafeField.setText("" + truncDouble(Convert.metersPerSecondToMPH(TC.computeSafeSpeed()), 3));
+        safeBrakeField.setText("" + truncDouble(Convert.metersToFeet(TC.computeSafeBrake()), 3));
+        suggestedField.setText("" + truncDouble(Convert.metersPerSecondToMPH(TC.theTrain.getSuggestedSpeed()), 3));
+        authField.setText("" + truncDouble(Convert.metersToFeet(TC.theMap.distToAuthEnd(TC.distanceTraveled)), 3));
     }
     
     public void updatePowers() {
@@ -271,7 +282,7 @@ public class TrainControllerUI extends javax.swing.JFrame {
 
         jLabel2.setText("Authority:");
 
-        authMiles.setText("Mi");
+        authMiles.setText("Feet");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -378,7 +389,7 @@ public class TrainControllerUI extends javax.swing.JFrame {
 
         safeBrakeField.setText("XX");
 
-        jLabel23.setText("miles");
+        jLabel23.setText("Feet");
 
         jLabel18.setText("mph");
 
