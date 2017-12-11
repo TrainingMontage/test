@@ -152,7 +152,6 @@ public class CTCModel{
     }
     public static void editTrain(int trainID, double suggestedSpeed,
                                  String suggestedAuth, int destBlockID){
-        System.out.println("adding to edit train queue...");
         TTEtrainID.add(trainID);
         TTEauthority.add(suggestedAuth);
         TTEspeed.add(suggestedSpeed);
@@ -421,31 +420,24 @@ public class CTCModel{
             //}
         }
         
-        System.out.println("------------------------ schedule Trains ------------------------");
         //if there is a new schedule file, read it
         readSchedule();
         scheduleTrains();
         
-        System.out.println("------------------------ add Train ------------------------");
         //add a train if the user entered one during the last update
         addTrain();
         //edit a train if the user changed one during the last update
-        System.out.println("------------------------ edit Train ------------------------");
         editTrain();
         
-        System.out.println("------------------------ Update Track ------------------------");
         updateTrack();
         
         //process any click events (also any routing) on the graph
         //update track must be called before this so CTC internal data matches other module data
-        System.out.println("------------------------ Route Trains ------------------------");
         CTCGUI.handleGraphEvents();
         
         //edit a train if it was changed during routing
-        System.out.println("------------------------ edit Train ------------------------");
         editTrain();
         
-        System.out.println("------------------------ send Sugg ------------------------");
         sendSuggestions();
         
         last_clock = current_time;
