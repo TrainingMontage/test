@@ -26,6 +26,7 @@ public class MapTracker {
     protected boolean startblock = true; // At start, this is the first block you are on.
     protected boolean onSwitch;
     protected boolean noNext = false;
+    protected double switchDist = 0;
 //    protected double distanceTraveled;
 
     
@@ -87,8 +88,15 @@ public class MapTracker {
         System.err.println("MAPTRACKER: AUTHORITY FOR BLOCK " + nextBlock.getId() + " IS " + theTrain.getAuthority());
         if(theTrain.getAuthority() && !noNext)
         {
-//            distToStop += theTrack.getStaticBlock(currentBlock.getNextId()).getLength();
-            distToStop += nextBlock.getLength();
+            if(onSwitch)
+            {
+                distToStop += switchDist;
+            }
+            else
+            {
+//                distToStop += theTrack.getStaticBlock(currentBlock.getNextId()).getLength();
+                distToStop += nextBlock.getLength();
+            }
         }
 //        updateDistTraveled();
         distToStop -= distanceTraveled;
@@ -106,7 +114,10 @@ public class MapTracker {
             if(startblock)
                 startblock = false;
             if(onSwitch)
+            {
                 onSwitch = false;
+                
+            }
             lastBlock = currentBlock;
             currentBlock = nextBlock;
             System.out.println("block change detected");
@@ -152,9 +163,40 @@ public class MapTracker {
     
     protected void doSwitchBlock(int switchID) {
 //        nextBlock = theTrack.getStaticSwitch(switchID).getActiveLeaf();
-        currentBlock = theTrack.getStaticBlock(switchID);
-        getNextBlock();
-        onSwitch = true;
+        // If I'm going into a switch, I can get the minimum of the two other leaves lengths for my authority
+        currentBlock = theTrack.getStaticBlock(switchID); // Always update current block to the one specified.
+        if(!onSwitch) // first entering switch
+        {
+            StaticSwitch ss = currentBlock.getStaticSwitch();
+            StaticBlock root, active, def;
+            root = ss.getRoot();
+            active = ss.getActiveLeaf();
+            def = ss.getDefaultLeaf();
+            double minAuthority = 0;
+
+            if(root.getId() == switchID) // On root
+            {
+                minAuthority = minAuth(active, def);
+            }
+            else if(active.getId() == switchID) // on active
+            {
+                minAuthority = minAuth(root, def);
+            }
+            else if(def.getId() == switchID) // on default
+            {
+                minAuthority = minAuth(active, root);
+            }
+    //        getNextBlock();
+            switchDist = minAuthority;
+            onSwitch = true;
+        }
+        else // leaving a switch
+            onSwitch = false;
+    }
+    
+    protected double minAuth(StaticBlock one, StaticBlock two) {
+        if(one.getLength() > two.getLength()) return two.getLength();
+        return one.getLength();
     }
     
 }
