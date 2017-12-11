@@ -67,6 +67,7 @@ public class CTCGUI implements ViewerListener{
     private static JTextArea temperatureText = null;
     private static JLabel timeLabel = null;
     private static JTextArea scheduleText = null;
+    private static JTextArea peopleTextArea = null;
     // train textArea handles
     private static JTextArea trainIDText;
     private static JTextArea trainBlockText;
@@ -98,6 +99,8 @@ public class CTCGUI implements ViewerListener{
     private static StaticTrack t;
     
     private static ArrayList<Edge> allRoots;
+    private static ArrayList<Integer> passDisTime;
+    private static ArrayList<Integer> passDisNumber;
     
     private static Graph graph;
     //private static ViewPanel graphView;
@@ -173,6 +176,9 @@ public class CTCGUI implements ViewerListener{
         graph.addAttribute("ui.stylesheet",styleSheet);
         isAutomatic = false;
         scheduleText = null;
+        peopleTextArea = null;
+        passDisTime = new ArrayList<Integer>();
+        passDisNumber = new ArrayList<Integer>();
         
         
         Node nodeYard = graph.addNode("Yard");
@@ -268,8 +274,8 @@ public class CTCGUI implements ViewerListener{
                     System.out.println("hi");
                 }
                 if(n2 == null && prevId == 153){
-                    System.out.println("hello");
-                    System.out.println("asdf "+ss.getRoot().getId());
+                    //System.out.println("hello");
+                    //System.out.println("asdf "+ss.getRoot().getId());
                     prevStr = "161 162";
                     n2 = graph.getNode(prevStr);
                 }
@@ -737,15 +743,15 @@ public class CTCGUI implements ViewerListener{
         //c.gridheight = 1;
         panelCTCInfo.add(temperatureText,c);
         
-        textArea = new JTextArea("0 people");
-        textArea.setEnabled(false);
-        textArea.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
+        peopleTextArea = new JTextArea("0 people");
+        peopleTextArea.setEnabled(false);
+        peopleTextArea.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         c.gridx = 1;
         c.gridy = 1;
         //c.gridwidth = 1;
         //c.gridheight = 1;
-        panelCTCInfo.add(textArea,c);
+        panelCTCInfo.add(peopleTextArea,c);
         
         panelCTCInfo.setBorder(BorderFactory.createTitledBorder("CTC Info"));
         c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -1180,9 +1186,9 @@ public class CTCGUI implements ViewerListener{
                 if(e != null){
                     //if broken
                     String s3 = e.getAttribute("ui.class");
-                    if(s3 == null || s2.equals(s3)){
+                    if(s3 == null){
                         TrackModel.getTrackModel().setRepair(Integer.parseInt(s));
-                    }else{
+                    }else if(s2.equals(s3)){
                         TrackModel.getTrackModel().setOperational(Integer.parseInt(s));
                     }
                 }
@@ -2697,6 +2703,31 @@ public class CTCGUI implements ViewerListener{
             route();
             //System.out.println("done routing");
         }
+        
+        //pass stuff
+        System.out.println("asdf");
+        prunePassArr();
+        if(peopleTextArea != null){
+            int sum = 0;
+            for(int i = 0; i < passDisNumber.size(); i++){
+                sum += passDisNumber.get(i);
+            }
+            peopleTextArea.setText(sum+" people");
+        }
+    }
+    public static void prunePassArr(){
+        while(passDisTime.size() != 0){
+            if(passDisTime.get(0) > Environment.clock+3600){
+                passDisTime.remove(0);
+                passDisNumber.remove(0);
+            }else{
+                break;
+            }
+        }
+    }
+    public static void addPassEntry(int pass){
+        passDisTime.add(Environment.clock);
+        passDisNumber.add(pass);
     }
     public static boolean setScheduleText(String text){
         if(scheduleText != null){

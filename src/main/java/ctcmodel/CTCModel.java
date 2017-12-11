@@ -386,6 +386,15 @@ public class CTCModel{
             }
         }
     }
+    public static void getPassengers(){
+        for(CTCTrainData tdata: trainData){
+            int pass = TrackModel.getTrackModel().getTrainPassengers(tdata.getTrainID());
+            if(pass != 0){
+                CTCGUI.addPassEntry(pass);
+            }
+        } 
+    }
+    
     public static void update(){
         current_time = Environment.clock;
         
@@ -403,6 +412,9 @@ public class CTCModel{
         editTrain();
         
         updateTrack();
+        
+        //get passengers
+        getPassengers();
         
         //process any click events (also any routing) on the graph
         //update track must be called before this so CTC internal data matches other module data
