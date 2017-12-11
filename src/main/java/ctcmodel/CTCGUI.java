@@ -61,6 +61,8 @@ public class CTCGUI implements ViewerListener{
     private static JButton autoButton;
     private static JButton newTrainButton;
     private static JButton launchTrainButton;
+    private static JButton maintenanceButton;
+    private static JButton toggleSwitchButton;
     // global textArea handles
     private static JTextArea temperatureText = null;
     private static JLabel timeLabel = null;
@@ -1167,6 +1169,28 @@ public class CTCGUI implements ViewerListener{
         //c.gridheight = 1;
         panelTrackInfo.add(label,c);
         
+        maintenanceButton = new JButton("Maintain");
+        maintenanceButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                //read textArea and check if it is edge id
+                String s = trackIDText.getText();
+                String s2 = "broken";
+                Edge e = graph.getEdge(s);
+                //if yes call maintain
+                if(e != null){
+                    //if broken
+                    String s3 = e.getAttribute("ui.class");
+                    if(s3 == null || s2.equals(s3)){
+                        TrackModel.getTrackModel().setRepair(Integer.parseInt(s));
+                    }else{
+                        TrackModel.getTrackModel().setOperational(Integer.parseInt(s));
+                    }
+                }
+            }
+        });
+        c.gridy = 13;
+        panelTrackInfo.add(maintenanceButton,c);
+        
         trackIDText = new JTextArea("");
         trackIDText.setEnabled(false);
         trackIDText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
@@ -1306,6 +1330,26 @@ public class CTCGUI implements ViewerListener{
         //c.gridwidth = 1;
         //c.gridheight = 1;
         panelTrackInfo.add(trackCrossingText,c);
+        
+        toggleSwitchButton = new JButton("Toggle Switch");
+        toggleSwitchButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                //read textArea and check if it is edge id
+                String s = selectBlockText.getText();
+                Edge e = graph.getEdge(s);
+                //if yes call fill
+                if(e != null){
+                    int bid = Integer.parseInt(s);
+                    StaticBlock sbb = t.getStaticBlock(bid);
+                    StaticSwitch sss = sbb.getStaticSwitch();
+                    if(sss != null){
+                        WaysideController.setSwitch(bid, !WaysideController.getSwitch(bid));
+                    }
+                }
+            }
+        });
+        c.gridy = 13;
+        panelTrackInfo.add(toggleSwitchButton,c);
         
         panelTrackInfo.setBorder(BorderFactory.createTitledBorder("Track Panel"));
         c.insets = new Insets(2,2,2,2);//top,left,bottom,right

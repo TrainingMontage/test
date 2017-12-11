@@ -431,6 +431,7 @@ public class CTCModel{
             element.setAttribute("track.occupied", new Boolean(occupied));
             boolean classSet = false;
             if(occupied){
+                //System.out.println("CTC found "+blockId+" occ");
                 CTCTrainData data = null;
                 boolean inHistory = false;
                 for(int i = 0; i < trainData.size(); i++){//these for loops will be expensive if there are a lot of trains but that probably won't be an issue
