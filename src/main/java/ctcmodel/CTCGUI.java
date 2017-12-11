@@ -63,6 +63,8 @@ public class CTCGUI implements ViewerListener{
     private static JButton launchTrainButton;
     // global textArea handles
     private static JTextArea temperatureText = null;
+    private static JLabel timeLabel = null;
+    private static JTextArea scheduleText = null;
     // train textArea handles
     private static JTextArea trainIDText;
     private static JTextArea trainBlockText;
@@ -168,6 +170,7 @@ public class CTCGUI implements ViewerListener{
         //Sprite unocc = sm.addSprite("unoccupied");
         graph.addAttribute("ui.stylesheet",styleSheet);
         isAutomatic = false;
+        scheduleText = null;
         
         
         Node nodeYard = graph.addNode("Yard");
@@ -582,6 +585,16 @@ public class CTCGUI implements ViewerListener{
         JMenu menuFile = new JMenu("File");
         //JMenuItem menuCreateTrain = new JMenuItem("Create Train");
         JMenuItem menuUploadSchedule = new JMenuItem("Upload Schedule");
+        menuUploadSchedule.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                System.out.println("Choose a schedule file...");
+                JFileChooser chooser = new JFileChooser();
+                int returnValue = chooser.showOpenDialog(null);
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    CTCModel.readSchedule(chooser.getSelectedFile());
+                }
+            }
+        });
         //TODO: more menu items?
         
         //sub-panel declarations
@@ -620,13 +633,13 @@ public class CTCGUI implements ViewerListener{
         c.gridheight = 1;
         pane.add(label,c);
         
-        label = new JLabel("8:00 AM");
+        timeLabel = new JLabel("8:00 AM");
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         c.gridx = 1;
         //c.gridy = 0;
         //c.gridwidth = 1;
         //c.gridheight = 1;
-        pane.add(label,c);
+        pane.add(timeLabel,c);
         
         isAutomatic = false;
         manualButton = new JButton("Manual");
@@ -1304,6 +1317,17 @@ public class CTCGUI implements ViewerListener{
         
         // -------------------- Schedule panel --------------------
         panelSchedule.setLayout(new GridBagLayout());
+        
+        scheduleText = new JTextArea("");
+        scheduleText.setEnabled(false);
+        //scheduleText.setPreferredSize(new Dimension(500,200));
+        //scheduleText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
+        c.insets = new Insets(0,0,0,0);//top,left,bottom,right
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        panelSchedule.add(scheduleText,c);
         
         panelSchedule.setBorder(BorderFactory.createTitledBorder("Schedule Panel"));
         c.insets = new Insets(2,2,2,2);//top,left,bottom,right
@@ -2609,6 +2633,16 @@ public class CTCGUI implements ViewerListener{
     }
     public static void handleGraphEvents(){
         fromViewer.pump();
+        //update the displayed time
+        int hours = ((Environment.clock/3600)+8)%24;
+        String min = ""+(Environment.clock/60)%60;
+        if(min.length() == 1){
+            min = "0"+min;
+        }
+        String timeStr = hours+":"+min;
+        if(timeLabel != null){
+            timeLabel.setText(timeStr);
+        }
         temperature = Environment.temperature;
         if(temperatureText != null){
             temperatureText.setText(temperature+"°F");
@@ -2619,6 +2653,13 @@ public class CTCGUI implements ViewerListener{
             route();
             //System.out.println("done routing");
         }
+    }
+    public static boolean setScheduleText(String text){
+        if(scheduleText != null){
+            scheduleText.setText(text);
+            return true;
+        }
+        return false;
     }
     public static Graph getGraph(){
         return graph;

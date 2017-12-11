@@ -79,6 +79,10 @@ public class App {
         }
         WaysideController.init();
         CTCModel.init();
+        if (args.length > 1) {
+            CTCModel.readSchedule(new File(args[1]));
+            CTCModel.readSchedule();
+        }
         TrainTracker.getTrainTracker();
         TrainController.initUI();
 
