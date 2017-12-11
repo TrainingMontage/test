@@ -1,3 +1,18 @@
+/*   ______                 _           _
+ *  /_  __/ _____  ____ _  (_) ____    (_) ____    ____ _
+ *   / /   / ___/ / __ `/ / / / __ \  / / / __ \  / __ `/
+ *  / /   / /    / /_/ / / / / / / / / / / / / / / /_/ /
+ * /_/   /_/     \__,_/ /_/ /_/ /_/ /_/ /_/ /_/  \__, /
+ *                                              /____/
+ *     __  ___                 __
+ *    /  |/  / ____    ____   / /_  ____ _  ____ _  ___
+ *   / /|_/ / / __ \  / __ \ / __/ / __ `/ / __ `/ / _ \
+ *  / /  / / / /_/ / / / / // /_  / /_/ / / /_/ / /  __/
+ * /_/  /_/  \____/ /_/ /_/ \__/  \__,_/  \__, /  \___/
+ *                                       /____/
+ *
+ * @author Parth Dadhania
+ */
 package trainmodel;
 
 import org.junit.*;
@@ -36,21 +51,24 @@ public class TrainModelTest{
     public void testGetCurrentVelocity(){
         assertEquals(testTrainObject.getCurrentVelocity(), 0.0, delta);
     }
-    /*
+
     @Test
     public void testGetVelocity(){
+        TrackModel _tm = mock(TrackModel.class);
+        testTrainObject = new Train(1, 0, _tm, 1);
         testTrainObject.trainController = mock(TrainController.class);
         when(testTrainObject.trainController.getPower()).thenReturn(10000.0);
-        testTrainObject.grade = 0.5;
-        testTrainObject.numPassengers = 222;
+        testTrainObject.numPassengers = 444;
         testTrainObject.velocity = 10;
-        assertEquals(testTrainObject.getVelocity(), testTrainObject.getCurrentVelocity(), delta);
+        Train spyTrain = spy(testTrainObject);
+        doReturn(0.5).when(spyTrain).getGrade();
+        assertEquals(spyTrain.getVelocity(), spyTrain.getCurrentVelocity(), delta);
     }
-    */
+
     @Test
     public void testSetPassengers(){
         //Too Many Passengers set
-        assertEquals(testTrainObject.setPassengers(500), 222);
+        assertEquals(testTrainObject.setPassengers(500), 444);
         //negative number of passengers
         assertEquals(testTrainObject.setPassengers(-100), 0);
         //base case
@@ -59,7 +77,7 @@ public class TrainModelTest{
 
     @Test
     public void testGetMaxPassengers(){
-        assertEquals(testTrainObject.getMaxPassengers(), 222);
+        assertEquals(testTrainObject.getMaxPassengers(), 444);
     }
 
     @Test
@@ -71,25 +89,37 @@ public class TrainModelTest{
     public void testGetMaxPower(){
         assertEquals(testTrainObject.getMaxPower(), 120000.0, delta);
     }
-    /*
+
     @Test
     public void testSetPower(){
-        testTrainObject.setPower(100000);
-        assertEquals(testTrainObject.getPower(),100000, delta);
+        TrackModel _tm = mock(TrackModel.class);
+        testTrainObject = new Train(1, 0, _tm, 1);
+        Train spyTrain = spy(testTrainObject);
+        doReturn(0.5).when(spyTrain).getGrade();
+        spyTrain.setPower(100000,0);
+        assertEquals(spyTrain.getPower(),100000.00, delta);
     }
+
     @Test
     public void testSetPowerNegative(){
-        testTrainObject.setPower(-100000);
-        assertEquals(testTrainObject.getPower(),0, delta);
+        TrackModel _tm = mock(TrackModel.class);
+        testTrainObject = new Train(1, 0, _tm, 1);
+        Train spyTrain = spy(testTrainObject);
+        doReturn(0.5).when(spyTrain).getGrade();
+        spyTrain.setPower(-100000,0);
+        assertEquals(spyTrain.getPower(),0, delta);
     }
+
     @Test
     public void testSetPowerTooLarge(){
-        TrackModel tm = mock(TrackModel.class);
-        when(tm.getGrade(testTrainObject.getTrainId())).thenReturn(0.5);
-        testTrainObject.setPower(300000);
-        assertEquals(testTrainObject.getPower(), 120000, delta);
+        TrackModel _tm = mock(TrackModel.class);
+        testTrainObject = new Train(1, 0, _tm, 1);
+        Train spyTrain = spy(testTrainObject);
+        doReturn(0.5).when(spyTrain).getGrade();
+        spyTrain.setPower(300000,0);
+        assertEquals(spyTrain.getPower(), 120000, delta);
     }
-    */
+
     @Test
     public void testSine(){
         assertEquals(testTrainObject.sine(.5), 0.004999, delta);
@@ -134,18 +164,24 @@ public class TrainModelTest{
     public void testGetServiceBrakeRate(){
         assertEquals(-1.2, testTrainObject.getServiceBrakeRate(), delta);
     }
-    /*
+
     @Test
     public void testUpdateSpeed(){
+        TrackModel _tm = mock(TrackModel.class);
+
+        testTrainObject = new Train(1, 0, _tm, 1);
         testTrainObject.velocity = 10.0;
-        testTrainObject.grade = 0.5;
-        testTrainObject.numPassengers = 222;
-        testTrainObject.updateSpeed(10000);
-        //testTrainObject.updateSpeed(10000) = 10.2454971747 (hand calculation)
-        assertEquals(10.2454971747, testTrainObject.getCurrentVelocity(), delta);
+        testTrainObject.numPassengers = 444;
+
+        Train spyTrain = spy(testTrainObject);
+        doReturn(0.5).when(spyTrain).getGrade();
+
+
+        spyTrain.updateSpeed(10000);
+        assertEquals(10.111703, spyTrain.getCurrentVelocity(), delta);
 
     }
-    */
+
     @Test
     public void testGetCurrentTemperature(){
         assertEquals(testTrainObject.getCurrentTemperature(), 72.0, delta);
@@ -220,16 +256,17 @@ public class TrainModelTest{
 
     @Test
     public void testGetDisplacement(){
-        /*Environment.clock = 10;
+        Environment.clock = 10;
         testTrainObject.time = 5;
         testTrainObject.acceleration = .5;
         testTrainObject.velocity = 10;
         TrainController controller = mock(TrainController.class);
         when(controller.getPower()).thenReturn(10000.0);
-        testTrainObject.grade = 0.5;
-        testTrainObject.numPassengers = 222;
-        assertEquals(testTrainObject.getDisplacement(), 57.477, delta);
-        */
+        testTrainObject.numPassengers = 444;
+        Train spyTrain = spy(testTrainObject);
+        doReturn(0.5).when(spyTrain).getGrade();
+        assertEquals(spyTrain.getDisplacement(), 49.5977, delta);
+
     }
 
 
