@@ -87,7 +87,7 @@ public class CTCModel{
         int tempint;
         double tempdoub;
         //line test
-        if(line != 152){//have to spawn next to the yard TODO: make this not fixed ID
+        if(line != 152 && line != 153){//have to spawn next to the yard TODO: make this not fixed ID
             return 1;
         }
         //speed test
@@ -386,7 +386,12 @@ public class CTCModel{
                     }
                 }
                 if(!classSet){
-                    element.setAttribute("ui.class", "occupied");
+                    String gLine = "GREEN";
+                    if(gLine.equals((String)element.getAttribute("track.line"))){
+                        element.setAttribute("ui.class", "occupied");
+                    }else{
+                        element.setAttribute("ui.class", "redoccupied");
+                    }
                     element.addAttribute("ui.label",element.getId()+"");
                 }
                 //System.out.println("**CTC found block "+blockId+" occupied**");
@@ -404,6 +409,10 @@ public class CTCModel{
                     }
                 }
                 element.removeAttribute("ui.class");
+                String rLine = "RED";
+                if(rLine.equals((String)element.getAttribute("track.line"))){
+                    element.setAttribute("ui.class", "red");
+                }
                 element.removeAttribute("ui.label");
                 
             }

@@ -135,6 +135,13 @@ public class CTCGUI implements ViewerListener{
         "   arrow-size: 4, 4;" +
         //"   size: 2px;" +
         "}" +
+        "edge.red {" +
+        "   fill-color: darkred;" +
+        "}" +
+        "edge.redoccupied {" +
+        "	fill-color: red;" +
+        "   text-size: 12;" +
+        "}" +
         "node:clicked {" +
         "   fill-color: red;" +
         "}" +
@@ -202,7 +209,7 @@ public class CTCGUI implements ViewerListener{
         //add all the nodes first, it makes adding edges easier
         while(itr.hasNext()){
             int blockId = (Integer)itr.next();
-            if(blockId == 151 || blockId == 152){
+            if(blockId == 151 || blockId == 152 || blockId == 153){
                 //special exception for blocks connected to the yard
                 continue;
             }
@@ -244,14 +251,16 @@ public class CTCGUI implements ViewerListener{
         }
         //now all nodes are added, just connect with edges (AKA blocks of track)
         itr = bIds.iterator();
+        
         while(itr.hasNext()){
             int blockId = (Integer)itr.next();
-            if(blockId == 151 || blockId == 152){
+            if(blockId == 151 || blockId == 152 || blockId == 153){
                 //special exception for blocks connected to the yard
                 continue;
             }
             Node n1,n2;
             Edge e;
+            System.out.println("blockId "+blockId);
             StaticBlock sb = t.getStaticBlock(blockId);
             StaticSwitch ss = sb.getStaticSwitch();
             if(ss != null){
@@ -259,6 +268,8 @@ public class CTCGUI implements ViewerListener{
                 n1 = graph.getNode(ss.getRoot().getId()+" "+ss.getDefaultLeaf().getId()+" "+ss.getActiveLeaf().getId());
                 int nextId = sb.getNextId();
                 int prevId = sb.getPreviousId();
+                System.out.println("nextId "+nextId);
+                System.out.println("prevId "+prevId);
                 boolean nextDirection = true;
                 String nextStr,prevStr;
                 if(nextId < blockId){
@@ -275,6 +286,15 @@ public class CTCGUI implements ViewerListener{
                     }else{
                         prevStr = blockId+" "+prevId;
                     }
+                    n2 = graph.getNode(prevStr);
+                }
+                if(n1 == null){
+                    System.out.println("hi");
+                }
+                if(n2 == null && prevId == 153){
+                    System.out.println("hello");
+                    System.out.println("asdf "+ss.getRoot().getId());
+                    prevStr = "161 162";
                     n2 = graph.getNode(prevStr);
                 }
                 if(nextDirection && sb.isBidirectional()){
@@ -321,6 +341,12 @@ public class CTCGUI implements ViewerListener{
             }
             //add edge properties
             //e.addAttribute("ui.label",e.getId()+"");
+            //System.out.println(sb.getLine());
+            e.addAttribute("track.line", sb.getLine());
+            String rLine = "RED";
+            if(rLine.equals(sb.getLine())){
+                e.addAttribute("ui.class","red");
+            }
             e.addAttribute("ui.selected", new Boolean(true));
             e.addAttribute("ui.clicked", new Boolean(true));
             e.addAttribute("layout.weight", new Double(sb.getLength()));
@@ -337,25 +363,42 @@ public class CTCGUI implements ViewerListener{
         //manually add the blocks connected to the yard
         //green line: 151 in, 152 out
         StaticBlock sb2 = t.getStaticBlock(151);
-        StaticSwitch ss2 = sb2.getStaticSwitch();
-        Node nodePrev = graph.getNode(ss2.getRoot().getId()+" "+ss2.getDefaultLeaf().getId()+" "+ss2.getActiveLeaf().getId());
-        Edge greenIn = graph.addEdge("151", nodePrev, nodeYard, true);
-        greenIn.addAttribute("layout.weight", new Double(t.getStaticBlock(151).getLength()));
-        greenIn.addAttribute("track.time", new Double(t.getStaticBlock(151).getLength()/t.getStaticBlock(151).getSpeedLimit()));
-        greenIn.addAttribute("track.occupied", new Boolean(false));
-        greenIn.addAttribute("track.isCrossing", new Boolean(false));
-        greenIn.addAttribute("track.isSwitch", new Boolean(false));
-        //greenIn.addAttribute("ui.label",greenIn.getId()+"");
+        StaticSwitch ss2;
+        if(sb2 != null){//if only green line this will be null
+            ss2 = sb2.getStaticSwitch();
+            Node gNodePrev = graph.getNode(ss2.getRoot().getId()+" "+ss2.getDefaultLeaf().getId()+" "+ss2.getActiveLeaf().getId());
+            Edge greenIn = graph.addEdge("151", gNodePrev, nodeYard, true);
+            greenIn.addAttribute("layout.weight", new Double(sb2.getLength()));
+            greenIn.addAttribute("track.time", new Double(sb2.getLength()/sb2.getSpeedLimit()));
+            greenIn.addAttribute("track.occupied", new Boolean(false));
+            greenIn.addAttribute("track.isCrossing", new Boolean(false));
+            greenIn.addAttribute("track.isSwitch", new Boolean(false));
+            //greenIn.addAttribute("ui.label",greenIn.getId()+"");
+        }
         sb2 = t.getStaticBlock(152);
-        ss2 = sb2.getStaticSwitch();
-        Node nodeNext = graph.getNode(ss2.getRoot().getId()+" "+ss2.getDefaultLeaf().getId()+" "+ss2.getActiveLeaf().getId());
-        Edge greenOut = graph.addEdge("152", nodeYard, nodeNext, true);
-        greenOut.addAttribute("layout.weight", new Double(t.getStaticBlock(152).getLength()));
-        greenOut.addAttribute("track.time", new Double(t.getStaticBlock(152).getLength()/t.getStaticBlock(152).getSpeedLimit()));
-        greenOut.addAttribute("track.occupied", new Boolean(false));
-        greenOut.addAttribute("track.isCrossing", new Boolean(false));
-        greenOut.addAttribute("track.isSwitch", new Boolean(false));
-        //greenOut.addAttribute("ui.label",greenOut.getId()+"");
+        if(sb2 != null){//if only red line this will be null
+            ss2 = sb2.getStaticSwitch();
+            Node gNodeNext = graph.getNode(ss2.getRoot().getId()+" "+ss2.getDefaultLeaf().getId()+" "+ss2.getActiveLeaf().getId());
+            Edge greenOut = graph.addEdge("152", nodeYard, gNodeNext, true);
+            greenOut.addAttribute("layout.weight", new Double(sb2.getLength()));
+            greenOut.addAttribute("track.time", new Double(sb2.getLength()/sb2.getSpeedLimit()));
+            greenOut.addAttribute("track.occupied", new Boolean(false));
+            greenOut.addAttribute("track.isCrossing", new Boolean(false));
+            greenOut.addAttribute("track.isSwitch", new Boolean(false));
+            //greenOut.addAttribute("ui.label",greenOut.getId()+"");
+        }
+        sb2 = t.getStaticBlock(153);
+        if(sb2 != null){//if only green line this will be null
+            ss2 = sb2.getStaticSwitch();
+            Node rNodeNext = graph.getNode(ss2.getRoot().getId()+" "+ss2.getDefaultLeaf().getId()+" "+ss2.getActiveLeaf().getId());
+            Edge redOut = graph.addEdge("153", nodeYard, rNodeNext, false);
+            redOut.addAttribute("layout.weight", new Double(sb2.getLength()));
+            redOut.addAttribute("track.time", new Double(sb2.getLength()/sb2.getSpeedLimit()));
+            redOut.addAttribute("track.occupied", new Boolean(false));
+            redOut.addAttribute("track.isCrossing", new Boolean(false));
+            redOut.addAttribute("track.isSwitch", new Boolean(false));
+            //redOut.addAttribute("ui.label",greenOut.getId()+"");
+        }
         
         //hardcode some positions to make the graph look better
         //nodeYard.setAttribute("xyz", 9, 4, 0);
