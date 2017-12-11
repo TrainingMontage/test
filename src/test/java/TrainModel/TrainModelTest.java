@@ -162,8 +162,8 @@ public class TrainModelTest{
     @Test
     public void testUpdateSpeed(){
         TrackModel _tm = mock(TrackModel.class);
+        when(_tm.getGrade(testTrainObject.getTrainId())).thenReturn(0.5);
         testTrainObject = new Train(1, 0, _tm, 1);
-        when(testTrainObject._tm.getGrade(testTrainObject.getTrainId())).thenReturn(0.5);
         testTrainObject.velocity = 10.0;
         testTrainObject.numPassengers = 444;
         testTrainObject.updateSpeed(10000);
