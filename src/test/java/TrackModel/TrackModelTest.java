@@ -189,7 +189,7 @@ public class TrackModelTest {
      */
     @Test
     public void testTrackModelInit() {
-        assertNotNull(_tm);
+        assertNotNull(TrackModel.init());
     }
 
     /**
@@ -682,7 +682,7 @@ public class TrackModelTest {
     @Test
     public void testTrackModelSetAuthorityFalse() throws SQLException {
         assertFalse(_tm.setAuthority(1, false));
-       
+
         assertFalse(_tm.blockAuthority.get(1));
     }
 
@@ -1182,7 +1182,7 @@ public class TrackModelTest {
 
         // check train position
         assertEquals(2.5, spyTM.getTrainPosition(1), epsilon);
-        
+
         // check block occupancies
         ArrayList<StaticBlock> occupancy = spyTM.trainOccupancy.get(1);
         assertEquals(spyTM.getStaticBlock(1), occupancy.get(0));
@@ -1218,9 +1218,9 @@ public class TrackModelTest {
         assertEquals(true, _tm.getTrainReportedPassenger(1));
     }
 
-        /**
-     * Validate basic train reported passenger get.
-     */
+    /**
+    * Validate basic train reported passenger get.
+    */
     @Test
     public void testGetTrainLoadedPassengers() throws SQLException {
         assertEquals(false, _tm.getTrainLoadedPassenger(1));
@@ -1315,7 +1315,7 @@ public class TrackModelTest {
      */
     @Test
     public void testGetStaticSwitchTestLineYard() throws IOException, SQLException {
-        
+
         _tm.loadTestData();
         StaticTrack _st = _tm.getStaticTrack();
 
@@ -1328,7 +1328,7 @@ public class TrackModelTest {
      */
     @Test
     public void testGetInformationTestGreenLine() throws IOException, SQLException {
-        
+
         File file = new File(
             this.getClass().getClassLoader().getResource("TrackModel/green.csv").getFile());
 
@@ -1341,4 +1341,204 @@ public class TrackModelTest {
         assertNotNull(_st.getStaticBlock(152).getNextId());
         assertNotNull(_st.getStaticBlock(63).getNextId());
     }
+
+    @Test
+    public void testGetTrainIds() {
+        ArrayList<Integer> ids = _tm.getTrainIds();
+        assertNotNull(ids);
+        assertEquals(1, ids.size());
+        assertEquals(1, (int) ids.get(0));
+    }
+
+    /**
+    * Validate basic speed limit set.
+    */
+    @Test
+    public void testSetSpeedLimit() throws SQLException {
+        assertTrue(_tm.setSpeedLimit(1, 20));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT speed_limit FROM blocks WHERE id = ?;");
+        stmt.setInt(1, 1);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        int speed_limit = rs.getInt("speed_limit");
+
+        assertEquals(20, speed_limit);
+    }
+
+    /**
+    * Validate basic train direction set.
+    */
+    @Test
+    public void testSetTrainDirection() throws SQLException {
+        assertTrue(_tm.setTrainDirection(1, true));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT direction FROM trains WHERE id = ?;");
+        stmt.setInt(1, 1);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        int direction = rs.getInt("direction");
+
+        assertEquals(1, direction);
+    }
+
+    /**
+    * Validate basic current block set.
+    */
+    @Test
+    public void testSetTrainBlock() throws SQLException {
+        assertEquals(2, _tm.setTrainBlock(1, 2));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT curr_block FROM trains WHERE id = ?;");
+        stmt.setInt(1, 1);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        int curr_block = rs.getInt("curr_block");
+
+        assertEquals(2, curr_block);
+    }
+
+    /**
+    * Validate basic current block set.
+    */
+    @Test
+    public void testUpdateOccupancies() throws SQLException {
+        ArrayList<StaticBlock> blks = new ArrayList<StaticBlock>();
+        blks.add(_tm.getStaticBlock(1));
+        _tm.trainOccupancy.put(1, blks);
+
+        _tm.updateOccupancies();
+
+        assertTrue(_tm.blockOccupancy.get(1));
+    }
+
+    /**
+    * Validate basic underground set.
+    */
+    @Test
+    public void testSetUnderground() throws SQLException {
+        assertTrue(_tm.setUnderground(1, true));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT underground FROM blocks WHERE id = ?;");
+        stmt.setInt(1, 1);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        int underground = rs.getInt("underground");
+
+        assertEquals(1, underground);
+    }
+
+    /**
+    * Validate basic heater set.
+    */
+    @Test
+    public void testSetHeater() throws SQLException {
+        assertTrue(_tm.setHeater(1, true));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT heater FROM blocks WHERE id = ?;");
+        stmt.setInt(1, 1);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        int heater = rs.getInt("heater");
+
+        assertEquals(1, heater);
+    }
+
+    /**
+    * Validate basic crossing set.
+    */
+    @Test
+    public void testSetCrossing() throws SQLException {
+        assertTrue(_tm.setCrossing(1, true));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT rr_crossing FROM blocks WHERE id = ?;");
+        stmt.setInt(1, 1);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        int crossing = rs.getInt("rr_crossing");
+
+        assertEquals(1, crossing);
+    }
+
+    /**
+    * Validate basic bidirectional set.
+    */
+    @Test
+    public void testSetBidirectional() throws SQLException {
+        assertTrue(_tm.setBidirectional(1, true));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT bidirectional FROM blocks WHERE id = ?;");
+        stmt.setInt(1, 1);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        int bidirectional = rs.getInt("bidirectional");
+
+        assertEquals(1, bidirectional);
+    }
+
+    /**
+    * Validate basic station set.
+    */
+    @Test
+    public void testSetStation() throws SQLException {
+        assertEquals("test station", _tm.setStation(2, "test station"));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT station FROM blocks WHERE id = ?;");
+        stmt.setInt(1, 2);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        String station = rs.getString("station");
+
+        assertEquals("test station", station);
+    }
+
+    /**
+    * Validate basic line set.
+    */
+    @Test
+    public void testSetLine() throws SQLException {
+        assertEquals("test line", _tm.setLine(2, "test line"));
+
+        PreparedStatement stmt = _tm.conn.prepareStatement("SELECT line FROM blocks WHERE id = ?;");
+        stmt.setInt(1, 2);
+        ResultSet rs = stmt.executeQuery();
+
+        rs.next();
+        String line = rs.getString("line");
+
+        assertEquals("test line", line);
+    }
+
+    /**
+     * Validate set Status Operational.
+     */
+    @Test
+    public void testSetOperational() throws SQLException {
+
+        TrackModel spyTM = spy(_tm);
+        doReturn(null).when(spyTM).setStatus(1, BlockStatus.OPERATIONAL);
+
+        assertTrue(spyTM.setOperational(1));
+    }
+
+    /**
+     * Validate set Status Repair.
+     */
+    @Test
+    public void testSetRepair() throws SQLException {
+
+        TrackModel spyTM = spy(_tm);
+        doReturn(null).when(spyTM).setStatus(1, BlockStatus.IN_REPAIR);
+
+        assertTrue(spyTM.setRepair(1));
+    }
+
 }
