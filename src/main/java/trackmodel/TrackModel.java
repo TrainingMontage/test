@@ -1539,7 +1539,7 @@ public class TrackModel implements TrackModelInterface {
 
             // disembark current passengers
             int disembarked = 0;
-            int trainPassengers = 50; // TODO replace this with train.getPassengers()
+            int trainPassengers = train.getPassengers();
             if (trainPassengers > 0) {
                 disembarked = this.random.nextInt((int) trainPassengers);
                 train.setPassengers(trainPassengers - disembarked);
@@ -1552,19 +1552,10 @@ public class TrackModel implements TrackModelInterface {
                 passengers -= loaded;
 
                 this.waitingPassengers.put(this.getTrainBlock(trainId), passengers - loaded);
-                train.setPassengers(trainPassengers + loaded); // TODO replace with train.getPassengers()
+                train.setPassengers(train.getPassengers() + loaded);
             }
 
             return disembarked;
-
-            // // if train has passengers loaded onto it
-            // if (this.getTrainLoadedPassenger(trainId)) {
-            //     return train.getMaxPassengers();
-            // } else {
-            //     train.setPassengers(train.getMaxPassengers());
-            //     this.setTrainLoadedPassenger(trainId, true);
-            //     return 0;
-            // }
         }
 
         return 0;
