@@ -32,17 +32,8 @@ import org.graphstream.graph.implementations.*;
 
 public class CTCModel{
     private static CTCModel model = null;
-    //private static TrainTracker trainTracker;
-    //private static boolean dataValid;
-    //private static ArrayList<Integer> dataTrainID;
-    //private static ArrayList<Integer> dataBlockID;
-    //private static ArrayList<Integer> dataSpeed;
-    //private static ArrayList<String> dataAuthority;
-    //private static ArrayList<Integer> dataOrigin;
-    //private static ArrayList<Integer> dataDestination;
     private static ArrayList<Suggestion> suggestions;
     private static ArrayList<CTCTrainData> trainData;
-    //private static JLabel trainLabel;
     private static int last_clock;
     private static StaticTrack track;
     private static ArrayList<Integer> bIds;
@@ -119,12 +110,6 @@ public class CTCModel{
     
     public static void createTrain(int startingBlockID, double suggestedSpeed,
                                    String suggestedAuth, int destBlockID){
-        /*int trainID = TrainTracker.getTrainTracker().createTrain(startingBlockID);
-        trainData.add(new CTCTrainData(trainID, startingBlockID, suggestedSpeed,
-                                       suggestedAuth, startingBlockID, destBlockID));
-        addSuggestion(trainID, suggestedSpeed, suggestedAuth);
-        return trainID;
-        */
         TTAauthority.add(suggestedAuth);
         TTAstartingBlock.add(startingBlockID);
         TTAspeed.add(suggestedSpeed);
@@ -132,7 +117,6 @@ public class CTCModel{
     }
     public static void editTrain(int trainID, double suggestedSpeed,
                                  String suggestedAuth, int destBlockID){
-        System.out.println("adding to edit train queue...");
         TTEtrainID.add(trainID);
         TTEauthority.add(suggestedAuth);
         TTEspeed.add(suggestedSpeed);
@@ -172,7 +156,6 @@ public class CTCModel{
     }
     public static void addSuggestion(int trainID, double suggestedSpeed, String suggestedAuthority){
         //there are no checks for input correctness here because checkTrainInputs must be called before using this function
-        //System.out.println("((("+suggestedAuthority);
         int blockID = -1;
         for (CTCTrainData data: trainData){
             if(data.getTrainID() == trainID){
@@ -207,15 +190,8 @@ public class CTCModel{
         return;
     }
     public static void sendSuggestions(){
-        //System.out.println(""+suggestions.size());
         if(suggestions.size() != 0){
             WaysideController.suggest(suggestions.toArray(new Suggestion[suggestions.size()]));
-        }
-        for(int i = 0; i < suggestions.size(); i++){
-            int[] strarr = suggestions.get(i).authority;
-            for(int j = 0; j < strarr.length; j++){
-                System.out.println("from sugg"+i+" "+strarr[j]);
-            }
         }
     }
     public static CTCTrainData getTrainData(int blockID){
@@ -239,26 +215,20 @@ public class CTCModel{
     }
     public static void update(){
         int current_time = Environment.clock;
-        System.out.println("------------------------ add Train ------------------------");
         //add a train if the user entered one during the last update
         addTrain();
         //edit a train if the user changed one during the last update
-        System.out.println("------------------------ edit Train ------------------------");
         editTrain();
         
-        System.out.println("------------------------ Update Track ------------------------");
         updateTrack();
         
         //process any click events (also any routing) on the graph
         //update track must be called before this so CTC internal data matches other module data
-        System.out.println("------------------------ Route Trains ------------------------");
         CTCGUI.handleGraphEvents();
         
         //edit a train if it was changed during routing
-        System.out.println("------------------------ edit Train ------------------------");
         editTrain();
         
-        System.out.println("------------------------ send Sugg ------------------------");
         sendSuggestions();
         
         last_clock = current_time;
@@ -293,13 +263,9 @@ public class CTCModel{
                         break;
                     }
                 }
-                //System.out.println("inHistory "+inHistory);
-                //System.out.println("data null? "+(data==null));
                 if(data == null && !inHistory){
                     //was unoccupied before, update traindata
                     //find neighbors
-                    //System.out.println("here");
-                    //classSet = false;
                     ArrayList<Edge> neighList = new ArrayList<Edge>();
                     Edge e = CTCGUI.getGraph().getEdge(""+blockId);
                     Iterator edgeIter = e.getNode0().getEdgeIterator();
@@ -326,7 +292,6 @@ public class CTCModel{
                     CTCTrainData dataTemp = null;
                     for(int i = 0; i < neighList.size(); i++){
                         for(int j = 0; j < trainData.size(); j++){
-                            //System.out.println("^^"+neighList.get(i).getId()+" "+trainData.get(j).getBlockID());
                             if(Integer.parseInt(neighList.get(i).getId()) == trainData.get(j).getBlockID()){
                                 data2 = trainData.get(j);
                                 dataTemp = data2;
@@ -350,7 +315,6 @@ public class CTCModel{
                         //change blockid, change authority
                         int oldBlockId = data2.getBlockID();
                         String newAuth = "";
-                        //System.out.println(")))"+data2.getAuthority());
                         if(data2.getAuthority().length() != 0){
                             String[] authArr = data2.getAuthority().split(",");
                             for(int i = 0; i < authArr.length; i++){
@@ -363,7 +327,6 @@ public class CTCModel{
                                 }
                             }
                         }
-                        //System.out.println(")))"+newAuth);
                         data2.setAuthority(newAuth);
                         addSuggestion(data2.getTrainID(),data2.getSpeed(),newAuth);
                         //ensure the suggestion block changes
@@ -389,7 +352,6 @@ public class CTCModel{
                     element.setAttribute("ui.class", "occupied");
                     element.addAttribute("ui.label",element.getId()+"");
                 }
-                //System.out.println("**CTC found block "+blockId+" occupied**");
             }else{
                 //returned unoccupied
                 if(allHistory.contains(blockId)){
@@ -407,7 +369,6 @@ public class CTCModel{
                 element.removeAttribute("ui.label");
                 
             }
-            //Boolean isSwitch = (Boolean) element.getAttribute("track.isSwitch");
             if(((Boolean) element.getAttribute("track.isSwitch")).booleanValue()){
                 boolean switchState = WaysideController.getSwitch(blockId);
                 element.setAttribute("track.switch", new Boolean(switchState));
