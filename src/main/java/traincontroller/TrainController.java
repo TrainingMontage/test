@@ -246,8 +246,6 @@ public class TrainController implements TrainControllerInterface {
             }
         }
         
-        
-        
         // Update our distance along the block
         updateDistTraveled();
         if(UIexists)
@@ -281,6 +279,7 @@ public class TrainController implements TrainControllerInterface {
                 return false;
             else if(beaconID != -1)
             {
+               System.err.println("TRAINCONTROLLER MAIN - FOUND BEACON, VALUE: " + beaconID);
                beacon = new TrainBeacon(beaconID);
                if(beacon.isSwitch())
                {
@@ -307,11 +306,12 @@ public class TrainController implements TrainControllerInterface {
                    }
                }
                
-               if(!beacon.isStation() && pastStation == false) // problem, supposed to be a beacon
+               if(!beacon.isStation() && pastStation == true) // problem, supposed to be a beacon
                {
                    System.err.println("PROBLEM - Expected second station beacon");
                    justStop();
                }
+               System.err.println("TRAINCONTROLLER MAIN - FOUND BEACON, VALUE: " + beaconID);
                return true;
             }
         } catch (BadBeaconException e) {
@@ -400,11 +400,13 @@ public class TrainController implements TrainControllerInterface {
         if(brakeDist > distLeft)
         {
             // Stop immediately using ebrake
-            emergencyStop();
+//            emergencyStop();
+//            justStop();
             
 //            System.err.println("TRAINCONTROLLER SAFE SPEED E-STOP");
         }
         else
+            youCanGoNow();
 //            velocity = Math.sqrt(2*distLeft*theTrain.getServiceBrakes());
             velocity = Math.sqrt(Math.abs(2*distLeft*theTrain.getServiceBrakeRate()));
 //        System.err.println("SAFESPEED; Brakedist: " + computeSafeBrake());

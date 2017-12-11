@@ -54,7 +54,7 @@ public class TrainBeacon {
         contents = beacon;
         // Extract type
         // It's a station
-        if(((contents&0x10000000)>>31) == 0)
+        if(((contents&0x10000000)>>31) == 1)
         {
             sttn = true;
             doors = (contents&0x0F000000)>>24;
