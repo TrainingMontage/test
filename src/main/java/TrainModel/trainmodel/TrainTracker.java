@@ -26,17 +26,19 @@ import shared.Environment;
 
 public class TrainTracker{
     private static TrainTracker tracker;
-    private static ArrayList<Train> trainList;
-    //private static Train[] trainList;
+    //private static ArrayList<Train> trainList;
+    private static Train[] trainList;
     private static int trainId;
 
     /**
      * Train Tracker singalton
+     * @return Train Tracker object
      */
     public static TrainTracker getTrainTracker(){
         if(tracker == null){
             tracker = new TrainTracker();
-            trainList = new ArrayList<Train>();
+            //trainList = new ArrayList<Train>();
+            trainList = new Train[100];
             trainId = 0;
         }
         return tracker;
@@ -44,56 +46,81 @@ public class TrainTracker{
 
     /**
      * CTC creates a new train
-     * @param  int blockId       Starting block id
-     * @return int    Train id
+     * @param  blockId  Starting block id
+     * @return Train id
      */
     public int createTrain(int blockId){
         int temp = trainId;
         Train newTrain = new Train(temp, blockId);
-        trainList.add(newTrain);
-        //trainList[temp] = newTrain;
+        //trainList.add(newTrain);
+        trainList[temp] = newTrain;
+        int i;
+        String[] guiList = new String[this.getSize()];
+        for(i = 0; i<100; i++){
+            if(trainList[i] != null){
+                Train addId = trainList[i];
+                String s = Integer.toString(addId.getTrainId());
+                guiList[i] = "Train " + s;
+            }
+        }
+        for(i = 0; i<100; i++){
+            if(trainList[i] != null){
+                Train addId = trainList[i];
+                addId.getGUI().trainIdPicker.setModel(new javax.swing.DefaultComboBoxModel<>(guiList));
+            }
+        }
+        newTrain.getGUI().trainIdPicker.setSelectedIndex(temp);
         trainId = trainId+1;
         return temp;
     }
 
     /**
      * JUnit testing method for createTrain
-     * @param  int blockId       Starting block id
-     * @return int    Train id
+     * @param  blockId Starting block id
+     * @return Train id
      */
     public int createTrainTest(int blockId){
         int temp = trainId;
         TrackModel tm;
         tm = TrackModel.getTrackModel();
         Train newTrain = new Train(temp, blockId, tm,1);
-        trainList.add(newTrain);
-        //trainList[temp] = newTrain;
+        //trainList.add(newTrain);
+        trainList[temp] = newTrain;
         trainId = trainId+1;
         return temp;
     }
 
     /**
      * Gets the train object specified
-     * @param  int retrieveTrain train id of the train to get
-     * @return Train returns a train model object
+     * @param  retrieveTrain train id of the train to get
+     * @return A train model object
      */
     public Train getTrain(int retrieveTrain){
-        //Train trainModel = trainList[retrieveTrain];
-        Train trainModel = trainList.get(retrieveTrain);
+        Train trainModel = trainList[retrieveTrain];
+        //Train trainModel = trainList.get(retrieveTrain);
         return trainModel;
     }
     /*
     public void removeTrain(int removeTrainId){
         removeTrainId = removeTrainId - 1;
         trainList.remove(removeTrainId);
+        trainList[removeTrainId] = null;
     }*/
 
     /**
      * Size of the arrayList of Trains
-     * @return int returns the size of the train arrayList
+     * @return the size of the train arrayList
      */
     public int getSize(){
-        return trainList.size();
+        int i = 0;
+        int num = 0;
+        while(i < trainList.length){
+            if(trainList[i] != null){
+                num++;
+            }
+            i++;
+        }
+        return num;
     }
 
     public static void main(String args[]){

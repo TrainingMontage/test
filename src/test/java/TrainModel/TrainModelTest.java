@@ -39,10 +39,12 @@ public class TrainModelTest{
     /*
     @Test
     public void testGetVelocity(){
+        TrackModel _tm = mock(TrackModel.class);
+        testTrainObject = new Train(1, 0, _tm, 1);
+        when(testTrainObject._tm.getGrade(1)).thenReturn(0.5);
         testTrainObject.trainController = mock(TrainController.class);
         when(testTrainObject.trainController.getPower()).thenReturn(10000.0);
-        testTrainObject.grade = 0.5;
-        testTrainObject.numPassengers = 222;
+        testTrainObject.numPassengers = 444;
         testTrainObject.velocity = 10;
         assertEquals(testTrainObject.getVelocity(), testTrainObject.getCurrentVelocity(), delta);
     }
@@ -50,7 +52,7 @@ public class TrainModelTest{
     @Test
     public void testSetPassengers(){
         //Too Many Passengers set
-        assertEquals(testTrainObject.setPassengers(500), 222);
+        assertEquals(testTrainObject.setPassengers(500), 444);
         //negative number of passengers
         assertEquals(testTrainObject.setPassengers(-100), 0);
         //base case
@@ -59,7 +61,7 @@ public class TrainModelTest{
 
     @Test
     public void testGetMaxPassengers(){
-        assertEquals(testTrainObject.getMaxPassengers(), 222);
+        assertEquals(testTrainObject.getMaxPassengers(), 444);
     }
 
     @Test
@@ -71,21 +73,28 @@ public class TrainModelTest{
     public void testGetMaxPower(){
         assertEquals(testTrainObject.getMaxPower(), 120000.0, delta);
     }
-    /*
+/*
     @Test
     public void testSetPower(){
+        TrackModel _tm = mock(TrackModel.class);
+        testTrainObject = new Train(1, 0, _tm, 1);
+        when(testTrainObject._tm.getGrade(testTrainObject.getTrainId())).thenReturn(0.5);
         testTrainObject.setPower(100000);
         assertEquals(testTrainObject.getPower(),100000, delta);
     }
     @Test
     public void testSetPowerNegative(){
+        TrackModel _tm = mock(TrackModel.class);
+        testTrainObject = new Train(1, 0, _tm, 1);
+        when(testTrainObject._tm.getGrade(testTrainObject.getTrainId())).thenReturn(0.5);
         testTrainObject.setPower(-100000);
         assertEquals(testTrainObject.getPower(),0, delta);
     }
     @Test
     public void testSetPowerTooLarge(){
-        TrackModel tm = mock(TrackModel.class);
-        when(tm.getGrade(testTrainObject.getTrainId())).thenReturn(0.5);
+        TrackModel _tm = mock(TrackModel.class);
+        testTrainObject = new Train(1, 0, _tm, 1);
+        when(testTrainObject._tm.getGrade(testTrainObject.getTrainId())).thenReturn(0.5);
         testTrainObject.setPower(300000);
         assertEquals(testTrainObject.getPower(), 120000, delta);
     }
@@ -137,9 +146,11 @@ public class TrainModelTest{
     /*
     @Test
     public void testUpdateSpeed(){
+        TrackModel _tm = mock(TrackModel.class);
+        testTrainObject = new Train(1, 0, _tm, 1);
+        when(testTrainObject.getGrade()).thenReturn(0.5);
         testTrainObject.velocity = 10.0;
-        testTrainObject.grade = 0.5;
-        testTrainObject.numPassengers = 222;
+        testTrainObject.numPassengers = 444;
         testTrainObject.updateSpeed(10000);
         //testTrainObject.updateSpeed(10000) = 10.2454971747 (hand calculation)
         assertEquals(10.2454971747, testTrainObject.getCurrentVelocity(), delta);
@@ -226,8 +237,7 @@ public class TrainModelTest{
         testTrainObject.velocity = 10;
         TrainController controller = mock(TrainController.class);
         when(controller.getPower()).thenReturn(10000.0);
-        testTrainObject.grade = 0.5;
-        testTrainObject.numPassengers = 222;
+        testTrainObject.numPassengers = 444;
         assertEquals(testTrainObject.getDisplacement(), 57.477, delta);
         */
     }

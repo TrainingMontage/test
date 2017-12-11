@@ -30,7 +30,7 @@ public class Train {
     int trainId;
     int blockId;
     protected TrainController trainController;
-
+    protected TrackModel _tm;
     protected int authority;
     protected double power; //W
     protected double maxPower = 120000.0; //Watts
@@ -39,8 +39,9 @@ public class Train {
     protected double maxVelocity = 70.0; //km/h
     protected double mass = 37103.86 * 2; //kg empty train 40.9 tons 2 cars;
     protected int numCrew = 1;
+    protected int numCars = 2;
     protected int numPassengers;
-    protected int maxPassengers = 222;
+    protected int maxPassengers = 444; //222 for one car 444 for two
     protected double passengerWeight = 88.9; //kg average weight of male in America
     protected double totalMass;
     protected double friction = 0.47;
@@ -76,7 +77,7 @@ public class Train {
         this(newTrainId, newblockId, TrackModel.getTrackModel());
     }
 
-    public Train(int newTrainId, int newblockId, TrackModel tm){
+    public Train(int newTrainId, int newblockId, TrackModel _tm){
         //trainController = new TrainController(this, trainId);
         trainId = newTrainId;
         blockId = newblockId;
@@ -104,7 +105,7 @@ public class Train {
         when(trainController.getPower()).thenReturn(50.0);
 
         // register with track
-        tm.initializeTrain(this.trainId, this.blockId);
+        _tm.initializeTrain(this.trainId, this.blockId);
 
 
         //GUI
@@ -117,6 +118,7 @@ public class Train {
         gui.massDisplayLabel.setText(String.format("%.2f", mass*2.20462) + "lb");
         gui.crewDisplayLabel.setText(numCrew + "");
         gui.passengersDisplayLabel.setText(numPassengers+"");
+        gui.numCarsDisplayLabel.setText(numCars +"");
         gui.messageBoardDisplayLabel.setText("Nothing To Display Currently");
         if(leftDoor == 0){
             gui.leftDoorDisplayLabel.setText("Closed");
@@ -148,7 +150,7 @@ public class Train {
 
 
     }
-    public Train(int newTrainId, int newblockId, TrackModel tm, int test){
+    public Train(int newTrainId, int newblockId, TrackModel _tm, int test){
         //Test Constructor
         //trainController = new TrainController(this, trainId);
         trainId = newTrainId;
@@ -177,27 +179,47 @@ public class Train {
         when(trainController.getPower()).thenReturn(50.0);
 
         // register with track
-        tm.initializeTrain(this.trainId, this.blockId);
+        _tm.initializeTrain(this.trainId, this.blockId);
 
     }
 
+    public TrainModelGUI getGUI(){
+        return gui;
+    }
+
+    /**
+     * @return The train id of the object.
+     */
     public int getTrainId(){
         return trainId;
     }
+
+    /**
+     * Method for the Train Controller to get the current power
+     * @return The current power
+     */
     public double getPower(){
         return power;
     }
 
+    /**
+     * @return current velocity of the train
+     */
     public double getCurrentVelocity(){
         return velocity;
     }
 
     public double getVelocity(){
         double newPower = trainController.getPower();
-        setPower(newPower);
+        setPower(newPower,0);
         return velocity;
     }
 
+    /**
+     * Method for the Track Model to set the number of passengers in the train
+     * @param  passengers The number of passengers that will be boarding
+     * @return Number of passengers
+     */
     public int setPassengers(int passengers){
         if(passengers > maxPassengers){
             numPassengers = maxPassengers;
@@ -215,6 +237,9 @@ public class Train {
         return numPassengers;
     }
 
+    /**
+     * @return The number of passengers on the train currently
+     */
     public int getPassengers(){
         return numPassengers;
     }
@@ -225,6 +250,10 @@ public class Train {
     }
     */
 
+    /**
+     * Method for the Train Controller to set the display when approaching stops.
+     * @param message The message to be displayed
+     */
     public void setDisplay(String message){
         //send to GUI
         gui.messageBoardDisplayLabel.setText(message);
@@ -232,21 +261,41 @@ public class Train {
 
     }
 
+    /**
+     * @return The max number of passengers allowed on the train.
+     */
     public int getMaxPassengers(){
         return maxPassengers;
     }
 
+    /**
+     * Method for the Track Model to get the length of the train
+     * @return The length of the train
+     */
     public double getLength(){
         return length;
     }
+
+    /**
+     * Helper method when setting the power
+     * @return The max power the train can handle
+     */
     public double getMaxPower(){
         return maxPower;
     }
 
+    /**
+     * Method for the train controller to see if the train has changed blocks
+     * @return true if changed else false
+     */
     public boolean blockChange(){
         return TrackModel.getTrackModel().getTrainBlockChange(trainId);
     }
 
+    /**
+     * Method for the Train Controller to see the authority
+     * @return a boolean from the Track Model
+     */
     public boolean getAuthority(){
         boolean authority = TrackModel.getTrackModel().getTrainAuthority(trainId);
         if(gui != null){
@@ -260,6 +309,10 @@ public class Train {
         }
     }
 
+    /**
+     * Method for the Train Controller to receive the suggested speed
+     * @return suggested speed from Track Models
+     */
     public double getSuggestedSpeed(){
         if(signalFailure){
             return 0.0;
@@ -269,15 +322,31 @@ public class Train {
         }
     }
 
+    /**
+     * Method for the Train Controller to get the beacon information
+     * @return an integer from the Track Model
+     */
     public int getBeacon(){
         return TrackModel.getTrackModel().getTrainBeacon(trainId);
     }
+
+    /**
+     * Helper method to get the grade from the Track Model
+     * @return the grade from the Track Model
+     */
     public double getGrade(){
         grade = TrackModel.getTrackModel().getGrade(trainId);
         return grade;
     }
 
-    public void setPower(double powerInput){
+    /**
+     * Method for the Train Controller to set the power for the train
+     * @param powerInput the power to be set
+     */
+    public void setPower(double powerInput, int test){
+        if(test == 1){
+            when(trainController.getPower()).thenReturn(powerInput);
+        }
         double forceApplied;
         double declaration;
         if(velocity == 0){
@@ -309,19 +378,31 @@ public class Train {
             updateSpeed(forceApplied);
         }
         if(gui != null){
-            gui.powerDisplayLabel.setText(String.format("%.2f", getPower()) + "W");
+            gui.powerDisplayLabel.setText(String.format("%.2f", getPower()/1000) + "W");
         }
     }
 
+    /**
+     * Calculates the sin of an angle
+     * @param  gradePercentage the percent of grade of the current block
+     * @return the sin of an angle after converting it from a percentage
+     */
     public double sine(double gradePercentage){
         double angle = Math.atan(gradePercentage/100);
         return Math.sin(angle);
     }
 
+    /**
+     * @return boolean returns the current status of the service brakes
+     */
     public boolean getServiceBrakes(){
         return serviceBrake;
     }
 
+    /**
+     * Turn service brakes on or off
+     * @param status the new status to be set
+     */
     public void setServiceBrakes(boolean status){
         if(status == true){
             serviceBrake = true;
@@ -331,10 +412,17 @@ public class Train {
         }
     }
 
+    /**
+     * @return boolean returns the current status of the emergency brakes
+     */
     public boolean getEmergencyBrakes(){
         return emergencyBrake;
     }
 
+    /**
+     * Turn emergency brakes on or off
+     * @param status the new status to be set
+     */
     public void setEmergencyBrakes(boolean status){
         if(status == true){
             emergencyBrake = true;
@@ -352,15 +440,26 @@ public class Train {
         }
     }
 
+    /**
+     * Method for the Train Controller to get the emergency brake rates of the train
+     * @return The rate of declaration when emergency brakes are applied
+     */
     public double getEmergencyBrakeRate(){
         return emergencyBrakeRate;
     }
 
+    /**
+     * Method for the Train Controller to get the service brake rates of the train
+     * @return The rate of declaration when service brakes are applied
+     */
     public double getServiceBrakeRate(){
         return serviceBrakeRate;
     }
 
-
+    /**
+     * Helper method to update the velocity after given a power.
+     * @param forceApplied the force after a new power is set.
+     */
     public void updateSpeed(double forceApplied){
         double nforce = totalMass*gravity*friction*sine(getGrade());
         totalForce = forceApplied - nforce;
@@ -382,27 +481,62 @@ public class Train {
 
     }
 
+    /**
+     *
+     * @return The current temperature of the train.
+     */
     public double getCurrentTemperature(){
         return temperature;
     }
 
+    /**
+     *
+     * @param newTemp desired new inside temperature
+     */
     public void setTemperature(double newTemp){
         temperature = newTemp;
     }
 
+    /**
+     * @return true if on and false if off
+     */
     public boolean getLights(){
         return lights;
     }
 
+    /**
+     * Change the status of the lights
+     * @param  status The new status of the lights
+     * @return true if on and false if off
+     */
     public boolean setLights(boolean status){
         lights = status;
+        if(gui != null){
+            if(getLights() == true){
+                gui.lightsDisplayLabel.setText("ON");
+            }
+            else if(getLights() == false){
+                gui.lightsDisplayLabel.setText("OFF");
+            }
+            else{
+                gui.lightsDisplayLabel.setText("--");
+            }
+        }
         return getLights();
     }
 
+    /**
+     * @return 0 if closed else 1 if open
+     */
     public int getLeftDoor(){
         return leftDoor;
     }
 
+    /**
+     * Change the status of the left door
+     * @param  newStatus The new status that the left door should be set to
+     * @return 0 if close else 1 if open
+     */
     public int setLeftDoor(int newStatus){
         //0 is closed
         //1 is open
@@ -412,13 +546,33 @@ public class Train {
         else{
             leftDoor = 0;
         }
+        if(gui != null){
+            if(getLeftDoor() == 1){
+                gui.leftDoorDisplayLabel.setText("OPEN");
+            }
+            else if(getLeftDoor() == 0){
+                gui.leftDoorDisplayLabel.setText("CLOSED");
+            }
+            else{
+                gui.leftDoorDisplayLabel.setText("--");
+            }
+        }
+
         return leftDoor;
     }
 
+    /**
+     * @return 0 if closed else 1 if open
+     */
     public int getRightDoor(){
         return rightDoor;
     }
 
+    /**
+     * Change the status of the right door
+     * @param  newStatus   The new status that the right door should be set to
+     * @return 0 if closed else 1 if open
+     */
     public int setRightDoor(int newStatus){
         //0 is closed
         //1 is open
@@ -428,30 +582,64 @@ public class Train {
         else{
             rightDoor = 0;
         }
+        if(gui != null){
+            if(getRightDoor() == 1){
+                gui.rightDoorDisplayLabel.setText("OPEN");
+            }
+            else if(getRightDoor() == 0){
+                gui.rightDoorDisplayLabel.setText("CLOSED");
+            }
+            else{
+                gui.rightDoorDisplayLabel.setText("--");
+            }
+        }
         return rightDoor;
     }
 
-
+    /**
+     * Helper method to calculate displacement
+     * @return The last updated time
+     */
     public int getTime(){
         return time;
     }
 
+    /**
+     * Turn signal failure on/off
+     * @param status new status of the signal failure mode
+     */
     public void signalFailureMode(boolean status){
         signalFailure = status;
+        setEmergencyBrakes(status);
     }
 
+    /**
+     * Turn brake failure on/off
+     * @param status new status of the brake failure mode
+     */
     public void brakeFailureMode(boolean status){
-        emergencyBrake = true;
+        brakeFailure = status;
+        setEmergencyBrakes(status);
     }
 
+    /**
+     * Turn engine failure on/off
+     * @param status new status of the engine failure mode
+     */
     public void engineFailureMode(boolean status){
-        emergencyBrake = true;
+        engineFailure = status;
+        setEmergencyBrakes(status);
     }
 
+    /**
+     * Calculates the distances traveled from the last time it was called
+     * @return The distance traveled returned to the Track Model
+     */
     public double getDisplacement(){
         int lastTime = getTime();
         int currentTime = Environment.clock;
         double dVelocity = getVelocity();
+
         double displacement;
         displacement = (dVelocity * (currentTime - lastTime) + (.5*(acceleration)*Math.pow((currentTime-lastTime),2)));
         time = Environment.clock;

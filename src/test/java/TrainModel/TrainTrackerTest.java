@@ -16,6 +16,7 @@ public class TrainTrackerTest{
         int get1 = tracker.getTrainTracker().getTrain(test1).getTrainId();
         int get2 = tracker.getTrainTracker().getTrain(test2).getTrainId();
         int get3 = tracker.getTrainTracker().getTrain(test3).getTrainId();
+        int size = tracker.getSize();
 
         assertEquals(0, test1);
         assertEquals(1, test2);
@@ -23,6 +24,7 @@ public class TrainTrackerTest{
         assertEquals(0, get1);
         assertEquals(1, get2);
         assertEquals(2, get3);
+        assertEquals(3, size);
         /*
         tracker.getTrainTracker().removeTrain(1);
         int check = tracker.getTrainTracker().getSize();
