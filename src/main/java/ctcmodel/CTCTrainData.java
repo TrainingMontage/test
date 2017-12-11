@@ -27,6 +27,7 @@ public class CTCTrainData{
     private int dataOrigin;
     private int dataDestination;
     private ArrayList<Integer> history;
+    private int lastVisited;
     
     protected CTCTrainData(){
         dataTrainID = -1;
@@ -36,6 +37,7 @@ public class CTCTrainData{
         dataOrigin = -1;
         dataDestination = -1;
         history = new ArrayList<Integer>();
+        lastVisited = -1;
     }
     protected CTCTrainData(int trainID, int blockID, double speed, String authority, int origin, int destination){
         dataTrainID = trainID;
@@ -45,6 +47,7 @@ public class CTCTrainData{
         dataOrigin = origin;
         dataDestination = destination;
         history = new ArrayList<Integer>();
+        lastVisited = -1;
     }
     
     public int getTrainID(){
@@ -96,5 +99,10 @@ public class CTCTrainData{
     public int historySize(){
         return history.size();
     }
-    
+    public int getLastVisited(){
+        return lastVisited;
+    }
+    public void setLastVisited(int visited){
+        lastVisited = visited;
+    }
 }
