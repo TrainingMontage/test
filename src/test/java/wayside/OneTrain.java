@@ -21,18 +21,20 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import trackmodel.TrackModel;
+import org.mockito.Mockito;
+
+import trackmodel.TrackModelInterface;
 
 public class OneTrain {
 
-    final boolean[] OCC = new boolean[] {
-        false, true, false, false, false, true, false, false, false
-    };
+    WCStaticTrack st = new WCStaticTrack(false);
+    WCTrackModel tm = new WCTrackModel(st.trackLen());
+    Decider decider = new Decider(tm, st);
+    final int[] speed = {0,1,2,3,4,5,6,7,8};
 
-    @BeforeClass
-    public static void init() {
-        TrackModel.initWithTestData();
-        WaysideController.initTest();
+    public OneTrain() {
+        tm.occupy(1, true);
+        tm.occupy(5, true);
     }
 
     @Test
@@ -41,26 +43,15 @@ public class OneTrain {
             false, true, true, true,
             false, true, false, false, false
         };
-        try {
-            WaysideController.checkStraightLine(authority, OCC);
-            Assert.assertTrue(true);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assert.fail(e.getMessage());
-        }
+        Assert.assertTrue(decider.suggest(authority, speed));
     }
 
     @Test
     public void unsafeStriaghtLine() {
         boolean[] authority = new boolean[] {
             false, true, true, true,
-            true, true, false, false, false
+            true, true, true, false, false
         };
-        try {
-            WaysideController.checkStraightLine(authority, OCC);
-            Assert.fail("Failed to find unsafe path between 2 occupied blocks.");
-        } catch (Exception e) {
-            Assert.assertTrue(true);
-        }
+        Assert.assertFalse(decider.suggest(authority, speed));
     }
 }

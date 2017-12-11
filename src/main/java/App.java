@@ -59,15 +59,15 @@ public class App {
      * Here we have the all-important entry point into our application.
      *
      * @param args Command-line arguments.
+     * @throws Exception Either we are unable to read in track model file,
+     *      or the main event loop was interrupted.
      */
     public static void main(String[] args) throws Exception {
         //init each module
         TrackModel.init();
         if (args.length > 0) {
-            // System.out.println("importing " + args[0]);
+            System.out.println("importing " + args[0]);
             TrackModel.getTrackModel().importTrack(new File(args[0]));
-            // System.out.println(TrackModel.getTrackModel().getStaticBlock(151).getStaticSwitch());
-            // System.out.println(Arrays.toString(TrackModel.getTrackModel().getBlockIds().toArray()));
         } else {
             JFileChooser chooser = new JFileChooser();
             int returnValue = chooser.showOpenDialog(null);
