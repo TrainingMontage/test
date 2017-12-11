@@ -133,6 +133,10 @@ public class Decider {
         return true;
     }
 
+    void setStaticTrack(WCStaticTrack st) {
+        this.st = st;
+    }
+
     boolean isOccupied(int blockId) {
         return tm.isOccupied(blockId);
     }
