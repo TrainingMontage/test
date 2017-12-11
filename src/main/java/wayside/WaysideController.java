@@ -126,6 +126,27 @@ public class WaysideController {
         return speed;
     }
 
+    /** For debuging. */
+    private static void print(Suggestion[] suggestion) {
+        for (Suggestion s: suggestion) {
+            System.err.printf(
+                "Suggestion<blockId: %d, speed: %d, authority: %s\n",
+                s.blockId, s.speed, show(s.authority)
+            );
+        }
+    }
+
+    private static String show(int[] a) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (int elem: a) {
+            sb.append(elem);
+            sb.append(" ");
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
     /**
      * How CTC presents a suggestion of speed and authority for each train.
      * The form of this suggestion can be found in the {@link shared.Suggestion} class.
