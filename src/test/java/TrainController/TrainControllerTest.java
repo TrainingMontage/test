@@ -100,25 +100,25 @@ public class TrainControllerTest {
 //        fail("getPower failure.");
     }
     
-    /**
-     * Test of TestBeacon method, of class TestBeacon.
-     */
-    @Test
-    public void testBeacons000() {
-        System.out.println("Beacons");
-        // This is a beacon on switch one with a station upcoming with no doors opening
-        int beacon = 32769 + 268566528;
-        try {
-            TrainBeacon instance = new TrainBeacon(beacon);
-            assertEquals(true, instance.isStation());
-            assertEquals(true, instance.isSwitch());
-            assertEquals(0, instance.getDoors());
-            assertEquals(2, instance.getStationID());
-            assertEquals(1, instance.getSwitchID());
-        } catch(BadBeaconException b) {
-            fail("testBeacon Failure");
-        }
-        
-    }
+//    /**
+//     * Test of TestBeacon method, of class TestBeacon.
+//     */
+//    @Test
+//    public void testBeacons000() {
+//        System.out.println("Beacons");
+//        // This is a beacon on switch one with a station upcoming with no doors opening
+//        int beacon = 32769 + 268566528;
+//        try {
+//            TrainBeacon instance = new TrainBeacon(beacon);
+//            assertEquals(true, instance.isStation());
+//            assertEquals(true, instance.isSwitch());
+//            assertEquals(0, instance.getDoors());
+//            assertEquals(2, instance.getStationID());
+//            assertEquals(1, instance.getSwitchID());
+//        } catch(BadBeaconException b) {
+//            fail("testBeacon Failure");
+//        }
+//        
+//    }
     
 }
