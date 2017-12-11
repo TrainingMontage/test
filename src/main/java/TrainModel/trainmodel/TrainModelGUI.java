@@ -114,7 +114,7 @@ public class TrainModelGUI extends javax.swing.JFrame {
         speedLimitLabel = new javax.swing.JLabel();
         speedLimitDisplay = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
         setResizable(true);
 
         passengersDisplayLabel.setBackground(new java.awt.Color(183, 183, 183));
@@ -385,7 +385,7 @@ public class TrainModelGUI extends javax.swing.JFrame {
         jLabel44.setBackground(new java.awt.Color(234, 153, 153));
         jLabel44.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
         jLabel44.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel44.setText("Set Power(W)");
+        jLabel44.setText("Set Power(kW)");
         jLabel44.setOpaque(true);
 
         setPowerInput.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
@@ -881,55 +881,116 @@ public class TrainModelGUI extends javax.swing.JFrame {
 
     private void applyChangesButtonActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+        if(debugModeOnButton.isSelected()){
+            double pInput = Double.parseDouble(setPowerInput.getText());
+            double powerInput = pInput*1000;
+            myTrain.setPower(powerInput,1);
+        }
+        else{
+            double pInput = Double.parseDouble(setPowerInput.getText());
+            double powerInput = pInput*1000;
+            myTrain.setPower(powerInput,0);
+        }
 
     }
 
     private void trainIdPickerActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+        String s = trainIdPicker.getSelectedItem().toString();
+        int id = Integer.parseInt(""+s.charAt(6));
+        Train tempTrain = TrainTracker.getTrainTracker().getTrain(id);
+        tempTrain.getGUI().setVisible(true);
     }
 
+    boolean isFirstClick3 = true;
     private void brakeFailureActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+        if(isFirstClick3)
+        {
+             myTrain.brakeFailureMode(true);
+             isFirstClick3 = false;
+        }
+        else
+        {
+             myTrain.brakeFailureMode(false);
+             isFirstClick3 = true;
+        }
     }
 
+    boolean isFirstClick1 = true;
     private void engineFailureActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+        if(isFirstClick1)
+        {
+             myTrain.engineFailureMode(true);
+             isFirstClick1 = false;
+        }
+        else
+        {
+             myTrain.engineFailureMode(false);
+             isFirstClick1 = true;
+        }
     }
 
+    boolean isFirstClick2 = true;
     private void signalFailureActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+        if(isFirstClick2)
+        {
+             myTrain.signalFailureMode(true);
+             isFirstClick2 = false;
+        }
+        else
+        {
+             myTrain.signalFailureMode(false);
+             isFirstClick2 = true;
+        }
     }
 
     private void leftOpenActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+        if(debugModeOnButton.isSelected()){
+            myTrain.setLeftDoor(1);
+        }
     }
 
     private void leftCloseActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+        if(debugModeOnButton.isSelected()){
+            myTrain.setLeftDoor(0);
+        }
     }
 
     private void rightOpenActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+        if(debugModeOnButton.isSelected()){
+            myTrain.setRightDoor(1);
+        }
     }
 
     private void rightCloseActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+        if(debugModeOnButton.isSelected()){
+            myTrain.setRightDoor(0);
+        }
     }
 
     private void lightsOnActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
+        if(debugModeOnButton.isSelected()){
+            myTrain.setLights(true);
+        }
     }
 
     private void lightsOffActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
-    }
-
-    private void emergencyBrakeButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        // TODO add your handling code here:
+        if(debugModeOnButton.isSelected()){
+            myTrain.setLights(false);
+        }
     }
 
     private boolean isFirstClick = true;
-    private void eBrakeButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    private void emergencyBrakeButtonActionPerformed(java.awt.event.ActionEvent evt) {
         // TODO add your handling code here:
         if(isFirstClick)
         {
@@ -941,6 +1002,10 @@ public class TrainModelGUI extends javax.swing.JFrame {
              myTrain.setEmergencyBrakes(false);
              isFirstClick = true;
         }
+    }
+
+    private void eBrakeButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        // TODO add your handling code here:
     }
 
     /**
