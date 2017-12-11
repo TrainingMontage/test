@@ -27,9 +27,9 @@ public class GUI {
 
     protected static JButton reloadBlockInfo, submitChanges;
     protected static JLabel time, temp, switchId, switchBlocks, switchState, next;
-    protected static JCheckBox occupied, underground, heater, crossing, bidirectional, authority;
+    protected static JCheckBox occupied, underground, heater, crossing, crossing_active, bidirectional, authority;
     protected static JComboBox<Integer> blockIdComboBox;
-    protected static JTextArea speed_limit, length, grade, elevation, region, station, status, line, signal;
+    protected static JTextArea speed_limit, length, grade, elevation, region, station, beacon, status, line, signal;
     private static boolean triggerEvents = true;
 
     public static void addComponentsToPane(Container pane) {
@@ -156,21 +156,31 @@ public class GUI {
         c.gridy = 7;
         panelBlockInfo.add(heater, c);
 
-        label = new JLabel("Infrastructure:");
+        label = new JLabel("Beacon Value:");
         c.gridx = 0;
         c.gridy = 8;
+        panelBlockInfo.add(label, c);
+
+        beacon = new JTextArea("");
+        c.gridx = 1;
+        c.gridy = 8;
+        panelBlockInfo.add(beacon, c);
+
+        label = new JLabel("Infrastructure:");
+        c.gridx = 0;
+        c.gridy = 9;
         panelBlockInfo.add(label, c);
 
         station = new JTextArea("");
         c.gridwidth = 3;
         c.gridx = 1;
-        c.gridy = 8;
+        c.gridy = 9;
         panelBlockInfo.add(station, c);
         c.gridwidth = 1;
 
         button = new JButton("Reload Block Info");
         c.gridx = 0;
-        c.gridy = 9;
+        c.gridy = 10;
         c.gridwidth = 2;
         panelBlockInfo.add(button, c);
         c.gridwidth = 1;
@@ -244,24 +254,34 @@ public class GUI {
         c.gridy = 5;
         panelBlockInfo.add(crossing, c);
 
-        label = new JLabel("Authority:");
+        label = new JLabel("Crossing Active:");
         c.gridx = 2;
         c.gridy = 6;
+        panelBlockInfo.add(label, c);
+
+        crossing_active = new JCheckBox();
+        c.gridx = 3;
+        c.gridy = 6;
+        panelBlockInfo.add(crossing_active, c);
+
+        label = new JLabel("Authority:");
+        c.gridx = 2;
+        c.gridy = 7;
         panelBlockInfo.add(label, c);
 
         authority = new JCheckBox();
         c.gridx = 3;
-        c.gridy = 6;
+        c.gridy = 7;
         panelBlockInfo.add(authority, c);
 
         label = new JLabel("Signal:");
         c.gridx = 2;
-        c.gridy = 7;
+        c.gridy = 8;
         panelBlockInfo.add(label, c);
 
-        signal = new JTextArea("Green");
+        signal = new JTextArea("");
         c.gridx = 3;
-        c.gridy = 7;
+        c.gridy = 8;
         panelBlockInfo.add(signal, c);
 
         button = new JButton("Submit Changes");
@@ -271,7 +291,7 @@ public class GUI {
             }
         } );
         c.gridx = 2;
-        c.gridy = 9;
+        c.gridy = 10;
         c.gridwidth = 2;
         panelBlockInfo.add(button, c);
         c.gridwidth = 1;
@@ -517,6 +537,7 @@ public class GUI {
             station.setText(block.getStation());
             line.setText(block.getLine());
             next.setText(tm.getStaticBlock(block.getNextId()).toString());
+            beacon.setText(String.valueOf(block.getBeacon()));
 
             StaticSwitch sw = block.getStaticSwitch();
             if (sw != null) {
@@ -543,6 +564,7 @@ public class GUI {
             }
             authority.setSelected(tm.getAuthority(blockId));
             status.setText(tm.getStatus(blockId).name());
+            crossing_active.setSelected(tm.getCrossingState(blockId));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -587,6 +609,13 @@ public class GUI {
 
             // dynamic data
             tm.setOccupied(blockId, occupied.isSelected());
+            tm.setCrossingState(blockId, crossing_active.isSelected());
+            if (signal.getText().toLowerCase().equals("Green")) { // signal
+                tm.setSignal(blockId, true);
+            } else {
+                tm.setSignal(blockId, true);
+            }
+            tm.setAuthority(blockId, authority.isSelected());
         } catch (Exception e) {
             e.printStackTrace();
             refreshGUI();
