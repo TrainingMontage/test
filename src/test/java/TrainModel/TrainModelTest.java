@@ -1,3 +1,18 @@
+/*   ______                 _           _
+ *  /_  __/ _____  ____ _  (_) ____    (_) ____    ____ _
+ *   / /   / ___/ / __ `/ / / / __ \  / / / __ \  / __ `/
+ *  / /   / /    / /_/ / / / / / / / / / / / / / / /_/ /
+ * /_/   /_/     \__,_/ /_/ /_/ /_/ /_/ /_/ /_/  \__, /
+ *                                              /____/
+ *     __  ___                 __
+ *    /  |/  / ____    ____   / /_  ____ _  ____ _  ___
+ *   / /|_/ / / __ \  / __ \ / __/ / __ `/ / __ `/ / _ \
+ *  / /  / / / /_/ / / / / // /_  / /_/ / / /_/ / /  __/
+ * /_/  /_/  \____/ /_/ /_/ \__/  \__,_/  \__, /  \___/
+ *                                       /____/
+ *
+ * @author Parth Dadhania
+ */
 package trainmodel;
 
 import org.junit.*;
@@ -143,12 +158,12 @@ public class TrainModelTest{
     public void testGetServiceBrakeRate(){
         assertEquals(-1.2, testTrainObject.getServiceBrakeRate(), delta);
     }
-    /*
+
     @Test
     public void testUpdateSpeed(){
         TrackModel _tm = mock(TrackModel.class);
         testTrainObject = new Train(1, 0, _tm, 1);
-        when(testTrainObject.getGrade()).thenReturn(0.5);
+        when(testTrainObject._tm.getGrade(testTrainObject.getTrainId())).thenReturn(0.5);
         testTrainObject.velocity = 10.0;
         testTrainObject.numPassengers = 444;
         testTrainObject.updateSpeed(10000);
@@ -156,7 +171,7 @@ public class TrainModelTest{
         assertEquals(10.2454971747, testTrainObject.getCurrentVelocity(), delta);
 
     }
-    */
+
     @Test
     public void testGetCurrentTemperature(){
         assertEquals(testTrainObject.getCurrentTemperature(), 72.0, delta);
