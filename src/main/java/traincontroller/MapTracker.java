@@ -111,15 +111,15 @@ public class MapTracker {
     protected boolean blockChange() {
         if(theTrain.blockChange())
         {
+            lastBlock = currentBlock;
             if(startblock)
                 startblock = false;
             if(onSwitch)
             {
-                onSwitch = false;
-                
+                // wait for beacon
             }
-            lastBlock = currentBlock;
-            currentBlock = nextBlock;
+            else
+                currentBlock = nextBlock;
             System.out.println("block change detected");
             return true;
         }
