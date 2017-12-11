@@ -113,7 +113,7 @@ public class TrainControllerTest {
             assertEquals(true, instance.isStation());
             assertEquals(true, instance.isSwitch());
             assertEquals(0, instance.getDoors());
-            assertEquals(1, instance.getStationID());
+            assertEquals(2, instance.getStationID());
             assertEquals(1, instance.getSwitchID());
         } catch(BadBeaconException b) {
             fail("testBeacon Failure");
