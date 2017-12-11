@@ -85,7 +85,7 @@ public class MapTracker {
         // distance of that block.
         double distToStop = currentBlock.getLength();
         // Add the distance of the next block if we have authority
-        System.err.println("MAPTRACKER: AUTHORITY FOR BLOCK " + nextBlock.getId() + " IS " + theTrain.getAuthority());
+//        System.err.println("MAPTRACKER: AUTHORITY FOR BLOCK " + nextBlock.getId() + " IS " + theTrain.getAuthority());
         if(theTrain.getAuthority() && !noNext)
         {
             if(onSwitch)
