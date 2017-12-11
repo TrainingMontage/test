@@ -84,7 +84,7 @@ public class GlobalGUI {
         c.gridy = 5;
         JComboBox<String> multplier = new JComboBox<String>();
         multplier.setModel(new DefaultComboBoxModel<>(new String[] {
-            "1x", "5x", "10x", "20x"
+            "1x", "5x", "10x", "20x", "fast"
         }));
         multplier.addItemListener(new ItemListener() {
             private int getSleepTime(String selected) {
@@ -93,6 +93,7 @@ public class GlobalGUI {
                     case "5x": return 200;
                     case "10x": return 100;
                     case "20x": return 50;
+                    case "fast": return 1;
                 }
                 return 1000;
             }

@@ -24,25 +24,25 @@ public class TestPlcImport {
 
     @Test
     public void trackLen() {
-        Assert.assertEquals(153, plc.getTrackLen());
+        Assert.assertEquals(230, plc.getTrackLen());
     }
 
     @Test
     public void switchesFromFile() {
-        int[] expected = new int[] {1,2,10,11,12,13};
+        int[] expected = new int[] {1,2,10,11,12,13,8,9,3,4,5,6,7};
         Assert.assertArrayEquals(expected, plc.getSwitches());
     }
 
     @Test
     public void switchRoots() {
-        int[] expected = new int[] {13,28,57,63,77,85};
+        int[] expected = new int[] {13,28,57,63,77,85,169,162,180,186,190,197,205};
         Assert.assertArrayEquals(expected, plc.getSwitchBlocks());
     }
 
     @Test
     public void switchDefault() {
         Assert.assertArrayEquals(
-            new int[] {12,29,58,62,76,86},
+            new int[] {12,29,58,62,76,86,168,163,181,185,191,196,206},
             plc.getDefaultSwitches()
         );
     }
@@ -50,7 +50,7 @@ public class TestPlcImport {
     @Test
     public void switchActive() {
         Assert.assertArrayEquals(
-            new int[] {1,150,151,152,101,100},
+            new int[] {1,150,151,152,101,100,154,153,229,225,224,220,219},
             plc.getActiveSwitches()
         );
     }
@@ -58,7 +58,7 @@ public class TestPlcImport {
     @Test
     public void crossings() {
         Assert.assertArrayEquals(
-            new int[] {19},
+            new int[] {19, 200},
             plc.getCrossings()
         );
     }
@@ -101,18 +101,10 @@ public class TestPlcImport {
 
     @Test
     public void everything() {
-        Assert.assertEquals(153, plc.getTrackLen());
-        Assert.assertArrayEquals(
-            new int[] {1,2,10,11,12,13}, 
-            plc.getSwitches());
-        Assert.assertArrayEquals(
-            new int[] {13,28,57,63,77,85}, 
-            plc.getSwitchBlocks()
-        );
-        Assert.assertArrayEquals(
-            new int[] {12,29,58,62,76,86},
-            plc.getDefaultSwitches()
-        );
+        trackLen();
+        switchesFromFile();
+        switchRoots();
+        switchDefault();
         switchActive();
         crossings();
         getFirstPath();

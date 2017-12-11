@@ -523,6 +523,7 @@ public class TrackModel implements TrackModelInterface {
             block.setStation(rs.getString("station"));
             block.setLine(rs.getString("line"));
             block.setNextId(rs.getInt("next"));
+            block.setBeacon(rs.getInt("beacon"));
             block.setHeater(rs.getInt("heater") > 0 ? true : false);
             block.setCrossing(rs.getInt("rr_crossing") > 0 ? true : false);
             block.setUnderground(rs.getInt("underground") > 0 ? true : false);

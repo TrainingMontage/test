@@ -31,6 +31,10 @@ public class WCStaticTrack {
         new int[] {3,4,5,6,7,8,2,1}
     };
 
+    public static final String WHOLE_TRACK = "src/main/resources/wayside/track.plc";
+    public static final String GREEN_LINE = "src/main/resources/wayside/green.plc";
+    public static final String RED_LINE = "src/main/resources/wayside/red.plc";
+
     public WCStaticTrack(File file) throws IOException, FailedToReadPlc {
         PlcImporter plc = new PlcImporter(file);
         TRACK_LEN = plc.getTrackLen();
