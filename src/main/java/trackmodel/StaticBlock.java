@@ -26,6 +26,7 @@ public class StaticBlock {
     private String station, line;
     private StaticSwitch staticSwitch;
     private int nextId, previousId;
+    private int beacon;
     private boolean bidirectional, underground, heater, crossing, needsUpdate;
 
     /**
@@ -392,5 +393,26 @@ public class StaticBlock {
      */
     protected boolean needsUpdate() {
         return this.needsUpdate;
+    }
+
+    /**
+     * Sets the beacon value.
+     *
+     * @param      beacon    The beacon value
+     *
+     * @return     the new beacon
+     */
+    protected int setBeacon(int beacon) {
+        this.beacon = beacon;
+        return this.beacon;
+    }
+
+    /**
+     * Gets the beacon value.
+     *
+     * @return     The beacon value.
+     */
+    public int getBeacon() {
+        return this.beacon;
     }
 }
