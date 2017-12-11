@@ -48,23 +48,30 @@ public class CTCModel{
     private static ArrayList<Integer> bIds;
     
     //Train-To-Add (TTA) data (to ensure trains aren't added in the middle of an update)
-    private static int TTAstartingBlock;
-    private static double TTAspeed;
-    private static String TTAauthority;
-    private static int TTAdestBlock;
+    private static ArrayList<Integer> TTAstartingBlock;
+    private static ArrayList<Double> TTAspeed;
+    private static ArrayList<String> TTAauthority;
+    private static ArrayList<Integer> TTAdestBlock;
     
     //Train-To-Edit (TTE) data (to ensure trains aren't edited in the middle of an update)
-    private static int TTEtrainID;
-    private static double TTEspeed;
-    private static String TTEauthority;
-    private static int TTEdestBlock;
+    private static ArrayList<Integer> TTEtrainID;
+    private static ArrayList<Double> TTEspeed;
+    private static ArrayList<String> TTEauthority;
+    private static ArrayList<Integer> TTEdestBlock;
     
     private CTCModel(){
         //trainTracker = atrainTracker;
         last_clock = 0;
         suggestions = new ArrayList<Suggestion>();
         trainData = new ArrayList<CTCTrainData>();
-        TTAauthority = null;
+        TTAstartingBlock = new ArrayList<Integer>();
+        TTAspeed = new ArrayList<Double>();
+        TTAauthority = new ArrayList<String>();
+        TTAdestBlock = new ArrayList<Integer>();
+        TTEtrainID = new ArrayList<Integer>();
+        TTEspeed = new ArrayList<Double>();
+        TTEauthority = new ArrayList<String>();
+        TTEdestBlock = new ArrayList<Integer>();
     }
     
     public static void init(){
@@ -118,46 +125,54 @@ public class CTCModel{
         addSuggestion(trainID, suggestedSpeed, suggestedAuth);
         return trainID;
         */
-        TTAauthority = suggestedAuth;
-        TTAstartingBlock = startingBlockID;
-        TTAspeed = suggestedSpeed;
-        TTAdestBlock = destBlockID;
+        TTAauthority.add(suggestedAuth);
+        TTAstartingBlock.add(startingBlockID);
+        TTAspeed.add(suggestedSpeed);
+        TTAdestBlock.add(destBlockID);
     }
     public static void editTrain(int trainID, double suggestedSpeed,
                                  String suggestedAuth, int destBlockID){
-        TTEtrainID = trainID;
-        TTEauthority = suggestedAuth;
-        TTEspeed = suggestedSpeed;
-        TTEdestBlock = destBlockID;
+        System.out.println("adding to edit train queue...");
+        TTEtrainID.add(trainID);
+        TTEauthority.add(suggestedAuth);
+        TTEspeed.add(suggestedSpeed);
+        TTEdestBlock.add(destBlockID);
     }
     private static void addTrain(){
-        if(TTAauthority != null){
-            int trainID = TrainTracker.getTrainTracker().createTrain(TTAstartingBlock);
-            trainData.add(new CTCTrainData(trainID, TTAstartingBlock, TTAspeed,
-                                           TTAauthority, TTAstartingBlock, TTAdestBlock));
-            addSuggestion(trainID, TTAspeed, TTAauthority);
+        while(TTAauthority.size() != 0){
+            int trainID = TrainTracker.getTrainTracker().createTrain(TTAstartingBlock.get(0));
+            trainData.add(new CTCTrainData(trainID, TTAstartingBlock.get(0), TTAspeed.get(0),
+                                           TTAauthority.get(0), TTAstartingBlock.get(0), TTAdestBlock.get(0)));
+            addSuggestion(trainID, TTAspeed.get(0), TTAauthority.get(0));
+            TTAspeed.remove(0);
+            TTAdestBlock.remove(0);
+            TTAstartingBlock.remove(0);
+            TTAauthority.remove(0);
         }
-        TTAauthority = null;
     }
-    private static void editTrain(){
-        if(TTEauthority != null){
+    protected static void editTrain(){
+        while(TTEauthority.size() != 0){
             //edit ctc train data
+            int trainId = TTEtrainID.get(0);
             for (CTCTrainData data: trainData){
-                if(data.getTrainID() == TTEtrainID){
-                    data.setSpeed(TTEspeed);
-                    data.setAuthority(TTEauthority);
-                    data.setDestination(TTEdestBlock);
+                if(data.getTrainID() == trainId){
+                    data.setSpeed(TTEspeed.get(0));
+                    data.setAuthority(TTEauthority.get(0));
+                    data.setDestination(TTEdestBlock.get(0));
                     break;
                 }
             }
             //edit suggestion
-            addSuggestion(TTEtrainID, TTEspeed, TTEauthority);
+            addSuggestion(trainId, TTEspeed.get(0), TTEauthority.get(0));
+            TTEspeed.remove(0);
+            TTEdestBlock.remove(0);
+            TTEtrainID.remove(0);
+            TTEauthority.remove(0);
         }
-        TTEauthority = null;
     }
     public static void addSuggestion(int trainID, double suggestedSpeed, String suggestedAuthority){
         //there are no checks for input correctness here because checkTrainInputs must be called before using this function
-        System.out.println("((("+suggestedAuthority);
+        //System.out.println("((("+suggestedAuthority);
         int blockID = -1;
         for (CTCTrainData data: trainData){
             if(data.getTrainID() == trainID){
@@ -196,6 +211,12 @@ public class CTCModel{
         if(suggestions.size() != 0){
             WaysideController.suggest(suggestions.toArray(new Suggestion[suggestions.size()]));
         }
+        for(int i = 0; i < suggestions.size(); i++){
+            int[] strarr = suggestions.get(i).authority;
+            for(int j = 0; j < strarr.length; j++){
+                System.out.println("from sugg"+i+" "+strarr[j]);
+            }
+        }
     }
     public static CTCTrainData getTrainData(int blockID){
         for (CTCTrainData data: trainData){
@@ -213,21 +234,31 @@ public class CTCModel{
         }
         return null;
     }
+    public static ArrayList<CTCTrainData> getAllTrainData(){
+        return trainData;
+    }
     public static void update(){
         int current_time = Environment.clock;
-        
-        //process any click events on the graph
-        CTCGUI.handleGraphEvents();
-        
+        System.out.println("------------------------ add Train ------------------------");
         //add a train if the user entered one during the last update
         addTrain();
         //edit a train if the user changed one during the last update
+        System.out.println("------------------------ edit Train ------------------------");
         editTrain();
         
+        System.out.println("------------------------ Update Track ------------------------");
         updateTrack();
         
-        //check that train hasn't left its block
+        //process any click events (also any routing) on the graph
+        //update track must be called before this so CTC internal data matches other module data
+        System.out.println("------------------------ Route Trains ------------------------");
+        CTCGUI.handleGraphEvents();
         
+        //edit a train if it was changed during routing
+        System.out.println("------------------------ edit Train ------------------------");
+        editTrain();
+        
+        System.out.println("------------------------ send Sugg ------------------------");
         sendSuggestions();
         
         last_clock = current_time;
@@ -262,12 +293,12 @@ public class CTCModel{
                         break;
                     }
                 }
-                System.out.println("inHistory "+inHistory);
-                System.out.println("data null? "+(data==null));
+                //System.out.println("inHistory "+inHistory);
+                //System.out.println("data null? "+(data==null));
                 if(data == null && !inHistory){
                     //was unoccupied before, update traindata
                     //find neighbors
-                    System.out.println("here");
+                    //System.out.println("here");
                     //classSet = false;
                     ArrayList<Edge> neighList = new ArrayList<Edge>();
                     Edge e = CTCGUI.getGraph().getEdge(""+blockId);
@@ -276,7 +307,7 @@ public class CTCModel{
                         Edge ee = (Edge) edgeIter.next();
                         if(!ee.equals(e)){
                             neighList.add(ee);
-                            System.out.println("** "+ee.getId());
+                            //System.out.println("** "+ee.getId());
                         }
                     }
                     edgeIter = e.getNode1().getEdgeIterator();
@@ -284,7 +315,7 @@ public class CTCModel{
                         Edge ee = (Edge) edgeIter.next();
                         if(!ee.equals(e)){
                             neighList.add(ee);
-                            System.out.println("** "+ee.getId());
+                            //System.out.println("** "+ee.getId());
                         }
                     }
                     
@@ -295,7 +326,7 @@ public class CTCModel{
                     CTCTrainData dataTemp = null;
                     for(int i = 0; i < neighList.size(); i++){
                         for(int j = 0; j < trainData.size(); j++){
-                            System.out.println("^^"+neighList.get(i).getId()+" "+trainData.get(j).getBlockID());
+                            //System.out.println("^^"+neighList.get(i).getId()+" "+trainData.get(j).getBlockID());
                             if(Integer.parseInt(neighList.get(i).getId()) == trainData.get(j).getBlockID()){
                                 data2 = trainData.get(j);
                                 dataTemp = data2;
@@ -308,7 +339,7 @@ public class CTCModel{
                             dataTemp = null;
                         }
                     }
-                    System.out.println("-->numOccEdges"+numOccEdges);
+                    //System.out.println("-->numOccEdges"+numOccEdges);
                     if(numOccEdges > 1){
                         //if more than 1
                         throw new RuntimeException("Edges "+edgestr+
@@ -319,7 +350,7 @@ public class CTCModel{
                         //change blockid, change authority
                         int oldBlockId = data2.getBlockID();
                         String newAuth = "";
-                        System.out.println(")))"+data2.getAuthority());
+                        //System.out.println(")))"+data2.getAuthority());
                         if(data2.getAuthority().length() != 0){
                             String[] authArr = data2.getAuthority().split(",");
                             for(int i = 0; i < authArr.length; i++){
@@ -332,7 +363,7 @@ public class CTCModel{
                                 }
                             }
                         }
-                        System.out.println(")))"+newAuth);
+                        //System.out.println(")))"+newAuth);
                         data2.setAuthority(newAuth);
                         addSuggestion(data2.getTrainID(),data2.getSpeed(),newAuth);
                         //ensure the suggestion block changes
@@ -346,6 +377,7 @@ public class CTCModel{
                         }
                         data2.setBlockID(blockId);
                         data2.historyAdd(oldBlockId);
+                        data2.setLastVisited(oldBlockId);
                         allHistory.add(oldBlockId);
                     }else{
                         //else mark as broken
@@ -357,7 +389,7 @@ public class CTCModel{
                     element.setAttribute("ui.class", "occupied");
                     element.addAttribute("ui.label",element.getId()+"");
                 }
-                System.out.println("**CTC found block "+blockId+" occupied**");
+                //System.out.println("**CTC found block "+blockId+" occupied**");
             }else{
                 //returned unoccupied
                 if(allHistory.contains(blockId)){
