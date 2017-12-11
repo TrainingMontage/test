@@ -147,7 +147,9 @@ public class MapTracker {
     }
     
     protected void doSwitchBlock(int switchID) {
-        nextBlock = theTrack.getStaticSwitch(switchID).getActiveLeaf();
+//        nextBlock = theTrack.getStaticSwitch(switchID).getActiveLeaf();
+        currentBlock = theTrack.getStaticBlock(switchID);
+        getNextBlock();
         onSwitch = true;
     }
     

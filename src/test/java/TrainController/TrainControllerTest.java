@@ -96,5 +96,29 @@ public class TrainControllerTest {
         double expResult = 2429.9999999999995;
         double result = instance.getPower();
         assertEquals(expResult, result, 0.0);
-	}
+        // TODO review the generated test code and remove the default call to fail.
+//        fail("getPower failure.");
+    }
+    
+    /**
+     * Test of TestBeacon method, of class TestBeacon.
+     */
+    @Test
+    public void testBeacons000() {
+        System.out.println("Beacons");
+        // This is a beacon on switch one with a station upcoming with no doors opening
+        int beacon = 32769 + 268566528;
+        try {
+            TrainBeacon instance = new TrainBeacon(beacon);
+            assertEquals(true, instance.isStation());
+            assertEquals(true, instance.isSwitch());
+            assertEquals(0, instance.getDoors());
+            assertEquals(1, instance.getStationID());
+            assertEquals(1, instance.getSwitchID());
+        } catch(BadBeaconException b) {
+            fail("testBeacon Failure");
+        }
+        
+    }
+    
 }
