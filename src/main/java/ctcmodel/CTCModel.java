@@ -386,6 +386,15 @@ public class CTCModel{
             }
         }
     }
+    public static void getPassengers(){
+        for(CTCTrainData tdata: trainData){
+            int pass = TrackModel.getTrackModel().getTrainPassengers(tdata.getTrainID());
+            if(pass != 0){
+                CTCGUI.addPassEntry(pass);
+            }
+        } 
+    }
+    
     public static void update(){
         current_time = Environment.clock;
         
@@ -403,6 +412,9 @@ public class CTCModel{
         editTrain();
         
         updateTrack();
+        
+        //get passengers
+        getPassengers();
         
         //process any click events (also any routing) on the graph
         //update track must be called before this so CTC internal data matches other module data
@@ -431,6 +443,7 @@ public class CTCModel{
             element.setAttribute("track.occupied", new Boolean(occupied));
             boolean classSet = false;
             if(occupied){
+                //System.out.println("CTC found "+blockId+" occ");
                 CTCTrainData data = null;
                 boolean inHistory = false;
                 for(int i = 0; i < trainData.size(); i++){//these for loops will be expensive if there are a lot of trains but that probably won't be an issue
