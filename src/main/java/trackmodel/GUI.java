@@ -29,7 +29,7 @@ public class GUI {
     protected static JLabel time, temp, switchId, switchBlocks, switchState, next;
     protected static JCheckBox occupied, underground, heater, crossing, crossing_active, bidirectional, authority;
     protected static JComboBox<Integer> blockIdComboBox;
-    protected static JTextArea speed_limit, length, grade, elevation, region, station, status, line, signal;
+    protected static JTextArea speed_limit, length, grade, elevation, region, station, beacon, status, line, signal;
     private static boolean triggerEvents = true;
 
     public static void addComponentsToPane(Container pane) {
@@ -155,6 +155,16 @@ public class GUI {
         c.gridx = 1;
         c.gridy = 7;
         panelBlockInfo.add(heater, c);
+
+        label = new JLabel("Beacon Value:");
+        c.gridx = 0;
+        c.gridy = 8;
+        panelBlockInfo.add(label, c);
+
+        beacon = new JTextArea("");
+        c.gridx = 1;
+        c.gridy = 8;
+        panelBlockInfo.add(beacon, c);
 
         label = new JLabel("Infrastructure:");
         c.gridx = 0;
@@ -527,6 +537,7 @@ public class GUI {
             station.setText(block.getStation());
             line.setText(block.getLine());
             next.setText(tm.getStaticBlock(block.getNextId()).toString());
+            beacon.setText(String.valueOf(block.getBeacon()));
 
             StaticSwitch sw = block.getStaticSwitch();
             if (sw != null) {
