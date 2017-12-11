@@ -1260,12 +1260,6 @@ public class TrackModelTest {
         doReturn(50).when(_train).getMaxPassengers();
         doReturn(_train).when(spyTM).getTrainModelFromTrainTracker(1);
         
-        assertEquals(5, spyTM.getTrainPassengers(1)); // TODO change this to 0
-
-        // set reported passengers flag to false (simulate movement)
-        spyTM.setTrainReportedPassenger(1, false);
-
-        assertEquals(5, spyTM.getTrainPassengers(1));
         assertEquals(0, spyTM.getTrainPassengers(1));
 
     }
