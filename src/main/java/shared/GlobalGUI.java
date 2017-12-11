@@ -69,7 +69,8 @@ public class GlobalGUI {
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
-                    TrainController.initUI();
+                    // TrainController.initUI();
+					TrainController.show();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
