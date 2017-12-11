@@ -429,7 +429,7 @@ public class TrainModelGUI extends javax.swing.JFrame {
         jLabel49.setBackground(new java.awt.Color(153, 204, 255));
         jLabel49.setFont(new java.awt.Font("Arial", 1, 16)); // NOI18N
         jLabel49.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel49.setText("Set Authority (miles)");
+        jLabel49.setText("Set Authority");
         jLabel49.setOpaque(true);
 
         jLabel50.setBackground(new java.awt.Color(67, 67, 67));
@@ -553,7 +553,7 @@ public class TrainModelGUI extends javax.swing.JFrame {
         suggestedSpeedLabel.setBackground(new java.awt.Color(153, 204, 255));
         suggestedSpeedLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         suggestedSpeedLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        suggestedSpeedLabel.setText("Speed Limit");
+        suggestedSpeedLabel.setText("Suggested Speed");
         suggestedSpeedLabel.setOpaque(true);
 
         suggestedSpeedDisplay.setBackground(new java.awt.Color(183, 183, 183));
@@ -895,6 +895,8 @@ public class TrainModelGUI extends javax.swing.JFrame {
             double pInput = Double.parseDouble(setPowerInput.getText());
             double powerInput = pInput*1000;
             myTrain.setPower(powerInput,1);
+            double tInput = Double.parseDouble(setTemperatureInput.getText());
+            myTrain.setTemperature(tInput);
         }
         else{
             double pInput = Double.parseDouble(setPowerInput.getText());

@@ -51,19 +51,20 @@ public class TrainModelTest{
     public void testGetCurrentVelocity(){
         assertEquals(testTrainObject.getCurrentVelocity(), 0.0, delta);
     }
-    /*
+
     @Test
     public void testGetVelocity(){
         TrackModel _tm = mock(TrackModel.class);
         testTrainObject = new Train(1, 0, _tm, 1);
-        when(testTrainObject._tm.getGrade(1)).thenReturn(0.5);
         testTrainObject.trainController = mock(TrainController.class);
         when(testTrainObject.trainController.getPower()).thenReturn(10000.0);
         testTrainObject.numPassengers = 444;
         testTrainObject.velocity = 10;
-        assertEquals(testTrainObject.getVelocity(), testTrainObject.getCurrentVelocity(), delta);
+        Train spyTrain = spy(testTrainObject);
+        doReturn(0.5).when(spyTrain).getGrade();
+        assertEquals(spyTrain.getVelocity(), spyTrain.getCurrentVelocity(), delta);
     }
-    */
+
     @Test
     public void testSetPassengers(){
         //Too Many Passengers set
@@ -88,32 +89,37 @@ public class TrainModelTest{
     public void testGetMaxPower(){
         assertEquals(testTrainObject.getMaxPower(), 120000.0, delta);
     }
-/*
+
     @Test
     public void testSetPower(){
         TrackModel _tm = mock(TrackModel.class);
         testTrainObject = new Train(1, 0, _tm, 1);
-        when(testTrainObject._tm.getGrade(testTrainObject.getTrainId())).thenReturn(0.5);
-        testTrainObject.setPower(100000);
-        assertEquals(testTrainObject.getPower(),100000, delta);
+        Train spyTrain = spy(testTrainObject);
+        doReturn(0.5).when(spyTrain).getGrade();
+        spyTrain.setPower(100000,0);
+        assertEquals(spyTrain.getPower(),100000.00, delta);
     }
+
     @Test
     public void testSetPowerNegative(){
         TrackModel _tm = mock(TrackModel.class);
         testTrainObject = new Train(1, 0, _tm, 1);
-        when(testTrainObject._tm.getGrade(testTrainObject.getTrainId())).thenReturn(0.5);
-        testTrainObject.setPower(-100000);
-        assertEquals(testTrainObject.getPower(),0, delta);
+        Train spyTrain = spy(testTrainObject);
+        doReturn(0.5).when(spyTrain).getGrade();
+        spyTrain.setPower(-100000,0);
+        assertEquals(spyTrain.getPower(),0, delta);
     }
+
     @Test
     public void testSetPowerTooLarge(){
         TrackModel _tm = mock(TrackModel.class);
         testTrainObject = new Train(1, 0, _tm, 1);
-        when(testTrainObject._tm.getGrade(testTrainObject.getTrainId())).thenReturn(0.5);
-        testTrainObject.setPower(300000);
-        assertEquals(testTrainObject.getPower(), 120000, delta);
+        Train spyTrain = spy(testTrainObject);
+        doReturn(0.5).when(spyTrain).getGrade();
+        spyTrain.setPower(300000,0);
+        assertEquals(spyTrain.getPower(), 120000, delta);
     }
-    */
+
     @Test
     public void testSine(){
         assertEquals(testTrainObject.sine(.5), 0.004999, delta);
@@ -170,10 +176,9 @@ public class TrainModelTest{
         Train spyTrain = spy(testTrainObject);
         doReturn(0.5).when(spyTrain).getGrade();
 
-        
+
         spyTrain.updateSpeed(10000);
-        //spyTrain.updateSpeed(10000) = 10.2454971747 (hand calculation)
-        assertEquals(10.2454971747, spyTrain.getCurrentVelocity(), delta);
+        assertEquals(10.111703, spyTrain.getCurrentVelocity(), delta);
 
     }
 
@@ -251,15 +256,17 @@ public class TrainModelTest{
 
     @Test
     public void testGetDisplacement(){
-        /*Environment.clock = 10;
+        Environment.clock = 10;
         testTrainObject.time = 5;
         testTrainObject.acceleration = .5;
         testTrainObject.velocity = 10;
         TrainController controller = mock(TrainController.class);
         when(controller.getPower()).thenReturn(10000.0);
         testTrainObject.numPassengers = 444;
-        assertEquals(testTrainObject.getDisplacement(), 57.477, delta);
-        */
+        Train spyTrain = spy(testTrainObject);
+        doReturn(0.5).when(spyTrain).getGrade();
+        assertEquals(spyTrain.getDisplacement(), 49.5977, delta);
+
     }
 
 
