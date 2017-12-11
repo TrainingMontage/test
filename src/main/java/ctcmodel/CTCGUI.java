@@ -88,7 +88,7 @@ public class CTCGUI implements ViewerListener{
     private static JTextArea trackLightText;
     private static JTextArea trackSwitchText;
     private static JTextArea trackStationText;
-    private static JTextArea trackPassengersText;
+    //private static JTextArea trackPassengersText;
     private static JTextArea trackCrossingText;
     // line combobox
     private static JComboBox<String> lineComboBox;
@@ -1159,18 +1159,18 @@ public class CTCGUI implements ViewerListener{
         //c.gridheight = 1;
         panelTrackInfo.add(label,c);
         
-        label = new JLabel("Waiting Passengers");
+        //label = new JLabel("Waiting Passengers");
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 0;
-        c.gridy = 11;
+        //c.gridy = 11;
         //c.gridwidth = 1;
         //c.gridheight = 1;
-        panelTrackInfo.add(label,c);
+        //panelTrackInfo.add(label,c);
         
         label = new JLabel("Crossing State");
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 0;
-        c.gridy = 12;
+        c.gridy = 11;
         //c.gridwidth = 1;
         //c.gridheight = 1;
         panelTrackInfo.add(label,c);
@@ -1194,7 +1194,7 @@ public class CTCGUI implements ViewerListener{
                 }
             }
         });
-        c.gridy = 13;
+        c.gridy = 12;
         panelTrackInfo.add(maintenanceButton,c);
         
         trackIDText = new JTextArea("");
@@ -1317,22 +1317,22 @@ public class CTCGUI implements ViewerListener{
         //c.gridheight = 1;
         panelTrackInfo.add(trackStationText,c);
         
-        trackPassengersText = new JTextArea("");
-        trackPassengersText.setEnabled(false);
-        trackPassengersText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
+        //trackPassengersText = new JTextArea("");
+        //trackPassengersText.setEnabled(false);
+        //trackPassengersText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 1;
-        c.gridy = 11;
+        //c.gridy = 11;
         //c.gridwidth = 1;
         //c.gridheight = 1;
-        panelTrackInfo.add(trackPassengersText,c);
+        //panelTrackInfo.add(trackPassengersText,c);
         
         trackCrossingText = new JTextArea("");
         trackCrossingText.setEnabled(false);
         trackCrossingText.setPreferredSize(new Dimension(TextAreaWidth,TextAreaHeight));
         //c.insets = new Insets(2,2,2,2);//top,left,bottom,right
         //c.gridx = 1;
-        c.gridy = 12;
+        c.gridy = 11;
         //c.gridwidth = 1;
         //c.gridheight = 1;
         panelTrackInfo.add(trackCrossingText,c);
@@ -1354,7 +1354,7 @@ public class CTCGUI implements ViewerListener{
                 }
             }
         });
-        c.gridy = 13;
+        c.gridy = 12;
         panelTrackInfo.add(toggleSwitchButton,c);
         
         panelTrackInfo.setBorder(BorderFactory.createTitledBorder("Track Panel"));
@@ -1429,10 +1429,10 @@ public class CTCGUI implements ViewerListener{
         }
         if(stationName == null || stationName.equals("")){
             trackStationText.setText("No Station");
-            trackPassengersText.setText("");
+            //trackPassengersText.setText("");
         }else{
             trackStationText.setText(stationName);
-            trackPassengersText.setText("0");
+            //trackPassengersText.setText("0");
         }
         if(!hasRailway){
             trackCrossingText.setText("No Railway Crossing");
@@ -2705,7 +2705,7 @@ public class CTCGUI implements ViewerListener{
         }
         
         //pass stuff
-        System.out.println("asdf");
+        //System.out.println("asdf");
         prunePassArr();
         if(peopleTextArea != null){
             int sum = 0;
