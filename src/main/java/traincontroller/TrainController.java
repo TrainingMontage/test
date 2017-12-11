@@ -245,9 +245,12 @@ public class TrainController implements TrainControllerInterface {
                 theMap.getNextBlock();
             }
         }
+        else{
+            // Update our distance along the block
+            updateDistTraveled();
+        }
         
-        // Update our distance along the block
-        updateDistTraveled();
+        
         if(UIexists)
         {
             UI.updateAll();
