@@ -100,12 +100,30 @@ public class TrainTracker{
         //Train trainModel = trainList.get(retrieveTrain);
         return trainModel;
     }
-    /*
+
+    /**
+     * getTrain test method without GUI
+     * @param retrieveTrain id of train to get
+     * @return
+     */
+    public Train getTrainTest(int retrieveTrain){
+        if(trainList[retrieveTrain] != null){
+            Train trainModel = trainList[retrieveTrain];
+            return trainModel;
+        }
+        else{
+            return null;
+        }
+    }
+    /**
+     * Remove train
+     * @param removeTrainId id of train to be removed
+     */
     public void removeTrain(int removeTrainId){
-        removeTrainId = removeTrainId - 1;
-        trainList.remove(removeTrainId);
+        //removeTrainId = removeTrainId - 1;
+        //trainList.remove(removeTrainId);
         trainList[removeTrainId] = null;
-    }*/
+    }
 
     /**
      * Size of the arrayList of Trains
@@ -124,6 +142,9 @@ public class TrainTracker{
     }
 
     public static void main(String args[]){
+        if(TrainTracker.getTrainTracker().getTrain(0) != null){
+
+        }
         TrainModelGUI gui = new TrainModelGUI();
         gui.setVisible(true);
     }

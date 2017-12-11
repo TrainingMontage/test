@@ -299,7 +299,13 @@ public class Train {
     public boolean getAuthority(){
         boolean authority = TrackModel.getTrackModel().getTrainAuthority(trainId);
         if(gui != null){
-            gui.authorityDisplayLabel.setText(authority + "");
+            if(authority){
+                gui.authorityDisplayLabel.setText("True");
+            }
+            else if(!authority){
+                gui.authorityDisplayLabel.setText("False");
+            }
+            gui.authorityDisplayLabel.setText("");
         }
         if(signalFailure){
             return false;
@@ -314,11 +320,15 @@ public class Train {
      * @return suggested speed from Track Models
      */
     public double getSuggestedSpeed(){
+        double speed = TrackModel.getTrackModel().getTrainSpeed(trainId);
+        if(gui != null){
+            gui.suggestedSpeedDisplay.setText(String.format("%.2f", speed) + "");
+        }
         if(signalFailure){
             return 0.0;
         }
         else{
-            return TrackModel.getTrackModel().getTrainSpeed(trainId);
+            return speed;
         }
     }
 
@@ -645,7 +655,7 @@ public class Train {
         time = Environment.clock;
         if(gui != null){
             gui.currentTrainSpeedDisplayLabel.setText(String.format("%.2f", (getCurrentVelocity() * 2.23694)) + "mph");
-            gui.accelerationDisplayLabel.setText(String.format("%.4f", acceleration) + "");
+            gui.accelerationDisplayLabel.setText(String.format("%.4f", acceleration*3.2808399) + "ft/s^2");
         }
         return displacement;
 

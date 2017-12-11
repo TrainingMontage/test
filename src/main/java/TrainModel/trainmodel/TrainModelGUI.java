@@ -1,7 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/*   ______                 _           _
+ *  /_  __/ _____  ____ _  (_) ____    (_) ____    ____ _
+ *   / /   / ___/ / __ `/ / / / __ \  / / / __ \  / __ `/
+ *  / /   / /    / /_/ / / / / / / / / / / / / / / /_/ /
+ * /_/   /_/     \__,_/ /_/ /_/ /_/ /_/ /_/ /_/  \__, /
+ *                                              /____/
+ *     __  ___                 __
+ *    /  |/  / ____    ____   / /_  ____ _  ____ _  ___
+ *   / /|_/ / / __ \  / __ \ / __/ / __ `/ / __ `/ / _ \
+ *  / /  / / / /_/ / / / / // /_  / /_/ / / /_/ / /  __/
+ * /_/  /_/  \____/ /_/ /_/ \__/  \__,_/  \__, /  \___/
+ *                                       /____/
+ *
+ * @author Parth Dadhania
  */
 package trainmodel;
 
@@ -111,9 +121,9 @@ public class TrainModelGUI extends javax.swing.JFrame {
         lightsOn = new javax.swing.JButton();
         lightsOff = new javax.swing.JButton();
         emergencyBrakeButton = new javax.swing.JButton();
-        speedLimitLabel = new javax.swing.JLabel();
-        speedLimitDisplay = new javax.swing.JLabel();
-
+        suggestedSpeedLabel = new javax.swing.JLabel();
+        suggestedSpeedDisplay = new javax.swing.JLabel();
+        setTitle("TrainModelGUI Train: " + myTrain.getTrainId());
         setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
         setResizable(true);
 
@@ -540,17 +550,17 @@ public class TrainModelGUI extends javax.swing.JFrame {
             }
         });
 
-        speedLimitLabel.setBackground(new java.awt.Color(153, 204, 255));
-        speedLimitLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
-        speedLimitLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        speedLimitLabel.setText("Speed Limit");
-        speedLimitLabel.setOpaque(true);
+        suggestedSpeedLabel.setBackground(new java.awt.Color(153, 204, 255));
+        suggestedSpeedLabel.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
+        suggestedSpeedLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        suggestedSpeedLabel.setText("Speed Limit");
+        suggestedSpeedLabel.setOpaque(true);
 
-        speedLimitDisplay.setBackground(new java.awt.Color(183, 183, 183));
-        speedLimitDisplay.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
-        speedLimitDisplay.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        speedLimitDisplay.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
-        speedLimitDisplay.setOpaque(true);
+        suggestedSpeedDisplay.setBackground(new java.awt.Color(183, 183, 183));
+        suggestedSpeedDisplay.setFont(new java.awt.Font("Arial", 1, 13)); // NOI18N
+        suggestedSpeedDisplay.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        suggestedSpeedDisplay.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+        suggestedSpeedDisplay.setOpaque(true);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -647,13 +657,13 @@ public class TrainModelGUI extends javax.swing.JFrame {
                                                             .addComponent(authorityDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                             .addGap(39, 39, 39)))
                                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addComponent(speedLimitLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(suggestedSpeedLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                         .addComponent(temperatureLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))))
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                                 .addComponent(temperatureDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addComponent(accelerationDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addComponent(speedLimitDisplay, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                                .addComponent(suggestedSpeedDisplay, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))))
                                     .addGap(0, 0, Short.MAX_VALUE)))
                             .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 460, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(messageBoardDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 460, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -776,13 +786,13 @@ public class TrainModelGUI extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(speedLimitLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(suggestedSpeedLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(accelerationLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addComponent(accelerationDisplayLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(speedLimitDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(suggestedSpeedDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(0, 0, Short.MAX_VALUE)))
                                 .addGap(13, 13, 13)
                                 .addComponent(emergencyBrakeButton, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1112,8 +1122,8 @@ public class TrainModelGUI extends javax.swing.JFrame {
     protected javax.swing.JTextField setTemperatureInput;
     protected javax.swing.JButton signalFailure;
     protected javax.swing.ButtonGroup signalGroup;
-    protected javax.swing.JLabel speedLimitDisplay;
-    protected javax.swing.JLabel speedLimitLabel;
+    protected javax.swing.JLabel suggestedSpeedDisplay;
+    protected javax.swing.JLabel suggestedSpeedLabel;
     protected javax.swing.JLabel temperatureDisplayLabel;
     protected javax.swing.JLabel temperatureLabel;
     protected javax.swing.JLabel trainIdLabel;
