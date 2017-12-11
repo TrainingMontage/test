@@ -153,4 +153,54 @@ public class WCStaticTrackTest {
             st.getPaths()[2]
         );
     }
+
+    @Test
+    public void uploadGreenLine() throws IOException, FailedToReadPlc {
+        st = new WCStaticTrack(new File("src/main/resources/wayside/green.plc"));
+
+        assertEquals(153, st.trackLen());
+        
+        assertEquals(6, st.getSwitches().length);
+        assertEquals(
+            new WCSwitch( 1, 13, 12,   1),
+            st.getSwitches()[0]
+        );
+        assertEquals(
+            new WCSwitch( 2, 28, 29, 150),
+            st.getSwitches()[1]
+        );
+        assertEquals(
+            new WCSwitch(10, 57, 58, 151),
+            st.getSwitches()[2]
+        );
+        assertEquals(
+            new WCSwitch(11, 63, 62, 152),
+            st.getSwitches()[3]
+        );
+        assertEquals(
+            new WCSwitch(12, 77, 76, 101),
+            st.getSwitches()[4]
+        );
+        assertEquals(
+            new WCSwitch(13, 85, 86, 100),
+            st.getSwitches()[5]
+        );
+
+        assertArrayEquals(
+            new int[] {19},
+            st.getCrossings()
+        );
+
+        assertArrayEquals(
+            new int[] {
+                36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+                48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 151
+            },
+            st.getPaths()[1]
+        );
+        assertArrayEquals(
+            new int[] {152, 63, 64, 65, 66, 67, 68},
+            st.getPaths()[2]
+        );
+    }
 }
