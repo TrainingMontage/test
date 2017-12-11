@@ -34,7 +34,7 @@ public class TrainController implements TrainControllerInterface {
     static protected int numTrains = 0;
     static protected TrainController[] allTrainControllers = new TrainController[100];
 //    static StaticTrack theTrack;
-    static protected MapTracker theMap;
+    protected MapTracker theMap;
     
     protected Train theTrain;
 
@@ -151,6 +151,7 @@ public class TrainController implements TrainControllerInterface {
 //        ID = trainID;
         ID = newTrain.getTrainId();
         addTrainController(this);
+        System.err.println("Is Track ID right? " + trackID);
         theMap = new MapTracker(theTrain, trackID);
 //        theTrack = TrackModel.getTrackModel().getStaticTrack();
 //        try {
@@ -367,10 +368,11 @@ public class TrainController implements TrainControllerInterface {
     protected double computeSafeBrake(){
         if(!checkForTrain())
             return -1;
-        double distance = Math.abs(2*theTrain.getCurrentVelocity()*theTrain.getCurrentVelocity());
+        double distance = Math.abs(theTrain.getCurrentVelocity()*theTrain.getCurrentVelocity());
 //        distance /= theTrain.getServiceBrakes();
         distance /= Math.abs(theTrain.getServiceBrakeRate());
-//        System.err.println("SAFEBRAKE: dist " + distance);
+        distance /= 2;
+//        System.err.println("TRAINCONTROLLER SAFEBRAKE: dist " + distance);
         // d = vt+at^2
         // if a is neg, and we come to a stop,
         // 0 = v-at
@@ -394,11 +396,13 @@ public class TrainController implements TrainControllerInterface {
         double velocity = 0;
         double distLeft;
         distLeft = theMap.distToAuthEnd(distanceTraveled);
+//        System.err.println("TRAINCONTROLLER SAFE SPEED DISTLEFT " + distLeft);
         if(brakeDist > distLeft)
         {
-//            System.out.println("SAFE SPEED ebrake");
             // Stop immediately using ebrake
             emergencyStop();
+            
+//            System.err.println("TRAINCONTROLLER SAFE SPEED E-STOP");
         }
         else
 //            velocity = Math.sqrt(2*distLeft*theTrain.getServiceBrakes());
@@ -430,6 +434,7 @@ public class TrainController implements TrainControllerInterface {
             applyEBrakes = true;
             theTrain.setEmergencyBrakes(true);
 //            Pcmd = 0 - theTrain.getEBrakePower();
+            System.err.println("TRAINCONTROLLER GET POWER E-STOP");
             return 0;
         }
         if(stop)
