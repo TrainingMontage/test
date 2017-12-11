@@ -505,6 +505,9 @@ public class Train {
      */
     public void setTemperature(double newTemp){
         temperature = newTemp;
+        if(gui != null){
+            gui.temperatureDisplayLabel.setText(temperature + " F");
+        }
     }
 
     /**

@@ -142,10 +142,8 @@ public class TrainTracker{
     }
 
     public static void main(String args[]){
-        if(TrainTracker.getTrainTracker().getTrain(0) != null){
-
-        }
         TrainModelGUI gui = new TrainModelGUI();
         gui.setVisible(true);
+
     }
 }
