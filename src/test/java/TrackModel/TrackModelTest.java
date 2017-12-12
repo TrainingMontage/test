@@ -1250,17 +1250,18 @@ public class TrackModelTest {
     public void testGetTrainPassengers() throws SQLException {
         // mock a train from trainTracker
         TrackModel spyTM = spy(_tm);
+        spyTM.waitingPassengers.put(1, 15.0);
+
+        Random _r = mock(Random.class);
+        doReturn(5).when(_r).nextInt(50);
+        spyTM.setRandom(_r);
+
         Train _train = mock(Train.class);
         doReturn(50).when(_train).getMaxPassengers();
         doReturn(_train).when(spyTM).getTrainModelFromTrainTracker(1);
-
+        
         assertEquals(0, spyTM.getTrainPassengers(1));
 
-        // set reported passengers flag to false (simulate movement)
-        spyTM.setTrainReportedPassenger(1, false);
-
-        assertEquals(50, spyTM.getTrainPassengers(1));
-        assertEquals(0, spyTM.getTrainPassengers(1));
     }
 
     /**
@@ -1541,4 +1542,11 @@ public class TrackModelTest {
         assertTrue(spyTM.setRepair(1));
     }
 
+    @Test
+    public void testAccumulatePassengers() {
+        _tm.accumulateWaitingPassengers(1.0, 1);
+
+        assertEquals(1.0, _tm.waitingPassengers.get(1), epsilon);
+        assertNull(_tm.waitingPassengers.get(2));
+    }
 }
