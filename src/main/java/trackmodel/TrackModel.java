@@ -1548,7 +1548,11 @@ public class TrackModel implements TrackModelInterface {
             // load waiting passengers
             Double passengers = this.waitingPassengers.get(this.getTrainBlock(trainId));
             if (passengers != null) {
-                int loaded = this.random.nextInt(Math.min((int) passengers.doubleValue(), train.getMaxPassengers()));
+                int bound = Math.min((int) passengers.doubleValue(), train.getMaxPassengers());
+                int loaded = 0;
+                if (bound > 0) {
+                    loaded = this.random.nextInt();
+                }
                 passengers -= loaded;
 
                 this.waitingPassengers.put(this.getTrainBlock(trainId), passengers - loaded);
