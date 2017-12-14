@@ -18,6 +18,7 @@ package wayside;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Scanner;
 
 public class WCStaticTrack {
 
@@ -36,7 +37,11 @@ public class WCStaticTrack {
     public static final String RED_LINE = "src/main/resources/wayside/red.plc";
 
     public WCStaticTrack(File file) throws IOException, FailedToReadPlc {
-        PlcImporter plc = new PlcImporter(file);
+        this(new Scanner(file));
+    }
+
+    public WCStaticTrack(Scanner sc) throws FailedToReadPlc {
+        PlcImporter plc = new PlcImporter(sc);
         TRACK_LEN = plc.getTrackLen();
         SWITCHES = buildSwitches(plc);
         CROSSINGS = plc.getCrossings();
