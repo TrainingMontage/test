@@ -24,6 +24,7 @@ import trackmodel.TrackModel;
 import trackmodel.TrackModelInterface;
 
 import java.util.List;
+import java.util.Scanner;
 import java.io.File;
 
 /**
@@ -60,8 +61,9 @@ public class WaysideController {
         gui = new WaysideUI();
         tm = TrackModel.getTrackModel();
         try {
-            st = new WCStaticTrack(new File(WCStaticTrack.WHOLE_TRACK));
+            st = new WCStaticTrack(new Scanner(WaysideController.class.getClass().getResourceAsStream("/wayside/track.plc")));
         } catch (Exception ioe) {
+            ioe.printStackTrace();
             throw new RuntimeException("failed to read main file: " + WCStaticTrack.WHOLE_TRACK);
         }
         decider = new Decider(tm, st);
