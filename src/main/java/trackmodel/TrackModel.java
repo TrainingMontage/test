@@ -1551,7 +1551,7 @@ public class TrackModel implements TrackModelInterface {
                 int bound = Math.min((int) passengers.doubleValue(), train.getMaxPassengers());
                 int loaded = 0;
                 if (bound > 0) {
-                    loaded = this.random.nextInt();
+                    loaded = this.random.nextInt(bound);
                 }
                 passengers -= loaded;
 
