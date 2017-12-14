@@ -17,7 +17,10 @@ public class PlcImporter {
     private List<int[]> paths;
 
     public PlcImporter(File file) throws IOException, FailedToReadPlc {
-        Scanner in = new Scanner(file);
+        this(new Scanner(file));
+    }
+
+    public PlcImporter(Scanner in) throws FailedToReadPlc {
         paths = new ArrayList<int[]>();
 
         read_file: while (in.hasNextLine()) {
